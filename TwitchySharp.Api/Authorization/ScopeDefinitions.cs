@@ -319,5 +319,6 @@ public partial record Scope
     /// PubSub-Specific Scope
     /// Receive whisper messages for your user using PubSub.
     /// </summary>
+    [Obsolete]
     public static Scope WhispersRead { get; } = new("whispers:read");
 }
