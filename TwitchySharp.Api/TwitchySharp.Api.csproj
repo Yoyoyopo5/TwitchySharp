@@ -22,6 +22,10 @@
     <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<Using Include="OneOf" />
 	</ItemGroup>
