@@ -61,27 +61,27 @@ public class TwitchOidc
     /// <summary>
     /// The client ID of the application that requested the user’s authorization.
     /// </summary>
-    [JsonRequired]
+    [JsonInclude, JsonRequired]
     public string Aud { get; private set; } = string.Empty;
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
-    [JsonRequired]
+    [JsonInclude, JsonRequired]
     public long Exp { get; private set; }
     /// <summary>
     /// The UNIX timestamp of when the server issued the token.
     /// </summary>
-    [JsonRequired]
+    [JsonInclude, JsonRequired]
     public long Iat { get; private set; }
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).
     /// </summary>
-    [JsonRequired]
+    [JsonInclude, JsonRequired]
     public string Iss { get; private set; } = string.Empty;
     /// <summary>
     /// The Twitch ID of the user that authorized the app.
     /// </summary>
-    [JsonRequired]
+    [JsonInclude, JsonRequired]
     public string Sub { get; private set; } = string.Empty;
     /// <summary>
     /// The email address of the user that authorized the app.

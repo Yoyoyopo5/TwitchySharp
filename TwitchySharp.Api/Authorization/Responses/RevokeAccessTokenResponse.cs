@@ -8,4 +8,4 @@ namespace TwitchySharp.Api.Authorization.Responses;
 /// Placeholder class for the <see cref="RevokeAccessTokenRequest"/>.
 /// This response has no data.
 /// </summary>
-public class RevokeAccessTokenResponse { }
+public record RevokeAccessTokenResponse { }
