@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Channels.Ads.Responses;
+/// <summary>
+/// Contains information about a channel's ad schedule.
+/// </summary>
 public record GetAdScheduleResponse
 {
     /// <summary>
