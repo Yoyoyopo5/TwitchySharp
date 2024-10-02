@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization;
-public partial record Scope
+public partial record Scope : ValueBackedEnum<string>
 {
-    private readonly string _scope;
     /// <summary>
     /// If possible, please use static <see cref="Scope"/> definitions provided by this class.
     /// You can use this constructor to create a <see cref="Scope"/> when a static definition is not provided.
     /// </summary>
     /// <param name="scope">The Twitch scope string (e.g. "bits:read")</param>
-    public Scope(string scope) {  _scope = scope; }
-    public override string ToString()
-        => _scope;
+    public Scope(string scope) : base(scope) { }
 }
 
 internal static class ScopeExtensions
