@@ -45,5 +45,5 @@ public record ExtensionAnalyticsData
     /// The reporting window’s start and end dates.
     /// </summary>
     [JsonInclude, JsonRequired]
-    public DateRange DateRange { get; private set; }
+    public DateTimeOffsetRange DateRange { get; private set; }
 }
