@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Models;
 
 namespace TwitchySharp.Api.Helix.Channels.Ads.Responses;
+/// <summary>
+/// Contains data about extension analytics.
+/// </summary>
 public record GetExtensionAnalyticsResponse
 {
     /// <summary>
