@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 namespace TwitchySharp.Api.Models;
-public record struct DateRange
+public record struct DateTimeOffsetRange
 {
     [JsonInclude, JsonRequired]
     public DateTimeOffset StartedAt { get; private set; }
