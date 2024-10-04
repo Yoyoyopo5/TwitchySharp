@@ -54,7 +54,7 @@ public class GetExtensionAnalyticsRequest(
     string clientId,
     string accessToken,
     string? extensionId = null,
-    ExtensionReportType? type = null,
+    ExtensionAnalyticsReportType? type = null,
     DateTimeOffset? startedAt = null,
     DateTimeOffset? endedAt = null,
     int? first = null,
@@ -73,8 +73,8 @@ public class GetExtensionAnalyticsRequest(
         accessToken
         );
 
-public record ExtensionReportType : ValueBackedEnum<string>
+public record ExtensionAnalyticsReportType : ValueBackedEnum<string>
 {
-    public static ExtensionReportType OverviewV2 { get; } = new ExtensionReportType("overview_v2");
-    private ExtensionReportType(string twitchString) : base(twitchString) { }
+    public static ExtensionAnalyticsReportType OverviewV2 { get; } = new ExtensionAnalyticsReportType("overview_v2");
+    private ExtensionAnalyticsReportType(string twitchString) : base(twitchString) { }
 }
