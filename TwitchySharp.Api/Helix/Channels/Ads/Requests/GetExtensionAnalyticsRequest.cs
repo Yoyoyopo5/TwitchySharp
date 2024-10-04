@@ -73,6 +73,9 @@ public class GetExtensionAnalyticsRequest(
         accessToken
         );
 
+/// <summary>
+/// Contains valid report types for use with <see cref="GetExtensionAnalyticsRequest"/>.
+/// </summary>
 public record ExtensionAnalyticsReportType : ValueBackedEnum<string>
 {
     public static ExtensionAnalyticsReportType OverviewV2 { get; } = new ExtensionAnalyticsReportType("overview_v2");
