@@ -9,8 +9,10 @@ using TwitchySharp.Api.Authorization;
 namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
 /// <summary>
 /// Starts a commercial on the specified channel.
-/// Requires a user access token that includes <see cref="Scope.ChannelEditCommercial"/>.
+/// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#start-commercial">start commerical</see> for more information.
+/// <br/>
+/// Requires a user access token that includes <see cref="Scope.ChannelEditCommercial"/>.
 /// </summary>
 /// <param name="clientId">The client id of the application.</param>
 /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelEditCommercial"/></param>
