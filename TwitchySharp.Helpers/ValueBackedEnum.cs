@@ -13,5 +13,5 @@ public record ValueBackedEnum<T>
     {
         Value = value;
     }
-    public override string ToString() => Value.ToString();
+    public override string ToString() => Value?.ToString() ?? string.Empty;
 }
