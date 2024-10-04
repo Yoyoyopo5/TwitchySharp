@@ -20,6 +20,10 @@ public record GetExtensionAnalyticsResponse
     /// </summary>
     [JsonInclude, JsonRequired]
     public ExtensionAnalyticsData[] Data { get; private set; } = [];
+    /// <summary>
+    /// Contains the information used to page through the list of results. 
+    /// The <see cref="Pagination.Cursor"/> is null if there are no more pages to page through.
+    /// </summary>
     [JsonInclude, JsonRequired]
     public Pagination Pagination { get; private set; } = new();
 
