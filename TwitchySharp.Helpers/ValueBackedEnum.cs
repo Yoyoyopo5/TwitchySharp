@@ -14,4 +14,5 @@ public record ValueBackedEnum<T>
         Value = value;
     }
     public override string ToString() => Value?.ToString() ?? string.Empty;
+    public static implicit operator T(ValueBackedEnum<T> a) => a.Value;
 }
