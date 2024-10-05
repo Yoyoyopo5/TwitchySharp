@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Authorization.Responses;
 
-namespace TwitchySharp.Api.Authorization.Requests;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Gets a set of OIDC claims associated with the user access token used to make the request.
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">getting claims information from an access token</see> for more information.

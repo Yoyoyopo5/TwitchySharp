@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Responses;
+namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
 /// Contains information about the snoozed ad.
 /// </summary>

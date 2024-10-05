@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Helix.Channels.Ads.Responses;
 using TwitchySharp.Api.Authorization;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
+namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
 /// Starts a commercial on the specified channel.
 /// <br/>

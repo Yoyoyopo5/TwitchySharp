@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Authorization.Responses;
 
-namespace TwitchySharp.Api.Authorization.Requests;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Requests JsonWebKeys from Twitch used to validate JsonWebTokens returned in the OIDC authorization flow (as the IdToken).
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#validating-an-id-token">validating an ID token</see> for more information.

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Authorization.Responses;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Response containing access and refresh tokens for a user that authorized the app.
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow">authorization code grant flow</see> for more information.

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Helix.Channels.Ads.Responses;
 using TwitchySharp.Api.Authorization;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
+namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
 /// If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes. 
 /// This endpoint duplicates the snooze functionality in the creator dashboard’s Ads Manager.

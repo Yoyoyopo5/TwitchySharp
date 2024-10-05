@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Authorization.Responses;
 
-namespace TwitchySharp.Api.Authorization.Requests;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Used to get a device code from Twitch which can be used to get a user access token for a specific device.
 /// Uses the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.

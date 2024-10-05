@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
-namespace TwitchySharp.Api.Authorization.Requests;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// 
 /// </summary>
