@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Authorization.Responses;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Contains information about a valid user access token.
 /// </summary>

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TwitchySharp.Api.Authorization.Responses;
 
-namespace TwitchySharp.Api.Authorization.Requests;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Revokes a valid user access token so that it is no longer valid.
 /// See <see href="https://dev.twitch.tv/docs/authentication/revoke-tokens/">revoke tokens</see> for more information.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Authorization.Responses;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Contains an app access token. 
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#client-credentials-grant-flow">client credentials code flow</see> for more information.

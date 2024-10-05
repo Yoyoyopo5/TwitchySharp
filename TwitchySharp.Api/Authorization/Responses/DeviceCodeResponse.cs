@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization.Requests;
 
-namespace TwitchySharp.Api.Authorization.Responses;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Contains device code used in the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.
 /// </summary>

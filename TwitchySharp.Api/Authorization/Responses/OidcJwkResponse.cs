@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Authorization.Responses;
+namespace TwitchySharp.Api.Authorization;
 public record OidcJwkResponse
 {
     /// <summary>

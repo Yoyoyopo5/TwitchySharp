@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchySharp.Api.Helix.Channels.Ads.Responses;
 using TwitchySharp.Api.Authorization;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
+namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
 /// This endpoint returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time. 
 /// Note that a new ad cannot be run until 8 minutes after running a previous ad.

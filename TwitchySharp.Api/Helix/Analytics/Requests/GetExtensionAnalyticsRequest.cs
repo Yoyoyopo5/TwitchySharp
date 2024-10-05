@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchySharp.Api.Helix.Channels.Ads.Responses;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Models;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
+namespace TwitchySharp.Api.Helix.Analytics;
 /// <summary>
 /// Gets an analytics report for one or more extensions. 
 /// The response contains the URLs used to download the reports (CSV files).
@@ -60,7 +59,7 @@ public class GetExtensionAnalyticsRequest(
     int? first = null,
     string? after = null)
     : HelixApiRequest<GetExtensionAnalyticsResponse>(
-        "/analytics/extensions" + (new Dictionary<string, string?>() 
+        "/analytics/extensions" + new Dictionary<string, string?>()
         {
             { "extension_id", extensionId },
             { "type", type?.Value },
@@ -68,7 +67,7 @@ public class GetExtensionAnalyticsRequest(
             { "ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
             { "first", first.ToString() },
             { "after", after }
-        }.ToHttpQueryString()),
+        }.ToHttpQueryString(),
         clientId,
         accessToken
         );

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TwitchySharp.Api.Helix.Channels.Ads.Responses;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Models;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
+namespace TwitchySharp.Api.Helix.Analytics;
 /// <summary>
 /// Gets an analytics report for one or more games. 
 /// The response contains the URLs used to download the reports (CSV files).
@@ -49,7 +48,7 @@ namespace TwitchySharp.Api.Helix.Channels.Ads.Requests;
 /// This parameter is ignored if <paramref name="gameId"/> is not null.
 /// </param>
 public class GetGameAnalyticsRequest(
-    string clientId, 
+    string clientId,
     string accessToken,
     string? gameId = null,
     GameAnalyticsReportType? type = null,
@@ -59,7 +58,7 @@ public class GetGameAnalyticsRequest(
     string? after = null
     )
     : HelixApiRequest<GetGameAnalyticsResponse>(
-        "/analytics/games" + (new Dictionary<string, string?>()
+        "/analytics/games" + new Dictionary<string, string?>()
         {
             { "game_id", gameId },
             { "type", type?.Value },
@@ -67,7 +66,7 @@ public class GetGameAnalyticsRequest(
             { "ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
             { "first", first.ToString() },
             { "after", after }
-        }.ToHttpQueryString()),
+        }.ToHttpQueryString(),
         clientId,
         accessToken
         );

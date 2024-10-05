@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Models;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Responses;
+namespace TwitchySharp.Api.Helix.Analytics;
 /// <summary>
 /// Contains data about game analytics.
 /// </summary>

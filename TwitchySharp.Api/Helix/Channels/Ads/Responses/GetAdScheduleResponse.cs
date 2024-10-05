@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers;
 
-namespace TwitchySharp.Api.Helix.Channels.Ads.Responses;
+namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
 /// Contains information about a channel's ad schedule.
 /// </summary>
