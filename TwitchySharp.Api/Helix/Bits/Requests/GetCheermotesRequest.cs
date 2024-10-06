@@ -21,10 +21,9 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// </param>
 public class GetCheermotesRequest(string clientId, string accessToken, string? broadcasterId = null)
     : HelixApiRequest<GetCheermotesResponse>(
-        "/bits/cheermotes" + (new Dictionary<string, string?>()
-        {
-            { "broadcaster_id", broadcasterId }
-        }.ToHttpQueryString()),
+        "/bits/cheermotes" + 
+        new HttpQueryParameters()
+            .Add("broadcaster_id", broadcasterId),
         clientId,
         accessToken
         );

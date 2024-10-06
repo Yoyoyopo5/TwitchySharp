@@ -59,15 +59,14 @@ public class GetExtensionAnalyticsRequest(
     int? first = null,
     string? after = null)
     : HelixApiRequest<GetExtensionAnalyticsResponse>(
-        "/analytics/extensions" + new Dictionary<string, string?>()
-        {
-            { "extension_id", extensionId },
-            { "type", type?.Value },
-            { "started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
-            { "ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
-            { "first", first.ToString() },
-            { "after", after }
-        }.ToHttpQueryString(),
+        "/analytics/extensions" + 
+        new HttpQueryParameters()
+            .Add("extension_id", extensionId)
+            .Add("type", type?.Value)
+            .Add("started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("first", first?.ToString())
+            .Add("after", after),
         clientId,
         accessToken
         );
