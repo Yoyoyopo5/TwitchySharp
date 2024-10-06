@@ -34,13 +34,12 @@ public class GetBitsLeaderboardRequest(
     string? userId = null
     )
     : HelixApiRequest<GetBitsLeaderboardResponse>(
-        "/bits/leaderboard" + (new Dictionary<string, string?>() 
-        {
-            { "count", count?.ToString() },
-            { "period", period?.Value },
-            { "started_at", StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ") }, // This is kind of fucked, but we have to add 8 hours to the time because Twitch converts it to PST (-8:00).
-            { "user_id", userId }
-        }.ToHttpQueryString()),
+        "/bits/leaderboard" + 
+        new HttpQueryParameters()
+            .Add("count", count?.ToString())
+            .Add("period", period?.Value)
+            .Add("started_at", StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("user_id", userId),
         clientId,
         accessToken
         );

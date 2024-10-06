@@ -58,15 +58,14 @@ public class GetGameAnalyticsRequest(
     string? after = null
     )
     : HelixApiRequest<GetGameAnalyticsResponse>(
-        "/analytics/games" + new Dictionary<string, string?>()
-        {
-            { "game_id", gameId },
-            { "type", type?.Value },
-            { "started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
-            { "ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ") },
-            { "first", first.ToString() },
-            { "after", after }
-        }.ToHttpQueryString(),
+        "/analytics/games" + 
+        new HttpQueryParameters()
+            .Add("game_id", gameId)
+            .Add("type", type?.Value)
+            .Add("started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("first", first?.ToString())
+            .Add("after", after),
         clientId,
         accessToken
         );

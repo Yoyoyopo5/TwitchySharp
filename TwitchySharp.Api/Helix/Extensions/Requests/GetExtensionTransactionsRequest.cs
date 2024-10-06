@@ -36,16 +36,12 @@ public class GetExtensionTransactionsRequest(
     string? after = null
     )
     : HelixApiRequest<GetExtensionTransactionsResponse>(
-        "/extensions/transactions" + (new Dictionary<string, string?>
-        {
-            { "extension_id", extensionId },
-            { "first", first?.ToString() },
-            { "after", after }
-        }.ToHttpQueryString() + (
-            transactionIds is null || !transactionIds.Any() ? 
-                string.Empty :
-                transactionIds.Aggregate("&", (total, next) => total += $"id={next}&").TrimEnd('&') // Jank-ass bullshit since Twitch wants query with multiple Id keys. StringBuilder will be more performant above 5 or so ids, if you can figure out how to use it in this context.
-        )),
+        "/extensions/transactions" +
+        new HttpQueryParameters()
+            .Add("extension_id", extensionId)
+            .Add("first", first?.ToString())
+            .Add("after", after)
+            .Add("id", transactionIds),
         clientId,
         accessToken
         );
