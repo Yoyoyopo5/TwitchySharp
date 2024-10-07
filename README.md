@@ -2,6 +2,18 @@
 
 ## Work In Progress
 
+### Authentication API
+- [X] Authentication Url Generators
+- [X] Get App Access Tokens
+- [X] Get User Access Tokens
+- [X] Validate User Access Tokens
+- [X] Refresh User Access Tokens
+- [X] OIDC
+- [X] User Info
+- [X] Device Code Flow
+- [X] Revoke User Access Token
+- [X] Scopes
+
 ### HTTP API
 - [X] Ads
 - [X] Analytics
