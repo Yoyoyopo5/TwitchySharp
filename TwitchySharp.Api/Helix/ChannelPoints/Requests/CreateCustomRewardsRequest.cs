@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwitchySharp.Helpers;
 
-namespace TwitchySharp.Api.Helix.ChannelPoints.Requests;
+namespace TwitchySharp.Api.Helix.ChannelPoints;
 public class CreateCustomRewardsRequest(
     string clientId, 
     string accessToken, 
