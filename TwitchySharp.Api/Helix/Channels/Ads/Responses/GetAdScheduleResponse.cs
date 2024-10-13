@@ -14,8 +14,7 @@ public record GetAdScheduleResponse
     /// A list that contains information related to the channel’s ad schedule.
     /// There should only be one entry?
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public AdSchedule[] Data { get; private set; } = [];
+    public required AdSchedule[] Data { get; init; }
 }
 
 /// <summary>
@@ -27,31 +26,27 @@ public record AdSchedule
     /// <summary>
     /// The number of snoozes available for the broadcaster.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int SnoozeCount { get; private set; }
+    public required int SnoozeCount { get; init; }
     /// <summary>
     /// The time when the broadcaster will gain an additional snooze.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public DateTimeOffset SnoozeRefreshAt { get; private set; }
+    public required DateTimeOffset SnoozeRefreshAt { get; init; }
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
     /// <summary>
     /// The time of the broadcaster’s next scheduled ad. Null if the channel has no ad scheduled or is not live.
     /// </summary>
-    public DateTimeOffset? NextAdAt { get; private set; }
+    public DateTimeOffset? NextAdAt { get; init; }
     /// <summary>
     /// The length in seconds of the scheduled upcoming ad break.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int Duration { get; private set; }
+    public required int Duration { get; init; }
     /// <summary>
     /// The time of the broadcaster’s last ad-break. Null if the channel has not run an ad or is not live.
     /// </summary>
-    [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
-    public DateTimeOffset? LastAdAt { get; private set; }
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public DateTimeOffset? LastAdAt { get; init; }
     /// <summary>
     /// The amount of pre-roll free time remaining for the channel in seconds. The value is 0 if they are currently not pre-roll free.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int PrerollFreeTime { get; private set; }
+    public required int PrerollFreeTime { get; init; }
 }

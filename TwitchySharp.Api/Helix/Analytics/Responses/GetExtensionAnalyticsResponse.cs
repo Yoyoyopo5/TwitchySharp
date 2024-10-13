@@ -18,14 +18,12 @@ public record GetExtensionAnalyticsResponse
     /// the report contains rows for only those days that the extension was used. 
     /// The array is empty if there are no reports.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public ExtensionAnalyticsData[] Data { get; private set; } = [];
+    public required ExtensionAnalyticsData[] Data { get; init; }
     /// <summary>
     /// Contains the information used to page through the list of results. 
     /// The <see cref="Pagination.Cursor"/> is null if there are no more pages to page through.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public Pagination Pagination { get; private set; } = new();
+    public required Pagination Pagination { get; init; }
 
 }
 
@@ -37,20 +35,18 @@ public record ExtensionAnalyticsData
     /// <summary>
     /// An ID that identifies the extension that the report was generated for.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string ExtensionId { get; private set; } = string.Empty;
+    public required string ExtensionId { get; init; }
     /// <summary>
     /// The URL that you use to download the report. The URL is valid for 5 minutes.
     /// </summary>
-    [JsonInclude, JsonRequired, JsonPropertyName("URL")]
-    public string Url { get; private set; } = string.Empty;
+    [JsonPropertyName("URL")]
+    public required string Url { get; init; }
     /// <summary>
     /// The type of report.
     /// </summary>
-    public string Type { get; private set; } = string.Empty;
+    public required string Type { get; init; }
     /// <summary>
     /// The reporting window’s start and end dates.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public DateTimeOffsetRange DateRange { get; private set; }
+    public required DateTimeOffsetRange DateRange { get; init; }
 }

@@ -12,26 +12,21 @@ public record ValidateAccessTokenResponse
     /// <summary>
     /// The client ID of the application the user has authorized.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string ClientId { get; private set; } = string.Empty;
+    public required string ClientId { get; init; }
     /// <summary>
     /// The login (username) of the Twitch user associated with the access token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Login { get; private set; } = string.Empty;
+    public required string Login { get; init; }
     /// <summary>
     /// The authorization scopes associated with the access token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string[] Scopes { get; private set; } = [];
+    public required string[] Scopes { get; init; }
     /// <summary>
     /// The user ID of the Twitch user associated with the access token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string UserId { get; private set; } = string.Empty;
+    public required string UserId { get; init; }
     /// <summary>
     /// Seconds until the access token must be refreshed.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int ExpiresIn { get; private set; } = 0;
+    public required int ExpiresIn { get; init; }
 }

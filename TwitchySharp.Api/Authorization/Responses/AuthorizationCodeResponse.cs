@@ -15,35 +15,30 @@ public record AuthorizationCodeResponse
     /// <summary>
     /// The access token for the user. Use this when accessing API endpoints that require it.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string AccessToken { get; } = string.Empty;
+    public required string AccessToken { get; init; } = string.Empty;
     /// <summary>
     /// Time in seconds until the access token needs to be refreshed.
     /// Note that a user can revoke access to an app at anytime, causing API requests to return HTTP code 401 before the token expires.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int ExpiresIn { get; private set; } = 0;
+    public required int ExpiresIn { get; init; }
     /// <summary>
     /// A token that can be used to get a new access token without requiring the user to reauthorize the app.
     /// See <see href="https://dev.twitch.tv/docs/authentication/refresh-tokens/">refresh tokens</see> for more information.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string RefreshToken { get; private set; } = string.Empty;
+    public required string RefreshToken { get; init; }
     /// <summary>
     /// The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> associated with the access token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string[] Scope { get; private set; } = [];
+    public required string[] Scope { get; init; }
     /// <summary>
     /// The type of the access token. This should always be bearer.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string TokenType { get; private set; } = string.Empty;
+    public required string TokenType { get; init; }
 
     /// <summary>
     /// An OIDC id token in the form of a base-64 encoded JWT containing data about the authorizing user.
     /// </summary>
-    public string? IdToken { get; private set; }
+    public string? IdToken { get; init; }
 }
 
 public static class AuthorizationCodeResponseExtensions

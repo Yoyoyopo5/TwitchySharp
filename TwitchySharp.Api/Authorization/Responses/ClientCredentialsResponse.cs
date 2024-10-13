@@ -13,16 +13,13 @@ public record ClientCredentialsResponse
     /// <summary>
     /// The app access token. Use this to authorize API requests that require an app access token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string AccessToken { get; private set; } = string.Empty;
+    public required string AccessToken { get; init; }
     /// <summary>
     /// Time in seconds that the access token will remain valid.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int ExpiresIn { get; private set; } = 0;
+    public required int ExpiresIn { get; init; }
     /// <summary>
     /// The type of access token. This should always be bearer.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string TokenType { get; private set; } = string.Empty;
+    public required string TokenType { get; init; }
 }
