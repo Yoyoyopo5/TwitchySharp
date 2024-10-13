@@ -45,3 +45,9 @@
 - [ ] Users
 - [ ] Videos
 - [ ] Whispers
+
+### EventSub
+
+### Not Planned (Obsolete)
+- PubSub
+- IRC Chatbots

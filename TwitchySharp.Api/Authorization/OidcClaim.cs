@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Buffers;
-using CommunityToolkit.HighPerformance.Buffers;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -61,7 +60,7 @@ public class OidcClaims
     /// <returns></returns>
     internal string JsonEncode()
     {
-        ArrayPoolBufferWriter<byte> buffer = new();
+        ArrayBufferWriter<byte> buffer = new();
         using Utf8JsonWriter jsonWriter = new(buffer);
 
         jsonWriter.WriteStartObject();

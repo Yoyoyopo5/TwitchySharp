@@ -12,8 +12,7 @@ public record StartCommericalResponse
     /// <summary>
     /// An array that contains a single <see cref="StartedCommerical"/> with the status of your start commercial request.
     /// </summary>
-    [JsonRequired]
-    public StartedCommerical[] Data { get; private set; } = [];
+    public required StartedCommerical[] Data { get; init; }
 }
 
 /// <summary>
@@ -26,16 +25,13 @@ public record StartedCommerical
     /// The length of the commercial you requested.
     /// If you request a commercial that’s longer than 180 seconds, the API uses 180 seconds. 
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int Length { get; private set; } = 0;
+    public required int Length { get; init; }
     /// <summary>
     /// A message that indicates whether Twitch was able to serve an ad (typically empty?).
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Message { get; private set; } = string.Empty;
+    public required string Message { get; init; }
     /// <summary>
     /// The number of seconds you must wait before running another commercial.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int RetryAfter { get; private set; } = 0;
+    public required int RetryAfter { get; init; }
 }

@@ -12,8 +12,7 @@ public record SnoozeNextAdResponse
     /// <summary>
     /// A list that contains information about the channel’s snoozes and next upcoming ad after successfully snoozing.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public AdSnoozeData[] Data { get; private set; } = [];
+    public required AdSnoozeData[] Data { get; init; }
 }
 
 /// <summary>
@@ -25,16 +24,13 @@ public record AdSnoozeData
     /// <summary>
     /// The number of snoozes available for the broadcaster.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public int SnoozeCount { get; private set; }
+    public required int SnoozeCount { get; init; }
     /// <summary>
     /// The time when the broadcaster will gain an additional snooze.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public DateTimeOffset SnoozeRefreshAt { get; private set; }
+    public required DateTimeOffset SnoozeRefreshAt { get; init; }
     /// <summary>
     /// The time of the broadcaster’s next scheduled ad.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public DateTimeOffset NextAdAt { get; private set; }
+    public required DateTimeOffset NextAdAt { get; init; }
 }

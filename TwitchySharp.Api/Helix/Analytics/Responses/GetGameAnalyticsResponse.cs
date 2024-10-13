@@ -18,14 +18,12 @@ public record GetGameAnalyticsResponse
     /// A report is available only if the game was broadcast for at least 5 hours over the reporting period. 
     /// The array is empty if there are no reports.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public GameAnalyticsData[] Data { get; private set; } = [];
+    public required GameAnalyticsData[] Data { get; init; }
     /// <summary>
     /// Contains the information used to page through the list of results. 
     /// The <see cref="Pagination.Cursor"/> is null if there are no more pages to page through.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public Pagination Pagination { get; private set; } = new();
+    public required Pagination Pagination { get; init; }
 }
 
 /// <summary>
@@ -36,21 +34,18 @@ public record GameAnalyticsData
     /// <summary>
     /// An ID that identifies the game that the report was generated for.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string GameId { get; private set; } = string.Empty;
+    public required string GameId { get; init; }
     /// <summary>
     /// The URL that you use to download the report. The URL is valid for 5 minutes.
     /// </summary>
-    [JsonInclude, JsonRequired, JsonPropertyName("URL")]
-    public string Url { get; private set; } = string.Empty;
+    [JsonPropertyName("URL")]
+    public required string Url { get; init; }
     /// <summary>
     /// The type of report.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Type { get; private set; } = string.Empty;
+    public required string Type { get; init; }
     /// <summary>
     /// The reporting window’s start and end dates.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public DateTimeOffsetRange DateRange { get; private set; }
+    public required DateTimeOffsetRange DateRange { get; init; }
 }

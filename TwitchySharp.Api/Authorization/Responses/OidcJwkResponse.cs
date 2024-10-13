@@ -10,6 +10,5 @@ public record OidcJwkResponse
     /// <summary>
     /// An array of JWKs used to verify OIDC JWTs obtained as ID tokens during Twitch OIDC authorization flows.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public JsonWebKey[] Keys { get; private set; } = [];
+    public required JsonWebKey[] Keys { get; init; }
 }
