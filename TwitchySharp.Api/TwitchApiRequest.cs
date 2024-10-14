@@ -50,7 +50,7 @@ public abstract class TwitchApiRequest<TResponse>(string path)
         {
             Method = Method,
             RequestUri = new Uri(Uri),
-            Content = new StringContent(Data)
+            Content = Data is null ? null : new StringContent(Data)
         };
 
         // Headers
