@@ -19,7 +19,7 @@
 - [X] Analytics
 - [X] Bits
 - [X] Channels
-- [ ] Channel Points
+- [X] Channel Points
 - [ ] Charity
 - [ ] Chat
 - [ ] Clips
