@@ -38,7 +38,7 @@ public class ModifyChannelInformationRequest(
         channelInformation
         )
 {
-    public override HttpMethod Method => new HttpMethod("PATCH"); // weird but okay
+    public override HttpMethod Method => HttpMethod.Patch;
 }
 
 /// <summary>
