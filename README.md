@@ -20,7 +20,7 @@
 - [X] Bits
 - [X] Channels
 - [X] Channel Points
-- [ ] Charity
+- [X] Charity
 - [ ] Chat
 - [ ] Clips
 - [ ] Conduits
