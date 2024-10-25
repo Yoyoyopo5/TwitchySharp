@@ -37,7 +37,7 @@ public record CheermoteData
     /// <summary>
     /// The type of Cheermote.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseJsonStringEnumConverter))]
+    [JsonConverter(typeof(SnakeCaseJsonStringEnumConverter<CheermoteType>))]
     public required CheermoteType Type { get; init; }
     /// <summary>
     /// The order that the Cheermotes are shown in the Bits card. 
