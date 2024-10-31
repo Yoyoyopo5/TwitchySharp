@@ -29,6 +29,6 @@ public class TwitchApi(HttpClient? httpClient = null, RateLimiter ? rateLimiter 
     /// <see cref="HttpRequestException"/>,
     /// <see cref="ApiException"/>
     /// </returns>
-    public ValueTask<OneOf<TResponse, Exception>> SendRequestAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default)
+    public ValueTask<OneOf<TResponse, Exception>> SendRequestAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default) // Lets change this to tradiational exception throwing for release
         => HttpClient.SendAsync(request, ct);
 }
