@@ -20,7 +20,7 @@ public record GetChannelEmotesResponse
     public required ChannelEmote[] Data { get; init; }
     /// <summary>
     /// A templated URL. 
-    /// Use the values from the <see cref="ChannelEmote.Id"/>, <see cref="ChannelEmote.Format"/>, <see cref="ChannelEmote.Scale"/>, and <see cref="ChannelEmote.ThemeMode"/> properties to replace the like-named placeholder strings in the templated URL to create a CDN (content delivery network) URL that you use to fetch the emote. 
+    /// Use the values from the <see cref="ChannelEmote.Id"/>, <see cref="ChannelEmote.Format"/>, <see cref="ChannelEmote.Scale"/>, and <see cref="ChannelEmote.ThemeMode"/> properties to call <see cref="EmoteImageTemplateString.CreateEmoteImageUrl(string, EmoteFormat, EmoteTheme, EmoteScale)"/> to create a CDN (content delivery network) URL that you use to fetch the emote. 
     /// For information about what the template looks like and how to use it to fetch emotes, see <see href="https://dev.twitch.tv/docs/chat/send-receive-messages/#cdn-template">Emote CDN URL format</see>. 
     /// You should use this template instead of using the URLs in the images object.
     /// </summary>
