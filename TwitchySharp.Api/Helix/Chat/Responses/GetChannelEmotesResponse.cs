@@ -66,7 +66,7 @@ public record ChannelEmote
     public required EmoteFormat[] Format { get; init; } // It would be cool to write a converter that can convert an array of strings into a Flags enum instead of an enum array.
     /// <summary>
     /// The sizes that the emote is available in. 
-    /// For example, if the emote is available in small and medium sizes, the array contains <see cref="EmoteScale"/>
+    /// For example, if the emote is available in small and medium sizes, the array contains <see cref="EmoteScale.Small"/> and <see cref="EmoteScale.Medium"/>.
     /// </summary>
     public required EmoteScale[] Scale { get; init; }
     /// <summary>
