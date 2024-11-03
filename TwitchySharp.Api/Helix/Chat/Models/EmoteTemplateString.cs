@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace TwitchySharp.Api.Helix.Chat;
@@ -10,6 +11,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Use <see cref="CreateEmoteImageUrl(string, TwitchySharp.Api.Helix.Chat.EmoteFormat, TwitchySharp.Api.Helix.Chat.EmoteTheme, TwitchySharp.Api.Helix.Chat.EmoteScale)"/>
 /// to create a URL pointing to a specific emote's image data. 
 /// </summary>
+[JsonConverter(typeof(EmoteImageTemplateStringJsonConverter))]
 public readonly record struct EmoteImageTemplateString
 {
     /// <summary>
