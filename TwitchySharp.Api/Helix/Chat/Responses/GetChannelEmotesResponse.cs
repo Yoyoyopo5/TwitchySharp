@@ -24,7 +24,6 @@ public record GetChannelEmotesResponse
     /// For information about what the template looks like and how to use it to fetch emotes, see <see href="https://dev.twitch.tv/docs/chat/send-receive-messages/#cdn-template">Emote CDN URL format</see>. 
     /// You should use this template instead of using the URLs in the images object.
     /// </summary>
-    [JsonConverter(typeof(EmoteImageTemplateStringJsonConverter))]
     public required EmoteImageTemplateString Template { get; init; }
 }
 
