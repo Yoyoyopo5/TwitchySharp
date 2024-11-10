@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 
-namespace TwitchySharp.Api.Helix.Chat.Requests;
+namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
 /// Gets the broadcaster’s chat settings.
 /// For an overview of chat settings, see <see href="https://help.twitch.tv/s/article/chat-commands#AllMods">Chat Commands for Broadcasters and Moderators</see> and <see href="https://help.twitch.tv/s/article/setting-up-moderation-for-your-twitch-channel#modpreferences">Moderator Preferences</see>.
