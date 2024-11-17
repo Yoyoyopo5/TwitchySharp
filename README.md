@@ -22,7 +22,7 @@
 - [X] Channel Points
 - [X] Charity
 - [X] Chat
-- [ ] Clips
+- [X] Clips
 - [ ] Conduits
 - [ ] CCLs
 - [ ] Entitlements
