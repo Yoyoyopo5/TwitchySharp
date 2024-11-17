@@ -17,5 +17,5 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// The user ID of the broadcaster(s) whose channel information you want to get. 
 /// You may specify a maximum of 100 IDs. The API ignores duplicate IDs and IDs that are not found.
 /// </param>
-public class GetChannelInformationRequest(string clientId, string accessToken, params string[] broadcasterIds)
+public class GetChannelInformationRequest(string clientId, string accessToken, IEnumerable<string> broadcasterIds)
     : HelixApiRequest<GetChannelInformationResponse>("/channels" + new HttpQueryParameters().Add("broadcaster_id", broadcasterIds), clientId, accessToken);
