@@ -21,7 +21,7 @@
 - [X] Channels
 - [X] Channel Points
 - [X] Charity
-- [ ] Chat
+- [X] Chat
 - [ ] Clips
 - [ ] Conduits
 - [ ] CCLs
@@ -47,6 +47,9 @@
 - [ ] Whispers
 
 ### EventSub
+- [ ] Notification Models
+- [ ] Websockets Handler
+- [ ] Webhooks Handler
 
 ### Not Planned (Obsolete)
 - PubSub
