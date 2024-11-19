@@ -20,7 +20,7 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// Requires an app or user access token. 
 /// Parameter use varies based on the type of token used.
 /// </remarks>
-/// <param name="clientId">The client id of the application.</param>
+/// <param name="clientId">The client id of the application. This application must be the owner of the game to get entitlements for.</param>
 /// <param name="accessToken">
 /// An app or user access token. 
 /// If you use a user access token, you will only get entitlements for the user that created it.
