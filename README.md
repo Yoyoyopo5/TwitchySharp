@@ -25,7 +25,7 @@
 - [X] Clips
 - [X] Conduits
 - [X] CCLs
-- [ ] Entitlements
+- [X] Entitlements
 - [ ] Extensions
 - [ ] EventSub
 - [ ] Games
