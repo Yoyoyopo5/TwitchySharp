@@ -44,7 +44,7 @@ public record SendChatAnnouncementRequestData
     /// <summary>
     /// The color used to highlight the announcement.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseJsonStringEnumConverter<ChatAnnouncementColor>))] // For lower-case serialization
+    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ChatAnnouncementColor>))] // For lower-case serialization
     public required ChatAnnouncementColor Color { get; init; }
 }
 

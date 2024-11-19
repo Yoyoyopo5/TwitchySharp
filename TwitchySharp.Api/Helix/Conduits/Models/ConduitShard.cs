@@ -16,7 +16,7 @@ public record ConduitShard
     /// The shard status.
     /// The subscriber receives events only for <see cref="ConduitShardStatus.Enabled"/> shards. 
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseJsonStringEnumConverter<ConduitShardStatus>))]
+    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ConduitShardStatus>))]
     public required ConduitShardStatus Status { get; init; }
     /// <summary>
     /// The transport details used to send the notifications.
