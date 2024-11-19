@@ -24,7 +24,7 @@
 - [X] Chat
 - [X] Clips
 - [X] Conduits
-- [ ] CCLs
+- [X] CCLs
 - [ ] Entitlements
 - [ ] Extensions
 - [ ] EventSub
