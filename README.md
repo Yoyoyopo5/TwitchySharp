@@ -23,7 +23,7 @@
 - [X] Charity
 - [X] Chat
 - [X] Clips
-- [ ] Conduits
+- [X] Conduits
 - [ ] CCLs
 - [ ] Entitlements
 - [ ] Extensions
