@@ -68,7 +68,7 @@ public record ConduitTransportUpdate
     /// <summary>
     /// The method to use for the transport.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseJsonStringEnumConverter<ConduitTransportMethod>))]
+    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ConduitTransportMethod>))]
     public ConduitTransportMethod? Method { get; set; }
     /// <summary>
     /// The callback url where webhook notifications are sent.
