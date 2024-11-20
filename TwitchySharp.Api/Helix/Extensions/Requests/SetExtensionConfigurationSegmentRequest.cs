@@ -17,7 +17,10 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// </summary>
 /// <remarks>
 /// <b>Rate Limits:</b> You may update the configuration a maximum of 20 times per minute.
-/// Requires a signed JWT created by an Extension Backend Service.
+/// Requires a signed JSON Web Token (JWT) created by an EBS. 
+/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>. 
+/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). 
+/// Set the role field to external and the user_id field to the user id of the user that owns the extension.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
 /// <param name="accessToken">
