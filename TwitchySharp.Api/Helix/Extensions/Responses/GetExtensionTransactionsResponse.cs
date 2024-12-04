@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json.Serialization;
 using TwitchySharp.Api.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
@@ -102,30 +101,4 @@ public record ExtensionProductData
     /// Contains details about the digital product’s cost.
     /// </summary>
     public required ExtensionProductCost Cost { get; init; }
-}
-
-/// <summary>
-/// Contains details about an extension digital product’s cost.
-/// </summary>
-public record ExtensionProductCost
-{
-    /// <summary>
-    /// The amount exchanged for the digital product.
-    /// Essentially, this is the amount of bits used.
-    /// </summary>
-    public required int Amount { get; init; }
-    /// <summary>
-    /// The type of currency exchanged.
-    /// As of now, this can only be bits.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public required ExtensionProductCostType Type { get; init; }
-}
-
-/// <summary>
-/// Cost types for Twitch extension transactions.
-/// </summary>
-public enum ExtensionProductCostType
-{
-    Bits
 }
