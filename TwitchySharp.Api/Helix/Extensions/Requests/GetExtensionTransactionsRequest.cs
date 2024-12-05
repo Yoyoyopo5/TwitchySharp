@@ -11,6 +11,9 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-transactions">get extension transactions</see> for more information.
 /// </summary>
+/// <remarks>
+/// Requires an app access token.
+/// </remarks>
 /// <param name="clientId">The client id of the application.</param>
 /// <param name="accessToken">An app access token.</param>
 /// <param name="extensionId">The ID of the extension whose list of transactions you want to get.</param>
