@@ -14,7 +14,7 @@
 - [X] Revoke User Access Token
 - [X] Scopes
 
-### HTTP API
+### HTTP API Models
 - [X] Ads
 - [X] Analytics
 - [X] Bits
@@ -26,7 +26,7 @@
 - [X] Conduits
 - [X] CCLs
 - [X] Entitlements
-- [ ] Extensions
+- [X] Extensions
 - [ ] EventSub
 - [ ] Games
 - [ ] Goals
