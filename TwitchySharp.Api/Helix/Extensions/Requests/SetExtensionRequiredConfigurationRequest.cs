@@ -21,12 +21,12 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Set the role field to external and the user_id field to the user id of the user that owns the extension.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="broadcasterId">The user id of the broadcaster that installed the extension on their channel.</param>
 /// <param name="data">The data used to set the required configuration setting.</param>
 public class SetExtensionRequiredConfigurationRequest(
     string clientId, 
-    string accessToken, 
+    string jwt, 
     string broadcasterId, 
     SetExtensionRequiredConfigurationRequestData data
     )
@@ -35,7 +35,7 @@ public class SetExtensionRequiredConfigurationRequest(
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId),
         clientId,
-        accessToken,
+        jwt,
         data
         )
 {
