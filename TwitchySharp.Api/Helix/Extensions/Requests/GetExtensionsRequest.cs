@@ -18,19 +18,19 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The role field must be set to external.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="extensionId">The id of the extension to get.</param>
 /// <param name="extensionVersion">
 /// The version of the extension to get. 
 /// If not specified, it returns the latest, released version. 
 /// If the extension doesn't have a released version, you must specify a version; otherwise, <see cref="GetExtensionsResponse.Data"/> is empty.
 /// </param>
-public class GetExtensionsRequest(string clientId, string accessToken, string extensionId, string? extensionVersion = null)
+public class GetExtensionsRequest(string clientId, string jwt, string extensionId, string? extensionVersion = null)
     : HelixApiRequest<GetExtensionsResponse>(
         "/extensions" + 
         new HttpQueryParameters()
             .Add("extension_id", extensionId)
             .Add("extension_version", extensionVersion),
         clientId,
-        accessToken
+        jwt
         );

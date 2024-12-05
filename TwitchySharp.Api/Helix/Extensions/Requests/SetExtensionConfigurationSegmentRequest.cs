@@ -23,7 +23,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Set the role field to external and the user_id field to the user id of the user that owns the extension.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">
+/// <param name="jwt">
 /// A signed JWT created by an Extension Backend Service.
 /// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
 /// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). The role field must be set to external.
@@ -31,11 +31,11 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <param name="data">
 /// Data used to set the configuration.
 /// </param>
-public class SetExtensionConfigurationSegmentRequest(string clientId, string accessToken, SetExtensionConfigurationSegmentRequestData data)
+public class SetExtensionConfigurationSegmentRequest(string clientId, string jwt, SetExtensionConfigurationSegmentRequestData data)
     : HelixApiRequest<SetExtensionConfigurationSegmentResponse, SetExtensionConfigurationSegmentRequestData>(
         "/extensions/configurations",
         clientId,
-        accessToken,
+        jwt,
         data
         )
 {

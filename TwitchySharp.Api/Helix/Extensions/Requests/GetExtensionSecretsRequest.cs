@@ -18,13 +18,13 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The role field must be set to external.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="extensionId">The id of the extension whose shared secrets you want to get.</param>
-public class GetExtensionSecretsRequest(string clientId, string accessToken, string extensionId)
+public class GetExtensionSecretsRequest(string clientId, string jwt, string extensionId)
     : HelixApiRequest<GetExtensionSecretsResponse>(
         "/extensions/jwt/secrets" +
         new HttpQueryParameters()
             .Add("extension_id", extensionId),
         clientId,
-        accessToken
+        jwt
         );

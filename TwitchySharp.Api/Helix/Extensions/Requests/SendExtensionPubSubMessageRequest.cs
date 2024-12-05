@@ -21,13 +21,13 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The role field must be set to external.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="messageData">Data used to create and send the message.</param>
-public class SendExtensionPubSubMessageRequest(string clientId, string accessToken, SendExtensionPubSubMessageRequestData messageData)
+public class SendExtensionPubSubMessageRequest(string clientId, string jwt, SendExtensionPubSubMessageRequestData messageData)
     : HelixApiRequest<SendExtensionPubSubMessageResponse, SendExtensionPubSubMessageRequestData>(
         "/extensions/pubsub",
         clientId,
-        accessToken,
+        jwt,
         messageData
         );
 

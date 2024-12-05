@@ -22,16 +22,16 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The role field must be set to external.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="broadcasterId">The user id of the broadcaster that has activated the extension.</param>
 /// <param name="messageData">The data to send.</param>
-public class SendExtensionChatMessageRequest(string clientId, string accessToken, string broadcasterId, SendExtensionChatMessageRequestData messageData)
+public class SendExtensionChatMessageRequest(string clientId, string jwt, string broadcasterId, SendExtensionChatMessageRequestData messageData)
     : HelixApiRequest<SendExtensionChatMessageResponse, SendExtensionChatMessageRequestData>(
         "/extensions/chat" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId),
         clientId,
-        accessToken,
+        jwt,
         messageData
         );
 

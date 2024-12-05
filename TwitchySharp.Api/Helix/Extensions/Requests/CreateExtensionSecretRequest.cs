@@ -21,7 +21,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The role field must be set to external.
 /// </remarks>
 /// <param name="clientId">The client id of the application.</param>
-/// <param name="accessToken">A signed JWT created by an EBS.</param>
+/// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="extensionId">The id of the extension to apply the shared secret to.</param>
 /// <param name="delay">
 /// The amount of time, in <b>seconds</b>, to delay activating the secret. 
@@ -29,14 +29,14 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The minimum delay is 300 seconds (5 minutes). 
 /// The default is 300 seconds.
 /// </param>
-public class CreateExtensionSecretRequest(string clientId, string accessToken, string extensionId, int? delay = null)
+public class CreateExtensionSecretRequest(string clientId, string jwt, string extensionId, int? delay = null)
     : HelixApiRequest<CreateExtensionSecretResponse>(
         "/extensions/jwt/secrets" +
         new HttpQueryParameters()
             .Add("extension_id", extensionId)
             .Add("delay", delay?.ToString()),
         clientId,
-        accessToken
+        jwt
         )
 {
     public override HttpMethod Method => HttpMethod.Post;
