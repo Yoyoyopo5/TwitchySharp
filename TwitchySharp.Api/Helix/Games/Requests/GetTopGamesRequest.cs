@@ -9,6 +9,7 @@ using TwitchySharp.Api.Models;
 namespace TwitchySharp.Api.Helix.Games;
 /// <summary>
 /// Gets information about top games on Twitch.
+/// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-top-games">get top games</see> for more information.
 /// </summary>
 /// <remarks>
