@@ -28,7 +28,7 @@
 - [X] Entitlements
 - [X] Extensions
 - [X] EventSub
-- [ ] Games
+- [X] Games
 - [ ] Goals
 - [ ] Guest Star
 - [ ] Hype Train
