@@ -26,6 +26,10 @@ public partial record Scope
     /// </summary>
     public static Scope ChannelBot { get; } = new("channel:bot");
     /// <summary>
+    /// Unknown. Used in EventSub channel.ban and channel.unban, please update me if docs change!
+    /// </summary>
+    public static Scope ChannelModerate { get; } = new("channel:moderate");
+    /// <summary>
     /// Manage ads schedule on a channel.
     /// </summary>
     public static Scope ChannelManageAds { get; } = new("channel:manage:ads");
