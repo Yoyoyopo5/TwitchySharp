@@ -29,7 +29,7 @@
 - [X] Extensions
 - [X] EventSub
 - [X] Games
-- [ ] Goals
+- [X] Goals
 - [ ] Guest Star
 - [ ] Hype Train
 - [ ] Moderation
