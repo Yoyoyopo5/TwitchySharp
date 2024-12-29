@@ -30,7 +30,7 @@
 - [X] EventSub
 - [X] Games
 - [X] Goals
-- [ ] Guest Star
+- [X] Guest Star
 - [ ] Hype Train
 - [ ] Moderation
 - [ ] Polls
