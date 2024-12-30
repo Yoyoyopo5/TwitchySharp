@@ -59,9 +59,9 @@ internal class TwitchHttpClient(RateLimiter? rateLimiter = null, HttpClient? htt
         if (httpResponse.IsT1) return httpResponse.AsT1;
 
         // If the response is not a success status code, return an ApiException
-        if (!httpResponse.AsT0.IsSuccessStatusCode) return new ApiException($"{httpResponse.AsT0.StatusCode} non-success response from Twitch API: {await httpResponse.AsT0.Content.ReadAsStringAsync()}", httpResponse.AsT0);
+        if (!httpResponse.AsT0.IsSuccessStatusCode) return new ApiException($"{httpResponse.AsT0.StatusCode} non-success response from Twitch API: {await httpResponse.AsT0.Content.ReadAsStringAsync(ct)}", httpResponse.AsT0);
 
-        OneOf<JsonElement, Exception> json = await httpResponse.AsT0.Content.ReadAsJsonAsync();
+        OneOf<JsonElement, Exception> json = await httpResponse.AsT0.Content.ReadAsJsonAsync(ct);
 
         // If the response fails to parse into JSON, return an ApiException.
         if (json.IsT1) return new ApiException($"", httpResponse.AsT0, json.AsT1);
@@ -93,11 +93,11 @@ internal static class HttpJsonExtensions
     /// <see cref="JsonException"/>, 
     /// <see cref="ArgumentException"/>
     /// </returns>
-    public async static ValueTask<OneOf<JsonElement, Exception>> ReadAsJsonAsync(this HttpContent httpContent)
+    public async static ValueTask<OneOf<JsonElement, Exception>> ReadAsJsonAsync(this HttpContent httpContent, CancellationToken ct = default)
     {
         try
         {
-            using JsonDocument json = JsonDocument.Parse(await httpContent.ReadAsStreamAsync());
+            using JsonDocument json = JsonDocument.Parse(await httpContent.ReadAsStreamAsync(ct));
             return json.RootElement.Clone();
         }
         catch (Exception ex) { return ex; }
