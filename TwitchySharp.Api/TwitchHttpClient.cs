@@ -52,7 +52,7 @@ internal class TwitchHttpClient(RateLimiter? rateLimiter = null, HttpClient? htt
     /// <see cref="HttpRequestException"/>, 
     /// <see cref="ApiException"/>
     /// </returns>
-    public async ValueTask<OneOf<TResponse, Exception>> SendAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default)
+    internal async ValueTask<OneOf<TResponse, Exception>> SendAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default)
     {
         OneOf<HttpResponseMessage, Exception> httpResponse = await SendAsync(request.ToHttpRequest(), ct);
         // If sending the request caused an exception, pass the exception upwards
