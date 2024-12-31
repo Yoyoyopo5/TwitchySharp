@@ -16,7 +16,7 @@ public record GetBannedUsersResponse
     /// <summary>
     /// A list of the channel's banned and timed-out users.
     /// </summary>
-    public required UserBan[] Data { get; init; }
+    public required BannedUser[] Data { get; init; }
     /// <summary>
     /// <inheritdoc cref="Models.Pagination"/>
     /// </summary>
@@ -26,7 +26,7 @@ public record GetBannedUsersResponse
 /// <summary>
 /// Contains information about an individual user's channel ban.
 /// </summary>
-public record UserBan
+public record BannedUser
 {
     /// <summary>
     /// The id of the banned or timed-out user.
