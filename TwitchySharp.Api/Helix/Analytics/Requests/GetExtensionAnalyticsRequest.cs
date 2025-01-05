@@ -63,8 +63,8 @@ public class GetExtensionAnalyticsRequest(
         new HttpQueryParameters()
             .Add("extension_id", extensionId)
             .Add("type", type?.Value)
-            .Add("started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
-            .Add("ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("started_at", startedAt?.ToUniversalTwitchQueryString())
+            .Add("ended_at", endedAt?.ToUniversalTwitchQueryString())
             .Add("first", first?.ToString())
             .Add("after", after),
         clientId,

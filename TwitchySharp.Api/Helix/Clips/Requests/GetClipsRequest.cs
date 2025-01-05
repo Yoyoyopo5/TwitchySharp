@@ -80,8 +80,8 @@ public class GetClipsRequest(
             .Add("id", id)
             .Add("broadcaster_id", id is null ? broadcasterId : null)
             .Add("game_id", id is null && broadcasterId is null ? gameId : null) // Should we remove the mutual exclusivity guard and allow the API to return the error if more than one is set? This may be unexpected behavior.
-            .Add("started_at", startedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
-            .Add("ended_at", endedAt?.UtcDateTime.Date.ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("started_at", startedAt?.ToUniversalTwitchQueryString())
+            .Add("ended_at", endedAt?.ToUniversalTwitchQueryString())
             .Add("first", first?.ToString())
             .Add("before", before)
             .Add("after", after)
