@@ -102,7 +102,7 @@ public record ChannelStreamScheduleCategory
 /// <summary>
 /// Contains information about a broadcaster's vacation schedule.
 /// </summary>
-public record ChannelStreamScheduleVacation
+public readonly record struct ChannelStreamScheduleVacation
 {
     /// <summary>
     /// The date and time of when the broadcaster’s vacation starts.
