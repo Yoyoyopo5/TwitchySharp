@@ -34,7 +34,7 @@
 - [X] Hype Train
 - [X] Moderation
 - [X] Polls
-- [ ] Predictions
+- [X] Predictions
 - [ ] Raids
 - [ ] Schedule
 - [ ] Search
