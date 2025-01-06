@@ -2,14 +2,14 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Api.Helix.Games;
+namespace TwitchySharp.Helpers;
 
 /// <summary>
-/// Helper class to create valid urls to game (category) cover images.
+/// Helper class to create valid urls to game (category) cover images and stream thumbnails.
 /// </summary>
 /// <param name="TemplateUrl"></param>
-[JsonConverter(typeof(GameBoxArtUrlTemplateJsonConverter))]
-public record GameBoxArtUrlTemplate(string TemplateUrl)
+[JsonConverter(typeof(ImageUrlTemplateJsonConverter))]
+public record ImageUrlTemplate(string TemplateUrl)
 {
     /// <summary>
     /// Creates a valid url to a game's box art.
@@ -23,15 +23,15 @@ public record GameBoxArtUrlTemplate(string TemplateUrl)
             .Replace("{height}", height.ToString());
 }
 
-internal class GameBoxArtUrlTemplateJsonConverter : JsonConverter<GameBoxArtUrlTemplate>
+internal class ImageUrlTemplateJsonConverter : JsonConverter<ImageUrlTemplate>
 {
-    public override GameBoxArtUrlTemplate? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override ImageUrlTemplate? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => reader.GetString() switch
         {
             null => null,
-            string value => new GameBoxArtUrlTemplate(value)
+            string value => new ImageUrlTemplate(value)
         };
 
-    public override void Write(Utf8JsonWriter writer, GameBoxArtUrlTemplate value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, ImageUrlTemplate value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.TemplateUrl);
 }
