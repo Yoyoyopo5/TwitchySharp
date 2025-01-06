@@ -38,7 +38,7 @@
 - [X] Raids
 - [X] Schedule
 - [X] Search
-- [ ] Streams
+- [X] Streams
 - [ ] Subscriptions
 - [ ] Tags
 - [ ] Teams
