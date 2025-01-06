@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Games;
+﻿using TwitchySharp.Helpers;
+
+namespace TwitchySharp.Api.Helix.Games;
 
 /// <summary>
 /// Contains data about a specific game (category) on Twitch.
@@ -16,7 +18,7 @@ public record Game
     /// <summary>
     /// A url to the category or game's box art.
     /// </summary>
-    public required GameBoxArtUrlTemplate BoxArtUrl { get; init; }
+    public required ImageUrlTemplate BoxArtUrl { get; init; }
     /// <summary>
     /// The ID that <see href="https://www.igdb.com/">IGDB</see> uses to identify this game. 
     /// If the IGDB ID is not available to Twitch, this is an empty string.
