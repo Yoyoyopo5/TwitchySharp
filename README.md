@@ -40,7 +40,6 @@
 - [X] Search
 - [X] Streams
 - [X] Subscriptions
-- [ ] Tags
 - [ ] Teams
 - [ ] Users
 - [ ] Videos
@@ -54,3 +53,4 @@
 ### Not Planned (Obsolete)
 - PubSub
 - IRC Chatbots
+- Tags API
