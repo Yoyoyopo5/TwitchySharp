@@ -39,7 +39,7 @@
 - [X] Schedule
 - [X] Search
 - [X] Streams
-- [ ] Subscriptions
+- [X] Subscriptions
 - [ ] Tags
 - [ ] Teams
 - [ ] Users
