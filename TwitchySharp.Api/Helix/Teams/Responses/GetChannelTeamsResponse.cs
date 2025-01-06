@@ -33,41 +33,22 @@ public record BroadcasterTeam
     /// The display name of the broadcaster.
     /// </summary>
     public required string BroadcasterName { get; init; }
-    /// <summary>
-    /// A URL to the team’s background image.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.BackgroundImageUrl"/>
     public required string BackgroundImageUrl { get; init; }
-    /// <summary>
-    /// A URL to the team’s banner.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.Banner"/>
     public required string Banner { get; init; }
-    /// <summary>
-    /// The date and time when the team was created.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.CreatedAt"/>
     public required DateTimeOffset CreatedAt { get; init; }
-    /// <summary>
-    /// The date and time of the last update to the team.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.UpdatedAt"/>
     public required DateTimeOffset UpdatedAt { get; init; }
-    /// <summary>
-    /// The team’s description. 
-    /// The description may contain formatting such as Markdown, HTML, newline (\n) characters, etc.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.Info"/>
     public required string Info { get; init; }
-    /// <summary>
-    /// A URL to a thumbnail image of the team’s logo.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.ThumbnailUrl"/>
     public required string ThumbnailUrl { get; init; }
-    /// <summary>
-    /// The team’s name.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.TeamName"/>
     public required string TeamName { get; init; }
-    /// <summary>
-    /// The team’s display name.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.Name"/>
     public required string TeamDisplayName { get; init; }
-    /// <summary>
-    /// The id of the team.
-    /// </summary>
+    /// <inheritdoc cref="TwitchTeam.Id"/>
     public required string Id { get; init; }
 }
