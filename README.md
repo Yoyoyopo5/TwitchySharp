@@ -41,7 +41,7 @@
 - [X] Streams
 - [X] Subscriptions
 - [X] Teams
-- [ ] Users
+- [X] Users
 - [ ] Videos
 - [ ] Whispers
 
