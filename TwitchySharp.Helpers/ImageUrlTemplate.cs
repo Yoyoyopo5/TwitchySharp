@@ -11,6 +11,9 @@ namespace TwitchySharp.Helpers;
 [JsonConverter(typeof(ImageUrlTemplateJsonConverter))]
 public record ImageUrlTemplate(string TemplateUrl)
 {
+    protected string WidthTemplate { get; set; } = "{width}";
+    protected string HeightTemplate { get; set; } = "{height}";
+
     /// <summary>
     /// Creates a valid url to an image based on the requested width and height.
     /// </summary>
@@ -19,8 +22,8 @@ public record ImageUrlTemplate(string TemplateUrl)
     /// <returns>A url to an image of the specified size.</returns>
     public string ToImageUrl(uint width, uint height)
         => TemplateUrl
-            .Replace("{width}", width.ToString())
-            .Replace("{height}", height.ToString());
+            .Replace(WidthTemplate, width.ToString())
+            .Replace(HeightTemplate, height.ToString());
 }
 
 internal class ImageUrlTemplateJsonConverter : JsonConverter<ImageUrlTemplate>
