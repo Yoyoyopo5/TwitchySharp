@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Helpers;
+namespace TwitchySharp.Helpers.JsonConverters;
 
 /// <summary>
 /// Enables conversion of empty strings to a null <see cref="DateTimeOffset"/>

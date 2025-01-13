@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 
