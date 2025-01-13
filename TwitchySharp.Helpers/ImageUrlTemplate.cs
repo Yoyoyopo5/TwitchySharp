@@ -12,12 +12,12 @@ namespace TwitchySharp.Helpers;
 public record ImageUrlTemplate(string TemplateUrl)
 {
     /// <summary>
-    /// Creates a valid url to a game's box art.
+    /// Creates a valid url to an image based on the requested width and height.
     /// </summary>
     /// <param name="width">The width of the image to get, in pixels.</param>
     /// <param name="height">The height of the image to get, in pixels.</param>
     /// <returns>A url to an image of the specified size.</returns>
-    public string MakeUrl(uint width, uint height)
+    public string ToImageUrl(uint width, uint height)
         => TemplateUrl
             .Replace("{width}", width.ToString())
             .Replace("{height}", height.ToString());
