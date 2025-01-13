@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters.Enums;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 

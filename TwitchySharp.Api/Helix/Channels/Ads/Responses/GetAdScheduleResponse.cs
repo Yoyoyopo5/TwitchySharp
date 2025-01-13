@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters.DateTime;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
