@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Helpers;
+namespace TwitchySharp.Helpers.JsonConverters;
 
 /// <summary>
 /// Converts an <see langword="int"/> to a <see langword="string"/> during serialization.

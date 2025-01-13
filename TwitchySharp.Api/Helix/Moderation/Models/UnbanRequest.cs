@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+using TwitchySharp.Helpers.JsonConverters.Enums;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 

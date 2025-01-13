@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers.JsonConverters.Enums;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>

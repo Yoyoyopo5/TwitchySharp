@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+using TwitchySharp.Helpers.JsonConverters.Enums;
 
 namespace TwitchySharp.Api.Helix.Goals;
 /// <summary>
