@@ -45,6 +45,9 @@
 - [ ] Videos
 - [ ] Whispers
 
+### API Misc
+- [ ] Change duration to use TimeSpan with converters
+
 ### EventSub
 - [ ] Notification Models
 - [ ] Websockets Handler
