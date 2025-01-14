@@ -10,6 +10,10 @@
     <EditorConfigFiles Remove="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit"/>
+	</ItemGroup>
+
   <ItemGroup>
     <None Include="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
