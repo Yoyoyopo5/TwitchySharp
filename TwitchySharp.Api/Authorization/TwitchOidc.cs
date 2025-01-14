@@ -10,10 +10,8 @@ namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// An <see href="https://openid.net/">OpenID Connect</see> claims collection used by Twitch to relay user information.
 /// </summary>
-public class TwitchOidc
+public record TwitchOidc
 {
-    public TwitchOidc() { }
-
     /// <summary>
     /// Creates a strongly-typed set of OIDC claims known to be used by Twitch from a standard <see cref="JsonWebToken"/>.
     /// </summary>
