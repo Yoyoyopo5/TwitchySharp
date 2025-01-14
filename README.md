@@ -2,7 +2,7 @@
 
 ## Work In Progress
 
-### Authentication API
+### Authentication API Models
 - [X] Authentication Url Generators
 - [X] Get App Access Tokens
 - [X] Get User Access Tokens
@@ -14,7 +14,7 @@
 - [X] Revoke User Access Token
 - [X] Scopes
 
-### HTTP API Models
+### Helix API Models
 - [X] Ads
 - [X] Analytics
 - [X] Bits
@@ -44,6 +44,38 @@
 - [X] Users
 - [X] Videos
 - [X] Whispers
+
+### API Integration Tests
+- [ ] Authentication
+- [ ] Ads
+- [ ] Analytics
+- [ ] Bits
+- [ ] Channels
+- [ ] Channel Points
+- [ ] Charity
+- [ ] Chat
+- [ ] Clips
+- [ ] Conduits
+- [ ] CCLs
+- [ ] Entitlements
+- [ ] Extensions
+- [ ] EventSub
+- [ ] Games
+- [ ] Goals
+- [ ] Guest Star
+- [ ] Hype Train
+- [ ] Moderation
+- [ ] Polls
+- [ ] Predictions
+- [ ] Raids
+- [ ] Schedule
+- [ ] Search
+- [ ] Streams
+- [ ] Subscriptions
+- [ ] Teams
+- [ ] Users
+- [ ] Videos
+- [ ] Whispers
 
 ### API Misc
 - [ ] Change duration to use TimeSpan with converters
