@@ -100,7 +100,7 @@ public record TwitchOidc
     /// The date and time (ISO 8601) that the user last updated their profile.
     /// Obtaining this requires <see cref="OidcClaim.UpdatedAt"/> during authorization.
     /// </summary>
-    public string? UpdatedAt { get; init; }
+    public DateTimeOffset? UpdatedAt { get; init; }
 }
 
 internal static class JsonWebTokenExtensions
