@@ -8,7 +8,7 @@ namespace TwitchySharp.Helpers;
 /// <summary>
 /// Allows for simple creation of hardcoded sets of values that can be discovered via intellisense.
 /// </summary>
-public record ValueBackedEnum<T>
+public class ValueBackedEnum<T>
 {
     public T Value { get; private set; }
     protected ValueBackedEnum(T value)
