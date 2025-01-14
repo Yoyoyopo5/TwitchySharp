@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization.ClientUrls;
 /// <summary>
@@ -16,22 +17,15 @@ public abstract class AuthorizationUrl
     public override string ToString()
         => Url;
 
-    public AuthorizationUrl(string clientId, string redirectUri, IEnumerable<Scope> scopes, string? state = null, string? nonce = null, OidcClaims? claims = null, bool forceVerify = false)
-    {
-        string url = $"https://id.twitch.tv/oauth2/authorize" +
-        $"?response_type={ResponseType}" +
-        $"&client_id={clientId}" +
-        $"&redirect_uri={redirectUri}" +
-        $"&scope={scopes.FormatScopes()}" +
-        $"force_verify={forceVerify}";
-
-        if (state is not null)
-            url += $"&state={state}";
-        if (nonce is not null)
-            url += $"&nonce={nonce}";
-        if (claims is not null)
-            url += $"&claims={claims.JsonEncode()}";
-
-        Url = url;
-    }
+    protected AuthorizationUrl(string clientId, string redirectUri, IEnumerable<Scope> scopes, string? state = null, string? nonce = null, OidcClaims? claims = null, bool forceVerify = false)
+        => Url = ENDPOINT +
+                new HttpQueryParameters()
+                    .Add("response_type", ResponseType)
+                    .Add("client_id", clientId)
+                    .Add("redirect_uri", redirectUri)
+                    .Add("scope", scopes.FormatScopes())
+                    .Add("force_verify", forceVerify.ToString())
+                    .Add("state", state)
+                    .Add("nonce", nonce)
+                    .Add("claims", claims?.JsonEncode());
 }
