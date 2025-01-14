@@ -59,7 +59,12 @@ public record TwitchOidc
     /// <summary>
     /// The client ID of the application that requested the user’s authorization.
     /// </summary>
-    public required string Aud { get; init; } = string.Empty;
+    public required string Aud { get; init; }
+    /// <summary>
+    /// The client ID of the application that received the user’s authorization. 
+    /// This contains the same value as <see cref="Aud"/>.
+    /// </summary>
+    public required string Azp { get; init; }
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
@@ -71,11 +76,11 @@ public record TwitchOidc
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).
     /// </summary>
-    public required string Iss { get; init; } = string.Empty;
+    public required string Iss { get; init; }
     /// <summary>
     /// The Twitch ID of the user that authorized the app.
     /// </summary>
-    public required string Sub { get; init; } = string.Empty;
+    public required string Sub { get; init; }
     /// <summary>
     /// The email address of the user that authorized the app.
     /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
