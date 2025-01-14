@@ -15,8 +15,20 @@ public class Test_Scope
 
         IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions];
 
-        string result = stubScopes.FormatScopes();
+        string actual = stubScopes.FormatScopes();
 
-        Assert.Equal(MOCK_SCOPE_STRING, result);
+        Assert.Equal(MOCK_SCOPE_STRING, actual);
+    }
+
+    [Fact]
+    public void FormatScopes_MultipleScopes_ReturnScopeString()
+    {
+        const string MOCK_SCOPE_STRING = "analytics:read:extensions+analytics:read:games";
+
+        IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions, Scope.AnalyticsReadGames];
+
+        string actual = stubScopes.FormatScopes();
+
+        Assert.Equal(MOCK_SCOPE_STRING, actual);
     }
 }
