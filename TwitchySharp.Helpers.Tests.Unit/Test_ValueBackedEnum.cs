@@ -10,13 +10,13 @@ public class Test_ValueBackedEnum
     private record TestStringEnum(string Value) : ValueBackedEnum<string>(Value);
 
     [Fact]
-    public void ToString_StringValue_ReturnStringValue()
+    public void StringImplicitCast_StringValue_ReturnStringValue()
     {
         const string MOCK_STRING = "mock";
 
         TestStringEnum stubEnum = new(MOCK_STRING);
 
-        string actual = stubEnum.ToString();
+        string actual = stubEnum;
 
         Assert.Equal(MOCK_STRING, actual);
     }
