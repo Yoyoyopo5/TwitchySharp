@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Buffers;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Represents additional OIDC claims that can be requested from a <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/">Twitch OIDC authorization flow</see> or the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">UserInfo</see> endpoint.
 /// </summary>
-public record OidcClaim
+public record OidcClaim(string Value) : ValueBackedEnum<string>(Value)
 {
     /// <summary>
     /// The email address of the user that authorized the app. Requires <see cref="Scope.ReadUserEmail"/>.
@@ -30,14 +31,6 @@ public record OidcClaim
     /// The date and time that the user last updated their profile.
     /// </summary>
     public static OidcClaim UpdatedAt { get; } = new("updated_at");
-
-    private readonly string _claim;
-    public override string ToString()
-        => _claim;
-    private OidcClaim(string claim)
-    {
-        _claim = claim;
-    }
 }
 
 /// <summary>
@@ -69,7 +62,7 @@ public class OidcClaims
         jsonWriter.WriteStartObject();
         foreach (OidcClaim claim in IdToken)
         {
-            jsonWriter.WriteNull(claim.ToString());
+            jsonWriter.WriteNull(claim);
         }
         jsonWriter.WriteEndObject();
 
@@ -77,7 +70,7 @@ public class OidcClaims
         jsonWriter.WriteStartObject();
         foreach (OidcClaim claim in Userinfo)
         {
-            jsonWriter.WriteNull(claim.ToString());
+            jsonWriter.WriteNull(claim);
         }
         jsonWriter.WriteEndObject();
 
