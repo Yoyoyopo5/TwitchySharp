@@ -5,7 +5,9 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api", "TwitchySharp.Api\TwitchySharp.Api.csproj", "{93D6F7C2-FF51-4B9C-9307-3F0C99A8EB7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Helpers", "TwitchySharp.Helpers\TwitchySharp.Helpers.csproj", "{3714BEF2-38A0-488F-B3DC-681156A45766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Helpers", "TwitchySharp.Helpers\TwitchySharp.Helpers.csproj", "{3714BEF2-38A0-488F-B3DC-681156A45766}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Api.Tests.Unit", "TwitchySharp.Api.Tests.Unit\TwitchySharp.Api.Tests.Unit.csproj", "{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3714BEF2-38A0-488F-B3DC-681156A45766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3714BEF2-38A0-488F-B3DC-681156A45766}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3714BEF2-38A0-488F-B3DC-681156A45766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
