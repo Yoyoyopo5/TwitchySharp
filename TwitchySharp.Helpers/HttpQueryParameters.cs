@@ -34,7 +34,7 @@ public class HttpQueryParameters
     {
         if (_parameters.Count == 0)
             return string.Empty;
-        StringBuilder sb = new('?');
+        StringBuilder sb = new("?");
         foreach (KeyValuePair<string, string> parameter in _parameters)
         {
             if (string.IsNullOrEmpty(parameter.Value))
