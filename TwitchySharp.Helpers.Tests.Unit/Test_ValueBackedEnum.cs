@@ -10,7 +10,7 @@ public class Test_ValueBackedEnum
     private record TestStringEnum(string Value) : ValueBackedEnum<string>(Value);
 
     [Fact]
-    public void StringImplicitCast_StringValue_ReturnStringValue()
+    public void StringImplicitCast_SingleValue_ReturnStringValue()
     {
         const string MOCK_STRING = "mock";
 
