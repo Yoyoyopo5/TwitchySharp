@@ -61,53 +61,48 @@ public class TwitchOidc
     /// <summary>
     /// The client ID of the application that requested the user’s authorization.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Aud { get; private set; } = string.Empty;
+    public required string Aud { get; init; } = string.Empty;
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public long Exp { get; private set; }
+    public required long Exp { get; init; }
     /// <summary>
     /// The UNIX timestamp of when the server issued the token.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public long Iat { get; private set; }
+    public required long Iat { get; init; }
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Iss { get; private set; } = string.Empty;
+    public required string Iss { get; init; } = string.Empty;
     /// <summary>
     /// The Twitch ID of the user that authorized the app.
     /// </summary>
-    [JsonInclude, JsonRequired]
-    public string Sub { get; private set; } = string.Empty;
+    public required string Sub { get; init; } = string.Empty;
     /// <summary>
     /// The email address of the user that authorized the app.
     /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
     /// </summary>
-    public string? Email { get; private set; }
+    public string? Email { get; init; }
     /// <summary>
     /// A Boolean value that indicates whether Twitch has verified the user’s email address. Is <see langword="true"/> if Twitch has verified the user’s email address.
     /// Obtaining this requires <see cref="OidcClaim.EmailVerified"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
     /// </summary>
-    public bool? EmailVerified { get; private set; }
+    public bool? EmailVerified { get; init; }
     /// <summary>
     /// A URL to the user’s profile image if they included one; otherwise, a default image.
     /// Obtaining this requires <see cref="OidcClaim.Picture"/> during authorization.
     /// </summary>
-    public string? Picture { get; private set; }
+    public string? Picture { get; init; }
     /// <summary>
     /// The user’s display name.
     /// Obtaining this requires <see cref="OidcClaim.PreferredUsername"/> during authorization.
     /// </summary>
-    public string? PreferredUsername { get; private set; }
+    public string? PreferredUsername { get; init; }
     /// <summary>
     /// The date and time (ISO 8601) that the user last updated their profile.
     /// Obtaining this requires <see cref="OidcClaim.UpdatedAt"/> during authorization.
     /// </summary>
-    public string? UpdatedAt { get; private set; }
+    public string? UpdatedAt { get; init; }
 }
 
 internal static class JsonWebTokenExtensions
