@@ -51,7 +51,7 @@ public class Test_HttpQueryParameters
     public void Add_NullParameterValue_ReturnParametersString()
     {
         const string STUB_NON_NULL_PARAMETER_KEY = "non_null_key";
-        const string STUB_NON_NULL_PARAMETER_VALUE = "non_null_key";
+        const string STUB_NON_NULL_PARAMETER_VALUE = "non_null_value";
         const string STUB_NULL_PARAMETER_KEY = "null_key";
 
         string mockParametersString = $"?non_null_key=non_null_value";
