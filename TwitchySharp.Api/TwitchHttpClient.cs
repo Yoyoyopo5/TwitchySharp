@@ -3,103 +3,57 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.RateLimiting;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Http.Headers;
 
 namespace TwitchySharp.Api;
 /// <summary>
-/// Internal helper class to consolidate code for making HTTP requests.
+/// Handles rate limits and dispatching API requests to Twitch.
 /// </summary>
-/// <param name="rateLimiter">The rate limiter to use.</param>
-/// <param name="httpClient">The client used to dispatch requests.</param>
-internal class TwitchHttpClient(RateLimiter? rateLimiter = null, HttpClient? httpClient = null)
+/// <param name="rateLimiter">The rate limiter that will be used when sending requests. If <see langword="null"/>, no rate limiter will be used. Note that exceeding <see href="https://dev.twitch.tv/docs/api/guide/#twitch-rate-limits">Twitch API rate limits</see> will result in additional API requests returning HTTP status code 429.</param>
+/// <param name="httpClient">The client that should be used to send the request. If <see langword="null"/>, a default <see cref="HttpClient"/> is used.</param>
+public class TwitchHttpClient(HttpClient? httpClient = null, RateLimiter ? rateLimiter = null)
 {
     private readonly HttpClient _httpClient = httpClient ?? new();
     private readonly RateLimiter? _rateLimiter = rateLimiter;
 
     /// <summary>
-    /// Sends the <paramref name="request"/> through the rate limiter.
+    /// Sends an API request to Twitch.
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="ct"></param>
-    /// <returns>
-    /// A <see cref="ValueTask"/> containing an <see cref="HttpResponseMessage"/> or one of
-    /// <see cref="OperationCanceledException"/>, 
-    /// <see cref="ArgumentNullException"/>, 
-    /// <see cref="InvalidOperationException"/>, 
-    /// <see cref="HttpRequestException"/>.
+    /// <returns>A <see cref="ValueTask"/> containing a <typeparamref name="TResponse"/> representing the API response.
     /// </returns>
-    private async ValueTask<OneOf<HttpResponseMessage, Exception>> SendAsync(HttpRequestMessage request, CancellationToken ct = default)
-    {
-        try
+    /// <exception cref="ApiException"/>
+    /// <inheritdoc cref="HttpClient.SendAsync(HttpRequestMessage, CancellationToken)" path="/exception"/>
+    /// <inheritdoc cref="TaskExtensions.RateLimit{T}(Task{T}, RateLimiter?, int, CancellationToken)" path="/exception"/>
+    internal async ValueTask<TResponse> SendAsync<TResponse>(TwitchApiRequest<TResponse> request, IConvertApiResponse converter, CancellationToken ct = default)
+        => (await _httpClient.SendAsync(request.ToHttpRequest(), ct).RateLimit(_rateLimiter, 1, ct).ConfigureAwait(false)) switch
         {
-            using RateLimitLease? lease = _rateLimiter is not null ? await _rateLimiter.AcquireAsync(1, ct) : null;
-            if (lease is not null && !lease.IsAcquired) return new OperationCanceledException("Request was denied by the rate limiter."); // Any better exception type?
-
-            using HttpResponseMessage response = await _httpClient.SendAsync(request, ct);
-            return response;
-        }
-        catch (Exception ex) { return ex; }
-    }
-
-    /// <returns>A <see cref="ValueTask"/> containing a <typeparamref name="TResponse"/> representing the API response,
-    /// or one of
-    /// <see cref="OperationCanceledException"/>, 
-    /// <see cref="ArgumentNullException"/>, 
-    /// <see cref="InvalidOperationException"/>, 
-    /// <see cref="HttpRequestException"/>, 
-    /// <see cref="ApiException"/>
-    /// </returns>
-    internal async ValueTask<OneOf<TResponse, Exception>> SendAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default)
-    {
-        OneOf<HttpResponseMessage, Exception> httpResponse = await SendAsync(request.ToHttpRequest(), ct);
-        // If sending the request caused an exception, pass the exception upwards
-        if (httpResponse.IsT1) return httpResponse.AsT1;
-
-        // If the response is not a success status code, return an ApiException
-        if (!httpResponse.AsT0.IsSuccessStatusCode) return new ApiException($"{httpResponse.AsT0.StatusCode} non-success response from Twitch API: {await httpResponse.AsT0.Content.ReadAsStringAsync(ct)}", httpResponse.AsT0);
-
-        OneOf<JsonElement, Exception> json = await httpResponse.AsT0.Content.ReadAsJsonAsync(ct);
-
-        // If the response fails to parse into JSON, return an ApiException.
-        if (json.IsT1) return new ApiException($"", httpResponse.AsT0, json.AsT1);
-
-        try
-        {
-            if (json.AsT0.Deserialize<TResponse>(JsonConfig.ApiOptions) is TResponse apiResponse)
-                return apiResponse;
-            // If the content of the response is a null literal (null JSON root value), wrap into exception.
-            // I'm not aware of any situation where a null literal is returned by Twitch API.
-            // Returning this as an exception instead of making return type nullable should reduce boilerplate in consumer code.
-            return new ApiException($"Request was successful, but the response was a null literal value.", httpResponse.AsT0);
-        }
-        // If the response fails to deserialize (e.g. a required JSON value was not present) return an ApiException 
-        catch (Exception ex) { return new ApiException($"", httpResponse.AsT0, ex); }
-    }
+            HttpResponseMessage { IsSuccessStatusCode: true } response => await converter.Convert<TResponse>(response, ct),
+            HttpResponseMessage { IsSuccessStatusCode: false } response => throw new ApiException("Twitch API returned an error. See the included response for details.", response)
+        };
 }
 
-internal static class HttpJsonExtensions
+internal static class TaskExtensions
 {
     /// <summary>
-    /// 
+    /// Rate limits a task with the supplied rate limiter.
     /// </summary>
-    /// <param name="httpContent"></param>
-    /// <param name="ct"></param>
-    /// <returns>
-    /// A result containing either a <see cref="JsonElement"/> parsed from the <paramref name="httpContent"/> 
-    /// or one of 
-    /// <see cref="JsonException"/>, 
-    /// <see cref="ArgumentException"/>
-    /// </returns>
-    public async static ValueTask<OneOf<JsonElement, Exception>> ReadAsJsonAsync(this HttpContent httpContent, CancellationToken ct = default)
+    /// <typeparam name="T">The result type of the task.</typeparam>
+    /// <param name="task">The task to rate limit.</param>
+    /// <param name="rateLimiter">The rate limiter to acquire from the limiter.</param>
+    /// <param name="permitCount">The amount of permits to use.</param>
+    /// <param name="ct">The cancellation token to use.</param>
+    /// <returns>A new task that wraps the original <paramref name="task"/>.</returns>
+    /// <exception cref="OperationCanceledException"/>
+    public static async Task<T> RateLimit<T>(this Task<T> task, RateLimiter? rateLimiter, int permitCount = 1, CancellationToken ct = default)
     {
-        try
+        if (rateLimiter is null) return await task;
+        using RateLimitLease lease = await rateLimiter.AcquireAsync(permitCount, ct);
+        return lease.IsAcquired switch
         {
-            using JsonDocument json = JsonDocument.Parse(await httpContent.ReadAsStreamAsync(ct));
-            return json.RootElement.Clone();
-        }
-        catch (Exception ex) { return ex; }
+            true => await task,
+            false => throw new OperationCanceledException("Request was denied by the rate limiter.")
+        };
     }
 }
