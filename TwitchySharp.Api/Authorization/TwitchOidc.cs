@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using OneOf.Types;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -17,43 +18,24 @@ public record TwitchOidc
     /// </summary>
     /// <param name="jwt">The JWT returned by Twitch OIDC authorization flows as an ID token.</param>
     /// <returns>
-    /// A <see cref="TwitchOidc"/> populated with the claims from the <paramref name="jwt"/> or
-    /// <see cref="ArgumentException"/> when a required key was not present or was invalid.
+    /// A <see cref="TwitchOidc"/> populated with the claims from the <paramref name="jwt"/>.
+    /// If a non-nullable claim was not present in the <paramref name="jwt"/>, it is filled with an empty string or default value.
     /// </returns>
-    public static OneOf<TwitchOidc, Exception> FromJsonWebToken(JsonWebToken jwt)
-    {
-        // Could change this to automatically find claims based on each property name
-        // would require reflection or source generation, probably not worth the effort here
-        // BUT beware of bugs if adding/removing any claims in the future.
-        
-        if (jwt.GetValue<string>("aud").TryPickT1(out ArgumentException ex, out string aud))
-            return ex;
-        if (jwt.GetValue<long>("exp").TryPickT1(out ex, out long exp))
-            return ex;
-        if (jwt.GetValue<long>("iat").TryPickT1(out ex, out long iat))
-            return ex;
-        if (jwt.GetValue<string>("iss").TryPickT1(out ex, out string iss))
-            return ex;
-        if (jwt.GetValue<string>("sub").TryPickT1(out ex, out string sub))
-            return ex;
-
-        return new TwitchOidc()
+    public static TwitchOidc FromJsonWebToken(JsonWebToken jwt)
+        => new TwitchOidc()
         {
-            // Required
-            Aud = aud,
-            Exp = exp,
-            Iat = iat,
-            Iss = iss,
-            Sub = sub,
-
-            // Optional
+            Aud = jwt.Audiences.FirstOrDefault() ?? string.Empty,
+            Azp = jwt.Azp,
+            Exp = jwt.ValidTo,
+            Iat = jwt.IssuedAt,
+            Iss = jwt.Issuer,
+            Sub = jwt.Subject,
             Email = jwt.GetValueOrDefault<string>("email"),
             EmailVerified = jwt.GetValueOrDefault<bool>("email_verified"),
             Picture = jwt.GetValueOrDefault<string>("picture"),
             PreferredUsername = jwt.GetValueOrDefault<string>("preferred_username"),
-            UpdatedAt = jwt.GetValueOrDefault<string>("updated_at")
+            UpdatedAt = jwt.GetValueOrDefault<DateTime>("updated_at")
         };
-    }
 
 
     /// <summary>
@@ -68,11 +50,11 @@ public record TwitchOidc
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
-    public required long Exp { get; init; }
+    public required DateTimeOffset Exp { get; init; }
     /// <summary>
     /// The UNIX timestamp of when the server issued the token.
     /// </summary>
-    public required long Iat { get; init; }
+    public required DateTimeOffset Iat { get; init; }
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).
     /// </summary>
@@ -115,12 +97,5 @@ internal static class JsonWebTokenExtensions
         if (jwt.TryGetValue(claim, out T value))
             return value;
         return default;
-    }
-
-    public static OneOf<T, ArgumentException> GetValue<T>(this JsonWebToken jwt, string claim)
-    {
-        if (jwt.TryGetValue(claim, out T value))
-            return value;
-        return new ArgumentException($"Claim with key \"{claim}\" was not found in the supplied JWT or it was an invalid value type.");
     }
 }

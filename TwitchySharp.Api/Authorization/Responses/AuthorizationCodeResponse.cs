@@ -52,6 +52,6 @@ public static class AuthorizationCodeResponseExtensions
     /// <summary>
     /// Converts the <see cref="IdToken"/> property into a <see cref="TwitchOidc"/> if it exists.
     /// </summary>
-    public static OneOf<TwitchOidc, Exception>? GetOidc(this AuthorizationCodeResponse authResponse)
-        => authResponse.IdToken is null ? (OneOf<TwitchOidc, Exception>?)null : TwitchOidc.FromJsonWebToken(authResponse.GetJwt()!); // Can safely ignore null here because it will only be null if the IdToken is null.
+    public static TwitchOidc? GetOidc(this AuthorizationCodeResponse authResponse)
+        => authResponse.IdToken is null ? null : TwitchOidc.FromJsonWebToken(authResponse.GetJwt()!); // Can safely ignore null here because it will only be null if the IdToken is null.
 }
