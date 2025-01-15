@@ -30,6 +30,7 @@ public record TwitchOidc
             Iat = jwt.IssuedAt,
             Iss = jwt.Issuer,
             Sub = jwt.Subject,
+            Nonce = jwt.GetValueOrDefault<string>("nonce"),
             Email = jwt.GetValueOrDefault<string>("email"),
             EmailVerified = jwt.GetValueOrDefault<bool>("email_verified"),
             Picture = jwt.GetValueOrDefault<string>("picture"),
@@ -63,6 +64,10 @@ public record TwitchOidc
     /// The Twitch ID of the user that authorized the app.
     /// </summary>
     public required string Sub { get; init; }
+    /// <summary>
+    /// The nonce that was used in the authorization request, if one was used.
+    /// </summary>
+    public string? Nonce { get; init; }
     /// <summary>
     /// The email address of the user that authorized the app.
     /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
