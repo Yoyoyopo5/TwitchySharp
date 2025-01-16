@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TwitchySharp.Api.ApiResponseConverters;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
-/// Placeholder class for the <see cref="RevokeAccessTokenRequest"/>.
-/// This response has no data.
+/// Empty response.
 /// </summary>
+[ApiConverter(typeof(EmptyResponseConverter))]
 public record RevokeAccessTokenResponse { }
