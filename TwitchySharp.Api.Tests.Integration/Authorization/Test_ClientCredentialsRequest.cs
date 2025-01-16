@@ -16,7 +16,7 @@ public class Test_ClientCredentialsRequest
     [Fact]
     public async void Send_ClientCredentialsRequest_ReturnSuccessResponse()
     {
-        ClientCredentialsRequest stubRequest = new(_fixture.ClientId, _fixture.ClientSecret);
+        ClientCredentialsRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.ClientSecret);
 
         ClientCredentialsResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

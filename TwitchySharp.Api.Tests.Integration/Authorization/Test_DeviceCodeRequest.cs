@@ -17,7 +17,7 @@ public class Test_DeviceCodeRequest
     public async void Send_DeviceCodeRequest_ReturnSuccessResponse()
     {
         Scope[] stubScopes = [];
-        DeviceCodeRequest stubRequest = new(_fixture.ClientId, stubScopes);
+        DeviceCodeRequest stubRequest = new(_fixture.Secrets.ClientId, stubScopes);
 
         DeviceCodeResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

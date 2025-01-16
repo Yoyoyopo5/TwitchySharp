@@ -18,8 +18,8 @@ public class Test_AccessTokenRefreshRequest
     {
         // You can use https://twitchtokengenerator.com/ to get an access token and refresh token.
         // Just make sure to use the same client id and secret as in the fixture.
-        string stubRefreshToken = System.Environment.GetEnvironmentVariable("TWITCHYSHARP_TEST_REFRESH_TOKEN", EnvironmentVariableTarget.User)!;
-        AccessTokenRefreshRequest stubRequest = new(_fixture.ClientId, _fixture.ClientSecret, stubRefreshToken);
+        string stubRefreshToken = _fixture.Secrets.UserRefreshToken;
+        AccessTokenRefreshRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.ClientSecret, stubRefreshToken);
 
         AccessTokenRefreshResponse actual = await _fixture.Api.SendRequestAsync(stubRequest);
     }
