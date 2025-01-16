@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace TwitchySharp.Api;
+namespace TwitchySharp.Api.ApiResponseConverters;
 
 internal class JsonResponseConverter(JsonSerializerOptions? serializerOptions) : IConvertApiResponse
 {

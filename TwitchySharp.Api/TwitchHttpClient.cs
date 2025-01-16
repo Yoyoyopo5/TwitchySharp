@@ -6,6 +6,7 @@ using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Http.Headers;
+using TwitchySharp.Api.ApiResponseConverters;
 
 namespace TwitchySharp.Api;
 /// <summary>
