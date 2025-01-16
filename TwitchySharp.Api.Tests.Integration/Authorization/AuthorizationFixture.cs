@@ -15,7 +15,7 @@ public class AuthorizationFixture : IDisposable
     private readonly TwitchHttpClient _twitchHttpClient;
     private readonly HttpClient _httpClient;
     private readonly RateLimiter _rateLimiter;
-    
+
 
     public AuthorizationFixture()
     {
