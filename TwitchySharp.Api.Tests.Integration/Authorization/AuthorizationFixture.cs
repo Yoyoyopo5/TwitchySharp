@@ -31,9 +31,6 @@ public class AuthorizationFixture : IDisposable
         });
         _twitchHttpClient = new TwitchHttpClient(_httpClient, _rateLimiter);
         Api = new TwitchApi(_twitchHttpClient);
-
-        ClientId = System.Environment.GetEnvironmentVariable("TWITCHYSHARP_TEST_CLIENT_ID", EnvironmentVariableTarget.User)!;
-        ClientSecret = System.Environment.GetEnvironmentVariable("TWITCHYSHARP_TEST_CLIENT_SECRET", EnvironmentVariableTarget.User)!;
     }
 
     public void Dispose()
