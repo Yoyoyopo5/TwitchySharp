@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">getting claims information from an access token</see> for more information.
 /// Requires <see cref="Scope.OpenId"/>.
 /// </summary>
-internal class UserInfoRequest
+public class UserInfoRequest
     : AuthorizationApiRequest<TwitchOidc>
 {
     public UserInfoRequest(string accessToken) 
