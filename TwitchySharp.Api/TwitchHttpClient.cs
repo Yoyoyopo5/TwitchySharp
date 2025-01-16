@@ -31,7 +31,7 @@ public class TwitchHttpClient(HttpClient? httpClient = null, RateLimiter ? rateL
         => (await _httpClient.SendAsync(request.ToHttpRequest(), ct).RateLimit(_rateLimiter, 1, ct).ConfigureAwait(false)) switch
         {
             HttpResponseMessage { IsSuccessStatusCode: true } response => await converter.Convert<TResponse>(response, ct),
-            HttpResponseMessage { IsSuccessStatusCode: false } response => throw new ApiException("Twitch API returned an error. See the included response for details.", response)
+            HttpResponseMessage { IsSuccessStatusCode: false } response => throw new ApiException($"Twitch API returned error code {response.StatusCode}: {await response.Content.ReadAsStringAsync()}", response)
         };
 }
 
