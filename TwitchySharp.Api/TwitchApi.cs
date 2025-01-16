@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
+using TwitchySharp.Api.ApiResponseConverters;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -26,5 +28,8 @@ public class TwitchApi(TwitchHttpClient twitchClient)
     /// </returns>
     /// <inheritdoc cref="TwitchHttpClient.SendAsync{TResponse}(TwitchApiRequest{TResponse}, IConvertApiResponse, CancellationToken)" path="/exception"/>
     public ValueTask<TResponse> SendRequestAsync<TResponse>(TwitchApiRequest<TResponse> request, CancellationToken ct = default)
-        => twitchClient.SendAsync(request, _defaultConverter, ct); // We may need to add support for more converters later, possibly through class attributes.
+        => twitchClient.SendAsync(request, GetConverter<TResponse>(), ct);
+
+    private IConvertApiResponse GetConverter<TResponse>()
+        => typeof(TResponse).GetCustomAttribute<ApiConverterAttribute>()?.CreateConverter() ?? _defaultConverter;
 }
