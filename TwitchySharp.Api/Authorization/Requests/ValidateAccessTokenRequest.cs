@@ -16,9 +16,10 @@ public class ValidateAccessTokenRequest
     public override HttpMethod Method => HttpMethod.Get;
     public override string? ContentType => null;
 
+    /// <inheritdoc cref="ValidateAccessTokenRequest"/>
     /// <param name="accessToken">The user access token to validate.</param>
     public ValidateAccessTokenRequest(string accessToken)
-        : base("validate")
+        : base("/validate")
     {
         AccessToken = accessToken;
     }
