@@ -23,7 +23,7 @@ public record GetExtensionAnalyticsResponse
     /// Contains the information used to page through the list of results. 
     /// The <see cref="Pagination.Cursor"/> is null if there are no more pages to page through.
     /// </summary>
-    public required Pagination Pagination { get; init; }
+    public Pagination? Pagination { get; init; }
 
 }
 
