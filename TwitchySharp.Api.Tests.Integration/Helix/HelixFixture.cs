@@ -7,7 +7,11 @@ using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Authorization.ClientUrls;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix;
-public class HelixFixture() : ApiFixture<HelixSecrets>("Helix");
+public class HelixFixture() : ApiFixture<HelixSecrets>("Helix")
+{
+    public async Task<string> GetUserIdFromAccessTokenAsync()
+        => (await Api.SendRequestAsync(new ValidateAccessTokenRequest(Secrets.UserAccessToken))).UserId;
+}
 
 [CollectionDefinition("helix")]
 public class HelixCollection : ICollectionFixture<HelixFixture> { }
