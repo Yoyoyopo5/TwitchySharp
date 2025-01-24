@@ -19,7 +19,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// <param name="accessToken">An app access token.</param>
 /// <param name="conduitToUpdate">The data to update the conduit with.</param>
 public class UpdateConduitRequest(string clientId, string accessToken, UpdateConduitRequestData conduitToUpdate)
-    : HelixApiRequest<UpdateConduitRequest, UpdateConduitRequestData>(
+    : HelixApiRequest<UpdateConduitResponse, UpdateConduitRequestData>(
         "/eventsub/conduits",
         clientId,
         accessToken,
