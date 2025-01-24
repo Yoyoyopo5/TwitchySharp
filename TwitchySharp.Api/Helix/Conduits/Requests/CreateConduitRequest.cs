@@ -30,6 +30,7 @@ public record CreateConduitRequestData
 {
     /// <summary>
     /// The number of shards to create for this conduit.
+    /// Note that new shards must be initialized via <see cref="UpdateConduitShardsRequest"/> before they will appear in a <see cref="GetConduitShardsRequest"/>.
     /// </summary>
     public required int ShardCount { get; init; }
 }
