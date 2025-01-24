@@ -32,7 +32,7 @@ public class GetConduitShardsRequest(
     string? after = null
     )
     : HelixApiRequest<GetConduitShardsResponse>(
-        "eventsub/conduits/shards" +
+        "/eventsub/conduits/shards" +
         new HttpQueryParameters()
             .Add("conduit_id", conduitId)
             .Add("status", status?.ToString().ToSnakeCase())
