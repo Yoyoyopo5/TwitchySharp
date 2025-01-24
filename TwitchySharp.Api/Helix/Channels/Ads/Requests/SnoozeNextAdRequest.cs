@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <summary>
@@ -19,7 +20,9 @@ namespace TwitchySharp.Api.Helix.Channels.Ads;
 /// <param name="broadcasterId">The user id of the channel to snooze an ad on. This must be the same user that provided the <paramref name="accessToken"/></param>
 public class SnoozeNextAdRequest(string clientId, string accessToken, string broadcasterId)
     : HelixApiRequest<SnoozeNextAdResponse>(
-        "/channels/ads/schedule/snooze" + $"broadcaster_id={broadcasterId}", 
+        "/channels/ads/schedule/snooze" + 
+        new HttpQueryParameters()
+            .Add("broadcaster_id", broadcasterId), 
         clientId, 
         accessToken
         )

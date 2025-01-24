@@ -26,7 +26,7 @@ public class UpdateUserChatColorRequest(string clientId, string accessToken, str
         "/chat/color" +
         new HttpQueryParameters()
             .Add("user_id", userId)
-            .Add("color", HttpUtility.UrlEncode(color.ToString())),
+            .Add("color", HttpUtility.UrlEncode(color)),
         clientId,
         accessToken
         )
