@@ -46,18 +46,18 @@
 - [X] Whispers
 
 ### API Integration Tests
-- [ ] Authentication
-- [ ] Ads
-- [ ] Analytics
-- [ ] Bits
-- [ ] Channels
-- [ ] Channel Points
-- [ ] Charity
-- [ ] Chat
-- [ ] Clips
-- [ ] Conduits
-- [ ] CCLs
-- [ ] Entitlements
+- [X] Authentication
+- [X] Ads
+- [X] Analytics
+- [X] Bits
+- [X] Channels
+- [X] Channel Points
+- [X] Charity
+- [X] Chat
+- [X] Clips
+- [X] Conduits
+- [X] CCLs
+- [X] Entitlements
 - [ ] Extensions
 - [ ] EventSub
 - [ ] Games
