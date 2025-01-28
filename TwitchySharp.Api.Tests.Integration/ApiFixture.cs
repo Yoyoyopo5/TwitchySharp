@@ -28,7 +28,7 @@ public class ApiFixture<TSecrets> : IDisposable
             QueueLimit = 100,
             TokenLimit = 800,
             TokensPerPeriod = 800,
-            ReplenishmentPeriod = TimeSpan.FromHours(6) // I believe this is standard.
+            ReplenishmentPeriod = TimeSpan.FromSeconds(1) // I believe this is standard.
         });
         _twitchHttpClient = new TwitchHttpClient(_httpClient, _rateLimiter);
         Api = new TwitchApi(_twitchHttpClient);
