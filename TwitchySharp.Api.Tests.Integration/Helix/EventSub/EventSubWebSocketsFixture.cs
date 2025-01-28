@@ -26,8 +26,13 @@ public class EventSubWebSocketsFixture() : EventSubFixture(), IDisposable, IAsyn
             using MemoryStream messageStream = new();
             ValueWebSocketReceiveResult receiveResult = await ws.ReceiveAsync(messageStream, cts.Token);
             if (receiveResult.MessageType == WebSocketMessageType.Close) break;
-            using JsonDocument jsonMessage = await JsonDocument.ParseAsync(messageStream, default, cts.Token);
-            if (GetIdOrDefault(jsonMessage.RootElement) is string id) return id;
+            messageStream.Position = 0;
+            try
+            {
+                using JsonDocument jsonMessage = await JsonDocument.ParseAsync(messageStream, default, cts.Token);
+                if (GetIdOrDefault(jsonMessage.RootElement) is string id) return id;
+            }
+            catch { }
         }
         throw new TaskCanceledException();
     }
