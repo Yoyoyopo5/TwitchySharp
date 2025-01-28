@@ -59,7 +59,7 @@
 - [X] CCLs
 - [X] Entitlements
 - [ ] Extensions
-- [ ] EventSub
+- [X] EventSub
 - [ ] Games
 - [ ] Goals
 - [ ] Guest Star
