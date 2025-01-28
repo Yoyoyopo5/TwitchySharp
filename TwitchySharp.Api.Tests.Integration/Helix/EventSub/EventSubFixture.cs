@@ -52,6 +52,7 @@ public class EventSubFixture : HelixFixture, IAsyncLifetime
 
     private async ValueTask<IReadOnlyDictionary<string, IEventSubSubscriptionType>> GenerateTypeMapAsync()
     {
+        string organizationId = string.Empty; // Don't have one of these to test with.
         string broadcasterId = await GetUserIdFromAccessTokenAsync();
 
         return new Dictionary<string, IEventSubSubscriptionType>
@@ -124,13 +125,13 @@ public class EventSubFixture : HelixFixture, IAsyncLifetime
             { nameof(ChannelSubscribe), new ChannelSubscribe(broadcasterId) },
             { nameof(ChannelUnban), new ChannelUnban(broadcasterId) },
             { nameof(ChannelUpdate), new ChannelUpdate(broadcasterId) },
-            { nameof(ConduitShardDisabled), new ConduitShardDisabled(broadcasterId) },
-            { nameof(DropEntitlementGrant), new DropEntitlementGrant(broadcasterId) },
-            { nameof(ExtensionBitsTransactionCreate), new ExtensionBitsTransactionCreate(broadcasterId) },
+            { nameof(ConduitShardDisabled), new ConduitShardDisabled(Secrets.ClientId) },
+            { nameof(DropEntitlementGrant), new DropEntitlementGrant(organizationId) },
+            { nameof(ExtensionBitsTransactionCreate), new ExtensionBitsTransactionCreate(Secrets.ClientId) },
             { nameof(StreamOffline), new StreamOffline(broadcasterId) },
             { nameof(StreamOnline), new StreamOnline(broadcasterId) },
-            { nameof(UserAuthorizationGrant), new UserAuthorizationGrant(broadcasterId) },
-            { nameof(UserAuthorizationRevoke), new UserAuthorizationRevoke(broadcasterId) },
+            { nameof(UserAuthorizationGrant), new UserAuthorizationGrant(Secrets.ClientId) },
+            { nameof(UserAuthorizationRevoke), new UserAuthorizationRevoke(Secrets.ClientId) },
             { nameof(WhisperReceived), new WhisperReceived(broadcasterId) },
             { nameof(UserUpdate), new UserUpdate(broadcasterId) },
         };
