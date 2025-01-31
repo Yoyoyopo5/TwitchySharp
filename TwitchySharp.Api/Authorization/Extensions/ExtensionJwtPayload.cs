@@ -12,9 +12,9 @@ using TwitchySharp.Helpers.JsonConverters.DateTime;
 
 namespace TwitchySharp.Api.Authorization.Extensions;
 /// <summary>
-/// Used to 
+/// Used to create a signed JWT for various Extensions API endpoints.
 /// </summary>
-/// <param name="userId">
+/// <param name="UserId">
 /// The user id of the owner of the extension.
 /// </param>
 public record ExtensionJwtPayload(string UserId)
@@ -24,7 +24,7 @@ public record ExtensionJwtPayload(string UserId)
     /// Defaults to 120 minutes from object creation.
     /// </summary>
     [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
-    [JsonPropertyName("ext")]
+    [JsonPropertyName("exp")]
     public DateTimeOffset ExpiresAt { get; set; } = DateTimeOffset.UtcNow.AddMinutes(120);
     /// <summary>
     /// The user id of the owner of the extension.
@@ -36,6 +36,11 @@ public record ExtensionJwtPayload(string UserId)
     /// </summary>
     [JsonPropertyName("role")]
     public string Role { get; } = "external";
+    [JsonPropertyName("pubsub_perms")]
+    public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
+    {
+        Send = ["*"]
+    };
 
     /// <summary>
     /// Creates an encoded JWT used to make various Extensions API calls.
@@ -45,11 +50,17 @@ public record ExtensionJwtPayload(string UserId)
     public string Sign(string extensionSecret)
         => new JsonWebTokenHandler()
             .CreateToken(
-                JsonSerializer.Serialize(this), 
+                JsonSerializer.Serialize(this, JsonConfig.ApiOptions), 
                 new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Convert.FromBase64String(extensionSecret)),
-                        "HS256"
-                    )
-            );
+                        Convert.FromBase64String(extensionSecret)
+                    ),
+                    "HS256"
+            ));
+}
+
+public record ExtensionPubSubPermissions
+{
+    public string[]? Listen { get; set; }
+    public string[]? Send { get; set; }
 }
