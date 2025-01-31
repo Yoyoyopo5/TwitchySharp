@@ -28,7 +28,7 @@ public class TwitchHttpClient(HttpClient? httpClient = null, RateLimiter ? rateL
     /// <inheritdoc cref="HttpClient.SendAsync(HttpRequestMessage, CancellationToken)" path="/exception"/>
     /// <inheritdoc cref="TaskExtensions.RateLimit{T}(Task{T}, RateLimiter?, int, CancellationToken)" path="/exception"/>
     internal async ValueTask<TResponse> SendAsync<TResponse>(TwitchApiRequest<TResponse> request, IConvertApiResponse converter, CancellationToken ct = default)
-        => (await _httpClient.SendAsync(request.ToHttpRequest(), ct).RateLimit(_rateLimiter, 1, ct).ConfigureAwait(false)) switch
+        => (await _httpClient.SendAsync(request.ToHttpRequest(), HttpCompletionOption.ResponseHeadersRead, ct).RateLimit(_rateLimiter, 1, ct).ConfigureAwait(false)) switch
         {
             HttpResponseMessage { IsSuccessStatusCode: true } response => await converter.Convert<TResponse>(response, ct),
             HttpResponseMessage { IsSuccessStatusCode: false } response => throw new ApiException("Twitch API returned an error. See the included response for details.", response)
