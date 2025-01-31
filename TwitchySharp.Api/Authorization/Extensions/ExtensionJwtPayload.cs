@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Authorization.Extensions;
 /// <param name="userId">
 /// The user id of the owner of the extension.
 /// </param>
-public record ExtensionJwtPayload(string userId)
+public record ExtensionJwtPayload(string UserId)
 {
     /// <summary>
     /// When the JWT is set to expire. 
@@ -30,7 +30,7 @@ public record ExtensionJwtPayload(string userId)
     /// The user id of the owner of the extension.
     /// </summary>
     [JsonPropertyName("user_id")]
-    public string UserId { get; set; } = userId;
+    public string UserId { get; set; } = UserId;
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
@@ -48,8 +48,8 @@ public record ExtensionJwtPayload(string userId)
                 JsonSerializer.Serialize(this), 
                 new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(extensionSecret)), 
-                        SecurityAlgorithms.HmacSha256Signature
+                        Convert.FromBase64String(extensionSecret)),
+                        "HS256"
                     )
             );
 }
