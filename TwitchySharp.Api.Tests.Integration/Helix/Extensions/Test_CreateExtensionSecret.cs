@@ -15,6 +15,10 @@ public class Test_CreateExtensionSecret(HelixFixture fixture)
     [Fact]
     public async void Send_CreateExtensionSecretRequest_ReturnSuccessResponse()
     {
+        // can't figure this one out, keep getting a 401 Authorization refused.
+        // I know the JWT is valid and everything else looks fine.
+        // Something strange with this endpoint
+
         string jwt = new ExtensionJwtPayload(await _fixture.GetUserIdFromAccessTokenAsync())
             .Sign(_fixture.Secrets.ExtensionSecret);
 
