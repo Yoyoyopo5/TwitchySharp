@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Requires an app access token. 
 /// The client id that created the app access token must be the extension's client id.
 /// </remarks>
-/// <param name="clientId">The client id of the application. This also identifies the extension to get products from.</param>
+/// <param name="clientId">The client id of the extension. This also identifies the extension to get products from.</param>
 /// <param name="accessToken">An app access token.</param>
 /// <param name="shouldIncludeAll">Determines whether to include disabled or expired Bits products in the response. The default is <see langword="false"/>.</param>
 public class GetExtensionBitsProductsRequest(string clientId, string accessToken, bool? shouldIncludeAll = null)
