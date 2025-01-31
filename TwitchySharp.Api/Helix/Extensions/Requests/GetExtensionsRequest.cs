@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The signed JWT must include the role field (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). 
 /// The role field must be set to external.
 /// </remarks>
-/// <param name="clientId">The client id of the application.</param>
+/// <param name="clientId">The client id of the extension.</param>
 /// <param name="jwt">A signed JWT created by an EBS.</param>
 /// <param name="extensionId">The id of the extension to get.</param>
 /// <param name="extensionVersion">
