@@ -16,6 +16,6 @@ public class Test_GetChannelEditors(HelixFixture fixture)
     {
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
-        await _fixture.Api.SendRequestAsync(new GetChannelEditorsRequest(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, broadcasterId));
+        await _fixture.Api.SendRequestAsync(new GetChannelEditorsRequest(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken, broadcasterId));
     }
 }

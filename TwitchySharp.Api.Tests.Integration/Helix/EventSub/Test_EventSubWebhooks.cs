@@ -26,12 +26,12 @@ public class Test_EventSubWebhooks(EventSubFixture fixture) : IClassFixture<Even
     public async void Send_WebhookEventSubCreateDeleteRequests_ReturnSuccessResponses(string subscriptionTypeName)
     {
         string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.ClientSecret
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.Client.Secret
             ))).AccessToken;
 
         EventSubSubscription testSubscription = (await _fixture.Api.SendRequestAsync(new CreateEventSubSubscriptionRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             new CreateEventSubSubscriptionRequestData
             {
@@ -41,7 +41,7 @@ public class Test_EventSubWebhooks(EventSubFixture fixture) : IClassFixture<Even
             ))).Data.Single();
 
         await _fixture.Api.SendRequestAsync(new DeleteEventSubSubscriptionRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             testSubscription.Id
             ));

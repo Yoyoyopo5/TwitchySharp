@@ -16,8 +16,8 @@ public class Test_Conduits(HelixFixture fixture)
     public async void Send_ConduitsRequests_ReturnSuccessResponses()
     {
         string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.ClientSecret
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.Client.Secret
             ))).AccessToken;
 
         string conduitId = (await CreateConduit(appToken)).Data.First().Id;
@@ -32,7 +32,7 @@ public class Test_Conduits(HelixFixture fixture)
     private ValueTask<CreateConduitsResponse> CreateConduit(string appToken)
         => _fixture.Api.SendRequestAsync(
             new CreateConduitRequest(
-                _fixture.Secrets.ClientId,
+                _fixture.Secrets.Client.Id,
                 appToken,
                 new CreateConduitRequestData()
                 {
@@ -42,20 +42,20 @@ public class Test_Conduits(HelixFixture fixture)
 
     private ValueTask<GetConduitsResponse> GetConduits(string appToken)
         => _fixture.Api.SendRequestAsync(new GetConduitsRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken
             ));
 
     private ValueTask<GetConduitShardsResponse> GetConduitShards(string appToken, string conduitId)
         => _fixture.Api.SendRequestAsync(new GetConduitShardsRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             conduitId
             ));
 
     private ValueTask<UpdateConduitShardsResponse> UpdateConduitShards(string appToken, string conduitId, string shardId)
         => _fixture.Api.SendRequestAsync(new UpdateConduitShardsRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             new UpdateConduitShardsRequestData()
             {
@@ -66,7 +66,7 @@ public class Test_Conduits(HelixFixture fixture)
 
     private ValueTask<UpdateConduitResponse> UpdateConduit(string appToken, string conduitId)
         => _fixture.Api.SendRequestAsync(new UpdateConduitRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             new UpdateConduitRequestData()
             {
@@ -77,7 +77,7 @@ public class Test_Conduits(HelixFixture fixture)
 
     private ValueTask<DeleteConduitResponse> DeleteConduit(string appToken, string conduitId)
         => _fixture.Api.SendRequestAsync(new DeleteConduitRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken,
             conduitId
             ));

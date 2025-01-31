@@ -14,6 +14,6 @@ public class Test_GetGlobalEmotes(HelixFixture fixture)
     [Fact]
     public async void Send_GetGlobalEmotesRequest_ReturnSuccessResponse()
     {
-        await _fixture.Api.SendRequestAsync(new GetGlobalEmotesRequest(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken));
+        await _fixture.Api.SendRequestAsync(new GetGlobalEmotesRequest(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken));
     }
 }

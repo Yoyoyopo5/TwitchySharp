@@ -20,12 +20,12 @@ public class Test_CreateExtensionSecret(HelixFixture fixture)
         // Something strange with this endpoint
 
         string jwt = new ExtensionJwtPayload(await _fixture.GetUserIdFromAccessTokenAsync())
-            .Sign(_fixture.Secrets.ExtensionSecret);
+            .Sign(_fixture.Secrets.Extension.Secret);
 
         await _fixture.Api.SendRequestAsync(new CreateExtensionSecretRequest(
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             jwt,
-            _fixture.Secrets.ExtensionClientId
+            _fixture.Secrets.Extension.Id
             ));
     }
 }

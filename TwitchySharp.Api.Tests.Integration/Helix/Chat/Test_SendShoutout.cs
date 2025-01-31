@@ -18,8 +18,8 @@ public class Test_SendShoutout(HelixFixture fixture)
         string fromBroadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
         await _fixture.Api.SendRequestAsync(new SendShoutoutRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             fromBroadcasterId,
             TO_BROADCASTER_ID,
             fromBroadcasterId

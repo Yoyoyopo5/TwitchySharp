@@ -17,8 +17,8 @@ public class Test_GetUserChatColor(HelixFixture fixture)
         string userId = await _fixture.GetUserIdFromAccessTokenAsync(); // can be any id
 
         await _fixture.Api.SendRequestAsync(new GetUserChatColorRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             [userId]
             ));
     }

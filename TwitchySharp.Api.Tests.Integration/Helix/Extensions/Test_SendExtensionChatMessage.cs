@@ -19,15 +19,15 @@ public class Test_SendExtensionChatMessage(HelixFixture fixture)
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
         string jwt = new ExtensionJwtPayload(broadcasterId)
-            .Sign(_fixture.Secrets.ExtensionSecret);
+            .Sign(_fixture.Secrets.Extension.Secret);
 
         await _fixture.Api.SendRequestAsync(new SendExtensionChatMessageRequest(
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             jwt,
             broadcasterId,
             new SendExtensionChatMessageRequestData()
             {
-                ExtensionId = _fixture.Secrets.ExtensionClientId,
+                ExtensionId = _fixture.Secrets.Extension.Id,
                 ExtensionVersion = EXTENSION_VERSION,
                 Text = "test message"
             }

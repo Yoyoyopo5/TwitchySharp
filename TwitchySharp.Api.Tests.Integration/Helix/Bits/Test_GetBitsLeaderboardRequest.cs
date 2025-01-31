@@ -14,7 +14,7 @@ public class Test_GetBitsLeaderboardRequest(HelixFixture fixture)
     [Fact]
     public async void Send_GetBitsLeaderboardRequest_ReturnSuccessResponse()
     {
-        GetBitsLeaderboardRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, 5, LeaderboardPeriod.All);
+        GetBitsLeaderboardRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken, 5, LeaderboardPeriod.All);
 
         GetBitsLeaderboardResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

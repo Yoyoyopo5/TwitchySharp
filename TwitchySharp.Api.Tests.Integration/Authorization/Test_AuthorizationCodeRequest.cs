@@ -17,7 +17,7 @@ public class Test_AuthorizationCodeRequest
     public async void Send_AuthorizationCodeRequest_ReturnSuccessResponse()
     {
         // Visit to get code: https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=8dhvxswu6888igrgh2kz47hkke50db&redirect_uri=http://localhost:5000&scope=&force_verify=true&state=123
-        AuthorizationCodeRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.ClientSecret, _fixture.Secrets.UserAuthorizationCode, _fixture.Secrets.RedirectUri);
+        AuthorizationCodeRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.Client.Secret, _fixture.Secrets.User.AuthorizationCode, _fixture.Secrets.Client.RedirectUri);
 
         AuthorizationCodeResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

@@ -17,12 +17,12 @@ public class Test_GetExtensions(HelixFixture fixture)
     {
         const string EXTENSION_VERSION = "0.0.1";
         string jwt = new ExtensionJwtPayload(await _fixture.GetUserIdFromAccessTokenAsync())
-            .Sign(_fixture.Secrets.ExtensionSecret);
+            .Sign(_fixture.Secrets.Extension.Secret);
 
         await _fixture.Api.SendRequestAsync(new GetExtensionsRequest(
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             jwt,
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             EXTENSION_VERSION
             ));
     }

@@ -17,7 +17,7 @@ public class Test_DeviceCodeTokenRequest(AuthorizationFixture fixture)
         // Use the device code generated from DeviceCodeRequest.
         // You also have to visit the VerficationUri in that response to validate the device code before this test will succeed.
         Scope[] stubScopes = [];
-        DeviceCodeTokenRequest stubRequest = new(_fixture.Secrets.ClientId, stubScopes, _fixture.Secrets.DeviceAuthorizationCode);
+        DeviceCodeTokenRequest stubRequest = new(_fixture.Secrets.Client.Id, stubScopes, _fixture.Secrets.Device.AuthorizationCode);
 
         DeviceCodeTokenResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }
