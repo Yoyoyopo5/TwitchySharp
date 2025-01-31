@@ -19,7 +19,8 @@ public class HelixCollection : ICollectionFixture<HelixFixture> { }
 public record HelixSecrets
 {
     public required string ClientId { get; init; }
-    public required string ExtensionClientId { get; init; }
     public required string ClientSecret { get; init; }
+    public required string ExtensionClientId { get; init; }
+    public required string ExtensionSecret { get; init; }
     public required string UserAccessToken { get; init; }
 }
