@@ -14,7 +14,7 @@ public class Test_GetContentClassificationLabelsRequest(HelixFixture fixture)
     [Fact]
     public async void Send_GetContentClassificationLabelsRequest_ReturnSuccessResponse()
     {
-        GetContentClassificationLabelsRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, ContentClassificationLocale.EnglishUnitedStates);
+        GetContentClassificationLabelsRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken, ContentClassificationLocale.EnglishUnitedStates);
 
         GetContentClassificationLabelsResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

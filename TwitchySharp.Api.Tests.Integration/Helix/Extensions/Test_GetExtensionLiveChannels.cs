@@ -18,14 +18,14 @@ public class Test_GetExtensionLiveChannels(HelixFixture fixture)
         // Not sure I can test this effectively unless we have an extension currently deployed on at least one channel.
 
         string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(
-            _fixture.Secrets.ExtensionClientId,
-            _fixture.Secrets.ExtensionClientSecret
+            _fixture.Secrets.Extension.Id,
+            _fixture.Secrets.Extension.ApiSecret
             ))).AccessToken;
 
         await _fixture.Api.SendRequestAsync(new GetExtensionLiveChannelsRequest(
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             appToken,
-            _fixture.Secrets.ExtensionClientId
+            _fixture.Secrets.Extension.Id
             ));
     }
 }

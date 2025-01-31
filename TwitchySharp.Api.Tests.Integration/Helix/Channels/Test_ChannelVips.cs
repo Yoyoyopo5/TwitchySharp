@@ -26,8 +26,8 @@ public class Test_ChannelVips(HelixFixture fixture)
     private async ValueTask AddVip(string userId, string broadcasterId)
         => await _fixture.Api.SendRequestAsync(
                 new AddChannelVipRequest(
-                    _fixture.Secrets.ClientId,
-                    _fixture.Secrets.UserAccessToken,
+                    _fixture.Secrets.Client.Id,
+                    _fixture.Secrets.User.AccessToken,
                     broadcasterId,
                     userId
                     )
@@ -36,8 +36,8 @@ public class Test_ChannelVips(HelixFixture fixture)
     private async ValueTask<ChannelVip> GetVip(string userId, string broadcasterId)
         => (await _fixture.Api.SendRequestAsync(
                 new GetVipsRequest(
-                    _fixture.Secrets.ClientId,
-                    _fixture.Secrets.UserAccessToken,
+                    _fixture.Secrets.Client.Id,
+                    _fixture.Secrets.User.AccessToken,
                     broadcasterId,
                     [userId]
                     )
@@ -46,8 +46,8 @@ public class Test_ChannelVips(HelixFixture fixture)
     private async ValueTask RemoveVip(ChannelVip vip, string broadcasterId)
         => await _fixture.Api.SendRequestAsync(
                 new RemoveChannelVipRequest(
-                    _fixture.Secrets.ClientId,
-                    _fixture.Secrets.UserAccessToken,
+                    _fixture.Secrets.Client.Id,
+                    _fixture.Secrets.User.AccessToken,
                     broadcasterId,
                     vip.UserId
                     )

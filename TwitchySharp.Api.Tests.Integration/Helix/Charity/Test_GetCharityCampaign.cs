@@ -17,8 +17,8 @@ public class Test_GetCharityCampaign(HelixFixture fixture)
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
         await _fixture.Api.SendRequestAsync(new GetCharityCampaignRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             broadcasterId
             ));
     }

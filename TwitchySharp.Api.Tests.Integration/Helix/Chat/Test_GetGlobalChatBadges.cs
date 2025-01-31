@@ -15,8 +15,8 @@ public class Test_GetGlobalChatBadges(HelixFixture fixture)
     public async void Send_GetGlobalChatBadgesRequest_ReturnSuccessResponse()
     {
         await _fixture.Api.SendRequestAsync(new GetGlobalChatBadgesRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken
             ));
     }
 }

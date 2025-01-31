@@ -17,8 +17,8 @@ public class Test_GetClips(HelixFixture fixture)
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
         await _fixture.Api.SendRequestAsync(new GetClipsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             broadcasterId
             ));
     }
@@ -27,8 +27,8 @@ public class Test_GetClips(HelixFixture fixture)
     public async void Send_GetClipsRequestGameId_ReturnSuccessResponse()
     {
         await _fixture.Api.SendRequestAsync(new GetClipsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             null,
             "1"
             ));
@@ -38,8 +38,8 @@ public class Test_GetClips(HelixFixture fixture)
     public async void Send_GetClipsRequestClipId_ReturnSuccessResponse()
     {
         await _fixture.Api.SendRequestAsync(new GetClipsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             null,
             null,
             "ObservantVictoriousButterOSfrog-Uur1-ZdwTmNRzuQ7"

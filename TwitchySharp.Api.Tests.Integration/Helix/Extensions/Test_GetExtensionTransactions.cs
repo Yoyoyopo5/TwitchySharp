@@ -16,14 +16,14 @@ public class Test_GetExtensionTransactions(HelixFixture fixture)
     public async void Send_GetExtensionTransactionsRequest_ReturnSuccessResponse()
     {
         string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(
-            _fixture.Secrets.ExtensionClientId,
-            _fixture.Secrets.ExtensionClientSecret
+            _fixture.Secrets.Extension.Id,
+            _fixture.Secrets.Extension.ApiSecret
             ))).AccessToken;
 
         await _fixture.Api.SendRequestAsync(new GetExtensionTransactionsRequest(
-            _fixture.Secrets.ExtensionClientId,
+            _fixture.Secrets.Extension.Id,
             appToken,
-            _fixture.Secrets.ExtensionClientId
+            _fixture.Secrets.Extension.Id
             ));
     }
 }

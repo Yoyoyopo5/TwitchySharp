@@ -14,7 +14,7 @@ public class Test_GetGameAnalyticsRequest(HelixFixture fixture)
     [Fact]
     public async void Send_GetGameAnalyticsRequest_ReturnSuccessResponse()
     {
-        GetGameAnalyticsRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken);
+        GetGameAnalyticsRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken);
 
         GetGameAnalyticsResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

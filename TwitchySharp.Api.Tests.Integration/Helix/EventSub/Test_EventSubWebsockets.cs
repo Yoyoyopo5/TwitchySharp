@@ -19,8 +19,8 @@ public class Test_EventSubWebsockets(EventSubWebSocketsFixture fixture) : IClass
     public async void Send_WebsocketEventSubCreateDeleteRequests_ReturnSuccessResponses(string subscriptionTypeName)
     {
         EventSubSubscription testSubscription = (await _fixture.Api.SendRequestAsync(new CreateEventSubSubscriptionRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             new CreateEventSubSubscriptionRequestData
             {
                 Type = _fixture.GetSubscriptionType(subscriptionTypeName),
@@ -29,8 +29,8 @@ public class Test_EventSubWebsockets(EventSubWebSocketsFixture fixture) : IClass
             ))).Data.Single();
 
         await _fixture.Api.SendRequestAsync(new DeleteEventSubSubscriptionRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             testSubscription.Id
             ));
     }

@@ -14,7 +14,7 @@ public class Test_UserInfoRequest(AuthorizationFixture fixture)
     [Fact]
     public async void Send_UserInfoRequest_ReturnSuccessfulResponse()
     {
-        UserInfoRequest stubRequest = new(_fixture.Secrets.UserAccessToken);
+        UserInfoRequest stubRequest = new(_fixture.Secrets.User.AccessToken);
 
         TwitchOidc actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

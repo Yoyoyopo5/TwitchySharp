@@ -17,8 +17,8 @@ public class Test_SendChatMessage(HelixFixture fixture)
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
         await _fixture.Api.SendRequestAsync(new SendChatMessageRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             new SendChatMessageRequestData()
             {
                 BroadcasterId = broadcasterId,

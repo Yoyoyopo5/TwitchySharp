@@ -16,7 +16,7 @@ public class Test_GetCheermotesRequest(HelixFixture fixture)
     public async void Send_GetCheermotesRequest_ReturnSuccessResponse()
     {
         const string BROADCASTER_ID = "52137752";
-        GetCheermotesRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, BROADCASTER_ID);
+        GetCheermotesRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken, BROADCASTER_ID);
 
         GetCheermotesResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

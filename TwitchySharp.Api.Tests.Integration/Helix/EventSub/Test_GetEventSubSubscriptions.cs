@@ -15,18 +15,18 @@ public class Test_GetEventSubSubscriptions(HelixFixture fixture)
     [Fact]
     public async void Send_GetEventSubSubscriptionsRequest_ReturnSuccessResponse()
     {
-        string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(_fixture.Secrets.ClientId, _fixture.Secrets.ClientSecret))).AccessToken;
+        string appToken = (await _fixture.Api.SendRequestAsync(new ClientCredentialsRequest(_fixture.Secrets.Client.Id, _fixture.Secrets.Client.Secret))).AccessToken;
 
         // webhooks
         await _fixture.Api.SendRequestAsync(new GetEventSubSubscriptionsRequest(
-            _fixture.Secrets.ClientId,
+            _fixture.Secrets.Client.Id,
             appToken
             ));
 
         // websockets
         await _fixture.Api.SendRequestAsync(new GetEventSubSubscriptionsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken
             ));
     }
 }

@@ -20,16 +20,16 @@ public class Test_GetEmoteSets(HelixFixture fixture)
         string emoteSetId = await GetEmoteSetId(broadcasterId);
 
         await _fixture.Api.SendRequestAsync(new GetEmoteSetsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             [emoteSetId]
             ));
     }
 
     private async ValueTask<string> GetEmoteSetId(string broadcasterId)
         => (await _fixture.Api.SendRequestAsync(new GetChannelEmotesRequest(
-                _fixture.Secrets.ClientId,
-                _fixture.Secrets.UserAccessToken,
+                _fixture.Secrets.Client.Id,
+                _fixture.Secrets.User.AccessToken,
                 broadcasterId
             ))).Data.First().EmoteSetId;
 }

@@ -26,8 +26,8 @@ public class Test_CustomRewardRequests(HelixFixture fixture)
     private async ValueTask<CreateCustomRewardsResponse> CreateRewardAsync()
         => await _fixture.Api.SendRequestAsync(
             new CreateCustomRewardsRequest(
-                _fixture.Secrets.ClientId,
-                _fixture.Secrets.UserAccessToken,
+                _fixture.Secrets.Client.Id,
+                _fixture.Secrets.User.AccessToken,
                 await _broadcasterId,
                 new CreateCustomRewardsRequestData()
                 {
@@ -40,8 +40,8 @@ public class Test_CustomRewardRequests(HelixFixture fixture)
     private async ValueTask<GetCustomRewardResponse> GetRewardAsync(string rewardId)
         => await _fixture.Api.SendRequestAsync(
             new GetCustomRewardRequest(
-                _fixture.Secrets.ClientId,
-                _fixture.Secrets.UserAccessToken,
+                _fixture.Secrets.Client.Id,
+                _fixture.Secrets.User.AccessToken,
                 await _broadcasterId,
                 [rewardId]
                 ));
@@ -49,8 +49,8 @@ public class Test_CustomRewardRequests(HelixFixture fixture)
     private async ValueTask<UpdateCustomRewardResponse> UpdateRewardAsync(string rewardId)
         => await _fixture.Api.SendRequestAsync(
             new UpdateCustomRewardRequest(
-                _fixture.Secrets.ClientId,
-                _fixture.Secrets.UserAccessToken,
+                _fixture.Secrets.Client.Id,
+                _fixture.Secrets.User.AccessToken,
                 await _broadcasterId,
                 rewardId,
                 new UpdateCustomRewardRequestData()
@@ -63,8 +63,8 @@ public class Test_CustomRewardRequests(HelixFixture fixture)
     private async ValueTask<DeleteCustomRewardResponse> DeleteRewardAsync(string rewardId)
         => await _fixture.Api.SendRequestAsync(
             new DeleteCustomRewardRequest(
-                _fixture.Secrets.ClientId,
-                _fixture.Secrets.UserAccessToken,
+                _fixture.Secrets.Client.Id,
+                _fixture.Secrets.User.AccessToken,
                 await _broadcasterId,
                 rewardId
             ));

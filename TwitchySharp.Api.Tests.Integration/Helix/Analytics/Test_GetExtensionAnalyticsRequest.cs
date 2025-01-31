@@ -15,7 +15,7 @@ public class Test_GetExtensionAnalyticsRequest(HelixFixture fixture)
     [Fact]
     public async void Send_GetExtensionAnalyticsRequest_ReturnSuccessResponse()
     {
-        GetExtensionAnalyticsRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken);
+        GetExtensionAnalyticsRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken);
 
         GetExtensionAnalyticsResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }

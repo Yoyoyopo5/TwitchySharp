@@ -15,11 +15,26 @@ public class AuthorizationCollection : ICollectionFixture<AuthorizationFixture> 
 
 public record AuthorizationSecrets
 {
-    public required string ClientId { get; init; }
-    public required string ClientSecret { get; init; }
+    public required ClientSecrets Client { get; init; }
+    public required UserSecrets User { get; init; }
+    public required DeviceSecrets Device { get; init; }
+}
+
+public record ClientSecrets
+{
+    public required string Id { get; init; }
+    public required string Secret { get; init; }
     public required string RedirectUri { get; init; }
-    public required string UserAccessToken { get; init; }
-    public required string UserRefreshToken { get; init; }
-    public required string UserAuthorizationCode { get; init; }
-    public required string DeviceAuthorizationCode { get; init; }
+}
+
+public record UserSecrets
+{
+    public required string AccessToken { get; init; }
+    public required string RefreshToken { get; init; }
+    public required string AuthorizationCode { get; init; }
+}
+
+public record DeviceSecrets
+{
+    public required string AuthorizationCode { get; init; }
 }

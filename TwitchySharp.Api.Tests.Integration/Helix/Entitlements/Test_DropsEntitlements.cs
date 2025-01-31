@@ -22,14 +22,14 @@ public class Test_DropsEntitlements(HelixFixture fixture)
 
     private ValueTask<GetDropsEntitlementsResponse> GetDropsEntitlements()
         => _fixture.Api.SendRequestAsync(new GetDropsEntitlementsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken
             ));
 
     private ValueTask<UpdateDropsEntitlementsResponse> UpdateDropsEntitlements(string entitlementId)
         => _fixture.Api.SendRequestAsync(new UpdateDropsEntitlementsRequest(
-            _fixture.Secrets.ClientId,
-            _fixture.Secrets.UserAccessToken,
+            _fixture.Secrets.Client.Id,
+            _fixture.Secrets.User.AccessToken,
             new UpdateDropsEntitlementsRequestData()
             {
                 EntitlementIds = [entitlementId],

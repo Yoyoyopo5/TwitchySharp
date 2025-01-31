@@ -14,7 +14,7 @@ public class Test_RevokeAccessTokenRequest(AuthorizationFixture fixture)
     public async void Send_RevokeAccessTokenRequest_ReturnSuccessResponse()
     {
         // Make sure to set the user access token to a valid token first.
-        RevokeAccessTokenRequest stubRequest = new(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken);
+        RevokeAccessTokenRequest stubRequest = new(_fixture.Secrets.Client.Id, _fixture.Secrets.User.AccessToken);
 
         RevokeAccessTokenResponse actualResponse = await _fixture.Api.SendRequestAsync(stubRequest);
     }
