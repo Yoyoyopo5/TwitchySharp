@@ -38,7 +38,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// </param>
 public class GetExtensionConfigurationSegmentRequest(string clientId, string jwt, string extensionId, IEnumerable<ExtensionConfigurationSegmentType> segments, string? broadcasterId = null)
     : HelixApiRequest<GetExtensionConfigurationSegmentResponse>(
-        "/extensions/configuration" +
+        "/extensions/configurations" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)
             .Add("extension_id", extensionId)
