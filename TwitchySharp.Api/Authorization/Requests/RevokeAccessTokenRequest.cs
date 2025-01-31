@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Authorization;
 /// <param name="clientId"></param>
 /// <param name="accessToken"></param>
 public class RevokeAccessTokenRequest(string clientId, string accessToken)
-    : AuthorizationApiRequest<RevokeAccessTokenResponse>("revoke")
+    : AuthorizationApiRequest<RevokeAccessTokenResponse>("/revoke")
 {
     /// <summary>
     /// The client ID of the application that the access token is authorizing.

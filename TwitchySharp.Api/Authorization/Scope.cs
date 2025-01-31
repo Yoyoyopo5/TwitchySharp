@@ -21,7 +21,7 @@ internal static class ScopeExtensions
         StringBuilder sb = new();
         foreach (Scope scope in scopes)
         {
-            sb.Append(scope.ToString());
+            sb.Append(scope);
             sb.Append('+');
         }
         return sb.ToString().TrimEnd('+');

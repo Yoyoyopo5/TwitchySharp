@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Authorization;
 /// <param name="clientSecret">The client secret of the application that the user originally authorized.</param>
 /// <param name="refreshToken">The refresh token for the user access token.</param>
 public class AccessTokenRefreshRequest(string clientId, string clientSecret, string refreshToken)
-    : AuthorizationApiRequest<AccessTokenRefreshResponse>("token")
+    : AuthorizationApiRequest<AccessTokenRefreshResponse>("/token")
 {
     /// <summary>
     /// The client ID of the application that the user originally authorized.

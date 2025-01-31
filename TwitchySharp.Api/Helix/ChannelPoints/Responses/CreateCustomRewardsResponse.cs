@@ -11,5 +11,5 @@ public record CreateCustomRewardsResponse
     /// <summary>
     /// A list that contains the single custom reward you created.
     /// </summary>
-    public CustomChannelPointsReward[] Data { get; private set; } = [];
+    public required CustomChannelPointsReward[] Data { get; init; }
 }
