@@ -50,12 +50,10 @@ public abstract class TwitchApiRequest<TResponse>(string path)
         {
             Method = Method,
             RequestUri = new Uri(Uri),
-            Content = Data is null ? null : new StringContent(Data)
+            Content = Data is null ? null : new StringContent(Data, Encoding.UTF8, ContentType ?? "text/plain")
         };
 
         // Headers
-        if (ContentType is not null)
-            httpRequest.Headers.Add("Content-Type", ContentType);
         if (AccessToken is not null)
             httpRequest.Headers.Authorization = new("Bearer", AccessToken);
         if (ClientId is not null)

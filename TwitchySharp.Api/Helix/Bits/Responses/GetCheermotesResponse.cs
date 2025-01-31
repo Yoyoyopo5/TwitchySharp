@@ -33,7 +33,7 @@ public record CheermoteData
     /// A list of tier levels that the Cheermote supports. 
     /// Each tier identifies the range of Bits that you can cheer at that tier level and an image that graphically identifies the tier level.
     /// </summary>
-    public required CheermoteTier Tiers { get; init; }
+    public required CheermoteTier[] Tiers { get; init; }
     /// <summary>
     /// The type of Cheermote.
     /// </summary>

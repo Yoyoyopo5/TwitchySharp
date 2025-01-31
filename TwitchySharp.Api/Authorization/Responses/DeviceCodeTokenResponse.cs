@@ -24,7 +24,7 @@ public record DeviceCodeTokenResponse
     /// <summary>
     /// The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> associated with the access token.
     /// </summary>
-    public required string[] Scope { get; init; }
+    public string[]? Scope { get; init; }
     /// <summary>
     /// The type of the access token. This should always be bearer.
     /// </summary>
