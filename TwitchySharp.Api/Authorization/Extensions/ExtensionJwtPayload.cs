@@ -29,13 +29,12 @@ public record ExtensionJwtPayload(string UserId)
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    [JsonPropertyName("user_id")]
     public string UserId { get; set; } = UserId;
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
-    [JsonPropertyName("role")]
     public string Role { get; } = "external";
+    public string? ChannelId { get; set; }
     [JsonPropertyName("pubsub_perms")]
     public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
     {
