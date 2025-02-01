@@ -58,7 +58,7 @@
 - [X] Conduits
 - [X] CCLs
 - [X] Entitlements
-- [ ] Extensions
+- [X] Extensions
 - [X] EventSub
 - [ ] Games
 - [ ] Goals
