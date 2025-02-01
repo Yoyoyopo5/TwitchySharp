@@ -16,6 +16,5 @@ public record ExtensionProductCost
     /// The type of currency exchanged.
     /// As of now, this can only be bits.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required ExtensionProductCostType Type { get; set; }
 }
