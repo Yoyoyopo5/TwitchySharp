@@ -35,6 +35,12 @@ public record ExtensionSecrets
     public required string ApiSecret { get; init; }
     public required string Secret { get; init; }
     public required string Version { get; init; }
+    public required ExtensionBitsProductSecrets BitsProduct { get; init; }
+}
+
+public record ExtensionBitsProductSecrets
+{
+    public required string Sku { get; init; }
 }
 
 public record UserSecrets
