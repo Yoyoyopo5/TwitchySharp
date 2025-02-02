@@ -27,13 +27,13 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// This must be the same user that created the <paramref name="accessToken"/>.
 /// </param>
 /// <param name="settings">The settings to update.</param>
-public class UpdateGuestStarSettingsRequest(
+public class UpdateChannelGuestStarSettingsRequest(
     string clientId, 
     string accessToken, 
     string broadcasterId, 
-    UpdateGuestStarSettingsRequestData settings
+    UpdateChannelGuestStarSettingsRequestData settings
     )
-    : HelixApiRequest<UpdateChannelGuestStarSettingsResponse, UpdateGuestStarSettingsRequestData>(
+    : HelixApiRequest<UpdateChannelGuestStarSettingsResponse, UpdateChannelGuestStarSettingsRequestData>(
         "guest_star/channel_settings" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId),
@@ -50,7 +50,7 @@ public class UpdateGuestStarSettingsRequest(
 /// <summary>
 /// Contains data used to set Guest Star settings.
 /// </summary>
-public record UpdateGuestStarSettingsRequestData
+public record UpdateChannelGuestStarSettingsRequestData
 {
     /// <summary>
     /// Determines if Guest Star moderators have access to control whether a guest is live once assigned to a slot.
