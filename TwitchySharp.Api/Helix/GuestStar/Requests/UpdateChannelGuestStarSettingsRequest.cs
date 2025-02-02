@@ -34,7 +34,7 @@ public class UpdateChannelGuestStarSettingsRequest(
     UpdateChannelGuestStarSettingsRequestData settings
     )
     : HelixApiRequest<UpdateChannelGuestStarSettingsResponse, UpdateChannelGuestStarSettingsRequestData>(
-        "guest_star/channel_settings" +
+        "/guest_star/channel_settings" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId),
         clientId,
@@ -44,7 +44,7 @@ public class UpdateChannelGuestStarSettingsRequest(
 {
     // Dev Note: Examples for this request show fields in the request data as query parameters.
     // The docs also show these as body fields.
-    public override HttpMethod Method => HttpMethod.Put;
+    public override HttpMethod Method => HttpMethod.Patch;
 }
 
 /// <summary>
