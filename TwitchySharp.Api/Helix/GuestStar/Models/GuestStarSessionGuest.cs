@@ -30,11 +30,11 @@ public record GuestStarSessionGuest
     /// <summary>
     /// Display name of the guest assigned to this slot.
     /// </summary>
-    public required string UserDisplayName { get; init; }
+    public string? UserDisplayName { get; init; }
     /// <summary>
     /// Login (username) of the guest assigned to this slot.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public string? UserLogin { get; init; }
     /// <summary>
     /// Value from 0 to 100 representing the host’s volume setting for this guest.
     /// </summary>
@@ -46,9 +46,9 @@ public record GuestStarSessionGuest
     /// <summary>
     /// Information about the guest’s audio settings.
     /// </summary>
-    public required GuestStarSessionGuestMediaSettings AudioSettings { get; init; }
+    public GuestStarSessionGuestMediaSettings? AudioSettings { get; init; }
     /// <summary>
     /// Information about the guest’s video settings.
     /// </summary>
-    public required GuestStarSessionGuestMediaSettings VideoSettings { get; init; }
+    public GuestStarSessionGuestMediaSettings? VideoSettings { get; init; }
 }
