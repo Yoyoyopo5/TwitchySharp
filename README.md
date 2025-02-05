@@ -63,7 +63,7 @@
 - [X] Games
 - [X] Goals
 - [X] Guest Star
-- [ ] Hype Train
+- [X] Hype Train
 - [ ] Moderation
 - [ ] Polls
 - [ ] Predictions
