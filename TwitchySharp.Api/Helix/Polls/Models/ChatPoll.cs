@@ -36,14 +36,6 @@ public record ChatPoll
     /// </summary>
     public required ChatPollChoice[] Choices { get; init; } 
     /// <summary>
-    /// Unused and always set to <see langword="false"/>.
-    /// </summary>
-    public required bool BitsVotingEnabled { get; init; }
-    /// <summary>
-    /// Unused and always set to <c>0</c>.
-    /// </summary>
-    public required int BitsPerVote { get; init; }
-    /// <summary>
     /// Indicates whether viewers may cast additional votes using Channel Points.
     /// </summary>
     public required bool ChannelPointsVotingEnabled { get; init; }
