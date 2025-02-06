@@ -65,7 +65,7 @@
 - [X] Guest Star
 - [X] Hype Train
 - [X] Moderation
-- [ ] Polls
+- [X] Polls
 - [ ] Predictions
 - [ ] Raids
 - [ ] Schedule
