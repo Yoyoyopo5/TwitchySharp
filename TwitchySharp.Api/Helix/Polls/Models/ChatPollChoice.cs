@@ -22,8 +22,4 @@ public record ChatPollChoice
     /// The number of votes that were cast using Channel Points.
     /// </summary>
     public required int ChannelPointsVotes { get; init; }
-    /// <summary>
-    /// Unused and always set to <c>0</c>.
-    /// </summary>
-    public required int BitsVotes { get; init; }
 }

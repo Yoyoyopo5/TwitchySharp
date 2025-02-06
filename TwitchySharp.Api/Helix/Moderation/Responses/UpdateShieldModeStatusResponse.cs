@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -41,5 +43,6 @@ public record ShieldModeStatus
     /// <summary>
     /// The date and time when Shield Mode was last activated.
     /// </summary>
-    public required DateTimeOffset LastActivatedAt { get; init; }
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public DateTimeOffset? LastActivatedAt { get; init; }
 }
