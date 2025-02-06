@@ -64,7 +64,7 @@
 - [X] Goals
 - [X] Guest Star
 - [X] Hype Train
-- [ ] Moderation
+- [X] Moderation
 - [ ] Polls
 - [ ] Predictions
 - [ ] Raids
