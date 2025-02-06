@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using System.Text.Json.Serialization;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
@@ -58,6 +59,7 @@ public record EndPollRequestData
 /// Contains static references for valid poll end statuses.
 /// </summary>
 /// <param name="Value">The string value of the status to end the poll with.</param>
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<EndPollStatus, string>))]
 public record EndPollStatus(string Value)
     : ValueBackedEnum<string>(Value)
 {
