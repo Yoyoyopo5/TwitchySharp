@@ -70,7 +70,7 @@
 - [X] Raids
 - [X] Schedule
 - [X] Search
-- [ ] Streams
+- [X] Streams
 - [ ] Subscriptions
 - [ ] Teams
 - [ ] Users
