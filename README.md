@@ -68,7 +68,7 @@
 - [X] Polls
 - [X] Predictions
 - [X] Raids
-- [ ] Schedule
+- [X] Schedule
 - [ ] Search
 - [ ] Streams
 - [ ] Subscriptions
