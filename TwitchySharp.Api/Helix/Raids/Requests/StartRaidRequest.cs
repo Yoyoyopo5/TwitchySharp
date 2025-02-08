@@ -30,7 +30,7 @@ public class StartRaidRequest(
     string toBroadcasterId
     )
     : HelixApiRequest<StartRaidResponse>(
-        "raids" +
+        "/raids" +
         new HttpQueryParameters()
             .Add("from_broadcaster_id", fromBroadcasterId)
             .Add("to_broadcaster_id", toBroadcasterId),
