@@ -69,7 +69,7 @@
 - [X] Predictions
 - [X] Raids
 - [X] Schedule
-- [ ] Search
+- [X] Search
 - [ ] Streams
 - [ ] Subscriptions
 - [ ] Teams
