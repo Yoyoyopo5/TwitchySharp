@@ -72,7 +72,7 @@
 - [X] Search
 - [X] Streams
 - [X] Subscriptions
-- [ ] Teams
+- [X] Teams
 - [ ] Users
 - [ ] Videos
 - [ ] Whispers
