@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.Api.Helix.Schedule.Responses;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Schedule;
@@ -12,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </summary>
 /// <param name="broadcasterId">The user id of the broadcaster (channel) to get the streaming schedule for.</param>
 public class GetChannelICalendarRequest(string broadcasterId)
-    : TwitchApiRequest<string>(
+    : TwitchApiRequest<GetChannelICalendarResponse>(
         "/helix/schedule/icalendar" + 
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)
