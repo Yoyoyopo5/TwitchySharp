@@ -71,7 +71,7 @@
 - [X] Schedule
 - [X] Search
 - [X] Streams
-- [ ] Subscriptions
+- [X] Subscriptions
 - [ ] Teams
 - [ ] Users
 - [ ] Videos
