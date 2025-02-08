@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <inheritdoc cref="ChannelStreamSchedule"/>
-public record UpdateChannelStreamScheduleSegment
+public record UpdateChannelStreamScheduleSegmentResponse
 {
     /// <summary>
     /// The broadcaster's updated streaming schedule.
