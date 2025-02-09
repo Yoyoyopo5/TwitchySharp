@@ -43,9 +43,45 @@ public class SetExtensionConfigurationSegmentRequest(string clientId, string jwt
 }
 
 /// <summary>
-/// Contains data used to set an extension configuration segment.
+/// Set configuration for the <see cref="ExtensionConfigurationSegmentType.Global"/> segment.
 /// </summary>
-public record SetExtensionConfigurationSegmentRequestData
+public record SetExtensionConfigurationGlobalSegmentData()
+    : SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType.Global);
+
+/// <summary>
+/// Set configuration for the <see cref="ExtensionConfigurationSegmentType.Developer"/> segment.
+/// </summary>
+public record SetExtensionConfigurationDeveloperSegmentData()
+    : SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType.Developer)
+{
+    /// <summary>
+    /// The user id of the broadcaster to update extension configuration data for.
+    /// </summary>
+    public new required string BroadcasterId { get => base.BroadcasterId!; set => base.BroadcasterId = value; }
+}
+
+/// <summary>
+/// Set configuration for the <see cref="ExtensionConfigurationSegmentType.Broadcaster"/> segment.
+/// </summary>
+public record SetExtensionConfigurationBroadcasterSegmentData()
+    : SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType.Broadcaster)
+{
+    /// <summary>
+    /// The user id of the broadcaster to update extension configuration data for.
+    /// </summary>
+    public new required string BroadcasterId { get => base.BroadcasterId!; set => base.BroadcasterId = value; }
+}
+
+/// <summary>
+/// Contains data used to set an extension configuration segment.
+/// Use derived classes <see cref="SetExtensionConfigurationGlobalSegmentData"/>, 
+/// <see cref="SetExtensionConfigurationDeveloperSegmentData"/>,
+/// <see cref="SetExtensionConfigurationBroadcasterSegmentData"/> for easier usage.
+/// </summary>
+/// <param name="Segment">
+/// The segment type to configure.
+/// </param>
+public record SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType Segment)
 {
     /// <summary>
     /// The id of the extension to update.
@@ -54,13 +90,12 @@ public record SetExtensionConfigurationSegmentRequestData
     /// <summary>
     /// The configuration segment to update.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ExtensionConfigurationSegmentType>))]
-    public required ExtensionConfigurationSegmentType Segment { get; set; }
-    /// <summary>
+    public ExtensionConfigurationSegmentType Segment { get; set; } = Segment;
+    /// <summary>.
     /// The user id of the broadcaster that installed the extension.
     /// Include this property only if the <see cref="Segment"/> is set to <see cref="ExtensionConfigurationSegmentType.Developer"/> or <see cref="ExtensionConfigurationSegmentType.Broadcaster"/>.
     /// </summary>
-    public string? BroadcasterId { get; set; }
+    public string? BroadcasterId { get; protected set; }
     /// <summary>
     /// The contents of the segment.
     /// This may be in plain-text or string-encoded JSON.

@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -58,6 +60,7 @@ public readonly record struct UpdateRedemptionStatusRequestData
     /// <summary>
     /// The status code that the redemption should be updated to.
     /// </summary>
+    [JsonConverter(typeof(SnakeCaseUpperJsonStringEnumConverter<UpdatedRewardRedemptionStatus>))]
     public required UpdatedRewardRedemptionStatus Status { get; init; }
 }
 

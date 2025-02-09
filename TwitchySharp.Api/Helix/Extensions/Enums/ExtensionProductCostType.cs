@@ -1,9 +1,14 @@
-﻿namespace TwitchySharp.Api.Helix.Extensions;
+﻿using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
+
+namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Cost types for Twitch extension transactions.
 /// </summary>
-public enum ExtensionProductCostType
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionProductCostType, string>))]
+public record ExtensionProductCostType(string Value)
+    : ValueBackedEnum<string>(Value)
 {
-    Bits
+    public static ExtensionProductCostType Bits { get; } = new("bits");
 }

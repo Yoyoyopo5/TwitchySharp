@@ -42,7 +42,7 @@ public class SendWhisperRequest(
     SendWhisperRequestData whisper
     )
     : HelixApiRequest<SendWhisperResponse, SendWhisperRequestData>(
-        "/whisper" + 
+        "/whispers" + 
         new HttpQueryParameters()
             .Add("from_user_id", fromUserId)
             .Add("to_user_id", toUserId),

@@ -16,7 +16,7 @@ public record GetExtensionTransactionsResponse
     /// <summary>
     /// The cursor used to get the next page of results. Use the <see cref="Pagination.Cursor"/> property to set the request’s after parameter.
     /// </summary>
-    public required Pagination Pagination { get; init; }
+    public Pagination? Pagination { get; init; }
 }
 
 /// <summary>

@@ -29,7 +29,7 @@ public class GetTeamsRequest(
         "/teams" +
         new HttpQueryParameters()
             .Add("name", query.Name)
-            .Add("id", query.Name),
+            .Add("id", query.Id),
         clientId,
         accessToken
         );

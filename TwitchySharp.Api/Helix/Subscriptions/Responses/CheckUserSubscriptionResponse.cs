@@ -27,11 +27,11 @@ public record UserSubscription
     /// <inheritdoc cref="BroadcasterSubscriber.BroadcasterName"/>
     public required string BroadcasterName { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterId"/>
-    public required string GifterId { get; init; }
+    public string? GifterId { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterLogin"/>
-    public required string GifterLogin { get; init; }
+    public string? GifterLogin { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterName"/>
-    public required string GifterName { get; init; }
+    public string? GifterName { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.IsGift"/>
     public required bool IsGift { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.Tier"/>

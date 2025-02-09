@@ -8,18 +8,18 @@ public enum GuestStarGroupLayout
     /// <summary>
     /// All live guests are tiled within the browser source with the same size.
     /// </summary>
-    TiledLayout,
+    Tiled,
     /// <summary>
     /// All live guests are tiled within the browser source with the same size. 
     /// If there is an active screen share, it is sized larger than the other guests.
     /// </summary>
-    ScreenshareLayout,
+    Screenshare,
     /// <summary>
     /// All live guests are arranged in a horizontal bar within the browser source.
     /// </summary>
-    HorizontalLayout,
+    Horizontal,
     /// <summary>
     /// All live guests are arranged in a vertical bar within the browser source.
     /// </summary>
-    VerticalLayout
+    Vertical
 }
