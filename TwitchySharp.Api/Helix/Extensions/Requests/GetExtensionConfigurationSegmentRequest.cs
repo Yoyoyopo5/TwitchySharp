@@ -1,5 +1,4 @@
-﻿using Minerals.StringCases;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +18,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). 
 /// Set the role field to external and the user_id field to the user id of the user that owns the extension..
 /// </remarks>
-/// <param name="clientId">The client id of the application.</param>
+/// <param name="clientId">The client id of the extension.</param>
 /// <param name="jwt">
 /// The signed JWT created by an Extension Backend Service.
 /// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
@@ -39,11 +38,11 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// </param>
 public class GetExtensionConfigurationSegmentRequest(string clientId, string jwt, string extensionId, IEnumerable<ExtensionConfigurationSegmentType> segments, string? broadcasterId = null)
     : HelixApiRequest<GetExtensionConfigurationSegmentResponse>(
-        "/extensions/configuration" +
+        "/extensions/configurations" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)
             .Add("extension_id", extensionId)
-            .Add("segment", segments.Select(x => x.ToString().ToSnakeCase())),
+            .Add("segment", segments.Select<ExtensionConfigurationSegmentType, string>(x => x)),
         clientId,
         jwt
         );

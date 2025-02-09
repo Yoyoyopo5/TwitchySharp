@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 /// <summary>
@@ -52,10 +54,11 @@ public record CreatePredictionRequestData
     /// </summary>
     public required CreatePredictionOutcome[] Outcomes { get; set; }
     /// <summary>
-    /// The length of time in <b>seconds</b> that the prediction will be active for.
+    /// The length of time that the prediction will be active for.
     /// The minimum is 30 seconds and the maximum is 1800 seconds (30 minutes).
     /// </summary>
-    public required int PredictionWindow { get; set; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public required TimeSpan PredictionWindow { get; set; }
 }
 
 /// <summary>

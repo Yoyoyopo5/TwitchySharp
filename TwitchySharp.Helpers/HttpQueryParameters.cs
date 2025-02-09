@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TwitchySharp.Helpers;
@@ -31,20 +32,14 @@ public class HttpQueryParameters
     }
 
     public override string ToString()
-    {
-        if (_parameters.Count == 0)
-            return string.Empty;
-        StringBuilder sb = new("?");
-        foreach (KeyValuePair<string, string> parameter in _parameters)
+        => _parameters switch
         {
-            if (string.IsNullOrEmpty(parameter.Value))
-                continue;
-            sb.Append(parameter.Key);
-            sb.Append('=');
-            sb.Append(parameter.Value);
-            sb.Append("&");
-        }
-        sb.Remove(sb.Length - 1, 1); // Remove final '&'
-        return sb.ToString();
-    }
+            { Count: > 0 } parameters => "?" + 
+                string.Join(
+                    '&',
+                    parameters
+                        .Where(p => !string.IsNullOrEmpty(p.Value))
+                        .Select(p => $"{p.Key}={p.Value}")),
+            _ => string.Empty
+        };
 }

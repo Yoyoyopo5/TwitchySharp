@@ -12,30 +12,34 @@ using TwitchySharp.Helpers.JsonConverters.DateTime;
 
 namespace TwitchySharp.Api.Authorization.Extensions;
 /// <summary>
-/// Used to 
+/// Used to create a signed JWT for various Extensions API endpoints.
 /// </summary>
-/// <param name="userId">
+/// <param name="UserId">
 /// The user id of the owner of the extension.
 /// </param>
-public record ExtensionJwtPayload(string userId)
+public record ExtensionJwtPayload(string UserId)
 {
     /// <summary>
     /// When the JWT is set to expire. 
     /// Defaults to 120 minutes from object creation.
     /// </summary>
     [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
-    [JsonPropertyName("ext")]
+    [JsonPropertyName("exp")]
     public DateTimeOffset ExpiresAt { get; set; } = DateTimeOffset.UtcNow.AddMinutes(120);
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    [JsonPropertyName("user_id")]
-    public string UserId { get; set; } = userId;
+    public string UserId { get; set; } = UserId;
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
-    [JsonPropertyName("role")]
     public string Role { get; } = "external";
+    public string? ChannelId { get; set; }
+    [JsonPropertyName("pubsub_perms")]
+    public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
+    {
+        Send = ["*"]
+    };
 
     /// <summary>
     /// Creates an encoded JWT used to make various Extensions API calls.
@@ -45,11 +49,17 @@ public record ExtensionJwtPayload(string userId)
     public string Sign(string extensionSecret)
         => new JsonWebTokenHandler()
             .CreateToken(
-                JsonSerializer.Serialize(this), 
+                JsonSerializer.Serialize(this, JsonConfig.ApiOptions), 
                 new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(extensionSecret)), 
-                        SecurityAlgorithms.HmacSha256Signature
-                    )
-            );
+                        Convert.FromBase64String(extensionSecret)
+                    ),
+                    "HS256"
+            ));
+}
+
+public record ExtensionPubSubPermissions
+{
+    public string[]? Listen { get; set; }
+    public string[]? Send { get; set; }
 }

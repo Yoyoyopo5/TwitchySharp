@@ -63,7 +63,7 @@ public class GetCustomRewardRedemptionRequest(
     int? first = null
     )
     : HelixApiRequest<GetCustomRewardRedemptionResponse>(
-        "/custom_rewards/redemptions" +
+        "/channel_points/custom_rewards/redemptions" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)
             .Add("reward_id", rewardId)
