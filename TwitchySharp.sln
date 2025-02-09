@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api.Tests.Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Helpers.Tests.Unit", "TwitchySharp.Helpers.Tests.Unit\TwitchySharp.Helpers.Tests.Unit.csproj", "{B62FF9FB-9A4D-4E6F-B3B3-2ADC2F12709E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Api.Tests.Unit", "TwitchySharp.Api.Tests.Unit\TwitchySharp.Api.Tests.Unit.csproj", "{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B62FF9FB-9A4D-4E6F-B3B3-2ADC2F12709E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B62FF9FB-9A4D-4E6F-B3B3-2ADC2F12709E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B62FF9FB-9A4D-4E6F-B3B3-2ADC2F12709E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
