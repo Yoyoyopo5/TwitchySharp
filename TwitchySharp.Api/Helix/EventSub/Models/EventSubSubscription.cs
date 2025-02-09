@@ -34,7 +34,7 @@ public record EventSubSubscription
     /// The subscription’s parameter values.
     /// The exact keys depend on what the subscription type expects.
     /// </summary>
-    public required ImmutableDictionary<string, string> Conditon { get; init; }
+    public required ImmutableDictionary<string, string> Condition { get; init; }
     /// <summary>
     /// The date and time when the subscription was created.
     /// </summary>
@@ -48,16 +48,4 @@ public record EventSubSubscription
     /// See <see href="https://dev.twitch.tv/docs/eventsub/manage-subscriptions/#subscription-limits">subscription limits</see>.
     /// </summary>
     public required int Cost { get; init; }
-    /// <summary>
-    /// The total number of subscriptions the application has created.
-    /// </summary>
-    public required int Total { get; init; }
-    /// <summary>
-    /// The sum of all your <see href="https://dev.twitch.tv/docs/eventsub/manage-subscriptions/#subscription-limits">subscription costs</see>.
-    /// </summary>
-    public required int TotalCost { get; init; }
-    /// <summary>
-    /// The maximum total cost that you’re allowed to incur for all subscriptions you create.
-    /// </summary>
-    public required int MaxTotalCost { get; init; }
 }

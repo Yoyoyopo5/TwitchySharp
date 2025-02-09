@@ -21,6 +21,6 @@ public sealed record ChannelAdBreakBegin(string BroadcasterId)
 
     private EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_id", BroadcasterId);
+            .Set("broadcaster_user_id", BroadcasterId);
     public IReadOnlyDictionary<string, object> Condition => _condition;
 }
