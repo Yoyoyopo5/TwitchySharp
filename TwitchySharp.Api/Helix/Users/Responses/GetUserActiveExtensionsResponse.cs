@@ -51,15 +51,15 @@ public record UserActiveExtension
     /// <summary>
     /// The id of the extension.
     /// </summary>
-    public required string Id { get; init; }
+    public string? Id { get; init; }
     /// <summary>
     /// The version of the extension.
     /// </summary>
-    public required string Version { get; init; }
+    public string? Version { get; init; }
     /// <summary>
     /// The name of the extension.
     /// </summary>
-    public required string Name { get; init; }
+    public string? Name { get; init; }
 }
 
 /// <summary>
@@ -71,9 +71,9 @@ public record UserActiveComponentExtension
     /// <summary>
     /// The x-coordinate where the extension is placed.
     /// </summary>
-    public required int X { get; init; }
+    public int? X { get; init; }
     /// <summary>
     /// The y-coordinate where the extension is placed.
     /// </summary>
-    public required int Y { get; init; }
+    public int? Y { get; init; }
 }
