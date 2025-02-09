@@ -13,5 +13,5 @@ public record CreatePredictionResponse
     /// <summary>
     /// A list containing the single prediction that was created.
     /// </summary>
-    public required ChatPrediction Data { get; init; }
+    public required ChatPrediction[] Data { get; init; }
 }

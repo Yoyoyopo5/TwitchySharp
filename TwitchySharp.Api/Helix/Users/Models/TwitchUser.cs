@@ -35,7 +35,7 @@ public record TwitchUser
     /// <summary>
     /// The user's broadcaster type.
     /// </summary>
-    [JsonConverter(typeof(ValueBackedEnumJsonConverter<TwitchUserType, string>))]
+    [JsonConverter(typeof(ValueBackedEnumJsonConverter<TwitchBroadcasterType, string>))]
     public required TwitchBroadcasterType BroadcasterType { get; init; }
     /// <summary>
     /// The user’s description of their channel.

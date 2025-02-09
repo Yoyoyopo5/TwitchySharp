@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -26,7 +27,6 @@ public record ExtensionConfigurationSegment
     /// <summary>
     /// The type of segment.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<ExtensionConfigurationSegmentType>))]
     public required ExtensionConfigurationSegmentType Segment { get; init; }
     /// <summary>
     /// The user id of the broadcaster that installed the extension. 
@@ -45,11 +45,13 @@ public record ExtensionConfigurationSegment
 }
 
 /// <summary>
-/// Represents types of extension configuration segments.
+/// Contains static definitions for types of extension configuration segments.
 /// </summary>
-public enum ExtensionConfigurationSegmentType
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionConfigurationSegmentType, string>))]
+public record ExtensionConfigurationSegmentType(string Value)
+    : ValueBackedEnum<string>(Value)
 {
-    Broadcaster,
-    Developer,
-    Global
+    public static ExtensionConfigurationSegmentType Broadcaster { get; } = new("broadcaster");
+    public static ExtensionConfigurationSegmentType Developer { get; } = new("developer");
+    public static ExtensionConfigurationSegmentType Global { get; } = new("global");
 }

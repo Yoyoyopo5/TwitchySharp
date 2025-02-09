@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Goals;
@@ -43,7 +44,6 @@ public record CreatorGoal
     /// <summary>
     /// The type of goal.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<CreatorGoalType>))]
     public required CreatorGoalType Type { get; init; }
     /// <summary>
     /// A description of the goal. Is an empty string if not specified.
@@ -66,31 +66,33 @@ public record CreatorGoal
 /// <summary>
 /// Possible goal types.
 /// </summary>
-public enum CreatorGoalType
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<CreatorGoalType, string>))]
+public record CreatorGoalType(string Value)
+    : ValueBackedEnum<string>(Value)
 {
     /// <summary>
     /// The goal is to increase followers.
     /// </summary>
-    Follower,
+    public static CreatorGoalType Follower { get; } = new("follower");
     /// <summary>
     /// The goal is to increase subscription points.
     /// Higher tier subscriptions contribute more to this type of goal.
     /// </summary>
-    Subscription,
+    public static CreatorGoalType Subscription { get; } = new("subscription");
     /// <summary>
     /// The goal is to increase subscriptions.
     /// This type shows the net increase or decrease in the number of subscriptions.
     /// </summary>
-    SubscriptionCount,
+    public static CreatorGoalType SubscriptionCount { get; } = new("subscription_count");
     /// <summary>
     /// The goal is to increase subscriptions.
     /// This type shows only the net increase in tier points associated with new subscriptions (from users that have not subscribed before).
     /// Higher tier subscriptions contribute more to this type of goal.
     /// </summary>
-    NewSubscription,
+    public static CreatorGoalType NewSubscription { get; } = new("new_subscription");
     /// <summary>
     /// The goal is to increase subscriptions.
     /// This type shows only the net increase in subscription count associated with new subscriptions (from users that have not subscribed before).
     /// </summary>
-    NewSubscriptionCount
+    public static CreatorGoalType NewSubscriptionCount { get; } = new("new_subscription_count");
 }

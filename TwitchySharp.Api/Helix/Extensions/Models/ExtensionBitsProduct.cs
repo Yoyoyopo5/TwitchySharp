@@ -27,8 +27,9 @@ public record ExtensionBitsProduct
     public required string DisplayName { get; init; }
     /// <summary>
     /// The date and time when the product expires.
+    /// If the product does not expire, this is set to <see langword="null"/>.
     /// </summary>
-    public required DateTimeOffset Expiration { get; init; }
+    public DateTimeOffset? Expiration { get; init; }
     /// <summary>
     /// Determines whether Bits product purchase events are broadcast to all instances of an extension on a channel. 
     /// The events are broadcast via the onTransactionComplete helper callback. 
