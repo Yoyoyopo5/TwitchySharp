@@ -1,91 +1,31 @@
 # TwitchySharp
+An up-to-date and easy to use Twitch API wrapper for .NET Core.
 
 ## Work In Progress
+TwitchySharp is still undergoing initial development. 
+Expect breaking changes.
 
-### Authentication API Models
-- [X] Authentication Url Generators
-- [X] Get App Access Tokens
-- [X] Get User Access Tokens
-- [X] Validate User Access Tokens
-- [X] Refresh User Access Tokens
-- [X] OIDC
-- [X] User Info
-- [X] Device Code Flow
-- [X] Revoke User Access Token
-- [X] Scopes
+### Completed Features
+- [X] Authorization API
+- [X] Helix API
+- [X] API Integration Tests
 
-### Helix API Models
-- [X] Ads
-- [X] Analytics
-- [X] Bits
-- [X] Channels
-- [X] Channel Points
-- [X] Charity
-- [X] Chat
-- [X] Clips
-- [X] Conduits
-- [X] CCLs
-- [X] Entitlements
-- [X] Extensions
-- [X] EventSub
-- [X] Games
-- [X] Goals
-- [X] Guest Star
-- [X] Hype Train
-- [X] Moderation
-- [X] Polls
-- [X] Predictions
-- [X] Raids
-- [X] Schedule
-- [X] Search
-- [X] Streams
-- [X] Subscriptions
-- [X] Teams
-- [X] Users
-- [X] Videos
-- [X] Whispers
+## TODO
 
-### API Integration Tests
-- [X] Authentication
-- [X] Ads
-- [X] Analytics
-- [X] Bits
-- [X] Channels
-- [X] Channel Points
-- [X] Charity
-- [X] Chat
-- [X] Clips
-- [X] Conduits
-- [X] CCLs
-- [X] Entitlements
-- [X] Extensions
-- [X] EventSub
-- [X] Games
-- [X] Goals
-- [X] Guest Star
-- [X] Hype Train
-- [X] Moderation
-- [X] Polls
-- [X] Predictions
-- [X] Raids
-- [X] Schedule
-- [X] Search
-- [X] Streams
-- [X] Subscriptions
-- [X] Teams
-- [X] Users
-- [X] Videos
-- [X] Whispers
+### API
+- [ ] Change duration type properties to use TimeSpan
 
-### API Misc
-- [ ] Change duration to use TimeSpan with converters
-
-### EventSub
+### EventSub 
 - [ ] Notification Models
-- [ ] Websockets Handler
-- [ ] Webhooks Handler
+- [ ] Websockets Notification Handler
+- [ ] Webhooks Notification Handler
+- [ ] ASP.NET Core Integration
 
-### Not Planned (Obsolete)
+### Documentation
+- [ ] API Example Project
+- [ ] API Quick Start Guide
+
+## Not Planned (Obsolete)
 - PubSub
 - IRC Chatbots
 - Tags API
