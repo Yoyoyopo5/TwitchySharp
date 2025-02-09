@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -46,6 +48,17 @@ public class BanUserRequest(
 public record BanUserRequestData
 {
     /// <summary>
+    /// Information about the specific user to ban or time out.
+    /// </summary>
+    public required BanUserData Data { get; set; } // Really Twitch?
+}
+
+/// <summary>
+/// Contains information about a specific user to ban or time out.
+/// </summary>
+public record BanUserData
+{
+    /// <summary>
     /// The user id of the user to ban or time out.
     /// </summary>
     public required string UserId { get; set; }
@@ -55,7 +68,8 @@ public record BanUserRequestData
     /// Note that time-outs overwrite each other. You can use this property to end a user's time-out by setting it 1 second.
     /// Also note that adding a time-out duration to a user does not overwrite a ban if they have one.
     /// </summary>
-    public int? Duration { get; set; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public TimeSpan? Duration { get; set; }
     /// <summary>
     /// Caller-defined text that is displayed to the banned user as the reason for their ban or time-out.
     /// </summary>

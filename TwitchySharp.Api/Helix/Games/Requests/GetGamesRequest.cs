@@ -19,6 +19,7 @@ namespace TwitchySharp.Api.Helix.Games;
 /// <param name="games">
 /// The games to get data for.
 /// You may specify up to 100 games.
+/// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/>.
 /// </param>
 public class GetGamesRequest(string clientId, string accessToken, IEnumerable<GameQuery> games)
     : HelixApiRequest<GetGamesResponse>(

@@ -1,11 +1,11 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using OneOf.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters.DateTime;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -51,10 +51,12 @@ public record TwitchOidc
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
+    [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
     public required DateTimeOffset Exp { get; init; }
     /// <summary>
     /// The UNIX timestamp of when the server issued the token.
     /// </summary>
+    [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
     public required DateTimeOffset Iat { get; init; }
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).

@@ -34,7 +34,7 @@ public class UpdateChannelStreamScheduleSegmentRequest(
     string segmentId,
     UpdateChannelStreamScheduleSegmentRequestData segmentSettings
     )
-    : HelixApiRequest<UpdateChannelStreamScheduleResponse, UpdateChannelStreamScheduleSegmentRequestData>(
+    : HelixApiRequest<UpdateChannelStreamScheduleSegmentResponse, UpdateChannelStreamScheduleSegmentRequestData>(
         "/schedule/segment" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)

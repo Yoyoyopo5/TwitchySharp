@@ -42,7 +42,7 @@ public class GetPollsRequest(
     string clientId,
     string accessToken,
     string broadcasterId,
-    IEnumerable<string>? pollIds,
+    IEnumerable<string>? pollIds = null,
     int? first = null,
     string? after = null
     )
