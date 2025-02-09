@@ -74,7 +74,7 @@
 - [X] Subscriptions
 - [X] Teams
 - [X] Users
-- [ ] Videos
+- [X] Videos
 - [ ] Whispers
 
 ### API Misc
