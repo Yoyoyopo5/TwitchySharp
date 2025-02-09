@@ -39,7 +39,7 @@ public class UpdateGuestStarSlotSettingsRequest(
     string slotId,
     GuestStarSlotSettings settings
     )
-    : HelixApiRequest<UpdateGuestStarSettingsRequest>(
+    : HelixApiRequest<UpdateGuestStarSlotSettingsResponse>(
         "/guest_star/slot_settings" +
         new HttpQueryParameters()
             .Add("broadcaster_id", broadcasterId)

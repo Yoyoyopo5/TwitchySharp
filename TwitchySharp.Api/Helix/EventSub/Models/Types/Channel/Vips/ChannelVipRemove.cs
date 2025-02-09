@@ -16,7 +16,7 @@ namespace TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.Vips;
 /// The user id of the broadcaster (channel) that you want to get VIP remove notifications for.
 /// This user must have created a user access token that includes <see cref="Scope.ChannelReadVips"/> or <see cref="Scope.ChannelManageVips"/> for this application.
 /// </param>
-public sealed record ChannelVIPRemove(string BroadcasterUserId)
+public sealed record ChannelVipRemove(string BroadcasterUserId)
     : IEventSubSubscriptionType
 {
     public string Type => EventSubSubscriptionTypeNames.CHANNEL_VIP_REMOVE;

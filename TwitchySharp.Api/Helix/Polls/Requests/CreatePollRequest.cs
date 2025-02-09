@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
@@ -51,10 +53,11 @@ public record CreatePollRequestData
     /// </summary>
     public required CreatePollChoice[] Choices { get; set; }
     /// <summary>
-    /// The length of time in <b>seconds</b> that the poll will run for. 
+    /// The length of time that the poll will run for. 
     /// The minimum is 15 seconds and the maximum is 1800 seconds (30 minutes).
     /// </summary>
-    public required int Duration { get; set; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public required TimeSpan Duration { get; set; }
     /// <summary>
     /// Determines whether viewers may cast additional votes using Channel Points.
     /// If set to <see langword="true"/>, the amount of Channel Points required per additional vote is set by <see cref="ChannelPointsPerVote"/>.

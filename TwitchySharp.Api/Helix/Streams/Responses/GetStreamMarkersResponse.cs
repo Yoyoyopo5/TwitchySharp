@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Models;
 
@@ -82,5 +83,6 @@ public record VideoMarker
     /// <summary>
     /// A URL that can be used to open the video in Twitch Highlighter.
     /// </summary>
+    [JsonPropertyName("URL")]
     public required string Url { get; init; }
 }

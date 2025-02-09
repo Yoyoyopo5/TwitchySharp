@@ -51,4 +51,10 @@ public record CreateEventSubSubscriptionRequestData
     /// Possible transport types are <see cref="WebhookSubscriptionTransport"/>, <see cref="WebsocketSubscriptionTransport"/>, and <see cref="ConduitSubscriptionTransport"/>.
     /// </summary>
     public required NewEventSubSubscriptionTransport Transport { get; set; }
+    [JsonInclude, JsonPropertyName("is_batching_enabled")]
+    private bool? _isBatchingEnabled => _type switch // Kind of jank but this is the only type that requires this. Adding to IEventSubSubscription type will be more mantainable.
+    {
+        EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT => true,
+        _ => null
+    };
 }
