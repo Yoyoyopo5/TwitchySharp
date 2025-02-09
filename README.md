@@ -75,7 +75,7 @@
 - [X] Teams
 - [X] Users
 - [X] Videos
-- [ ] Whispers
+- [X] Whispers
 
 ### API Misc
 - [ ] Change duration to use TimeSpan with converters
