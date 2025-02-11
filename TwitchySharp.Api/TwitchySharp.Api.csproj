@@ -35,10 +35,6 @@
     <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
 	<PackageReference Include="TwitchySharp.Helpers" Version="1.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
-  </ItemGroup>
 	
   <ItemGroup>
 	<None Update="README.md" Pack="true" PackagePath="\"></None>
