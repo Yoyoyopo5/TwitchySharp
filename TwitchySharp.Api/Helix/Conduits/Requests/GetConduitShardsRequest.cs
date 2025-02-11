@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Models;
-using Minerals.StringCases;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -35,7 +34,7 @@ public class GetConduitShardsRequest(
         "/eventsub/conduits/shards" +
         new HttpQueryParameters()
             .Add("conduit_id", conduitId)
-            .Add("status", status?.ToString().ToSnakeCase())
+            .Add("status", status?.Value)
             .Add("after", after),
         clientId,
         accessToken
