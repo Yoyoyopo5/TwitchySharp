@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Minerals.StringCases;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
 /// Gets a list of EventSub subscriptions that the <paramref name="clientId"/> created.
+/// <br/>
+/// See <see href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</see> for more information.
 /// </summary>
 /// <remarks>
 /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, requires an app access token.
@@ -43,7 +44,7 @@ public class GetEventSubSubscriptionsRequest(
     : HelixApiRequest<GetEventSubSubscriptionsResponse>(
         "/eventsub/subscriptions" +
         new HttpQueryParameters()
-            .Add("status", status?.ToString().ToSnakeCase())
+            .Add("status", status?.Value)
             .Add("type", type?.Type)
             .Add("user_id", userId)
             .Add("after", after),
