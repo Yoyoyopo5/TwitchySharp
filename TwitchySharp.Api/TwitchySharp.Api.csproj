@@ -1,9 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+      <TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
+	  <PackageVersion>1.0.0</PackageVersion>
+	  <Title>TwitchySharp.Api</Title>
+	  <Authors>Yoyoyopo5</Authors>
+	  <Description>Provides wrapper classes and functions to easily integrate .NET Core applications with the Twitch API.</Description>
+	  <PackageProjectUrl>https://github.com/Yoyoyopo5/TwitchySharp</PackageProjectUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <RepositoryUrl>https://github.com/Yoyoyopo5/TwitchySharp</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
