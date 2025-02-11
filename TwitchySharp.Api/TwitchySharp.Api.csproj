@@ -8,6 +8,7 @@
 	  <Title>TwitchySharp.Api</Title>
 	  <Authors>Yoyoyopo5</Authors>
 	  <Description>Provides wrapper classes and functions to easily integrate .NET Core applications with the Twitch API.</Description>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageProjectUrl>https://github.com/Yoyoyopo5/TwitchySharp</PackageProjectUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <RepositoryUrl>https://github.com/Yoyoyopo5/TwitchySharp</RepositoryUrl>
