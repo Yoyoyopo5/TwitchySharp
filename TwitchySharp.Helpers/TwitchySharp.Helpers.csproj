@@ -4,6 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
+	  <PackageVersion>1.0.0</PackageVersion>
+	  <Title>TwitchySharp.Helpers</Title>
+	  <Authors>Yoyoyopo5</Authors>
+	  <Description>Provides helper classes and functions used in TwitchySharp packages.</Description>
+	  <PackageProjectUrl>https://github.com/Yoyoyopo5/TwitchySharp</PackageProjectUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <RepositoryUrl>https://github.com/Yoyoyopo5/TwitchySharp</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
