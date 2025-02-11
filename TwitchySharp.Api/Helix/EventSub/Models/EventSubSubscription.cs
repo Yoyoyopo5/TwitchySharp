@@ -18,7 +18,6 @@ public record EventSubSubscription
     /// The subscription's status.
     /// Note that the subscriber receives events only for <see cref="EventSubSubscriptionStatus.Enabled"/> subscriptions.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<EventSubSubscriptionStatus>))]
     public required EventSubSubscriptionStatus Status { get; init; }
     /// <summary>
     /// The subscription’s type name.
