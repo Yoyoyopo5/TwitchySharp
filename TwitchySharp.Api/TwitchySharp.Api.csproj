@@ -4,6 +4,7 @@
       <TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
+	  <PackageId>TwitchySharp.Api</PackageId>
 	  <PackageVersion>1.0.0</PackageVersion>
 	  <Title>TwitchySharp.Api</Title>
 	  <Authors>Yoyoyopo5</Authors>
@@ -32,6 +33,7 @@
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
+	<PackageReference Include="TwitchySharp.Helpers" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
