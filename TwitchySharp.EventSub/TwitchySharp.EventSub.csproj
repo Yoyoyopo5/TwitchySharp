@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit"/>
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Shared\TwitchySharp.Shared.csproj" />
+  </ItemGroup>
+	
+
+</Project>
