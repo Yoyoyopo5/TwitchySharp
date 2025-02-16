@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters.DateTime;
 
-namespace TwitchySharp.EventSub.Notifications.EventModels;
-public record AutomodMessageHoldNotification : EventSubNotification<AutoModMessageHoldEvent, AutomodMessageHoldCondition>;
+namespace TwitchySharp.EventSub.Notifications.Automod;
+public record AutomodMessageHoldNotification : EventSubNotification<AutomodMessageHoldEvent, AutomodMessageHoldCondition>;
 public record AutomodMessageHoldCondition
 {
     public required string BroadcasterUserId { get; init; }
     public required string ModeratorUserId { get; init; }
 }
-public record AutoModMessageHoldEvent
+public record AutomodMessageHoldEvent
 {
     public required string BroadcasterUserId { get; init; }
     public required string BroadcasterUserLogin { get; init; }
