@@ -8,6 +8,12 @@ using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Automod.Message;
+/// <summary>
+/// <inheritdoc cref="EventSubSubscriptionType.AutomodMessageHoldV2"/>
+/// </summary>
+/// <remarks>
+/// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#automodmessagehold-v2">Automod Message Hold V2</see> for more information.
+/// </remarks>
 public record AutomodMessageHoldV2Notification : EventSubNotification<AutomodMessageHoldV2Event, AutomodMessageHoldV2Condition>;
 
 /// <summary>
@@ -25,6 +31,9 @@ public record AutomodMessageHoldV2Condition
     public required string ModeratorUserId { get; init; }
 }
 
+/// <summary>
+/// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodMessageHoldV2"/> event.
+/// </summary>
 public record AutomodMessageHoldV2Event
 {
     /// <summary>
