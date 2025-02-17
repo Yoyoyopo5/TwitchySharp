@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Helpers.Tests.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api.Tests.Unit", "TwitchySharp.Api.Tests.Unit\TwitchySharp.Api.Tests.Unit.csproj", "{D6FB06B3-9778-4B5B-9341-C416C2C8BB33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub", "TwitchySharp.EventSub\TwitchySharp.EventSub.csproj", "{E09D9A69-A48C-4F4A-A383-357A98C7D1A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub", "TwitchySharp.EventSub\TwitchySharp.EventSub.csproj", "{E09D9A69-A48C-4F4A-A383-357A98C7D1A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Shared", "TwitchySharp.Shared\TwitchySharp.Shared.csproj", "{3A95C580-716F-407D-B417-ED484BCC9A1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Shared", "TwitchySharp.Shared\TwitchySharp.Shared.csproj", "{3A95C580-716F-407D-B417-ED484BCC9A1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Tests.Unit", "TwitchySharp.EventSub.Tests.Unit\TwitchySharp.EventSub.Tests.Unit.csproj", "{14B7C512-0158-4E0F-96DB-7A336BE6E056}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub.Tests.Unit", "TwitchySharp.EventSub.Tests.Unit\TwitchySharp.EventSub.Tests.Unit.csproj", "{14B7C512-0158-4E0F-96DB-7A336BE6E056}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Websocket", "TwitchySharp.EventSub.Websocket\TwitchySharp.EventSub.Websocket.csproj", "{786E6C2D-59F3-482E-8377-C4D1687EAFBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{14B7C512-0158-4E0F-96DB-7A336BE6E056}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14B7C512-0158-4E0F-96DB-7A336BE6E056}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14B7C512-0158-4E0F-96DB-7A336BE6E056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{786E6C2D-59F3-482E-8377-C4D1687EAFBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{786E6C2D-59F3-482E-8377-C4D1687EAFBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{786E6C2D-59F3-482E-8377-C4D1687EAFBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{786E6C2D-59F3-482E-8377-C4D1687EAFBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
