@@ -17,7 +17,33 @@ Expect breaking changes.
 
 ### EventSub 
 - [ ] Notification Models
-- [ ] Websockets Notification Handler
+    - [ ] Automod
+    - [ ] Channel
+        - [ ] Ad Break
+        - [ ] Channel Points
+        - [ ] Charity Campaign
+        - [ ] Chat
+        - [ ] Chat Settings
+        - [ ] Goals
+        - [ ] Guest Star
+        - [ ] Hype Train
+        - [ ] Moderator
+        - [ ] Polls
+        - [ ] Predictions
+        - [ ] Shared Chat
+        - [ ] Shield Mode
+        - [ ] Shoutout
+        - [ ] Subscription
+        - [ ] Suspicious User
+        - [ ] Unban Request
+        - [ ] VIPs
+        - [ ] Warnings
+    - [ ] Conduit
+    - [ ] Drops
+    - [ ] Extension
+    - [ ] Stream
+    - [ ] User 
+- [ ] Websockets Notification Handler (Needs testing!)
 - [ ] Webhooks Notification Handler
 - [ ] ASP.NET Core Integration
 
