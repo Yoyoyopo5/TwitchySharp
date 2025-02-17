@@ -23,6 +23,20 @@ public interface INotificationConverter
     /// <param name="subscriptionType">The subscription type of the EventSub notification.</param>
     /// <returns>An instance of a type that implements <see cref="IEventSubNotification"/>.</returns>
     IEventSubNotification Deserialize(JsonDocument json, EventSubSubscriptionType subscriptionType);
+    /// <summary>
+    /// <inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/>
+    /// </summary>
+    /// <param name="json"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
+    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
+    /// <returns><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></returns>
+    IEventSubNotification Deserialize(JsonElement json, EventSubSubscriptionType subscriptionType);
+    /// <summary>
+    /// <inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/>
+    /// </summary>
+    /// <param name="json">A JSON string of the EventSub notification to deserialize.</param>
+    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
+    /// <returns><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></returns>
+    IEventSubNotification Deserialize(string json, EventSubSubscriptionType subscriptionType);
 }
 
 /// <summary>
@@ -54,6 +68,21 @@ public class NotificationConverter(IReadOnlyDictionary<EventSubSubscriptionType,
     private IReadOnlyDictionary<EventSubSubscriptionType, Type> _notificationTypes = notificationTypes ?? DefaultNotificationTypes;
 
     /// <summary>
+    /// <inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/>
+    /// </summary>
+    /// <param name="json"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></param>
+    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></param>
+    /// <returns>
+    /// <inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/>
+    /// </returns>
+    /// <exception cref="ArgumentException"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></exception>
+    /// <exception cref="InvalidCastException"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></exception>
+    /// <exception cref="JsonException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    public IEventSubNotification Deserialize(JsonDocument json, EventSubSubscriptionType subscriptionType)
+        => Deserialize(json.RootElement, subscriptionType);
+
+    /// <summary>
     /// Deserializes a JSON document into a type implementing <see cref="IEventSubNotification"/> using the class' notification type map.
     /// </summary>
     /// <param name="json"><inheritdoc cref="INotificationConverter.Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
@@ -66,7 +95,19 @@ public class NotificationConverter(IReadOnlyDictionary<EventSubSubscriptionType,
     /// <exception cref="InvalidCastException">The value of the <paramref name="subscriptionType"/> key in this instance's notification type map is not a type that implements <see cref="IEventSubNotification"/>.</exception>
     /// <exception cref="JsonException"></exception>
     /// <exception cref="NotSupportedException"></exception>
-    public IEventSubNotification Deserialize(JsonDocument json, EventSubSubscriptionType subscriptionType)
+    public IEventSubNotification Deserialize(JsonElement json, EventSubSubscriptionType subscriptionType)
         => (IEventSubNotification?)json.Deserialize(_notificationTypes[subscriptionType], _serializerOptions) ?? throw new ArgumentException("JSON cannot be null literal.", nameof(json));
 
+    /// <summary>
+    /// <inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/>
+    /// </summary>
+    /// <param name="json"></param>
+    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></param>
+    /// <returns><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></returns>
+    /// <exception cref="ArgumentException"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></exception>
+    /// <exception cref="InvalidCastException"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></exception>
+    /// <exception cref="JsonException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    public IEventSubNotification Deserialize(string json, EventSubSubscriptionType subscriptionType)
+         => (IEventSubNotification?)JsonSerializer.Deserialize(json, _notificationTypes[subscriptionType], _serializerOptions) ?? throw new ArgumentException("JSON cannot be null literal.", nameof(json));
 }
