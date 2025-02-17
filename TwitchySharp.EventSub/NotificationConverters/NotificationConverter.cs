@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Notifications.Automod;
 using TwitchySharp.Shared;
-using TwitchySharp.Shared.EventSub.Models;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.NotificationConverters;
 

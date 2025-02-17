@@ -6,12 +6,12 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters.DateTime;
-using TwitchySharp.Shared.EventSub.Models;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Automod;
 public record AutomodMessageHoldNotification : EventSubNotification<AutomodMessageHoldEvent, AutomodMessageHoldCondition>;
 /// <summary>
-/// Contains information specific to an <see cref="EventSubSubscriptionType.AutomodMessageHold"/>.
+/// Contains subscription information specific to <see cref="EventSubSubscriptionType.AutomodMessageHold"/>.
 /// </summary>
 public record AutomodMessageHoldCondition
 {
