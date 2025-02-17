@@ -9,6 +9,12 @@ using TwitchySharp.Helpers.JsonConverters.DateTime;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Automod;
+/// <summary>
+/// <inheritdoc cref="EventSubSubscriptionType.AutomodMessageHold"/>
+/// </summary>
+/// <remarks>
+/// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#automodmessagehold">Automod Message Hold</see> for more information.
+/// </remarks>
 public record AutomodMessageHoldNotification : EventSubNotification<AutomodMessageHoldEvent, AutomodMessageHoldCondition>;
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.AutomodMessageHold"/>.
