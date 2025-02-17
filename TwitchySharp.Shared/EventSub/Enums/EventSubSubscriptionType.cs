@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Shared.EventSub.Models;
+﻿namespace TwitchySharp.Shared.EventSub.Enums;
 
 // Note that this type may need to be moved into a higher scope or dependency as we develop the EventSub branch.
 
