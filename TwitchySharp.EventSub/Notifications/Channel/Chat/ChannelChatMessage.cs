@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
+namespace TwitchySharp.EventSub.Notifications.Channel;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelChatMessage"/>
 /// </summary>
