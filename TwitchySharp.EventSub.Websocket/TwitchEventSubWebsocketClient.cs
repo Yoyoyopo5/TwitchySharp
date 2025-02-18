@@ -136,13 +136,13 @@ public class TwitchEventSubWebsocketClient(
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         if (_ws.IsRunning) return;
-        await _ws.StartOrFail();
         _ws.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text))
             .Subscribe(
                 async message => await HandleMessage(message.Text!, cancellationToken),
                 async exception => await _handler.OnException(exception, cancellationToken)
                 );
+        await _ws.StartOrFail();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
