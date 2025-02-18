@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Automod.Message;
+namespace TwitchySharp.EventSub.Notifications.Automod;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.AutomodMessageHoldV2"/>
 /// </summary>

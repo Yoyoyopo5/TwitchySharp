@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Notifications.EventModels;
+using TwitchySharp.EventSub.Notifications.Automod;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
