@@ -1,4 +1,8 @@
-﻿namespace TwitchySharp.EventSub.Websocket.Messages;
+﻿using System.Reactive;
+using System.Text.Json;
+using TwitchySharp.EventSub.Websocket.Messages.Payloads;
+
+namespace TwitchySharp.EventSub.Websocket.Messages;
 
 internal record EventSubWebsocketMessage<TPayload> : IEventSubWebsocketMessage
 {

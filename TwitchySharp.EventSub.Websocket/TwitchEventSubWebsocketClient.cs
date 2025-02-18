@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Extensions.Hosting;
+using System.ComponentModel;
+using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Text.Json;
 using TwitchySharp.EventSub.NotificationConverters;
@@ -12,9 +14,12 @@ using Websocket.Client;
 namespace TwitchySharp.EventSub.Websocket;
 
 /// <summary>
-/// Abstract class that handles basic Twitch EventSub Websocket message handling and reconnects.
-/// To use, derive your own class and override the virtual and abstract methods.
+/// Default Twitch EventSub WebSocket implementation that handles basic Twitch EventSub Websocket message handling and reconnects.
+/// Supply your own <see cref="IWebsocketEventSubHandler"/> to recieve events.
 /// </summary>
+/// <param name="eventSubHandler">
+/// The handler that will receive events from the client.
+/// </param>
 /// <param name="url">
 /// The URL of the EventSub server to connect to.
 /// Leave this default unless you know what you're doing.
@@ -27,11 +32,23 @@ namespace TwitchySharp.EventSub.Websocket;
 /// The websocket client to use.
 /// Leave this <see langword="null"/> unless you know what you're doing.
 /// </param>
-public abstract class TwitchEventSubWebsocketClient(string url = "wss://eventsub.wss.twitch.tv/ws", IWebsocketClient? websocketClient = null, INotificationConverter? converter = null)
-    : IDisposable, ISupportInitialize
+/// <param name="messageDeserializerOptions">
+/// Custom serializer options to use when deserializing messages.
+/// Leave this <see langword="null"/> unless you know what you're doing.
+/// </param>
+public class TwitchEventSubWebsocketClient(
+    IWebsocketEventSubHandler eventSubHandler,
+    string url = "wss://eventsub.wss.twitch.tv/ws",
+    IWebsocketClient? websocketClient = null,
+    INotificationConverter? converter = null,
+    JsonSerializerOptions? messageDeserializerOptions = null
+    )
+    : IEventSubWebsocketMessageProcessor, IDisposable, IHostedService
 {
     private readonly IWebsocketClient _ws = websocketClient ?? new WebsocketClient(new Uri(url));
     private readonly INotificationConverter _converter = converter ?? new NotificationConverter();
+    private readonly IWebsocketEventSubHandler _handler = eventSubHandler;
+    private readonly JsonSerializerOptions _serializerOptions = messageDeserializerOptions ?? JsonConfig.ApiOptions;
 
     /// <summary>
     /// Amount of time to wait after a scheduled keepalive message from Twitch is missed before attempting to reconnect.
@@ -39,77 +56,95 @@ public abstract class TwitchEventSubWebsocketClient(string url = "wss://eventsub
     public TimeSpan ReconnectGracePeriod { get; set; }
 
     /// <summary>
-    /// Called when a subscription notification is received.
+    /// Simulate a message received by the websocket.
+    /// Useful for testing purposes.
     /// </summary>
-    /// <param name="notification">The notification that was received.</param>
-    protected abstract ValueTask OnNotified(IEventSubNotification notification);
-    /// <summary>
-    /// Called when a subscription is revoked.
-    /// </summary>
-    /// <param name="subscription">
-    /// The subscription that was revoked.
-    /// See the <see cref="EventSubSubscription.Status"/> property for information about the revocation.
-    /// </param>
-    protected abstract ValueTask OnSubscriptionRevoked(EventSubSubscription subscription);
-    /// <summary>
-    /// Called when a welcome message is received from the server.
-    /// Note that this can be called multiple times throughout the life of the object due to reconnects.
-    /// Be sure to update existing EventSub subscriptions with the updated session id.
-    /// </summary>
-    /// <param name="session">The current session details.</param>
-    protected abstract ValueTask OnConnected(EventSubWebsocketSession session);
-    /// <summary>
-    /// Called when an exception occurs while processing a message.
-    /// </summary>
-    /// <param name="exception">The exception.</param>
-    protected abstract ValueTask OnException(Exception exception);
-    /// <summary>
-    /// Called when a keepalive message is recieved from the server.
-    /// </summary>
-    protected virtual ValueTask OnKeepalive() => ValueTask.CompletedTask;
-
-    private ValueTask HandleMessage(string message, JsonSerializerOptions options)
-        => JsonSerializer.Deserialize<EventSubWebsocketMessage<JsonElement>>(message, options) switch
+    /// <param name="message">The message to recieve.</param>
+    public ValueTask HandleMessage(string message, CancellationToken ct = default)
+        => ValidateMessage(message, _serializerOptions) switch
         {
-            { Payload.ValueKind: JsonValueKind.Object } esMessage => esMessage switch
-            {
-                { Metadata.MessageType: EventSubMessageType.Welcome } welcomeMessage => Connected(JsonSerializer.Deserialize<WelcomeMessagePayload>(esMessage.Payload, options)!.Session),
-                { Metadata.MessageType: EventSubMessageType.Keepalive } => OnKeepalive(),
-                { Metadata.MessageType: EventSubMessageType.Notification, Metadata.SubscriptionType: string, Metadata.SubscriptionVersion: string } notificationMessage => OnNotified(_converter.Deserialize(notificationMessage.Payload, new EventSubSubscriptionType(notificationMessage.Metadata.SubscriptionType, notificationMessage.Metadata.SubscriptionVersion))),
-                { Metadata.MessageType: EventSubMessageType.Revocation } revocationMessage => OnSubscriptionRevoked(JsonSerializer.Deserialize<RevocationMessagePayload>(revocationMessage.Payload, options)!.Subscription),
-                { Metadata.MessageType: EventSubMessageType.Reconnect } reconnectMessage => HandleReconnect(JsonSerializer.Deserialize<ReconnectMessagePayload>(reconnectMessage.Payload)!.Session),
-                _ => ValueTask.CompletedTask
-            },
+            { } valid => ProcessMessage(valid, _serializerOptions, ct),
             _ => ValueTask.CompletedTask
         };
 
-    private async ValueTask HandleReconnect(EventSubReconnectSession reconnectSession)
+    private static EventSubWebsocketMessage<JsonElement>? ValidateMessage(string message, JsonSerializerOptions? serializerOptions = null)
+        => JsonSerializer.Deserialize<EventSubWebsocketMessage<JsonElement>>(message, serializerOptions) switch
+        {
+            { Payload.ValueKind: not JsonValueKind.Null } valid => valid,
+            _ => default
+        };
+
+    private ValueTask ProcessMessage(EventSubWebsocketMessage<JsonElement> message, JsonSerializerOptions options, CancellationToken ct = default)
+        => message.Metadata.MessageType switch
+        {
+            EventSubMessageTypes.WELCOME => Welcome(JsonSerializer.Deserialize<WelcomeMessagePayload>(message.Payload, options)!.Session, ct),
+            EventSubMessageTypes.KEEPALIVE => Keepalive(ct),
+            EventSubMessageTypes.NOTIFICATION => Notification(_converter.Deserialize(message.Payload), ct),
+            EventSubMessageTypes.REVOCATION => Revocation(JsonSerializer.Deserialize<RevocationMessagePayload>(message.Payload, options)!.Subscription, ct),
+            EventSubMessageTypes.RECONNECT => Reconnect(JsonSerializer.Deserialize<ReconnectMessagePayload>(message.Payload)!.Session, ct),
+            _ => ValueTask.CompletedTask
+        };
+
+    /// <summary>
+    /// Simulate receiving a welcome message from Twitch.
+    /// Useful for testing purposes.
+    /// </summary>
+    /// <param name="session">The session details.</param>
+    public ValueTask Welcome(EventSubWebsocketSession session, CancellationToken ct = default)
     {
-        _ws.Url = new Uri(reconnectSession.ReconnectUrl);
+        _ws.ReconnectTimeout = session.KeepaliveTimeout + ReconnectGracePeriod; // Amount of time to wait before reconnecting if no messages received.
+        return _handler.OnConnected(session, ct);
+    }
+
+    /// <summary>
+    /// Simulate receiving a keepalive message from Twitch.
+    /// Useful for testing purposes.
+    /// </summary>
+    public ValueTask Keepalive(CancellationToken ct = default)
+        => _handler.OnKeepalive(ct);
+
+    /// <summary>
+    /// Simulate receiving an EventSub notification from Twitch.
+    /// Useful for testing purposes.
+    /// </summary>
+    /// <param name="notification">The notification to receive.</param>
+    public ValueTask Notification(IEventSubNotification notification, CancellationToken ct = default)
+        => _handler.OnNotified(notification, ct);
+
+    /// <summary>
+    /// Simulate receiving an EventSub revocation from Twitch.
+    /// Useful for testing purposes.
+    /// </summary>
+    /// <param name="subscription">The revocation to receive.</param>
+    public ValueTask Revocation(EventSubSubscription subscription, CancellationToken ct = default)
+        => _handler.OnSubscriptionRevoked(subscription, ct);
+
+    /// <summary>
+    /// Simulate receiving a reconnect message from Twitch.
+    /// Useful for testing purposes.
+    /// </summary>
+    /// <param name="session">The reconnect session details.</param>
+    internal async ValueTask Reconnect(EventSubReconnectSession session, CancellationToken ct = default)
+    {
+        _ws.Url = new Uri(session.ReconnectUrl);
         await _ws.ReconnectOrFail();
     }
 
-    private ValueTask Connected(EventSubWebsocketSession session)
-    {
-        _ws.ReconnectTimeout = session.KeepaliveTimeout + ReconnectGracePeriod; // Amount of time to wait before reconnecting if no messages received.
-        return OnConnected(session);
-    }
-
     public void Dispose()
-    {
-        _ws.Dispose();
-    }
+        => _ws.Dispose();
 
-    public void BeginInit()
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _ws.StartOrFail();
+        if (_ws.IsRunning) return;
+        await _ws.StartOrFail();
         _ws.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text))
             .Subscribe(
-                async message => await HandleMessage(message.Text!, JsonConfig.ApiOptions),
-                async exception => await OnException(exception)
+                async message => await HandleMessage(message.Text!, cancellationToken),
+                async exception => await _handler.OnException(exception, cancellationToken)
                 );
     }
 
-    public void EndInit() { }
+    public Task StopAsync(CancellationToken cancellationToken)
+        => _ws.StopOrFail(WebSocketCloseStatus.NormalClosure, string.Empty);
 }
