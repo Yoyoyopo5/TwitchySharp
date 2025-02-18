@@ -12,11 +12,11 @@ internal record EventSubMessageMetadata
     public string? SubscriptionVersion { get; init; }
 }
 
-internal static class EventSubMessageType
+internal static class EventSubMessageTypes
 {
-    public const string Welcome = "welcome";
-    public const string Keepalive = "keepalive";
-    public const string Notification = "notification";
-    public const string Reconnect = "reconnect";
-    public const string Revocation = "revocation";
+    public const string WELCOME = "welcome";
+    public const string KEEPALIVE = "keepalive";
+    public const string NOTIFICATION = "notification";
+    public const string RECONNECT = "reconnect";
+    public const string REVOCATION = "revocation";
 }
