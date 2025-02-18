@@ -43,7 +43,7 @@ Expect breaking changes.
     - [ ] Extension
     - [ ] Stream
     - [ ] User 
-- [ ] Websockets Notification Handler (Needs testing!)
+- [X] Websockets Notification Handler
 - [ ] Webhooks Notification Handler
 - [ ] ASP.NET Core Integration
 
