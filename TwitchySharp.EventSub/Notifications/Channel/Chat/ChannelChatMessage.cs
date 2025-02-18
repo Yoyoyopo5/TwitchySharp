@@ -198,6 +198,7 @@ public record ChannelChatMessageBadge
 /// Contains static definitions for possible types of chat messages.
 /// </summary>
 /// <param name="Value"></param>
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelChatMessageType, string>))]
 public record ChannelChatMessageType(string Value)
     : ValueBackedEnum<string>(Value)
 {
