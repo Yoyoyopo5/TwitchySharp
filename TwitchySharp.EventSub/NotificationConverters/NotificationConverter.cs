@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Notifications.Automod;
+using TwitchySharp.EventSub.Notifications.Channel;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -82,7 +83,9 @@ public class NotificationConverter(IReadOnlyDictionary<EventSubSubscriptionType,
     /// </summary>
     public static readonly IReadOnlyDictionary<EventSubSubscriptionType, Type> DefaultNotificationTypes = new Dictionary<EventSubSubscriptionType, Type>()
     {
-        { EventSubSubscriptionType.AutomodMessageHold, typeof(AutomodMessageHoldNotification) }
+        { EventSubSubscriptionType.AutomodMessageHold, typeof(AutomodMessageHoldNotification) },
+        { EventSubSubscriptionType.AutomodMessageHoldV2, typeof(AutomodMessageHoldV2Notification) },
+        { EventSubSubscriptionType.ChannelChatMessage, typeof(ChannelChatMessageNotification) }
     };
 
     private JsonSerializerOptions _serializerOptions = JsonConfig.ApiOptions;
