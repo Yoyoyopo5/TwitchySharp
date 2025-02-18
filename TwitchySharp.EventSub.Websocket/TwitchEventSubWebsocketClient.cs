@@ -133,7 +133,7 @@ public class TwitchEventSubWebsocketClient(
     public void Dispose()
         => _ws.Dispose();
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         if (_ws.IsRunning) return;
         _ws.MessageReceived
@@ -145,6 +145,6 @@ public class TwitchEventSubWebsocketClient(
         await _ws.StartOrFail();
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken = default)
         => _ws.StopOrFail(WebSocketCloseStatus.NormalClosure, string.Empty);
 }
