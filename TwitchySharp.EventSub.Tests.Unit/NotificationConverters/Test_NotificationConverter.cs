@@ -89,8 +89,7 @@ public class Test_NotificationConverter
 
         using JsonDocument inputJson = JsonSerializer.SerializeToDocument<AutomodMessageHoldNotification>(stubNotification, JsonConfig.ApiOptions);
         string mockJson = JsonSerializer.Serialize(stubNotification, JsonConfig.ApiOptions);
-        EventSubNotification preliminary = JsonSerializer.Deserialize<EventSubNotification>(inputJson, JsonConfig.ApiOptions)!;
-        AutomodMessageHoldNotification actualNotification = stubConverter.Deserialize(inputJson, preliminary.Subscription) switch
+        AutomodMessageHoldNotification actualNotification = stubConverter.Deserialize(inputJson) switch
         {
             AutomodMessageHoldNotification automodMessageHold => automodMessageHold,
             _ => throw new NotSupportedException("Notifcation failed to deserialize to correct type.")
