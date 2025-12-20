@@ -1,463 +1,330 @@
 # TwitchySharp Architecture
 
-This document provides an overview of the TwitchySharp library architecture using standard software architecture diagrams.
-
-## Table of Contents
-
-- [Solution Structure](#solution-structure)
-- [Component Diagram](#component-diagram)
-- [Layer Architecture](#layer-architecture)
-- [Class Diagrams](#class-diagrams)
-  - [API Request Hierarchy](#api-request-hierarchy)
-  - [EventSub Components](#eventsub-components)
-- [Sequence Diagrams](#sequence-diagrams)
-  - [API Request Flow](#api-request-flow)
-  - [WebSocket EventSub Flow](#websocket-eventsub-flow)
-  - [Webhook EventSub Flow](#webhook-eventsub-flow)
-- [Dependency Graph](#dependency-graph)
+> A developer's guide to understanding and contributing to TwitchySharp
 
 ---
 
-## Solution Structure
+## Overview
 
-Overview of all projects in the solution and their purpose.
+TwitchySharp is a .NET 8 library that wraps the Twitch API. It provides three main capabilities:
 
-```mermaid
-graph TB
-    subgraph Solution["TwitchySharp.sln"]
-        subgraph Core["Core Libraries"]
-            API["TwitchySharp.Api<br/>━━━━━━━━━━━━━<br/>Helix & Auth APIs"]
-            Shared["TwitchySharp.Shared<br/>━━━━━━━━━━━━━<br/>Common Types & Enums"]
-            Helpers["TwitchySharp.Helpers<br/>━━━━━━━━━━━━━<br/>Utilities & Converters"]
-        end
-
-        subgraph EventSub["EventSub Libraries"]
-            ES["TwitchySharp.EventSub<br/>━━━━━━━━━━━━━<br/>Base EventSub Types"]
-            WS["TwitchySharp.EventSub.Websocket<br/>━━━━━━━━━━━━━<br/>WebSocket Client"]
-            WH["TwitchySharp.EventSub.Webhooks<br/>━━━━━━━━━━━━━<br/>Webhook Handler"]
-        end
-
-        subgraph Tests["Test Projects"]
-            T1["Api.Tests.Unit"]
-            T2["Api.Tests.Integration"]
-            T3["EventSub.Tests.Unit"]
-            T4["Websocket.Tests.Integration"]
-            T5["Helpers.Tests.Unit"]
-        end
-    end
-
-    API --> Shared
-    API --> Helpers
-    ES --> Shared
-    WS --> ES
-    WH --> ES
-
-    T1 --> API
-    T2 --> API
-    T3 --> ES
-    T4 --> WS
-    T5 --> Helpers
-
-    style Core fill:#e1f5fe
-    style EventSub fill:#fff3e0
-    style Tests fill:#f3e5f5
-```
+| Capability | What it does | Status |
+|------------|--------------|--------|
+| **Helix API** | Call any Twitch REST endpoint | Complete |
+| **EventSub WebSocket** | Receive real-time events via persistent connection | Complete |
+| **EventSub Webhooks** | Receive real-time events via HTTP callbacks | Not implemented |
 
 ---
 
-## Component Diagram
+## Quick Orientation
 
-High-level view of how TwitchySharp interacts with external systems.
+**"I want to make an API call"** → Start in `TwitchySharp.Api/Helix/`
+
+**"I want to receive real-time events"** → Start in `TwitchySharp.EventSub.Websocket/`
+
+**"I want to understand the request/response pattern"** → See [How API Requests Work](#how-api-requests-work)
+
+**"I want to add a new Helix endpoint"** → See [Adding a New Endpoint](#adding-a-new-endpoint)
+
+---
+
+## System Context
+
+How TwitchySharp fits into the bigger picture.
 
 ```mermaid
 graph LR
-    subgraph Client["Your Application"]
-        App["Application Code"]
+    App[Your Application]
+
+    subgraph TwitchySharp
+        API[API Client]
+        WS[WebSocket Client]
     end
 
-    subgraph TwitchySharp["TwitchySharp Library"]
-        direction TB
-        TC["TwitchHttpClient"]
-        WSC["WebSocket Client"]
-        WHH["Webhook Handler"]
+    subgraph Twitch
+        Helix[Helix API]
+        Auth[Auth API]
+        EventSub[EventSub Service]
     end
 
-    subgraph Twitch["Twitch Services"]
-        HelixAPI["Helix API<br/>api.twitch.tv"]
-        AuthAPI["Auth API<br/>id.twitch.tv"]
-        WSSUB["EventSub WebSocket<br/>eventsub.wss.twitch.tv"]
-        WHSUB["EventSub Webhooks<br/>(callback to your server)"]
-    end
+    App --> API
+    App --> WS
 
-    App --> TC
-    App --> WSC
-    App --> WHH
-
-    TC -->|"HTTPS"| HelixAPI
-    TC -->|"HTTPS"| AuthAPI
-    WSC -->|"WSS"| WSSUB
-    WHSUB -->|"HTTPS POST"| WHH
-
-    style TwitchySharp fill:#c8e6c9
-    style Twitch fill:#bbdefb
+    API -- "REST/HTTPS" --> Helix
+    API -- "REST/HTTPS" --> Auth
+    WS -- "WSS" --> EventSub
 ```
 
 ---
 
-## Layer Architecture
+## Project Structure
 
-The library follows a layered architecture pattern.
+The solution contains 11 projects organized into three groups.
+
+```
+TwitchySharp.sln
+│
+├── Core Libraries (you'll work with these most)
+│   ├── TwitchySharp.Api            # Helix + Authorization endpoints
+│   ├── TwitchySharp.Helpers        # JSON converters, query builders
+│   └── TwitchySharp.Shared         # Enums, constants shared across projects
+│
+├── EventSub Libraries
+│   ├── TwitchySharp.EventSub           # Base types for real-time events
+│   ├── TwitchySharp.EventSub.Websocket # WebSocket implementation
+│   └── TwitchySharp.EventSub.Webhooks  # Webhook implementation (stub)
+│
+└── Test Projects
+    ├── *.Tests.Unit                # Fast, isolated tests
+    └── *.Tests.Integration         # Tests against real Twitch API
+```
+
+### Project Dependencies
 
 ```mermaid
-graph TB
-    subgraph Presentation["Consumer Layer"]
-        Consumer["Your Application"]
+graph TD
+    subgraph " "
+        Api[TwitchySharp.Api]
+        Helpers[TwitchySharp.Helpers]
+        Shared[TwitchySharp.Shared]
+        ES[TwitchySharp.EventSub]
+        WS[EventSub.Websocket]
+        WH[EventSub.Webhooks]
     end
 
-    subgraph Public["Public API Layer"]
-        TwitchClient["TwitchHttpClient"]
-        EventSubWS["TwitchEventSubWebsocketClient"]
-        EventSubWH["EventSubWebhookMessageProcessor"]
-    end
-
-    subgraph Business["Business Logic Layer"]
-        Requests["Request Classes<br/>(HelixApiRequest, AuthorizationApiRequest)"]
-        Converters["Response Converters<br/>(JsonApiConverter, EmptyApiConverter)"]
-        Handlers["Event Handlers<br/>(IWebsocketEventSubHandler)"]
-    end
-
-    subgraph Domain["Domain Layer"]
-        Models["Response Models<br/>(Records & DTOs)"]
-        Notifications["EventSub Notifications"]
-        Enums["Enums & Constants"]
-    end
-
-    subgraph Infrastructure["Infrastructure Layer"]
-        Http["HttpClient"]
-        WebSocket["WebsocketClient"]
-        Json["System.Text.Json"]
-        RateLimiter["RateLimiter"]
-    end
-
-    Consumer --> Public
-    Public --> Business
-    Business --> Domain
-    Business --> Infrastructure
-
-    style Presentation fill:#ffecb3
-    style Public fill:#c8e6c9
-    style Business fill:#bbdefb
-    style Domain fill:#e1bee7
-    style Infrastructure fill:#ffccbc
+    Api --> Helpers
+    Api --> Shared
+    ES --> Shared
+    WS --> ES
+    WH --> ES
 ```
+
+**Key insight:** `Shared` is at the bottom of the dependency tree. Types that need to be used across multiple projects belong there.
 
 ---
 
-## Class Diagrams
+## How API Requests Work
 
-### API Request Hierarchy
+Every Twitch API call follows the same pattern. Understanding this unlocks the entire codebase.
 
-The request class hierarchy enables type-safe API calls with built-in authentication.
+### The Request Pipeline
+
+```mermaid
+sequenceDiagram
+    participant App as Your Code
+    participant Client as TwitchHttpClient
+    participant Request as Request Object
+    participant Twitch as Twitch API
+
+    App->>Client: SendRequestAsync(request)
+
+    Note over Client,Request: 1. Build HTTP request
+    Client->>Request: GetRequestMessage()
+    Request-->>Client: HttpRequestMessage
+
+    Note over Client,Twitch: 2. Send with rate limiting
+    Client->>Twitch: HTTP Request
+    Twitch-->>Client: HTTP Response
+
+    Note over Client,Request: 3. Convert response
+    Client->>Request: GetResponseConverter()
+    Request-->>Client: Converter
+    Client->>Client: converter.ConvertAsync(response)
+
+    Client-->>App: Typed Response Object
+```
+
+### The Class Hierarchy
+
+All API requests inherit from a common base. This provides consistent authentication and response handling.
 
 ```mermaid
 classDiagram
     class TwitchApiRequest~TResponse~ {
         <<abstract>>
-        +string Endpoint
-        +HttpMethod Method
-        +HttpContent? Content
-        +GetResponseConverter() IConvertApiResponse~TResponse~
-    }
-
-    class AuthorizationApiRequest~TResponse~ {
-        <<abstract>>
-        #string ClientId
-        #string ClientSecret
+        Endpoint : string
+        Method : HttpMethod
+        GetResponseConverter()
     }
 
     class HelixApiRequest~TResponse~ {
         <<abstract>>
-        #string ClientId
-        #string AccessToken
-        +GetRequestMessage() HttpRequestMessage
+        ClientId : string
+        AccessToken : string
     }
 
-    class IConvertApiResponse~TResponse~ {
-        <<interface>>
-        +ConvertAsync(HttpResponseMessage) ValueTask~TResponse~
-    }
-
-    class JsonApiResponseConverter~TResponse~ {
-        +ConvertAsync(HttpResponseMessage) ValueTask~TResponse~
-    }
-
-    class EmptyApiResponseConverter {
-        +ConvertAsync(HttpResponseMessage) ValueTask~EmptyApiResponse~
-    }
-
-    TwitchApiRequest <|-- AuthorizationApiRequest
-    TwitchApiRequest <|-- HelixApiRequest
-    TwitchApiRequest ..> IConvertApiResponse : creates
-    IConvertApiResponse <|.. JsonApiResponseConverter
-    IConvertApiResponse <|.. EmptyApiResponseConverter
-
-    class GetChannelInfoRequest {
-        +broadcasterIds: IEnumerable~string~
+    class AuthorizationApiRequest~TResponse~ {
+        <<abstract>>
+        ClientId : string
+        ClientSecret : string
     }
 
     class GetUsersRequest {
-        +ids: IEnumerable~string~
-        +logins: IEnumerable~string~
+        Ids : IEnumerable~string~
+        Logins : IEnumerable~string~
     }
 
-    HelixApiRequest <|-- GetChannelInfoRequest
+    class GetTokenRequest {
+        GrantType : string
+        Code : string
+    }
+
+    TwitchApiRequest <|-- HelixApiRequest : Helix endpoints
+    TwitchApiRequest <|-- AuthorizationApiRequest : OAuth endpoints
     HelixApiRequest <|-- GetUsersRequest
+    AuthorizationApiRequest <|-- GetTokenRequest
 ```
 
-### EventSub Components
+**Key insight:**
+- Helix endpoints use `HelixApiRequest` (user/app access token)
+- OAuth endpoints use `AuthorizationApiRequest` (client credentials)
 
-Components involved in EventSub real-time notifications.
+---
+
+## How EventSub Works
+
+EventSub delivers real-time notifications when things happen on Twitch (new follower, chat message, stream went live, etc.)
+
+### WebSocket Flow
+
+```mermaid
+sequenceDiagram
+    participant App as Your Code
+    participant Client as EventSubWebsocketClient
+    participant Handler as Your Handler
+    participant Twitch as Twitch EventSub
+
+    Note over App,Client: 1. Start connection
+    App->>Client: StartAsync()
+    Client->>Twitch: Connect
+
+    Note over Client,Twitch: 2. Receive session ID
+    Twitch->>Client: Welcome (session_id)
+    Client->>Handler: HandleWelcomeAsync(sessionId)
+
+    Note over Handler: Use session_id to create
+    Note over Handler: subscriptions via Helix API
+
+    Note over Client,Twitch: 3. Receive events
+    Twitch->>Client: Notification
+    Client->>Handler: HandleNotificationAsync(event)
+    Handler->>App: Process event
+
+    Note over Client,Twitch: 4. Stay alive
+    loop Every ~10 seconds
+        Twitch->>Client: Keepalive
+    end
+```
+
+### Handler Interface
+
+You implement `IWebsocketEventSubHandler` to receive events:
 
 ```mermaid
 classDiagram
-    class TwitchEventSubWebsocketClient {
-        -IWebsocketClient _ws
-        -IWebsocketEventSubHandler _handler
-        +StartAsync() Task
-        +StopAsync() Task
-        +ProcessMessage(string) ValueTask
-    }
-
     class IWebsocketEventSubHandler {
         <<interface>>
-        +HandleWelcomeAsync(WebsocketWelcome) ValueTask
-        +HandleKeepAliveAsync() ValueTask
-        +HandleNotificationAsync(EventSubNotification) ValueTask
-        +HandleReconnectAsync(WebsocketReconnect) ValueTask
-        +HandleRevocationAsync() ValueTask
+        HandleWelcomeAsync(welcome)
+        HandleKeepAliveAsync()
+        HandleNotificationAsync(notification)
+        HandleReconnectAsync(reconnect)
+        HandleRevocationAsync(revocation)
     }
 
-    class IEventSubNotification {
-        <<interface>>
-        +Subscription: EventSubSubscription
+    class YourHandler {
+        HandleWelcomeAsync(welcome)
+        HandleNotificationAsync(notification)
+        ...
     }
 
-    class EventSubSubscription {
-        +Id: string
-        +Type: string
-        +Version: string
-        +Status: string
-        +Condition: Dictionary
-    }
-
-    class ChannelChatMessageNotification {
-        +BroadcasterUserId: string
-        +ChatterUserId: string
-        +Message: ChatMessage
-    }
-
-    class AutomodMessageHoldNotification {
-        +BroadcasterUserId: string
-        +UserId: string
-        +Message: string
-    }
-
-    TwitchEventSubWebsocketClient --> IWebsocketEventSubHandler
-    TwitchEventSubWebsocketClient ..> IEventSubNotification : processes
-    IEventSubNotification <|.. ChannelChatMessageNotification
-    IEventSubNotification <|.. AutomodMessageHoldNotification
-    IEventSubNotification --> EventSubSubscription
+    IWebsocketEventSubHandler <|.. YourHandler : implement
 ```
 
 ---
 
-## Sequence Diagrams
+## Key Abstractions
 
-### API Request Flow
+### Response Converters
 
-How a typical Helix API request flows through the system.
+Different endpoints return different response shapes. Converters handle this:
 
-```mermaid
-sequenceDiagram
-    participant App as Application
-    participant Client as TwitchHttpClient
-    participant Request as HelixApiRequest
-    participant RL as RateLimiter
-    participant HTTP as HttpClient
-    participant Twitch as Twitch API
-    participant Conv as ResponseConverter
+| Converter | Used When | Example |
+|-----------|-----------|---------|
+| `JsonApiResponseConverter<T>` | Endpoint returns JSON body | GET /users |
+| `EmptyApiResponseConverter` | Endpoint returns 204 No Content | DELETE /subscriptions |
+| Custom | Special handling needed | Pagination, streaming |
 
-    App->>Client: SendRequestAsync(request)
-    Client->>Request: GetRequestMessage()
-    Request-->>Client: HttpRequestMessage
+### Query Parameter Builder
 
-    Client->>RL: AcquireAsync()
+`HttpQueryParameters` builds URL query strings:
 
-    alt Rate Limit Available
-        RL-->>Client: Lease Acquired
-        Client->>HTTP: SendAsync(message)
-        HTTP->>Twitch: HTTPS Request
-        Twitch-->>HTTP: HTTP Response
-        HTTP-->>Client: HttpResponseMessage
-
-        Client->>Request: GetResponseConverter()
-        Request-->>Client: IConvertApiResponse
-        Client->>Conv: ConvertAsync(response)
-        Conv-->>Client: TResponse
-        Client-->>App: TResponse
-    else Rate Limited
-        RL-->>Client: OperationCanceledException
-        Client-->>App: Exception
-    end
-```
-
-### WebSocket EventSub Flow
-
-Real-time event subscription via WebSocket.
-
-```mermaid
-sequenceDiagram
-    participant App as Application
-    participant Client as EventSubWebsocketClient
-    participant Handler as IWebsocketEventSubHandler
-    participant WS as WebsocketClient
-    participant Twitch as Twitch EventSub
-
-    App->>Client: StartAsync()
-    Client->>WS: Start()
-    WS->>Twitch: Connect WSS
-    Twitch-->>WS: Connected
-
-    Twitch->>WS: Welcome Message
-    WS->>Client: OnMessageReceived
-    Client->>Client: ProcessMessage()
-    Client->>Handler: HandleWelcomeAsync(sessionId)
-    Note over App,Handler: App uses sessionId to create subscriptions via API
-
-    loop Keep Alive
-        Twitch->>WS: Keepalive Message
-        WS->>Client: OnMessageReceived
-        Client->>Handler: HandleKeepAliveAsync()
-    end
-
-    Twitch->>WS: Notification Message
-    WS->>Client: OnMessageReceived
-    Client->>Client: Deserialize Notification
-    Client->>Handler: HandleNotificationAsync(notification)
-    Handler->>App: Process Event
-
-    alt Reconnect Required
-        Twitch->>WS: Reconnect Message
-        WS->>Client: OnMessageReceived
-        Client->>Handler: HandleReconnectAsync(newUrl)
-        Client->>WS: Reconnect to new URL
-    end
-```
-
-### Webhook EventSub Flow
-
-Server-to-server event delivery via webhooks (planned implementation).
-
-```mermaid
-sequenceDiagram
-    participant Twitch as Twitch EventSub
-    participant Server as Your Server
-    participant Processor as WebhookMessageProcessor
-    participant Handler as Event Handler
-
-    Note over Twitch,Server: Subscription Setup
-    Server->>Twitch: Create Subscription (callback URL)
-    Twitch->>Server: Challenge Request
-    Server->>Processor: HandleRequest()
-    Processor->>Processor: Verify Challenge
-    Processor-->>Twitch: Echo Challenge
-    Twitch-->>Server: Subscription Active
-
-    Note over Twitch,Server: Event Delivery
-    Twitch->>Server: POST /webhook (signed)
-    Server->>Processor: HandleRequest()
-    Processor->>Processor: Verify HMAC Signature
-
-    alt Valid Signature
-        Processor->>Processor: Deserialize Notification
-        Processor->>Handler: HandleNotification()
-        Handler->>Handler: Process Event
-        Processor-->>Twitch: 200 OK
-    else Invalid Signature
-        Processor-->>Twitch: 403 Forbidden
-    end
+```csharp
+// Produces: ?broadcaster_id=123&broadcaster_id=456
+new HttpQueryParameters()
+    .Add("broadcaster_id", new[] { "123", "456" })
 ```
 
 ---
 
-## Dependency Graph
+## Adding a New Endpoint
 
-NuGet package dependencies for each project.
+To add a new Helix endpoint:
 
-```mermaid
-graph TB
-    subgraph External["External Dependencies"]
-        STJ["System.Text.Json"]
-        JWT["Microsoft.IdentityModel<br/>.JsonWebTokens"]
-        RL["System.Threading<br/>.RateLimiting"]
-        WSC["Websocket.Client"]
-        MEH["Microsoft.Extensions<br/>.Hosting.Abstractions"]
-    end
+1. **Create the request class** in `TwitchySharp.Api/Helix/{Category}/Requests/`
+2. **Create the response record** in `TwitchySharp.Api/Helix/{Category}/Responses/`
+3. **Add an integration test** in `TwitchySharp.Api.Tests.Integration/`
 
-    subgraph Projects["TwitchySharp Projects"]
-        API["TwitchySharp.Api"]
-        Helpers["TwitchySharp.Helpers"]
-        Shared["TwitchySharp.Shared"]
-        ES["TwitchySharp.EventSub"]
-        WS["TwitchySharp.EventSub<br/>.Websocket"]
-        WH["TwitchySharp.EventSub<br/>.Webhooks"]
-    end
+Example request:
 
-    API --> STJ
-    API --> JWT
-    API --> RL
-    API --> Helpers
-    API --> Shared
-
-    Helpers --> STJ
-    Shared --> STJ
-
-    ES --> Shared
-    ES --> STJ
-
-    WS --> ES
-    WS --> WSC
-    WS --> MEH
-
-    WH --> ES
-
-    style External fill:#ffccbc
-    style Projects fill:#c8e6c9
+```csharp
+public class GetChannelInformationRequest(
+    string clientId,
+    string accessToken,
+    IEnumerable<string> broadcasterIds)
+    : HelixApiRequest<GetChannelInformationResponse>(
+        "/channels" + new HttpQueryParameters()
+            .Add("broadcaster_id", broadcasterIds),
+        clientId,
+        accessToken);
 ```
 
----
-
-## Key Design Patterns
-
-| Pattern | Usage | Location |
-|---------|-------|----------|
-| **Strategy** | Response converters for different response types | `IConvertApiResponse<T>` |
-| **Template Method** | Base request classes define structure | `TwitchApiRequest<T>` |
-| **Factory** | Converter creation via attributes | `ApiConverterAttribute` |
-| **Observer** | Event handling in WebSocket client | `IWebsocketEventSubHandler` |
-| **Adapter** | Wrapping external WebSocket library | `TwitchEventSubWebsocketClient` |
+**The pattern:**
+- Constructor takes auth + endpoint-specific params
+- Base class takes endpoint path + auth
+- Response type is specified as generic parameter
 
 ---
 
-## Technology Stack
+## External Dependencies
 
-| Component | Technology |
-|-----------|------------|
-| **Framework** | .NET 8.0 |
-| **Language** | C# 12 (latest) |
-| **Serialization** | System.Text.Json |
-| **HTTP Client** | HttpClient (built-in) |
-| **WebSocket** | Websocket.Client |
-| **Rate Limiting** | System.Threading.RateLimiting |
-| **JWT Handling** | Microsoft.IdentityModel.JsonWebTokens |
-| **Testing** | xUnit |
+| Package | Purpose | Used By |
+|---------|---------|---------|
+| System.Text.Json | JSON serialization | All projects |
+| Microsoft.IdentityModel.JsonWebTokens | JWT validation | Api (Extensions) |
+| System.Threading.RateLimiting | Rate limit compliance | Api |
+| Websocket.Client | WebSocket connection | EventSub.Websocket |
+
+---
+
+## Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Records for responses | Immutability, value equality, concise syntax |
+| Primary constructors | Reduce boilerplate in request classes |
+| Abstract base classes (not interfaces) | Share implementation, not just contract |
+| snake_case JSON | Match Twitch API conventions |
+| Separate Shared project | Avoid circular dependencies between Api and EventSub |
+
+---
+
+## Areas Needing Work
+
+| Area | Issue | Difficulty |
+|------|-------|------------|
+| Webhooks | Completely unimplemented | Medium |
+| EventSub models | Only ~6 of 40+ notification types exist | Low (repetitive) |
+| Unit tests | Almost none exist | Low |
+| URL encoding | `HttpQueryParameters` doesn't encode values | Low |
+
+See the [README](../README.md) for the full TODO list.
