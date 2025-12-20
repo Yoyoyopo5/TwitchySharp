@@ -139,40 +139,37 @@ sequenceDiagram
 All API requests inherit from a common base. This provides consistent authentication and response handling.
 
 ```mermaid
-classDiagram
-    class TwitchApiRequest~TResponse~ {
-        <<abstract>>
-        Endpoint : string
+flowchart TD
+    subgraph Base["TwitchApiRequest&lt;TResponse&gt;  (abstract)"]
+        BaseProps["Endpoint : string
         Method : HttpMethod
-        GetResponseConverter()
-    }
+        GetResponseConverter()"]
+    end
 
-    class HelixApiRequest~TResponse~ {
-        <<abstract>>
-        ClientId : string
-        AccessToken : string
-    }
+    subgraph Helix["HelixApiRequest&lt;TResponse&gt;  (abstract)"]
+        HelixProps["ClientId : string
+        AccessToken : string"]
+    end
 
-    class AuthorizationApiRequest~TResponse~ {
-        <<abstract>>
-        ClientId : string
-        ClientSecret : string
-    }
+    subgraph Auth["AuthorizationApiRequest&lt;TResponse&gt;  (abstract)"]
+        AuthProps["ClientId : string
+        ClientSecret : string"]
+    end
 
-    class GetUsersRequest {
-        Ids : IEnumerable~string~
-        Logins : IEnumerable~string~
-    }
+    subgraph GetUsers["GetUsersRequest"]
+        GetUsersProps["Ids : IEnumerable&lt;string&gt;
+        Logins : IEnumerable&lt;string&gt;"]
+    end
 
-    class GetTokenRequest {
-        GrantType : string
-        Code : string
-    }
+    subgraph GetToken["GetTokenRequest"]
+        GetTokenProps["GrantType : string
+        Code : string"]
+    end
 
-    TwitchApiRequest <|-- HelixApiRequest : Helix endpoints
-    TwitchApiRequest <|-- AuthorizationApiRequest : OAuth endpoints
-    HelixApiRequest <|-- GetUsersRequest
-    AuthorizationApiRequest <|-- GetTokenRequest
+    Base -->|"Helix endpoints"| Helix
+    Base -->|"OAuth endpoints"| Auth
+    Helix --> GetUsers
+    Auth --> GetToken
 ```
 
 **Key insight:**
@@ -221,23 +218,22 @@ sequenceDiagram
 You implement `IWebsocketEventSubHandler` to receive events:
 
 ```mermaid
-classDiagram
-    class IWebsocketEventSubHandler {
-        <<interface>>
-        HandleWelcomeAsync(welcome)
+flowchart TD
+    subgraph Interface["IWebsocketEventSubHandler  (interface)"]
+        Methods["HandleWelcomeAsync(welcome)
         HandleKeepAliveAsync()
         HandleNotificationAsync(notification)
         HandleReconnectAsync(reconnect)
-        HandleRevocationAsync(revocation)
-    }
+        HandleRevocationAsync(revocation)"]
+    end
 
-    class YourHandler {
-        HandleWelcomeAsync(welcome)
+    subgraph YourImpl["YourHandler  (your implementation)"]
+        YourMethods["HandleWelcomeAsync(welcome)
         HandleNotificationAsync(notification)
-        ...
-    }
+        // ... implement all methods"]
+    end
 
-    IWebsocketEventSubHandler <|.. YourHandler : implement
+    Interface -.->|"implement"| YourImpl
 ```
 
 ---
