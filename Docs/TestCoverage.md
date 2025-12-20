@@ -1,190 +1,246 @@
 # Test Coverage Overview
 
-> Quick reference for what is and isn't covered by unit tests
+> Quick visual reference for unit test coverage
 
 ---
 
-## Summary
+## Coverage at a Glance
 
-| Project | Source Files | Unit Tests | Coverage |
-|---------|--------------|------------|----------|
-| TwitchySharp.Api | 472 | 4 | ~1% |
-| TwitchySharp.Helpers | 11 | 4 | ~36% |
-| TwitchySharp.EventSub | 7 | 1 | ~14% |
-| TwitchySharp.EventSub.Websocket | 13 | 0 | 0% |
-| TwitchySharp.EventSub.Webhooks | 6 | 0 | 0% |
-
-**Note:** Integration tests exist separately and cover API endpoint calls against the real Twitch API.
-
----
-
-## What's Tested
-
-### TwitchySharp.Api.Tests.Unit
-
-| File | What It Tests | Status |
-|------|---------------|--------|
-| `Test_Scope.cs` | `Scope.FormatScopes()` - single & multiple scopes | Covered |
-| `Test_OidcClaims.cs` | OIDC claim parsing | Covered |
-| `Test_TwitchOidc.cs` | OIDC token validation | Covered |
-| `Test_ExtensionJwtPayload.cs` | Extension JWT payload handling | Covered |
-
-### TwitchySharp.Helpers.Tests.Unit
-
-| File | What It Tests | Status |
-|------|---------------|--------|
-| `Test_HttpQueryParameters.cs` | Query string building | Covered |
-| `Test_ValueBackedEnum.cs` | Enum-to-value mapping | Covered |
-| `Test_ValueBackedEnumJsonConverter.cs` | JSON serialization of ValueBackedEnum | Covered |
-
-### TwitchySharp.EventSub.Tests.Unit
-
-| File | What It Tests | Status |
-|------|---------------|--------|
-| `Test_NotificationConverter.cs` | `AutomodMessageHold` deserialization | Covered |
+```mermaid
+pie showData
+    title Unit Test Coverage by Project
+    "Untested Code" : 505
+    "Api (tested)" : 4
+    "Helpers (tested)" : 4
+    "EventSub (tested)" : 1
+```
 
 ---
 
-## What's NOT Tested
+## Project Breakdown
 
-### TwitchySharp.Api - Core Classes
+| Project | Coverage | Visual | Status |
+|---------|----------|--------|--------|
+| **TwitchySharp.Api** | 4 / 472 | `░░░░░░░░░░░░░░░░░░░░` | 🔴 Critical |
+| **TwitchySharp.Helpers** | 4 / 11 | `███████░░░░░░░░░░░░░` | 🟡 Partial |
+| **TwitchySharp.EventSub** | 1 / 7 | `███░░░░░░░░░░░░░░░░░` | 🟡 Partial |
+| **EventSub.Websocket** | 0 / 13 | `░░░░░░░░░░░░░░░░░░░░` | 🔴 None |
+| **EventSub.Webhooks** | 0 / 6 | `░░░░░░░░░░░░░░░░░░░░` | ⚫ N/A* |
 
-| Class | Purpose | Priority |
-|-------|---------|----------|
-| `TwitchHttpClient` | Main HTTP client, rate limiting | High |
-| `TwitchApiRequest<T>` | Base request class | High |
-| `ApiException` | Error handling | Medium |
-| `HttpResponseMessageTwitchExtensions` | Rate limit header parsing | Medium |
-| `JsonConfig` | JSON serialization settings | Low |
-
-### TwitchySharp.Api - Authorization (23 of 27 files untested)
-
-| Category | Untested Classes |
-|----------|------------------|
-| Requests | `AccessTokenRefreshRequest`, `AuthorizationCodeRequest`, `ClientCredentialsRequest`, `DeviceCodeRequest`, `DeviceCodeTokenRequest`, `OidcJwkRequest`, `RevokeAccessTokenRequest`, `UserInfoRequest`, `ValidateAccessTokenRequest` |
-| Responses | All response classes |
-| Client URLs | `AuthorizationCodeGrantUrl`, `ImplicitGrantUrl`, `AuthorizationUrl` |
-
-### TwitchySharp.Api - Helix (430 files, 0 unit tests)
-
-All Helix endpoint request/response classes lack unit tests. Examples:
-
-- `GetUsersRequest` / `GetUsersResponse`
-- `GetChannelInformationRequest` / `GetChannelInformationResponse`
-- `CreateClipRequest` / `CreateClipResponse`
-- ... and 400+ more
-
-**Note:** These are covered by integration tests, but unit tests would catch serialization issues without requiring API calls.
-
-### TwitchySharp.Helpers (7 of 11 files untested)
-
-| Class | Purpose | Priority |
-|-------|---------|----------|
-| `ImageUrlTemplate` | Image URL manipulation | Low |
-| `TwitchDateTimeOffsetQueryConverterExtension` | DateTime query formatting | Medium |
-| `EmptyDateTimeOffsetConverter` | JSON converter | Medium |
-| `UnixSecondsDateTimeOffsetConverter` | JSON converter | Medium |
-| `SnakeCaseLowerJsonStringEnumConverter` | JSON converter | Medium |
-| `SnakeCaseUpperJsonStringEnumConverter` | JSON converter | Medium |
-| `IntStringJsonConverter` | JSON converter | Medium |
-| `MinutesTimeSpanJsonConverter` | JSON converter | Medium |
-| `SecondsTimeSpanJsonConverter` | JSON converter | Medium |
-
-### TwitchySharp.EventSub (6 of 7 files untested)
-
-| Class | Purpose | Priority |
-|-------|---------|----------|
-| `NotificationConverter` | Only `AutomodMessageHold` tested | High |
-| `ChannelChatMessage` | Chat message notification | High |
-| `AutomodMessageHoldV2` | Updated automod notification | Medium |
-| `EventSubSubscription` | Subscription metadata | Low |
-| `EventSubTransport` | Transport metadata | Low |
-
-### TwitchySharp.EventSub.Websocket (0% coverage)
-
-| Class | Purpose | Priority |
-|-------|---------|----------|
-| `TwitchEventSubWebsocketClient` | WebSocket connection management | High |
-| `EventSubWebsocketMessage` | Message deserialization | High |
-| All payload classes | Message payloads | Medium |
-
-### TwitchySharp.EventSub.Webhooks (0% coverage)
-
-| Class | Purpose | Priority |
-|-------|---------|----------|
-| `DefaultEventSubWebhookMessageProcessor` | **Completely stubbed** (NotImplementedException) | N/A |
-| `EventSubWebhookRequestHeader` | Header parsing | N/A |
-| All request classes | Request handling | N/A |
-
-**Note:** Webhooks implementation is incomplete - no point testing until implemented.
+*\*Webhooks not implemented yet*
 
 ---
 
-## Known Test Gaps
+## Coverage Map
 
-### Missing Test Scenarios
+```mermaid
+flowchart TB
+    subgraph API["TwitchySharp.Api"]
+        direction TB
+        A1["Authorization
+        ████░░░░░░
+        4/27 tested"]
+        A2["Helix
+        ░░░░░░░░░░
+        0/430 tested"]
+        A3["Core Classes
+        ░░░░░░░░░░
+        0/7 tested"]
+    end
 
-| Area | Missing Tests |
-|------|---------------|
-| `HttpQueryParameters` | URL encoding of special characters (`&`, `=`, spaces) |
-| `TwitchHttpClient` | Rate limiting behavior, retry logic |
-| Error handling | `ApiException` thrown on various HTTP status codes |
-| JSON converters | Edge cases (null, empty, malformed JSON) |
-| WebSocket | Connection lifecycle, reconnection, message ordering |
+    subgraph Helpers["TwitchySharp.Helpers"]
+        H1["Query/Enum
+        ██████████
+        2/2 tested"]
+        H2["JSON Converters
+        ██░░░░░░░░
+        1/9 tested"]
+    end
 
-### Test Quality Issues
+    subgraph EventSub["EventSub"]
+        E1["Notifications
+        ██░░░░░░░░
+        1/7 tested"]
+        E2["WebSocket
+        ░░░░░░░░░░
+        0/13 tested"]
+        E3["Webhooks
+        ░░░░░░░░░░
+        NOT IMPL"]
+    end
 
-| File | Issue |
-|------|-------|
-| `Test_HttpQueryParameters.cs` | `Add_SingleEnumerableParameter_ReturnParametersString` missing `[Fact]`/`[Theory]` attribute |
-| Integration tests | Many tests have no assertions (just call API) |
+    style A1 fill:#ffd43b,color:#000
+    style A2 fill:#ff6b6b,color:#fff
+    style A3 fill:#ff6b6b,color:#fff
+    style H1 fill:#51cf66,color:#000
+    style H2 fill:#ffd43b,color:#000
+    style E1 fill:#ffd43b,color:#000
+    style E2 fill:#ff6b6b,color:#fff
+    style E3 fill:#868e96,color:#fff
+```
 
 ---
 
-## Recommended Test Priorities
+## What's Tested vs Not
 
-### Quick Wins (Low effort, High value)
+### TwitchySharp.Api
 
-1. **JSON Converters** - Add tests for all converters in `TwitchySharp.Helpers/JsonConverters/`
-2. **More notification types** - Expand `Test_NotificationConverter.cs` to cover `ChannelChatMessage`
-3. **Fix missing attribute** - Add `[Theory]` to `Add_SingleEnumerableParameter_ReturnParametersString`
+```
+Authorization/
+├── 🟢 Scope.cs                    ✓ Tested
+├── 🟢 OidcClaim.cs                ✓ Tested
+├── 🟢 TwitchOidc.cs               ✓ Tested
+├── 🟢 ExtensionJwtPayload.cs      ✓ Tested
+├── 🔴 AuthorizationApiRequest.cs  ✗ Not tested
+├── 🔴 Requests/ (9 files)         ✗ Not tested
+├── 🔴 Responses/ (8 files)        ✗ Not tested
+└── 🔴 ClientUrls/ (4 files)       ✗ Not tested
 
-### Medium Effort
+Helix/
+└── 🔴 (430 files)                 ✗ Not tested
 
-1. **`TwitchHttpClient`** - Mock HttpClient, test rate limiting
-2. **`HttpQueryParameters`** - URL encoding edge cases
-3. **WebSocket message parsing** - Test without actual connection
+Core/
+├── 🔴 TwitchHttpClient.cs         ✗ Not tested
+├── 🔴 TwitchApiRequest.cs         ✗ Not tested
+├── 🔴 ApiException.cs             ✗ Not tested
+└── 🔴 JsonConfig.cs               ✗ Not tested
+```
 
-### Larger Efforts
+### TwitchySharp.Helpers
 
-1. **Helix request/response serialization** - Ensure JSON round-trips correctly
-2. **WebSocket client** - Requires mocking `IWebsocketClient`
-3. **Error scenarios** - Test `ApiException` handling
+```
+├── 🟢 HttpQueryParameters.cs            ✓ Tested
+├── 🟢 ValueBackedEnum.cs                ✓ Tested
+├── 🔴 ImageUrlTemplate.cs               ✗ Not tested
+├── 🔴 TwitchDateTimeOffsetQuery...      ✗ Not tested
+│
+└── JsonConverters/
+    ├── 🟢 ValueBackedEnumJsonConverter  ✓ Tested
+    ├── 🔴 EmptyDateTimeOffsetConverter  ✗ Not tested
+    ├── 🔴 UnixSecondsDateTimeOffset...  ✗ Not tested
+    ├── 🔴 SnakeCaseLower/Upper...       ✗ Not tested
+    ├── 🔴 IntStringJsonConverter        ✗ Not tested
+    └── 🔴 Minutes/SecondsTimeSpan...    ✗ Not tested
+```
+
+### TwitchySharp.EventSub
+
+```
+├── 🟢 AutomodMessageHold.cs       ✓ Tested (via NotificationConverter)
+├── 🔴 AutomodMessageHoldV2.cs     ✗ Not tested
+├── 🔴 ChannelChatMessage.cs       ✗ Not tested
+├── 🔴 EventSubSubscription.cs     ✗ Not tested
+└── 🔴 EventSubTransport.cs        ✗ Not tested
+
+Websocket/
+├── 🔴 TwitchEventSubWebsocket...  ✗ Not tested
+├── 🔴 EventSubWebsocketMessage    ✗ Not tested
+└── 🔴 (11 more files)             ✗ Not tested
+
+Webhooks/
+└── ⚫ (6 files)                    Not implemented
+```
+
+---
+
+## Priority Matrix
+
+```mermaid
+quadrantChart
+    title Test Priority Matrix
+    x-axis Low Impact --> High Impact
+    y-axis High Effort --> Low Effort
+    quadrant-1 Do First
+    quadrant-2 Schedule
+    quadrant-3 Delegate
+    quadrant-4 Quick Wins
+
+    JSON Converters: [0.3, 0.8]
+    More Notifications: [0.4, 0.75]
+    HttpQueryParameters edge cases: [0.25, 0.85]
+    TwitchHttpClient: [0.8, 0.3]
+    WebSocket Client: [0.75, 0.2]
+    Helix Requests: [0.6, 0.15]
+    Authorization Requests: [0.5, 0.5]
+```
+
+---
+
+## Quick Wins
+
+These tests can be added with minimal effort:
+
+| Test | Effort | File to Create |
+|------|--------|----------------|
+| 🟢 Add `[Theory]` attribute | 5 min | `Test_HttpQueryParameters.cs` line 39 |
+| 🟢 Test `ChannelChatMessage` | 30 min | `Test_NotificationConverter.cs` |
+| 🟢 Test `SecondsTimeSpanJsonConverter` | 30 min | New file in Helpers.Tests.Unit |
+| 🟢 Test `IntStringJsonConverter` | 30 min | New file in Helpers.Tests.Unit |
+
+---
+
+## Test Health Dashboard
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  UNIT TEST HEALTH                                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Overall Coverage    ██░░░░░░░░░░░░░░░░░░░░░░░  ~2%        │
+│                                                             │
+│  ┌─────────────┬──────────────────────────────┐            │
+│  │ 🟢 Passing  │  9 tests                     │            │
+│  │ 🔴 Missing  │  ~500 potential tests        │            │
+│  │ ⚠️  Flaky    │  0 tests                     │            │
+│  └─────────────┴──────────────────────────────┘            │
+│                                                             │
+│  Last Updated: Dec 2024                                     │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Running Tests
 
 ```bash
-# Run all unit tests
+# All unit tests
+dotnet test --filter "FullyQualifiedName~Tests.Unit"
+
+# Specific project
 dotnet test TwitchySharp.Api.Tests.Unit
 dotnet test TwitchySharp.Helpers.Tests.Unit
 dotnet test TwitchySharp.EventSub.Tests.Unit
 
-# Run with verbosity
-dotnet test --verbosity normal
-
-# Run specific test class
-dotnet test --filter "FullyQualifiedName~Test_HttpQueryParameters"
+# With coverage report (requires coverlet)
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
 ---
 
-## Contributing Tests
+## Contributing
 
-When adding tests:
+### Test File Naming
+```
+Test_{ClassName}.cs
+```
 
-1. Follow existing naming: `Test_{ClassName}.cs`
-2. Use xUnit `[Fact]` for single cases, `[Theory]` with `[InlineData]` for multiple
-3. Follow Arrange-Act-Assert pattern
-4. Place in corresponding `.Tests.Unit` project
+### Test Method Naming
+```
+{Method}_{Scenario}_{ExpectedResult}
+```
+
+### Example Test Structure
+```csharp
+[Fact]
+public void FormatScopes_MultipleScopes_ReturnsJoinedString()
+{
+    // Arrange
+    var scopes = new[] { Scope.ChatRead, Scope.ChatWrite };
+
+    // Act
+    var result = scopes.FormatScopes();
+
+    // Assert
+    Assert.Equal("chat:read+chat:write", result);
+}
+```
