@@ -34,50 +34,26 @@ pie showData
 ## Coverage Map
 
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph API["TwitchySharp.Api"]
-        direction TB
-        A1["Authorization
-        ████░░░░░░
-        4/27 tested"]
-        A2["Helix
-        ░░░░░░░░░░
-        0/430 tested"]
-        A3["Core Classes
-        ░░░░░░░░░░
-        0/7 tested"]
+        A1["🟡 Authorization\n4/27"]
+        A2["🔴 Helix\n0/430"]
+        A3["🔴 Core\n0/7"]
     end
 
-    subgraph Helpers["TwitchySharp.Helpers"]
-        H1["Query/Enum
-        ██████████
-        2/2 tested"]
-        H2["JSON Converters
-        ██░░░░░░░░
-        1/9 tested"]
+    subgraph HLP["TwitchySharp.Helpers"]
+        H1["🟢 Query/Enum\n2/2"]
+        H2["🟡 Converters\n1/9"]
     end
 
-    subgraph EventSub["EventSub"]
-        E1["Notifications
-        ██░░░░░░░░
-        1/7 tested"]
-        E2["WebSocket
-        ░░░░░░░░░░
-        0/13 tested"]
-        E3["Webhooks
-        ░░░░░░░░░░
-        NOT IMPL"]
+    subgraph EVT["EventSub"]
+        E1["🟡 Notifications\n1/7"]
+        E2["🔴 WebSocket\n0/13"]
+        E3["⚫ Webhooks\nN/A"]
     end
-
-    style A1 fill:#ffd43b,color:#000
-    style A2 fill:#ff6b6b,color:#fff
-    style A3 fill:#ff6b6b,color:#fff
-    style H1 fill:#51cf66,color:#000
-    style H2 fill:#ffd43b,color:#000
-    style E1 fill:#ffd43b,color:#000
-    style E2 fill:#ff6b6b,color:#fff
-    style E3 fill:#868e96,color:#fff
 ```
+
+**Legend:** 🟢 Good (>50%) · 🟡 Partial (1-50%) · 🔴 None (0%) · ⚫ Not Implemented
 
 ---
 
@@ -145,24 +121,15 @@ Webhooks/
 
 ## Priority Matrix
 
-```mermaid
-quadrantChart
-    title Test Priority Matrix
-    x-axis Low Impact --> High Impact
-    y-axis High Effort --> Low Effort
-    quadrant-1 Do First
-    quadrant-2 Schedule
-    quadrant-3 Delegate
-    quadrant-4 Quick Wins
-
-    JSON Converters: [0.3, 0.8]
-    More Notifications: [0.4, 0.75]
-    HttpQueryParameters edge cases: [0.25, 0.85]
-    TwitchHttpClient: [0.8, 0.3]
-    WebSocket Client: [0.75, 0.2]
-    Helix Requests: [0.6, 0.15]
-    Authorization Requests: [0.5, 0.5]
-```
+|  | Low Effort | High Effort |
+|--|------------|-------------|
+| **High Impact** | 🎯 **Do First** | 📅 **Schedule** |
+|  | • TwitchHttpClient tests | • WebSocket Client tests |
+|  | • Authorization Requests | • Helix Request validation |
+| **Low Impact** | ✅ **Quick Wins** | ⏳ **Later** |
+|  | • JSON Converters | • ImageUrlTemplate |
+|  | • More Notification types | • Edge case coverage |
+|  | • HttpQueryParameters edge cases | |
 
 ---
 
