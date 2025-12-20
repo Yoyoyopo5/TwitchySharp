@@ -1,6 +1,10 @@
 # TwitchySharp
 An up-to-date and easy to use Twitch API wrapper for .NET Core.
 
+## Documentation
+
+- [Test Coverage](Docs/TestCoverage.md) - Unit test coverage overview and gaps
+
 ## Work In Progress
 TwitchySharp is still undergoing initial development. 
 Expect breaking changes.
