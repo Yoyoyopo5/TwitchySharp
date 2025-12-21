@@ -4,6 +4,7 @@ An up-to-date and easy to use Twitch API wrapper for .NET Core.
 ## Documentation
 
 - [Architecture Overview](Docs/Architecture.md) - Component diagrams, class hierarchies, and sequence flows
+- [Webhook Implementation Plan](Docs/WebhookImplementationPlan.md) - Roadmap for webhooks + ASP.NET Core middleware
 
 ## Work In Progress
 TwitchySharp is still undergoing initial development. 
