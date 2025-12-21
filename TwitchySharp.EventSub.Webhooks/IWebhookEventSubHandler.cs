@@ -9,6 +9,6 @@ using TwitchySharp.EventSub.Webhooks.Responses;
 namespace TwitchySharp.EventSub.Webhooks;
 public interface IWebhookEventSubHandler
 {
-    ValueTask<RevocationResponseData> OnSubscriptionRevoked(EventSubSubscription revokedSubscription);
-    ValueTask<NotificationResponseData> OnNotified(IEventSubNotification notification);
+    ValueTask<RevocationResponseData> OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default);
+    ValueTask<NotificationResponseData> OnNotified(IEventSubNotification notification, CancellationToken ct = default);
 }
