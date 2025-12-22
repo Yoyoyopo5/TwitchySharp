@@ -32,8 +32,8 @@ public class DefaultTwitchWebhookMessageVerifier(
     /// <param name="requestHeader">The headers of the webhook HTTP request.</param>
     /// <param name="body">The raw body of the webhook HTTP request.</param>
     /// <returns>A <see langword="bool"/> indicating whether the request came from Twitch.</returns>
-    public bool IsValid(EventSubWebhookRequestHeader requestHeader, string body)
-        => CryptographicOperations.FixedTimeEquals(
+    public ValueTask<bool> IsValid(EventSubWebhookRequestHeader requestHeader, string body, CancellationToken ct = default)
+        => ValueTask.FromResult(CryptographicOperations.FixedTimeEquals(
             Encoding.UTF8.GetBytes(requestHeader.TwitchEventsubMessageSignature),
             Encoding.UTF8.GetBytes(
                 "sha256=" +
@@ -46,5 +46,5 @@ public class DefaultTwitchWebhookMessageVerifier(
                         )
                     )
                 )
-            );
+            ));
 }
