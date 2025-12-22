@@ -9,7 +9,7 @@ namespace TwitchySharp.EventSub.Webhooks;
 public record EventSubWebhookRequestHeader
 {
     public required string TwitchEventsubMessageId { get; init; }
-    public required string TwitchEventsubMessageRetry { get; init; }
+    public string? TwitchEventsubMessageRetry { get; init; } // Unsure of how this header is actually used, not clear in documentation.
     public required string TwitchEventsubMessageType { get; init; }
     public required string TwitchEventsubMessageSignature { get; init; }
     public required string TwitchEventsubMessageTimestamp { get; init; }
