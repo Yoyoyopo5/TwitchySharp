@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks;
-internal record EventSubWebhookRequestHeader
+public record EventSubWebhookRequestHeader
 {
     public required string TwitchEventsubMessageId { get; init; }
     public required string TwitchEventsubMessageRetry { get; init; }
