@@ -7,7 +7,7 @@ using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.Requests;
 using TwitchySharp.EventSub.Webhooks.Responses;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 public interface IEventSubWebhookMessageProcessor
 {
     ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, Stream bodyStream, CancellationToken ct = default);

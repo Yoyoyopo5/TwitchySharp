@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks.SignatureComputers;
 
 /// <summary>
 /// Computes the Twitch EventSub webhook signature for verification purposes.

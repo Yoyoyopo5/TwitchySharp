@@ -6,11 +6,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
 using TwitchySharp.EventSub.Webhooks.Requests;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.Shared;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 public class DefaultEventSubWebhookMessageProcessor(
     IWebhookEventSubHandler handler,
     INotificationConverter? converter = null,
