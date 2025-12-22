@@ -6,49 +6,60 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Webhooks.Requests;
+using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.Shared;
 
 namespace TwitchySharp.EventSub.Webhooks;
 public class DefaultEventSubWebhookMessageProcessor(
     IWebhookEventSubHandler handler,
-    Func<string, string> secretResolver,
     INotificationConverter? converter = null,
+    IWebhookCallbackVerifier? callbackVerifier = null,
     JsonSerializerOptions? serializerOptions = null
     )
     : IEventSubWebhookMessageProcessor
 {
     private readonly IWebhookEventSubHandler _handler = handler;
     private readonly INotificationConverter _converter = converter ?? new NotificationConverter();
-    private readonly Func<string, string> _secretResolver = secretResolver;
+    private readonly IWebhookCallbackVerifier _callbackVerifier = callbackVerifier ?? new DefaultWebhookCallbackVerifier();
     private readonly JsonSerializerOptions _serializerOptions = serializerOptions ?? JsonConfig.ApiOptions;
 
-    public ValueTask HandleRequest(EventSubWebhookRequestHeader requestHeader, Stream bodyStream)
-    {
-        throw new NotImplementedException();
-    }
+    public async ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, Stream bodyStream, CancellationToken ct = default)
+        => requestHeader.TwitchEventsubMessageType switch
+        {
+            TwitchEventSubMessageTypes.NOTIFICATION => await Notification(_converter.Deserialize(JsonSerializer.Deserialize<JsonElement>(await JsonSerializer.DeserializeAsync<JsonElement>(bodyStream, _serializerOptions, ct).ConfigureAwait(false), _serializerOptions)), ct),
+            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => await CallbackVerification((await JsonSerializer.DeserializeAsync<CallbackVerificationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false))?.Challenge, ct),
+            TwitchEventSubMessageTypes.REVOCATION => await Revocation((await JsonSerializer.DeserializeAsync<RevocationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false))?.Subscription, ct),
+            _ => throw new NotSupportedException($"Unsupported EventSub message type: {requestHeader.TwitchEventsubMessageType}"),
+        };
 
-    public ValueTask HandleRequest(KeyValuePair<string, string> requestHeaders, string body)
-    {
-        throw new NotImplementedException();
-    }
+    public async ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, string body, CancellationToken ct = default)
+        => requestHeader.TwitchEventsubMessageType switch
+        {
+            TwitchEventSubMessageTypes.NOTIFICATION => await Notification(_converter.Deserialize(JsonSerializer.Deserialize<JsonElement>(body, _serializerOptions)), ct),
+            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => await CallbackVerification(JsonSerializer.Deserialize<CallbackVerificationRequestData>(body, _serializerOptions)?.Challenge, ct),
+            TwitchEventSubMessageTypes.REVOCATION => await Revocation(JsonSerializer.Deserialize<RevocationRequestData>(body, _serializerOptions)?.Subscription, ct),
+            _ => throw new NotSupportedException($"Unsupported EventSub message type: {requestHeader.TwitchEventsubMessageType}"),
+        };
 
-    private bool IsRequestFromTwitch(KeyValuePair<string, string> headers, string body)
-    {
-        JsonSerializer.Deserialize<EventSubNotification<JsonElement, JsonElement>>(body, _serializerOptions);
-    }
+    public ValueTask<CallbackVerificationResponseData> CallbackVerification(string? challenge, CancellationToken ct = default)
+        => challenge switch
+        {
+            { } => _callbackVerifier.VerifyCallback(challenge, ct),
+            _ => ValueTask.FromResult(new CallbackVerificationResponseData() { StatusCode = 400, Challenge = string.Empty })
+        };
 
-    public ValueTask CallbackVerification(string challenge, EventSubSubscription subscription)
-    {
-        throw new NotImplementedException();
-    }
+    public ValueTask<NotificationResponseData> Notification(IEventSubNotification? notification, CancellationToken ct = default)
+        => notification switch
+        {
+            { } => _handler.OnNotified(notification, ct),
+            _ => ValueTask.FromResult(new NotificationResponseData() { StatusCode = 400 })
+        };
 
-    public ValueTask Notification(IEventSubNotification notification)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ValueTask Revocation(EventSubSubscription subscription)
-    {
-        throw new NotImplementedException();
-    }
+    public ValueTask<RevocationResponseData> Revocation(EventSubSubscription? revokedSubscription, CancellationToken ct = default)
+        => revokedSubscription switch
+        {
+            { } => _handler.OnSubscriptionRevoked(revokedSubscription, ct),
+            _ => ValueTask.FromResult(new RevocationResponseData() { StatusCode = 400 })
+        };
 }

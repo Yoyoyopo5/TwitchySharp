@@ -6,7 +6,4 @@ using System.Threading.Tasks;
 using TwitchySharp.EventSub.Notifications;
 
 namespace TwitchySharp.EventSub.Webhooks.Requests;
-internal class RevocationRequestData
-{
-    public required EventSubSubscription Subscription { get; init; }
-}
+internal record RevocationRequestData : WebhookRequestData { }
