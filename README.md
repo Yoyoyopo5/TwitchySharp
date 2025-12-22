@@ -49,7 +49,7 @@ Expect breaking changes.
     - [ ] Stream
     - [ ] User 
 - [X] Websockets Notification Handler
-- [ ] Webhooks Notification Handler
+- [X] Webhooks Notification Handler
 - [ ] ASP.NET Core Integration
 
 ### Documentation
