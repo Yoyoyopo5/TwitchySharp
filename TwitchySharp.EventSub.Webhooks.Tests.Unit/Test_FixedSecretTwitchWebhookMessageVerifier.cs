@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
+using TwitchySharp.EventSub.Webhooks.SecretResolvers;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
 
@@ -58,7 +60,7 @@ public class Test_FixedSecretTwitchWebhookMessageVerifier
             TwitchEventsubSubscriptionVersion = string.Empty
         };
 
-        FixedSecretTwitchWebhookMessageVerifier stubVerifier = new(FAKE_SECRET);
+        DefaultTwitchWebhookMessageVerifier stubVerifier = new(new FixedSecretTwitchWebhookSecretsResolver(FAKE_SECRET));
         bool actualResult = await stubVerifier.IsValid(fakeRequestHeaders, fakeNotificationData);
 
         Assert.True(actualResult);
@@ -112,7 +114,7 @@ public class Test_FixedSecretTwitchWebhookMessageVerifier
             TwitchEventsubSubscriptionVersion = string.Empty
         };
 
-        FixedSecretTwitchWebhookMessageVerifier stubVerifier = new(FAKE_SECRET);
+        DefaultTwitchWebhookMessageVerifier stubVerifier = new(new FixedSecretTwitchWebhookSecretsResolver(FAKE_SECRET));
         bool actualResult = await stubVerifier.IsValid(fakeRequestHeaders, fakeNotificationData);
 
         Assert.False(actualResult);

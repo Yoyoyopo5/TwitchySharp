@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.SignatureComputers;
 
 /// <summary>
 /// Default implementation for computing Twitch Webhook signatures.

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.Responses;
+using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;

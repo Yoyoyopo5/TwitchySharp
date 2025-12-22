@@ -1,3 +1,4 @@
+using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
 using TwitchySharp.EventSub.Webhooks.Responses;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
