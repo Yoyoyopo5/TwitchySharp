@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.EventSub.Webhooks\TwitchySharp.EventSub.Webhooks.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Shared\TwitchySharp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
