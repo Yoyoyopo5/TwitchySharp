@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 namespace TwitchySharp.EventSub.Webhooks;
 public interface ITwitchWebhookMessageVerifier
 {
-    bool IsValid(EventSubWebhookRequestHeader requestHeader, string body);
+    ValueTask<bool> IsValid(EventSubWebhookRequestHeader requestHeader, string body, CancellationToken ct = default);
 }
