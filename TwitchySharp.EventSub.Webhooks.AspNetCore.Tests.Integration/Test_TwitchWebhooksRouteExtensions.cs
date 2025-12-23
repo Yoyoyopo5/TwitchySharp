@@ -8,6 +8,7 @@ using System.Text;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Notifications.Channel;
 using TwitchySharp.EventSub.Webhooks.SignatureComputers;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration;
 
@@ -183,7 +184,71 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
     [Fact]
     public async Task Respond_ValidRevocationRequest_204Response()
     {
-        throw new NotImplementedException();
+        const string FAKE_SUBSCRIPTION_ID = "f1c2a387-161a-49f9-a165-0f21d7a4e1c4";
+        const string FAKE_MESSAGE_ID = "1234567890";
+        const string FAKE_TIMESTAMP = "2019-11-16T10:11:12.634234626Z";
+        const string FAKE_BODY = $$"""
+            {
+              "subscription": {
+                "id": "{{FAKE_SUBSCRIPTION_ID}}",
+                "status": "authorization_revoked",
+                "type": "channel.follow",
+                "cost": 1,
+                "version": "1",
+                "condition": {
+                  "broadcaster_user_id": "12826"
+                },
+                "transport": {
+                  "method": "webhook",
+                  "callback": "https://example.com/webhooks/callback"
+                },
+                "created_at": "{{FAKE_TIMESTAMP}}"
+              }
+            }
+            """;
+
+        DefaultTwitchWebhookCrypto stubCrypto = new();
+        string fakeSignature = Encoding.UTF8.GetString(await stubCrypto.ComputeSignature(Encoding.UTF8.GetBytes(_fixture.Secret), FAKE_MESSAGE_ID, FAKE_TIMESTAMP, FAKE_BODY));
+
+        IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
+        {
+            TwitchEventsubMessageId = FAKE_MESSAGE_ID,
+            TwitchEventsubMessageType = "revocation",
+            TwitchEventsubMessageSignature = fakeSignature,
+            TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
+            TwitchEventsubSubscriptionType = "channel.follow",
+            TwitchEventsubSubscriptionVersion = "1"
+        }.ToHeaderDictionary();
+
+        HttpRequestMessage fakeRevocationRequest = new HttpRequestMessage(HttpMethod.Post, _fixture.Path)
+        {
+            Content = new StringContent(FAKE_BODY)
+        }.AddHeaders(fakeHeaders);
+
+        EventSubSubscription fakePreexistingSubscription = new()
+        {
+            Id = FAKE_SUBSCRIPTION_ID,
+            Cost = 1,
+            CreatedAt = DateTimeOffset.UtcNow,
+            Status = EventSubSubscriptionStatus.Enabled,
+            Transport = new()
+            {
+                Method = EventSubTransportMethod.Webhook,
+                Callback = "https://example.com/webhooks/callback"
+            },
+            Type = "channel.follow",
+            Version = "1"
+        };
+        _fixture.Handler.ActiveSubscription = fakePreexistingSubscription;
+
+        HttpClient stubClient = _fixture.CreateClient();
+        HttpResponseMessage actualReponse = await stubClient.SendAsync(fakeRevocationRequest);
+        EventSubSubscription? actualSubscription = _fixture.Handler.ActiveSubscription;
+
+        HttpStatusCode actualResponseStatusCode = actualReponse.StatusCode;
+
+        Assert.Equal(HttpStatusCode.NoContent, actualResponseStatusCode);
+        Assert.Null(actualSubscription);
     }
 
     [Fact]

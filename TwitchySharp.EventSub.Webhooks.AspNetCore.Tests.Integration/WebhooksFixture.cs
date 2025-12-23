@@ -65,8 +65,8 @@ public class WebhooksFixture : WebApplicationFactory<Program>
 
 public class TestHandler : IWebhookEventSubHandler
 {
-    public EventSubSubscription? ActiveSubscription { get; private set; }
-    public IEventSubNotification? LastNotification { get; private set; }
+    public EventSubSubscription? ActiveSubscription { get; set; }
+    public IEventSubNotification? LastNotification { get; set; }
 
     public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default)
     {
