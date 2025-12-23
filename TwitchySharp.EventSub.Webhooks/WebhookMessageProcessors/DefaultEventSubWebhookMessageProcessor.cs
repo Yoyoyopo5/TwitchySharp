@@ -32,17 +32,17 @@ public class DefaultEventSubWebhookMessageProcessor(
     public async ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, Stream bodyStream, CancellationToken ct = default)
         => requestHeader.TwitchEventsubMessageType switch
         {
-            TwitchEventSubMessageTypes.NOTIFICATION => await JsonSerializer.DeserializeAsync<JsonElement>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
+            TwitchEventSubMessageTypes.NOTIFICATION => await JsonSerializer.DeserializeAsync<JsonElement>(bodyStream.Reset(), _serializerOptions, ct).ConfigureAwait(false) switch
             {
                 { ValueKind: JsonValueKind.Undefined or JsonValueKind.Null } => throw new NotSupportedException("Notification request body cannot be null or undefined literal."),
                 { } json => await Notification(_converter.Deserialize(json), ct)
             }, 
-            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => await JsonSerializer.DeserializeAsync<CallbackVerificationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
+            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => await JsonSerializer.DeserializeAsync<CallbackVerificationRequestData>(bodyStream.Reset(), _serializerOptions, ct).ConfigureAwait(false) switch
             {
                 { } data => await CallbackVerification(data.Subscription, data.Challenge, ct),
                 _ => throw new NotSupportedException("Callback verification request body cannot be null or undefined literal.")
             },
-            TwitchEventSubMessageTypes.REVOCATION => await JsonSerializer.DeserializeAsync<RevocationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
+            TwitchEventSubMessageTypes.REVOCATION => await JsonSerializer.DeserializeAsync<RevocationRequestData>(bodyStream.Reset(), _serializerOptions, ct).ConfigureAwait(false) switch
             {
                 { } data => await Revocation(data.Subscription, ct),
                 _ => throw new NotSupportedException("Revocation request body cannot be null or undefined literal.")
