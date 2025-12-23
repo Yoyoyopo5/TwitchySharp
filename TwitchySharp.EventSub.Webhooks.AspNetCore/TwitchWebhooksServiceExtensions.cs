@@ -24,6 +24,7 @@ public static class TwitchEventSubWebhooksServiceExtensions
     {
         services.Configure(configureOptions);
 
+        services.TryAddScoped<ITwitchWebhooksHeaderConverter, DefaultTwitchWebhooksHeaderConverter>();
         services.TryAddScoped<ITwitchEventSubWebhookSecretsResolver>(sp =>
             new FixedSecretTwitchWebhookSecretsResolver(sp.GetRequiredService<IOptions<TwitchEventSubWebhooksVerificationOptions>>().Value.Secret ?? throw new NotSupportedException($"The {nameof(TwitchEventSubWebhooksVerificationOptions.Secret)} must be configured in the {nameof(TwitchEventSubWebhooksVerificationOptions)}."))
             );
@@ -41,6 +42,7 @@ public static class TwitchEventSubWebhooksServiceExtensions
     {
         services.Configure(configureOptions);
 
+        services.TryAddScoped<ITwitchWebhooksHeaderConverter, DefaultTwitchWebhooksHeaderConverter>();
         services.TryAddScoped<IWebhookCallbackVerifier, DefaultWebhookCallbackVerifier>();
         services.TryAddScoped<INotificationConverter>(sp => 
             new NotificationConverter(sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.NotificationTypes)
