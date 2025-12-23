@@ -50,7 +50,7 @@ Expect breaking changes.
     - [ ] User 
 - [X] Websockets Notification Handler
 - [X] Webhooks Notification Handler
-- [ ] ASP.NET Core Integration
+- [X] ASP.NET Core Integration
 
 ### Documentation
 - [ ] API Example Project
