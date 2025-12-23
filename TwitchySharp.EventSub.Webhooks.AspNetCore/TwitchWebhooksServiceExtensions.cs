@@ -37,10 +37,11 @@ public static class TwitchEventSubWebhooksServiceExtensions
 
     public static IServiceCollection AddTwitchEventSubWebhooks(
         this IServiceCollection services, 
-        Action<TwitchEventSubWebhooksOptions> configureOptions
+        Action<TwitchEventSubWebhooksOptions>? configureOptions = null
         )
     {
-        services.Configure(configureOptions);
+        if (configureOptions is not null)
+            services.Configure(configureOptions);
 
         services.TryAddScoped<ITwitchWebhooksHeaderConverter, DefaultTwitchWebhooksHeaderConverter>();
         services.TryAddScoped<IWebhookCallbackVerifier, DefaultWebhookCallbackVerifier>();
