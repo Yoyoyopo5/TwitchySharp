@@ -20,6 +20,9 @@ public static class TwitchWebhooksRouteExtensions
     {
         return endpoints.MapPost(pattern, async (HttpContext context, ILoggerFactory? loggerFactory = null, CancellationToken ct = default) =>
         {
+            context.Request.EnableBuffering();
+            context.Request.Body.Position = 0;
+
             // Header Conversion
             ITwitchWebhooksHeaderConverter headerConverter = context.RequestServices.GetRequiredService<ITwitchWebhooksHeaderConverter>();
             var headerConversionResult = headerConverter.Convert(context.Request.Headers);
