@@ -39,10 +39,10 @@ public class DefaultTwitchWebhookMessageVerifier(
     public async ValueTask<bool> IsValid(EventSubWebhookRequestHeader requestHeaders, Stream body, CancellationToken ct = default)
     {
         byte[] computedHash = await _signatureComputer.ComputeSignature(
-                Encoding.UTF8.GetBytes(await _secrets.GetSecret(requestHeaders, body, ct)),
+                Encoding.UTF8.GetBytes(await _secrets.GetSecret(requestHeaders, body.Reset(), ct)),
                 requestHeaders.TwitchEventsubMessageId,
                 requestHeaders.TwitchEventsubMessageTimestamp,
-                body,
+                body.Reset(),
                 ct
                 );
         byte[] expectedHash = Encoding.UTF8.GetBytes(requestHeaders.TwitchEventsubMessageSignature);
