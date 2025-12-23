@@ -10,6 +10,4 @@ namespace TwitchySharp.EventSub.Webhooks.Requests;
 internal abstract record WebhookRequestData
 {
     public required EventSubSubscription Subscription { get; init; }
-    public required EventSubTransport Transport { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
 }
