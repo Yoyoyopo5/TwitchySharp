@@ -273,6 +273,36 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
     [Fact]
     public async Task Respond_InvalidSecretRequest_401Response()
     {
-        throw new NotImplementedException();
+        const string FAKE_MESSAGE_ID = "1234567890";
+        const string FAKE_TIMESTAMP = "2023-11-06T18:11:47.492253549Z";
+        const string FAKE_BODY = "{}";
+        const string FAKE_INVALID_SECRET = "bad_secret";
+
+        DefaultTwitchWebhookCrypto stubCrypto = new();
+        string fakeSignature = Encoding.UTF8.GetString(await stubCrypto.ComputeSignature(Encoding.UTF8.GetBytes(FAKE_INVALID_SECRET), FAKE_MESSAGE_ID, FAKE_TIMESTAMP, FAKE_BODY));
+
+        IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
+        {
+            TwitchEventsubMessageId = FAKE_MESSAGE_ID,
+            TwitchEventsubMessageType = "notification",
+            TwitchEventsubMessageSignature = fakeSignature,
+            TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
+            TwitchEventsubSubscriptionType = "channel.follow",
+            TwitchEventsubSubscriptionVersion = "1"
+        }.ToHeaderDictionary();
+
+        HttpRequestMessage fakeInvalidSecretRequest = new HttpRequestMessage(HttpMethod.Post, _fixture.Path)
+        {
+            Content = new StringContent(FAKE_BODY)
+        }.AddHeaders(fakeHeaders);
+
+        HttpClient stubClient = _fixture.CreateClient();
+        HttpResponseMessage actualReponse = await stubClient.SendAsync(fakeInvalidSecretRequest);
+
+        HttpStatusCode actualResponseStatusCode = actualReponse.StatusCode;
+        IEventSubNotification? actualNotification = _fixture.Handler.LastNotification;
+
+        Assert.Equal(HttpStatusCode.Unauthorized, actualResponseStatusCode);
+        Assert.Null(actualNotification);
     }
 }
