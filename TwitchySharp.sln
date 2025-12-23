@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api", "TwitchySharp.Api\TwitchySharp.Api.csproj", "{93D6F7C2-FF51-4B9C-9307-3F0C99A8EB7B}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks", "TwitchySharp.EventSub.Webhooks\TwitchySharp.EventSub.Webhooks.csproj", "{2856906B-D8C1-4ECB-8BB1-0C879BD4368B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks.Tests.Unit", "TwitchySharp.EventSub.Webhooks.Tests.Unit\TwitchySharp.EventSub.Webhooks.Tests.Unit.csproj", "{B86F5725-99C4-40E2-A131-DE7DF1442F6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks.AspNetCore", "TwitchySharp.EventSub.Webhooks.AspNetCore\TwitchySharp.EventSub.Webhooks.AspNetCore.csproj", "{4698B3CC-61B4-07AD-9A8D-5727312C9680}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration", "TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration\TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration.csproj", "{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +85,14 @@ Global
 		{B86F5725-99C4-40E2-A131-DE7DF1442F6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B86F5725-99C4-40E2-A131-DE7DF1442F6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B86F5725-99C4-40E2-A131-DE7DF1442F6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4698B3CC-61B4-07AD-9A8D-5727312C9680}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4698B3CC-61B4-07AD-9A8D-5727312C9680}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4698B3CC-61B4-07AD-9A8D-5727312C9680}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4698B3CC-61B4-07AD-9A8D-5727312C9680}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
