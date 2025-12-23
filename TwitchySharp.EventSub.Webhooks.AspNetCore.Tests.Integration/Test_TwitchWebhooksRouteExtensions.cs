@@ -296,6 +296,8 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
             Content = new StringContent(FAKE_BODY)
         }.AddHeaders(fakeHeaders);
 
+        _fixture.Handler.LastNotification = null; // leaky handler.
+
         HttpClient stubClient = _fixture.CreateClient();
         HttpResponseMessage actualReponse = await stubClient.SendAsync(fakeInvalidSecretRequest);
 
