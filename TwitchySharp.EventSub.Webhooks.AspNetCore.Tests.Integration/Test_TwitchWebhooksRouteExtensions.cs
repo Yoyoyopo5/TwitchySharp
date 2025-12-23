@@ -254,7 +254,20 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
     [Fact]
     public async Task Respond_InvalidHeadersRequest_400Response()
     {
-        throw new NotImplementedException();
+        HeaderDictionary fakeInvalidHeaders = new()
+        {
+            ["Invalid-Message-Id"] = "12345"
+        };
+
+        HttpRequestMessage fakeInvalidRequest = new HttpRequestMessage(HttpMethod.Post, _fixture.Path)
+        {
+            Content = new StringContent("{}")
+        }.AddHeaders(fakeInvalidHeaders);
+
+        HttpClient stubClient = _fixture.CreateClient();
+        HttpResponseMessage actualReponse = await stubClient.SendAsync(fakeInvalidRequest);
+
+        Assert.Equal(HttpStatusCode.BadRequest, actualReponse.StatusCode);
     }
 
     [Fact]
