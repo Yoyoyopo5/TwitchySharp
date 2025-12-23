@@ -57,6 +57,8 @@ public static class TwitchEventSubWebhooksServiceExtensions
                 )
             );
 
+        services.AddHostedService<TwitchWebhooksConfigurationValidator>();
+
         return services;
     }
 }
