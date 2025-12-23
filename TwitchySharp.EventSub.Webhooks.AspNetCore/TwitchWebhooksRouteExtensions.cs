@@ -33,6 +33,7 @@ public static class TwitchWebhooksRouteExtensions
             if (context.RequestServices.GetService<ITwitchWebhookMessageVerifier>() is ITwitchWebhookMessageVerifier verifier)
                 if (!await verifier.IsValid(headerConversionResult.ConvertedHeader, context.Request.Body, ct))
                     return Results.Unauthorized();
+            context.Request.Body.Position = 0;
 
             // Process
             IEventSubWebhookMessageProcessor processor = context.RequestServices.GetRequiredService<IEventSubWebhookMessageProcessor>();
