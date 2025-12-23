@@ -15,11 +15,14 @@ public class Test_DefaultEventSubWebhookMessageProcessor
 {
     private class StubWebhookHandler : IWebhookEventSubHandler
     {
-        public ValueTask<NotificationResponseData> OnNotified(IEventSubNotification notification, CancellationToken ct = default)
-            => ValueTask.FromResult(new NotificationResponseData());
+        public ValueTask OnCallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
+            => ValueTask.CompletedTask;
 
-        public ValueTask<RevocationResponseData> OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default)
-            => ValueTask.FromResult(new RevocationResponseData());
+        ValueTask IWebhookEventSubHandler.OnNotified(IEventSubNotification notification, CancellationToken ct)
+            => ValueTask.CompletedTask;
+
+        ValueTask IWebhookEventSubHandler.OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct)
+            => ValueTask.CompletedTask;
     }
 
     [Fact]
