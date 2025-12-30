@@ -85,7 +85,7 @@ public record AutomodMessageHoldV2Event
     /// Contains information about the blocked term that caused the hold.
     /// Is <see langword="null"/> unless <see cref="Reason"/> is <see cref="AutomodHoldReason.BlockedTerm"/>.
     /// </summary>
-    public BlockedTermHold? BlockedTermHold { get; init; }
+    public BlockedTermHold? BlockedTerm { get; init; }
 }
 
 /// <summary>
