@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 /// <inheritdoc cref="UserSubscription"/>
@@ -35,6 +36,5 @@ public record UserSubscription
     /// <inheritdoc cref="BroadcasterSubscriber.IsGift"/>
     public required bool IsGift { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.Tier"/>
-    [JsonConverter(typeof(SubscriptionTierJsonConverter))]
     public required SubscriptionTier Tier { get; init; }
 }
