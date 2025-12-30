@@ -88,6 +88,9 @@ public record EventSubSubscriptionType(string Type, string Version)
     /// <summary>
     /// A moderator or bot has cleared all messages from a specific user.
     /// </summary>
+    /// <remarks>
+    /// This is typically due to a ban or timeout action.
+    /// </remarks>
     public static EventSubSubscriptionType ChannelChatClearUserMessages { get; } = new("channel.chat.clear_user_messages", VERSION_1);
 
     /// <summary>
