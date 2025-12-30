@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Models;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 /// <summary>
@@ -71,7 +72,6 @@ public record BroadcasterSubscriber
     /// <summary>
     /// The tier of the subscription.
     /// </summary>
-    [JsonConverter(typeof(SubscriptionTierJsonConverter))]
     public required SubscriptionTier Tier { get; init; }
     /// <summary>
     /// The user id of the subscriber.
