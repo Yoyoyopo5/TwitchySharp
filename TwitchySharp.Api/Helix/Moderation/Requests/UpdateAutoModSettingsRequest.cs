@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -59,15 +60,15 @@ public class UpdateAutoModSettingsRequest(
 /// </remarks>
 public record UpdateAutoModSettingsRequestData
 {
-    public AutoModFilteringLevel? OverallLevel { get; protected set; }
-    public AutoModFilteringLevel? Aggression { get; protected set; }
-    public AutoModFilteringLevel? Bullying { get; protected set; }
-    public AutoModFilteringLevel? Disability { get; protected set; }
-    public AutoModFilteringLevel? Misogyny { get; protected set; }
-    public AutoModFilteringLevel? RaceEthnicityOrReligion { get; protected set; }
-    public AutoModFilteringLevel? SexBasedTerms { get; protected set; }
-    public AutoModFilteringLevel? SexualitySexOrGender { get; protected set; }
-    public AutoModFilteringLevel? Swearing { get; protected set; }
+    public AutomodFilteringLevel? OverallLevel { get; protected set; }
+    public AutomodFilteringLevel? Aggression { get; protected set; }
+    public AutomodFilteringLevel? Bullying { get; protected set; }
+    public AutomodFilteringLevel? Disability { get; protected set; }
+    public AutomodFilteringLevel? Misogyny { get; protected set; }
+    public AutomodFilteringLevel? RaceEthnicityOrReligion { get; protected set; }
+    public AutomodFilteringLevel? SexBasedTerms { get; protected set; }
+    public AutomodFilteringLevel? SexualitySexOrGender { get; protected set; }
+    public AutomodFilteringLevel? Swearing { get; protected set; }
     protected UpdateAutoModSettingsRequestData() { }
     /// <summary>
     /// Update settings using an instance of <see cref="AutoModSettings"/>.
@@ -101,7 +102,7 @@ public record UpdateAutoModOverallLevelData
 {
     /// <inheritdoc cref="UpdateAutoModOverallLevelData"/>
     /// <param name="level">The overall level to set.</param>
-    public UpdateAutoModOverallLevelData(AutoModFilteringLevel level)
+    public UpdateAutoModOverallLevelData(AutomodFilteringLevel level)
         => OverallLevel = level;
 }
 
@@ -110,27 +111,27 @@ public record UpdateAutoModOverallLevelData
 /// </summary>
 /// <remarks>
 /// All current levels are overwritten when using with <see cref="UpdateAutoModSettingsRequest"/>.
-/// <b>Note:</b> Levels default to <see cref="AutoModFilteringLevel.None"/> when creating the object.
+/// <b>Note:</b> Levels default to <see cref="AutomodFilteringLevel.None"/> when creating the object.
 /// </remarks>
 public record UpdateAutoModCustomLevelsData
     : UpdateAutoModSettingsRequestData
 {
     /// <inheritdoc cref="AutoModSettings.Aggression"/>
-    public new AutoModFilteringLevel Aggression { get; set; }
+    public new AutomodFilteringLevel Aggression { get; set; }
     /// <inheritdoc cref="AutoModSettings.Bullying"/>
-    public new AutoModFilteringLevel Bullying { get; set; }
+    public new AutomodFilteringLevel Bullying { get; set; }
     /// <inheritdoc cref="AutoModSettings.Disability"/>
-    public new AutoModFilteringLevel Disability { get; set; }
+    public new AutomodFilteringLevel Disability { get; set; }
     /// <inheritdoc cref="AutoModSettings.Misogyny"/>
-    public new AutoModFilteringLevel Misogyny { get; set; }
+    public new AutomodFilteringLevel Misogyny { get; set; }
     /// <inheritdoc cref="AutoModSettings.RaceEthnicityOrReligion"/>
-    public new AutoModFilteringLevel RaceEthnicityOrReligion { get; set; }
+    public new AutomodFilteringLevel RaceEthnicityOrReligion { get; set; }
     /// <inheritdoc cref="AutoModSettings.SexBasedTerms"/>
-    public new AutoModFilteringLevel SexBasedTerms { get; set; }
+    public new AutomodFilteringLevel SexBasedTerms { get; set; }
     /// <inheritdoc cref="AutoModSettings.SexualitySexOrGender"/>
-    public new AutoModFilteringLevel SexualitySexOrGender { get; set; }
+    public new AutomodFilteringLevel SexualitySexOrGender { get; set; }
     /// <inheritdoc cref="AutoModSettings.Swearing"/>
-    public new AutoModFilteringLevel Swearing { get; set; }
+    public new AutomodFilteringLevel Swearing { get; set; }
 
     /// <inheritdoc cref="UpdateAutoModCustomLevelsData"/>
     public UpdateAutoModCustomLevelsData()
