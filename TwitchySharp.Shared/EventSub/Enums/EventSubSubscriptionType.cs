@@ -46,6 +46,26 @@ public record EventSubSubscriptionType(string Type, string Version)
     public static EventSubSubscriptionType AutomodTermsUpdate { get; } = new("automod.terms.update", VERSION_1);
 
     /// <summary>
+    /// A notification is sent whenever Bits are used on a channel.
+    /// <br/>
+    /// Currently, this event will be sent when a user:
+    /// <list type="number">
+    /// <item>
+    /// Cheers in a channel.
+    /// </item>
+    /// <item>
+    /// Uses a Power-Up (Will not emit when a streamer uses a Power-Up for free in their own channel).
+    /// </item>
+    /// <item>
+    /// Sends Combos.
+    /// </item>
+    /// </list>
+    /// <br/>
+    /// Bits transactions via Twitch Extensions are not included in this subscription type.
+    /// </summary>
+    public static EventSubSubscriptionType ChannelBitsUse { get; } = new("channel.bits.use", VERSION_1);
+
+    /// <summary>
     /// A broadcaster updates their channel properties e.g., category, title, content classification labels, broadcast, or language.
     /// </summary>
     public static EventSubSubscriptionType ChannelUpdate { get; } = new("channel.update", VERSION_2);

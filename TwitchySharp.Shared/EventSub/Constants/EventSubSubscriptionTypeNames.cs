@@ -25,6 +25,7 @@ public static class EventSubSubscriptionTypeNames
     public const string AUTOMOD_MESSAGE_UPDATE = "automod.message.update";
     public const string AUTOMOD_SETTINGS_UPDATE = "automod.settings.update";
     public const string AUTOMOD_TERMS_UPDATE = "automod.terms.update";
+    public const string CHANNEL_BITS_USE = "channel.bits.use";
     public const string CHANNEL_UPDATE = "channel.update";
     public const string CHANNEL_FOLLOW = "channel.follow";
     public const string CHANNEL_AD_BREAK_BEGIN = "channel.ad_break.begin";
