@@ -60,8 +60,12 @@ public static class TwitchWebhooksRouteExtensions
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, "An error occurred during message verification.");
+#if DEBUG
                     return Results.StatusCode(500);
-                } 
+#else
+                    return Results.Ok(); // We return 200 in release mode to avoid Twitch revoking the webhook subscription due to internal errors.
+#endif
+                }
                 finally
                 {
                     context.Request.Body.Position = 0;
@@ -78,7 +82,11 @@ public static class TwitchWebhooksRouteExtensions
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, "An error occurred during message processing.");
+#if DEBUG
                     return Results.StatusCode(500);
+#else
+                    return Results.Ok();
+#endif
                 }
 
                 // Respond
