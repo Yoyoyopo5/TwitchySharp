@@ -216,6 +216,7 @@ public record ChannelModerateActionType(string Value) : ValueBackedEnum<string>(
     public static ChannelModerateActionType RemovePermittedTerm { get; } = new("remove_permitted_term");
     public static ChannelModerateActionType Mod { get; } = new("mod");
     public static ChannelModerateActionType Unmod { get; } = new("unmod");
+    public static ChannelModerateActionType Warn { get; } = new("warn"); // V2 only
     public static ChannelModerateActionType ApproveUnbanRequest { get; } = new("approve_unban_request");
     public static ChannelModerateActionType DenyUnbanRequest { get; } = new("deny_unban_request");
     public static ChannelModerateActionType SharedChatBan { get; } = new("shared_chat_ban");
