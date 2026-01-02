@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.SharedChat;
@@ -17,13 +18,7 @@ public record ChannelSharedChatBeginNotification : EventSubNotification<ChannelS
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelSharedChatSessionBegin"/>.
 /// </summary>
-public record ChannelSharedChatBeginCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Shared Chat Begin Events for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelSharedChatBeginCondition : BroadcasterCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSharedChatSessionBegin"/> event.

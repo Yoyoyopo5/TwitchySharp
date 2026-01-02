@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -19,13 +20,7 @@ public record ChannelUpdateNotification : EventSubNotification<ChannelUpdateEven
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelUpdate"/>.
 /// </summary>
-public record ChannelUpdateCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Update notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelUpdateCondition : BroadcasterCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUpdate"/> event.
