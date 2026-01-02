@@ -57,7 +57,7 @@ public static class EventSubSubscriptionTypeNames
     public const string CHANNEL_GUEST_STAR_SESSION_END = "channel.guest_star_session.end";
     public const string CHANNEL_GUEST_STAR_GUEST_UPDATE = "channel.guest_star_guest.update";
     public const string CHANNEL_GUEST_STAR_SETTINGS_UPDATE = "channel.guest_star_settings.update";
-    public const string CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION = "channel.channel_points_automatic_reward_redemption.add";
+    public const string CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION_ADD = "channel.channel_points_automatic_reward_redemption.add";
     public const string CHANNEL_POINTS_CUSTOM_REWARD_ADD = "channel.channel_points_custom_reward.add";
     public const string CHANNEL_POINTS_CUSTOM_REWARD_UPDATE = "channel.channel_points_custom_reward.update";
     public const string CHANNEL_POINTS_CUSTOM_REWARD_REMOVE = "channel.channel_points_custom_reward.remove";
