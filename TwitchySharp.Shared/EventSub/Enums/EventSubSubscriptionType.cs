@@ -232,6 +232,10 @@ public record EventSubSubscriptionType(string Type, string Version)
     /// A viewer has redeemed an automatic channel points reward on the specified channel.
     /// </summary>
     public static EventSubSubscriptionType ChannelPointsAutomaticRewardRedemptionAdd { get; } = new("channel.channel_points_automatic_reward_redemption.add", VERSION_1);
+    /// <summary>
+    /// A viewer has redeemed an automatic channel points reward on the specified channel.
+    /// </summary>
+    public static EventSubSubscriptionType ChannelPointsAutomaticRewardRedemptionAddV2 { get; } = new("channel.channel_points_automatic_reward_redemption.add", VERSION_2);
 
     /// <summary>
     /// A custom channel points reward has been created for the specified channel.
