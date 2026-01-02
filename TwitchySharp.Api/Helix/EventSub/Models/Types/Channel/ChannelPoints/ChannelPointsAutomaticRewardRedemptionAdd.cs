@@ -9,10 +9,10 @@ namespace TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.ChannelPoints;
 /// A viewer has redeemed an automatic channel points reward on the specified channel.
 /// </summary>
 /// <param name="BroadcasterUserId">The broadcaster user ID for the channel you want to receive channel points reward add notifications for.</param>
-public sealed record ChannelPointsAutomaticRewardRedemption(string BroadcasterUserId)
+public sealed record ChannelPointsAutomaticRewardRedemptionAdd(string BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION;
+    public string Type => EventSubSubscriptionTypeNames.CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION_ADD;
     public string Version => EventSubSubscriptionTypeVersions.V1;
 
     private EventSubSubscriptionCondition _condition =
