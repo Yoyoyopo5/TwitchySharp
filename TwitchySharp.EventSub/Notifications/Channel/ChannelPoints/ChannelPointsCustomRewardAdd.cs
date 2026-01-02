@@ -6,8 +6,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.EventSub.Models.Conditions;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/>
 /// </summary>
@@ -18,13 +19,7 @@ public record ChannelPointsCustomRewardAddNotification : EventSubNotification<Ch
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/>.
 /// </summary>
-public record ChannelPointsCustomRewardAddCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Points Custom Reward Add notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelPointsCustomRewardAddCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/> event.
 /// </summary>

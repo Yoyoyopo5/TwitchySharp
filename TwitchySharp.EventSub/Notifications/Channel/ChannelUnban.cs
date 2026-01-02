@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
@@ -16,13 +17,7 @@ public record ChannelUnbanNotification : EventSubNotification<ChannelUnbanEvent,
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelUnban"/>.
 /// </summary>
-public record ChannelUnbanCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Unban notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelUnbanCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUnban"/> event.
 /// </summary>

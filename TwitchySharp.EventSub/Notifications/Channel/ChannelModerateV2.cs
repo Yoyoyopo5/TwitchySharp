@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
@@ -16,7 +17,7 @@ public record ChannelModerateV2Notification : EventSubNotification<ChannelModera
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelModerateV2"/>.
 /// </summary>
-public record ChannelModerateV2Condition : ChannelModerateCondition;
+public record ChannelModerateV2Condition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelModerateV2"/> event.
 /// </summary>

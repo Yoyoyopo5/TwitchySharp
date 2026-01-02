@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
@@ -16,13 +17,7 @@ public record ChannelCheerNotification : EventSubNotification<ChannelCheerEvent,
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelCheer"/>.
 /// </summary>
-public record ChannelCheerCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Cheer notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelCheerCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelCheer"/> event.
 /// </summary>

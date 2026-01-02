@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
 
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelChatUserMessageHold"/>
@@ -17,17 +18,7 @@ public record ChannelChatUserMessageHoldNotification : EventSubNotification<Chan
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelChatUserMessageHold"/>.
 /// </summary>
-public record ChannelChatUserMessageHoldCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Chat User Message Hold notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The id of the user to read chat as.
-    /// </summary>
-    public required string UserId { get; init; }
-}
+public record ChannelChatUserMessageHoldCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatUserMessageHold"/> event.
 /// </summary>
