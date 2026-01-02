@@ -62,7 +62,7 @@ public class EventSubFixture : HelixFixture, IAsyncLifetime
             { nameof(AutomodSettingsUpdate), new AutomodSettingsUpdate(broadcasterId, broadcasterId) },
             { nameof(AutomodTermsUpdate), new AutomodTermsUpdate(broadcasterId, broadcasterId) },
             { nameof(ChannelAdBreakBegin), new ChannelAdBreakBegin(broadcasterId) },
-            { nameof(ChannelPointsAutomaticRewardRedemption), new ChannelPointsAutomaticRewardRedemption(broadcasterId) },
+            { nameof(ChannelPointsAutomaticRewardRedemptionAdd), new ChannelPointsAutomaticRewardRedemptionAdd(broadcasterId) },
             { nameof(ChannelPointsCustomRewardAdd), new ChannelPointsCustomRewardAdd(broadcasterId) },
             { nameof(ChannelPointsCustomRewardRedemptionAdd), new ChannelPointsCustomRewardRedemptionAdd(broadcasterId) },
             { nameof(ChannelPointsCustomRewardRedemptionUpdate), new ChannelPointsCustomRewardRedemptionUpdate(broadcasterId) },
