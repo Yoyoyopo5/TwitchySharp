@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Automod;
+namespace TwitchySharp.EventSub.Notifications.Automod.Message;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.AutomodMessageHoldV2"/>
 /// </summary>
@@ -19,17 +20,7 @@ public record AutomodMessageHoldV2Notification : EventSubNotification<AutomodMes
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.AutomodMessageHoldV2"/>
 /// </summary>
-public record AutomodMessageHoldV2Condition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Automod Message Hold notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster or a moderator of the broadcaster's chat.
-    /// </summary>
-    public required string ModeratorUserId { get; init; }
-}
+public record AutomodMessageHoldV2Condition : BroadcasterModeratorCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodMessageHoldV2"/> event.

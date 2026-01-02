@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Automod;
+namespace TwitchySharp.EventSub.Notifications.Automod.Terms;
 
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.AutomodTermsUpdate"/>
@@ -20,17 +21,7 @@ public record AutomodTermsUpdateNotification : EventSubNotification<AutomodTerms
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.AutomodTermsUpdate"/>
 /// </summary>
-public record AutomodTermsUpdateCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Automod Terms Update notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster or a moderator of the broadcaster's chat to get Automod Terms Update notifications on behalf of.
-    /// </summary>
-    public required string ModeratorUserId { get; init; }
-}
+public record AutomodTermsUpdateCondition : BroadcasterModeratorCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodTermsUpdate"/> event.
