@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.UnbanRequest;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelUnbanRequestCreate"/>
 /// </summary>
@@ -16,17 +17,7 @@ public record ChannelUnbanRequestCreateNotification : EventSubNotification<Chann
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelUnbanRequestCreate"/>.
 /// </summary>
-public record ChannelUnbanRequestCreateCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Unban Request Create notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster or a moderator of the broadcaster's chat.
-    /// </summary>
-    public required string ModeratorUserId { get; init; }
-}
+public record ChannelUnbanRequestCreateCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUnbanRequestCreate"/> event.
 /// </summary>

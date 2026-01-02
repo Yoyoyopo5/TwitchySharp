@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.EventSub.Models.Conditions;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
 /// <summary>
@@ -19,17 +20,7 @@ public record ChannelModerateNotification : EventSubNotification<ChannelModerate
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelModerate"/>.
 /// </summary>
-public record ChannelModerateCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Moderate notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster or a moderator in the broadcaster's chat to get Moderate notifications on behalf of.
-    /// </summary>
-    public required string ModeratorUserId { get; init; }
-}
+public record ChannelModerateCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelModerate"/> event.
 /// </summary>

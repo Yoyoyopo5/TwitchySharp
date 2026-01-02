@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelChatUserMessageUpdate"/>
 /// </summary>
@@ -18,17 +19,7 @@ public record ChannelChatUserMessageUpdateNotification : EventSubNotification<Ch
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelChatUserMessageUpdate"/>.
 /// </summary>
-public record ChannelChatUserMessageUpdateCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Chat User Message Update notifications for.
-    /// </summary>
-    public required string BroadcasterMessageId { get; init; }
-    /// <summary>
-    /// The id of the user to read chat as.
-    /// </summary>
-    public required string UserId { get; init; }
-}
+public record ChannelChatUserMessageUpdateCondition : BroadcasterUserCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatUserMessageUpdate"/> event.

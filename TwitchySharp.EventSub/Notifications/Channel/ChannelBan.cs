@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.EventSub.Models.Conditions;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
 /// <summary>
@@ -18,13 +19,7 @@ public record ChannelBanNotification : EventSubNotification<ChannelBanEvent, Cha
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelBan"/>.
 /// </summary>
-public record ChannelBanCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Ban notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelBanCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelBan"/> event.
 /// </summary>

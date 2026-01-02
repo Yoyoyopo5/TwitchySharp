@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2"/>
 /// </summary>
@@ -18,13 +19,7 @@ public record ChannelPointsAutomaticRewardRedemptionAddV2Notification : EventSub
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2"/>.
 /// </summary>
-public record ChannelPointsAutomaticRewardRedemptionAddV2Condition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Points Automatic Reward Redemption Add V2 notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelPointsAutomaticRewardRedemptionAddV2Condition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2"/> event.
 /// </summary>

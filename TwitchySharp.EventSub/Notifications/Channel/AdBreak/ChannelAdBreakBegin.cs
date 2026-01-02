@@ -6,8 +6,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.EventSub.Models.Conditions;
 
-namespace TwitchySharp.EventSub.Notifications.Channel;
+namespace TwitchySharp.EventSub.Notifications.Channel.AdBreak;
 
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelAdBreakBegin"/>
@@ -19,13 +20,7 @@ public record ChannelAdBreakBeginNotification : EventSubNotification<ChannelAdBr
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelAdBreakBegin"/>.
 /// </summary>
-public record ChannelAdBreakBeginCondition
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) to get Channel Ad Break Begin notifications for.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-}
+public record ChannelAdBreakBeginCondition : BroadcasterCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelAdBreakBegin"/> event.

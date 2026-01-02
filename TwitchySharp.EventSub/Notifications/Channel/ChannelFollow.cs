@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
@@ -18,11 +19,7 @@ public record ChannelFollowNotification : EventSubNotification<ChannelFollowEven
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelFollow"/>.
 /// </summary>
-public record ChannelFollowCondition
-{
-    public required string BroadcasterUserId { get; init; }
-    public required string ModeratorUserId { get; init; }
-}
+public record ChannelFollowCondition : BroadcasterModeratorCondition;
 
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelFollow"/> event.
