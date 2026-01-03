@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Notifications.Channel.Chat;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
