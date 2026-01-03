@@ -15,7 +15,7 @@ namespace TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#channelchannel_points_automatic_reward_redemptionadd">Channel Points Automatic Reward Redemption Add</see> for more information.
 /// </remarks>
-public record ChannelPointsAutomaticRewardRedemptionAddNotification : EventSubNotification<ChannelPointsAutomaticRewardRedemptionAddEvent, ChannelPointsAutomaticRewardRedemptionAddCondition>
+public record ChannelPointsAutomaticRewardRedemptionAddNotification : EventSubNotification<ChannelPointsAutomaticRewardRedemptionAddEvent, ChannelPointsAutomaticRewardRedemptionAddCondition>;
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAdd"/>.
 /// </summary>

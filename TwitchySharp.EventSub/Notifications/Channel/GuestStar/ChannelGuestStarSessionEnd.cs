@@ -13,7 +13,7 @@ namespace TwitchySharp.EventSub.Notifications.Channel.GuestStar;
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#channelguest_star_sessionend">Channel Guest Star Session End</see> for more information.
 /// </remarks>
-public record ChannelGuestStarSessionEndNotification : EventSubNotification<ChannelGuestStarSessionEndEvent, ChannelGuestStarSessionEndCondition>
+public record ChannelGuestStarSessionEndNotification : EventSubNotification<ChannelGuestStarSessionEndEvent, ChannelGuestStarSessionEndCondition>;
 /// <summary>
 /// Contains subscription information specific to <see cref="EventSubSubscriptionType.ChannelGuestStarSessionEnd"/>.
 /// </summary>
