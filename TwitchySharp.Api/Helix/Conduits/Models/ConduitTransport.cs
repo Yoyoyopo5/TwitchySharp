@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 
@@ -13,7 +14,6 @@ public record ConduitTransport
     /// The transport method.
     /// Shards can either send events over Webhooks or WebSocket connections.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ConduitTransportMethod>))]
     public required ConduitTransportMethod Method { get; init; }
     /// <summary>
     /// The callback URL where the notifications are sent. 
