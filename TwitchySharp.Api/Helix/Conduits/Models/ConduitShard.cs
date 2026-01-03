@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 
