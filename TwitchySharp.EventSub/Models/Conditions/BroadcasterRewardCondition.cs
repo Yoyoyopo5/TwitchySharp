@@ -8,5 +8,5 @@ public record BroadcasterRewardCondition : BroadcasterCondition
     /// <summary>
     /// The id of the channel points reward the notification is for.
     /// </summary>
-    public required string RewardId { get; init; }
+    public string? RewardId { get; init; }
 }
