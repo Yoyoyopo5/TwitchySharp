@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
