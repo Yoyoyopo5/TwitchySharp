@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Api.Helix.EventSub.Models.Types.Automod.Message;
 
