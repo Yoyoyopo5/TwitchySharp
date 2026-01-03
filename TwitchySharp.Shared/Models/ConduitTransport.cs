@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Enums;
 
-namespace TwitchySharp.Api.Helix.Conduits;
+namespace TwitchySharp.Shared.Models;
 
 /// <summary>
 /// Contains data about a conduit shard's transport mechanism.
