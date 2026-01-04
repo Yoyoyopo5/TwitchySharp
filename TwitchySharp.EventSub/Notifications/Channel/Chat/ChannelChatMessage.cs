@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
@@ -331,7 +332,7 @@ public record ChannelChatMessageEmote
     /// <summary>
     /// The formats the emote is available in.
     /// </summary>
-    public required ChannelChatMessageEmoteFormat[] Format { get; init; }
+    public required ChatMessageEmoteFormat[] Format { get; init; }
 }
 
 /// <summary>
@@ -351,22 +352,4 @@ public record ChannelChatMessageMention
     /// The login (username) of the user that was mentioned.
     /// </summary>
     public required string UserLogin { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions of possible emote formats.
-/// </summary>
-/// <param name="Value"></param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelChatMessageEmoteFormat, string>))]
-public record ChannelChatMessageEmoteFormat(string Value)
-    : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// An animated GIF.
-    /// </summary>
-    public static ChannelChatMessageEmoteFormat Animated { get; } = new("animated");
-    /// <summary>
-    /// A static PNG.
-    /// </summary>
-    public static ChannelChatMessageEmoteFormat Static { get; } = new("static");
 }
