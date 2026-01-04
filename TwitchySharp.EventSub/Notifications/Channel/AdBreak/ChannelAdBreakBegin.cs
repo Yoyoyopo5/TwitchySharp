@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.AdBreak;
 
@@ -25,7 +26,7 @@ public record ChannelAdBreakBeginCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelAdBreakBegin"/> event.
 /// </summary>
-public record ChannelAdBreakBeginEvent
+public record ChannelAdBreakBeginEvent : IHaveBroadcaster
 {
     /// <summary>
     /// Length of the mid-roll ad break requested.
