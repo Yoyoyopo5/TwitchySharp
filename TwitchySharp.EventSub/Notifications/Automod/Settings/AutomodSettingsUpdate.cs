@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.EventSub.Enums;
@@ -25,7 +26,7 @@ public record AutomodSettingsUpdateCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodSettingsUpdate"/> event.
 /// </summary>
-public record AutomodSettingsUpdateEvent
+public record AutomodSettingsUpdateEvent : IHaveBroadcaster, IHaveModerator
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that the Automod settings were updated for.

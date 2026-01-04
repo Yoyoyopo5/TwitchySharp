@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Automod.Message;
+using TwitchySharp.EventSub.Interfaces.Automod.Message;
+using TwitchySharp.EventSub.Models.Automod.Message;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -23,56 +26,40 @@ public record AutomodMessageUpdateV2Condition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodMessageUpdateV2"/> event.
 /// </summary>
-public record AutomodMessageUpdateV2Event
+public record AutomodMessageUpdateV2Event : IAutomodMessageEvent, IAutomodMessageV2Event, IAutomodMessageUpdateEvent
 {
     /// <summary>
-    /// The user id of the broadcaster (channel) that the held Automod message was updated in.
+    /// The user id of the broadcaster (channel) that the Automod caught the message for.
     /// </summary>
     public required string BroadcasterUserId { get; init; }
     /// <summary>
-    /// The login (username) of the broadcaster (channel) that the held Automod message was updated in.
+    /// The login (username) of the broadcaster (channel) that the Automod caught the message for.
     /// </summary>
     public required string BroadcasterUserLogin { get; init; }
     /// <summary>
-    /// The display name of the broadcaster (channel) that the held Automod message was updated in.
+    /// The display name of the broadcaster (channel) that the Automod caught the message for.
     /// </summary>
     public required string BroadcasterUserName { get; init; }
     /// <summary>
-    /// The id of the user that sent the original chat message that was held by Automod.
+    /// The user id of the user that sent the caught message.
     /// </summary>
     public required string UserId { get; init; }
     /// <summary>
-    /// The login (username) of the user that sent the original chat message that was held by Automod.
+    /// The login (username) of the user that sent the caught message.
     /// </summary>
     public required string UserLogin { get; init; }
     /// <summary>
-    /// The display name of the user that sent the original chat message that was held by Automod.
+    /// The display name of the user that sent the caught message.
     /// </summary>
     public required string UserName { get; init; }
     /// <summary>
-    /// The user id of the moderator that updated the held Automod message.
-    /// </summary>
-    public required string ModeratorUserId { get; init; }
-    /// <summary>
-    /// The display name of the moderator that updated the held Automod message.
-    /// </summary>
-    public required string ModeratorUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the moderator that updated the held Automod message.
-    /// </summary>
-    public required string ModeratorUserLogin { get; init; }
-    /// <summary>
-    /// The id of the message that was updated.
+    /// The id of the message that was flagged by the Automod.
     /// </summary>
     public required string MessageId { get; init; }
     /// <summary>
-    /// The message that was updated.
+    /// The message that was flagged.
     /// </summary>
     public required AutomodCaughtChatMessage Message { get; init; }
-    /// <summary>
-    /// The status of the held message after the update.
-    /// </summary>
-    public required AutomodMessageUpdateStatus Status { get; init; }
     /// <summary>
     /// The date and time when the Automod caught the message.
     /// </summary>
@@ -91,4 +78,20 @@ public record AutomodMessageUpdateV2Event
     /// Is <see langword="null"/> unless <see cref="Reason"/> is <see cref="AutomodHoldReason.BlockedTerm"/>.
     /// </summary>
     public BlockedTermHold? BlockedTerm { get; init; }
+    /// <summary>
+    /// The user id of the moderator that updated the held Automod message.
+    /// </summary>
+    public required string ModeratorUserId { get; init; }
+    /// <summary>
+    /// The display name of the moderator that updated the held Automod message.
+    /// </summary>
+    public required string ModeratorUserName { get; init; }
+    /// <summary>
+    /// The login (username) of the moderator that updated the held Automod message.
+    /// </summary>
+    public required string ModeratorUserLogin { get; init; }
+    /// <summary>
+    /// The status of the held message after the update.
+    /// </summary>
+    public required AutomodMessageUpdateStatus Status { get; init; }
 }
