@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Channel.Chat;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Chat;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Enums;
+using TwitchySharp.EventSub.Models.Events.Channel.Chat;
 using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
 
@@ -27,7 +28,7 @@ public record ChannelChatNotificationCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatNotification"/> event.
 /// </summary>
-public record ChannelChatNotificationEvent
+public record ChannelChatNotificationEvent : IHaveBroadcaster, IHaveUser, IHaveChannelChatMessage
 {
     /// <summary>
     /// The user id of the broadcaster (channel) where the chat notification occurred.
@@ -45,10 +46,17 @@ public record ChannelChatNotificationEvent
     /// The user id of the chatter that triggered the chat notification.
     /// </summary>
     public required string ChatterUserId { get; init; }
+    string IHaveUser.UserId => ChatterUserId;
+    /// <summary>
+    /// The login (username) of the chatter that triggered the chat notification.
+    /// </summary>
+    public required string ChatterUserLogin { get; init; }
+    string IHaveUser.UserLogin => ChatterUserLogin;
     /// <summary>
     /// The display name of the chatter that triggered the chat notification.
     /// </summary>
     public required string ChatterUserName { get; init; }
+    string IHaveUser.UserName => ChatterUserName;
     /// <summary>
     /// Indicates whether the chatter that triggered the chat notification is anonymous.
     /// </summary>
@@ -217,367 +225,4 @@ public record ChannelChatNotificationEvent
     /// and the announcement event occurred in a shared chat session to a broadcaster other than <see cref="BroadcasterUserId"/>.
     /// </summary>
     public ChannelChatNotificationAnnouncement? SharedChatAnnouncement { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for chat notification types.
-/// </summary>
-/// <param name="Value">The string value of the notification type.</param>
-public record ChannelChatNotificationType(string Value) : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// A user subscribed to the channel.
-    /// </summary>
-    public static ChannelChatNotificationType Subscription { get; } = new("sub");
-    /// <summary>
-    /// A user resubscribed to the channel.
-    /// </summary>
-    public static ChannelChatNotificationType Resubscription { get; } = new("resub");
-    /// <summary>
-    /// A user was gifted a subscription to the channel.
-    /// </summary>
-    public static ChannelChatNotificationType GiftedSubscription { get; } = new("sub_gift");
-    /// <summary>
-    /// A community gifted subscription occurred in the channel.
-    /// </summary>
-    /// <remarks>
-    /// Dev Note: I'm not entirely sure what this one is, but I'm guessing it's when a user gifts multiple subscriptions at once to random viewers in the channel.
-    /// </remarks>
-    public static ChannelChatNotificationType CommunityGiftedSubscription { get; } = new("community_sub_gift");
-    /// <summary>
-    /// A user that received a gifted subscription upgraded to a paid subscription.
-    /// </summary>
-    public static ChannelChatNotificationType GiftedSubscriptionPaidUpgrade { get; } = new("gift_paid_upgrade");
-    /// <summary>
-    /// A user that had an active Prime subscription upgraded to a paid subscription.
-    /// </summary>
-    public static ChannelChatNotificationType PrimeSubscriptionPaidUpgrade { get; } = new("prime_paid_upgrade");
-    /// <summary>
-    /// A raid was started.
-    /// </summary>
-    public static ChannelChatNotificationType Raid { get; } = new("raid"); // Need to verify this documentation.
-    /// <summary>
-    /// A raid was cancelled.
-    /// </summary>
-    public static ChannelChatNotificationType Unraid { get; } = new("unraid");
-    /// <summary>
-    /// A user that received a gifted subscription decided to "pay it forward" by gifting a subscription to another user.
-    /// </summary>
-    public static ChannelChatNotificationType PayItForward { get; } = new("pay_it_forward");
-    /// <summary>
-    /// A chat announcement was made in the channel.
-    /// </summary>
-    public static ChannelChatNotificationType Announcement { get; } = new("announcement");
-    /// <summary>
-    /// A user received a bits badge tier upgrade.
-    /// </summary>
-    /// <remarks>
-    /// Dev Note: I'm pretty sure this happens when a user cheers a certain amount of total bits in a channel.
-    /// </remarks>
-    public static ChannelChatNotificationType BitsBadgeTier { get; } = new("bits_badge_tier");
-    /// <summary>
-    /// A charity donation was made.
-    /// </summary>
-    public static ChannelChatNotificationType CharityDonation { get; } = new("charity_donation");
-    /// <summary>
-    /// A user subscribed to a channel in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatSubscription { get; } = new("shared_chat_sub");
-    /// <summary>
-    /// A user resubscribed to a channel in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatResubscription { get; } = new("shared_chat_resub");
-    /// <summary>
-    /// A user was gifted a subscription to a channel in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatGiftedSubscription { get; } = new("shared_chat_sub_gift");
-    /// <summary>
-    /// A community gifted subscription occurred in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatCommunityGiftedSubscription { get; } = new("shared_chat_community_sub_gift");
-    /// <summary>
-    /// A user that received a gifted subscription in a shared chat upgraded to a paid subscription.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatGiftedSubscriptionPaidUpgrade { get; } = new("shared_chat_gift_paid_upgrade");
-    /// <summary>
-    /// A user that had an active Prime subscription in a shared chat upgraded to a paid subscription.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatPrimeSubscriptionPaidUpgrade { get; } = new("shared_chat_prime_paid_upgrade");
-    /// <summary>
-    /// A raid was started in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatRaid { get; } = new("shared_chat_raid");
-    /// <summary>
-    /// A user that received a gifted sub decided to "pay it forward" by gifting a subscription to another user in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatPayItForward { get; } = new("shared_chat_pay_it_forward");
-    /// <summary>
-    /// A chat announcement was made in a shared chat.
-    /// </summary>
-    public static ChannelChatNotificationType SharedChatAnnouncement { get; } = new("shared_chat_announcement");
-}
-
-/// <summary>
-/// Contains information about a channel subscription that appeared in a chat notification.
-/// </summary>
-public record ChannelChatNotificationSubscription
-{
-    /// <summary>
-    /// The tier of the subscription.
-    /// </summary>
-    public required SubscriptionTier SubTier { get; init; }
-    /// <summary>
-    /// Indicates if the subscription was obtained through Amazon Prime.
-    /// </summary>
-    public required bool IsPrime { get; init; }
-    /// <summary>
-    /// The number of months the subscription is for.
-    /// </summary>
-    public required int DurationMonths { get; init; }
-}
-
-/// <summary>
-/// Contains information about a channel resubscription that appeared in a chat notification.
-/// </summary>
-public record ChannelChatNotificationResubscription
-{
-    /// <summary>
-    /// The total number of months the user has been subscribed to the channel.
-    /// </summary>
-    public required int CumulativeMonths { get; init; }
-    /// <summary>
-    /// The number of months the resubscription is for.
-    /// </summary>
-    public required int DurationMonths { get; init; }
-    /// <summary>
-    /// The number of consecutive months the user has been subscribed to the channel.
-    /// </summary>
-    public required int StreakMonths { get; init; }
-    /// <summary>
-    /// The tier of the subscription.
-    /// </summary>
-    public required SubscriptionTier SubTier { get; init; }
-    /// <summary>
-    /// Indicates if the subscription was obtained through Amazon Prime.
-    /// </summary>
-    public bool? IsPrime { get; init; } // Marked optional in documentation, no idea why. Docs also fucked here, so we'll have to figure it out live.
-    /// <summary>
-    /// Indicates if the resubscription is the result of a gift.
-    /// </summary>
-    public bool IsGift { get; init; }
-    /// <summary>
-    /// Indicates if the resubscription gifter is anonymous.
-    /// Is <see langword="null"/> if <see cref="IsGift"/> is <see langword="false"/>.
-    /// </summary>
-    public bool? GifterIsAnonymous { get; init; }
-    /// <summary>
-    /// The id of the user that gifted the subscription.
-    /// Is <see langword="null"/> if <see cref="IsGift"/> is <see langword="false"/>, or if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserId { get; init; }
-    /// <summary>
-    /// The display name of the user that gifted the subscription.
-    /// Is <see langword="null"/> if <see cref="IsGift"/> is <see langword="false"/>, or if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the user that gifted the subscription.
-    /// Is <see langword="null"/> if <see cref="IsGift"/> is <see langword="false"/>, or if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserLogin { get; init; }
-}
-
-/// <summary>
-/// Contains information about a gifted subscription that appeared in a chat notification.
-/// </summary>
-public record ChannelChatNotificationGiftedSubscription
-{
-    /// <summary>
-    /// The number of months the subscription is for.
-    /// </summary>
-    public required int DurationMonths { get; init; }
-    /// <summary>
-    /// The total amount of gifted subscriptions the gifter has given in the channel.
-    /// This is <see langword="null"/> if the gifter is anonymous.
-    /// </summary>
-    public int? CumulativeTotal { get; init; }
-    /// <summary>
-    /// The id of the user that received the gifted subscription.
-    /// </summary>
-    public required string RecipientUserId { get; init; }
-    /// <summary>
-    /// The display name of the user that received the gifted subscription.
-    /// </summary>
-    public required string RecipientUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the user that received the gifted subscription.
-    /// </summary>
-    public required string RecipientUserLogin { get; init; }
-    /// <summary>
-    /// The tier of the gifted subscription.
-    /// </summary>
-    public required SubscriptionTier SubTier { get; init; }
-    /// <summary>
-    /// The id of the associated community gift event.
-    /// This is <see langword="null"/> if the gifted subscription is not part of a community gift.
-    /// </summary>
-    public string? CommunityGiftId { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific community subscription gift that appeared in a chat notification.
-/// </summary>
-public record ChannelChatMessageNotificationCommunitySubcriptionGift
-{
-    /// <summary>
-    /// The id of the community gift event.
-    /// </summary>
-    public required string Id { get; init; }
-    /// <summary>
-    /// The number of subscriptions being gifted.
-    /// </summary>
-    public required int Total { get; init; }
-    /// <summary>
-    /// The tier of the gifted subscriptions.
-    /// </summary>
-    public required SubscriptionTier SubTier { get; init; }
-    /// <summary>
-    /// The cumulative total number of subscriptions the gifter has gifted in the channel.
-    /// This is <see langword="null"/> if the gifter is anonymous.
-    /// </summary>
-    public int? CumulativeTotal { get; init; }
-}
-
-/// <summary>
-/// Contains information about a gifted subscription paid upgrade that appeared in a chat notification.
-/// </summary>
-public record ChannelChatNotificationGiftedSubscriptionPaidUpgrade
-{
-    /// <summary>
-    /// Indicates whether the gifter is anonymous.
-    /// </summary>
-    public required bool GifterIsAnonymous { get; init; }
-    /// <summary>
-    /// The id of the user that gifted the subscription.
-    /// This is <see langword="null"/> if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserId { get; init; }
-    /// <summary>
-    /// The display name of the user that gifted the subscription.
-    /// This is <see langword="null"/> if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserName { get; init; }
-}
-
-/// <summary>
-/// Contains information about a prime subscription paid upgrade that appeared in a chat notification.
-/// </summary>
-public record ChannelChatNotificationPrimeSubscriptionPaidUpgrade
-{
-    /// <summary>
-    /// The tier of the subscription.
-    /// </summary>
-    public required SubscriptionTier SubTier { get; init; }
-}
-
-/// <summary>
-/// Contains information about a "pay it forward" chat notification.
-/// </summary>
-public record ChannelChatNotificationPayItForward
-{
-    /// <summary>
-    /// Indicates whether the gifter is anonymous.
-    /// </summary>
-    public required bool GifterIsAnonymous { get; init; }
-    /// <summary>
-    /// The id of the user who gifted the subscription.
-    /// This is <see langword="null"/> if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserId { get; init; }
-    /// <summary>
-    /// The display name of the user who gifted the subscription.
-    /// This is <see langword="null"/> if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the user who gifted the subscription.
-    /// This is <see langword="null"/> if <see cref="GifterIsAnonymous"/> is <see langword="true"/>.
-    /// </summary>
-    public string? GifterUserLogin { get; init; }
-}
-
-/// <summary>
-/// Contains information about a raid chat notification.
-/// </summary>
-/// <remarks>
-/// Dev Note: I'm not sure if this is for an incoming raid or outgoing one, but docs word it as outgoing.
-/// </remarks>
-public record ChannelChatNotificationRaid
-{
-    /// <summary>
-    /// The id of the user raiding the channel.
-    /// </summary>
-    public required string UserId { get; init; }
-    /// <summary>
-    /// The display name of the user raiding the channel.
-    /// </summary>
-    public required string UserName { get; init; }
-    /// <summary>
-    /// The login (username) of the user raiding the channel.
-    /// </summary>
-    public required string UserLogin { get; init; }
-    /// <summary>
-    /// The number of viewers in the raid.
-    /// </summary>
-    public required int ViewerCount { get; init; }
-    /// <summary>
-    /// The profile image URL of the user raiding the channel.
-    /// </summary>
-    public required string ProfileImageUrl { get; init; }
-}
-
-/// <summary>
-/// An empty object.
-/// </summary>
-public record ChannelChatNotificationUnraid // Really need to figure out what this represents
-{
-
-}
-
-/// <summary>
-/// Contains information about a chat announcement notification.
-/// </summary>
-public record ChannelChatNotificationAnnouncement
-{
-    /// <summary>
-    /// The color of the announcement.
-    /// </summary>
-    public required string Color { get; init; } // Might be optional, need to test.
-}
-
-/// <summary>
-/// Contains information about a bits badge tier upgrade notification.
-/// </summary>
-public record ChannelChatNotificationBitsBadgeTier
-{
-    /// <summary>
-    /// The tier of the Bits badge (how many Bits are required to acheive it).
-    /// For example, <c>100</c>, <c>1000</c>, <c>10000</c>, etc.
-    /// </summary>
-    public required int Tier { get; init; }
-}
-
-/// <summary>
-/// Contains information about a charity donation notification.
-/// </summary>
-public record ChannelChatMessageNotificationCharityDonation
-{
-    /// <summary>
-    /// The name of the charity that was donated to.
-    /// </summary>
-    public required string CharityName { get; init; }
-    /// <summary>
-    /// The amount that was donated.
-    /// </summary>
-    public required CharityAmount Amount { get; init; }
 }

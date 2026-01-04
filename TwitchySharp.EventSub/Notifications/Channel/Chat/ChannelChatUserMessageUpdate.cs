@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Channel.Chat;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Chat;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
+using TwitchySharp.EventSub.Models.Events.Channel.Chat;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
@@ -24,7 +26,7 @@ public record ChannelChatUserMessageUpdateCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatUserMessageUpdate"/> event.
 /// </summary>
-public record ChannelChatUserMessageUpdateEvent
+public record ChannelChatUserMessageUpdateEvent : IHaveBroadcaster, IHaveUser, IHaveChannelChatMessage
 {
     /// <summary>
     /// The user id of the broadcaster (channel) to get Channel Chat User Message Update notifications for.
@@ -62,16 +64,4 @@ public record ChannelChatUserMessageUpdateEvent
     /// The held message.
     /// </summary>
     public required ChannelChatMessage Message { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for possible user message update statuses.
-/// </summary>
-/// <param name="Value">The string value of the status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelChatUserMessageUpdateStatus, string>))]
-public record ChannelChatUserMessageUpdateStatus(string Value) : ValueBackedEnum<string>(Value)
-{
-    public static ChannelChatUserMessageUpdateStatus Approved { get; } = new("approved");
-    public static ChannelChatUserMessageUpdateStatus Denied { get; } = new("denied");
-    public static ChannelChatUserMessageUpdateStatus Invalid { get; } = new("invalid");
 }

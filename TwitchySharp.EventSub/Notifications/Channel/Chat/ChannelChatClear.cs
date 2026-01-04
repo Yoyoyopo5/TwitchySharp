@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -24,7 +25,7 @@ public record ChannelChatClearCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatClear"/> event.
 /// </summary>
-public record ChannelChatClearEvent
+public record ChannelChatClearEvent : IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that had their chat cleared.
