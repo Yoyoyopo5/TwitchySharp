@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.EventSub.Models;
 using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.CharityCampaign;
 /// <summary>
@@ -22,8 +23,27 @@ public record CharityCampaignStartCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.CharityCampaignStart"/> event.
 /// </summary>
-public record CharityCampaignStartEvent : CharityCampaignLifecycleEvent
+public record CharityCampaignStartEvent : ICharityCampaignLifecycleEvent
 {
+    /// <summary>
+    /// The user id of the broadcaster (channel) who is hosting the charity campaign.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) who is hosting the charity campaign.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) who is hosting the charity campaign.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    public required string CharityName { get; init; }
+    public required string CharityDescription { get; init; }
+    public required string CharityLogo { get; init; }
+    public required string CharityWebsite { get; init; }
+    public required string Id { get; init; }
+    public required CharityAmount CurrentAmount { get; init; }
+    public required CharityAmount TargetAmount { get; init; }
     /// <summary>
     /// The date and time the charity campaign began.
     /// </summary>
