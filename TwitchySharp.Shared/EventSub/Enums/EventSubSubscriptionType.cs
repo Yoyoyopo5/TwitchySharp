@@ -382,17 +382,32 @@ public record EventSubSubscriptionType(string Type, string Version)
     /// <summary>
     /// A Hype Train begins on the specified channel.
     /// </summary>
+    [Obsolete]
     public static EventSubSubscriptionType HypeTrainBegin { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN, VERSION_1);
+    /// <summary>
+    /// A Hype Train begins on the specified channel.
+    /// </summary>
+    public static EventSubSubscriptionType HypeTrainBeginV2 { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN, VERSION_2);
 
     /// <summary>
     /// A Hype Train makes progress on the specified channel.
     /// </summary>
+    [Obsolete]
     public static EventSubSubscriptionType HypeTrainProgress { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_PROGRESS, VERSION_1);
+    /// <summary>
+    /// A Hype Train makes progress on the specified channel.
+    /// </summary>
+    public static EventSubSubscriptionType HypeTrainProgressV2 { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_PROGRESS, VERSION_2);
 
     /// <summary>
     /// A Hype Train ends on the specified channel.
     /// </summary>
+    [Obsolete]
     public static EventSubSubscriptionType HypeTrainEnd { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_END, VERSION_1);
+    /// <summary>
+    /// A Hype Train ends on the specified channel.
+    /// </summary>
+    public static EventSubSubscriptionType HypeTrainEndV2 { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_END, VERSION_2);
 
     /// <summary>
     /// Sends a notification when the broadcaster activates Shield Mode.
