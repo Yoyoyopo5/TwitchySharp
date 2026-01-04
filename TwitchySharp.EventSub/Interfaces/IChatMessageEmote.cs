@@ -22,5 +22,5 @@ public interface IChatMessageEmote
     /// <summary>
     /// The formats that the emote is available in.
     /// </summary>
-    ChatMessageEmoteFormat[] Format { get; }
+    IEnumerable<ChatMessageEmoteFormat> Format { get; }
 }
