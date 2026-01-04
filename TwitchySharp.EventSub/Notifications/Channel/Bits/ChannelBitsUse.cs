@@ -65,7 +65,7 @@ public record ChannelBitsUseEvent : IHaveBroadcaster, IHaveUser
     /// <summary>
     /// The message associated with the bits use, if any.
     /// </summary>
-    public ChannelChatMessage? Message { get; init; }
+    public BitsChatMessage? Message { get; init; }
     /// <summary>
     /// The power-up associated with the bits use, if any.
     /// </summary>
