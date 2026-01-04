@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Helpers;
+﻿using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Interfaces;
 
@@ -15,6 +16,19 @@ public interface IChatMessageFragment
     /// The type of fragment.
     /// </summary>
     ValueBackedEnum<string> Type { get; }
+    /// <summary>
+    /// The emote information.
+    /// This is <see langword="null"/> unless <see cref="Type"/> is <c>emote</c>.
+    /// </summary>
     IChatMessageEmote? Emote { get; }
+    /// <summary>
+    /// The cheermote information.
+    /// This is <see langword="null"/> unless <see cref="Type"/> is <c>cheermote</c>.
+    /// </summary>
     IChatMessageCheermote? Cheermote { get; }
+    /// <summary>
+    /// The mention information.
+    /// This is <see langword="null"/> unless <see cref="Type"/> is <c>mention</c>.
+    /// </summary>
+    IChatMessageMention? Mention { get; }
 }

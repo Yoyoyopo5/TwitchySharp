@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Chat;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel.Chat;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Chat;
@@ -22,7 +25,7 @@ public record ChannelChatUserMessageHoldCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatUserMessageHold"/> event.
 /// </summary>
-public record ChannelChatUserMessageHoldEvent
+public record ChannelChatUserMessageHoldEvent : IHaveBroadcaster, IHaveUser, IHaveChannelChatMessage
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that the message was sent in.

@@ -26,4 +26,9 @@ public record ChannelPointsRewardRedemptionMessageV2Fragment : IChatMessageFragm
     /// Set to <see langword="null"/>.
     /// </summary>
     IChatMessageCheermote? IChatMessageFragment.Cheermote => null;
+    /// <summary>
+    /// Not supported for this event type.
+    /// Set to <see langword="null"/>.
+    /// </summary>
+    IChatMessageMention? IChatMessageFragment.Mention => null;
 }
