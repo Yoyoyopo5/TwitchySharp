@@ -54,6 +54,10 @@ public record ChannelPointsAutomaticRewardRedemptionAddEvent
     /// </summary>
     public required string Id { get; init; }
     /// <summary>
+    /// The automatic (built-in) reward that was redeemed.
+    /// </summary>
+    public required ChannelPointsAutomaticRewardRedemptionReward Reward { get; init; }
+    /// <summary>
     /// The message that was sent with the redemption.
     /// This is <see langword="null"/> if the reward does not require user input.
     /// </summary>
