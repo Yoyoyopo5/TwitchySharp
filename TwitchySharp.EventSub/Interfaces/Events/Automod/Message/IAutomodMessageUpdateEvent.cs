@@ -20,5 +20,5 @@ public interface IAutomodMessageUpdateEvent : IHaveModerator
     /// <summary>
     /// The status of the updated automod message.
     /// </summary>
-    AutomodMessageUpdateStatus Status { get; init; }
+    AutomodMessageUpdateStatus Status { get; }
 }

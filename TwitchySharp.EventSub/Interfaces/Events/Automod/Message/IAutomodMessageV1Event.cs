@@ -12,10 +12,10 @@ namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 /// </remarks>
 public interface IAutomodMessageV1Event
 {
-    AutomodMessageCategory Category { get; init; }
+    AutomodMessageCategory Category { get; }
     /// <summary>
     /// The level of severity for the caught message.
     /// Ranges from 1 to 4.
     /// </summary>
-    int Level { get; init; }
+    int Level { get; }
 }
