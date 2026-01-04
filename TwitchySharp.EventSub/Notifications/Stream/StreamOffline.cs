@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Models.Conditions;
+
+namespace TwitchySharp.EventSub.Notifications.Stream;
+/// <summary>
+/// <inheritdoc cref="EventSubSubscriptionType.StreamOffline"/>
+/// </summary>
+/// <remarks>
+/// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#streamoffline">Stream Offline</see> for more information.
+/// </remarks>
+public record StreamOfflineNotification : EventSubNotification<StreamOfflineEvent, StreamOfflineCondition>;
+/// <summary>
+/// Contains subscription information specific to <see cref="EventSubSubscriptionType.StreamOffline"/>.
+/// </summary>
+public record StreamOfflineCondition : BroadcasterCondition;
+/// <summary>
+/// Contains information about a specific <see cref="EventSubSubscriptionType.StreamOffline"/> event.
+/// </summary>
+public record StreamOfflineEvent : StreamEvent;
