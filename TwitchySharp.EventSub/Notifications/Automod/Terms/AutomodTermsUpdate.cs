@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Automod.Terms;
+using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Automod.Terms;
@@ -26,7 +26,7 @@ public record AutomodTermsUpdateCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodTermsUpdate"/> event.
 /// </summary>
-public record AutomodTermsUpdateEvent
+public record AutomodTermsUpdateEvent : IHaveBroadcaster, IHaveModerator
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that the Automod terms were updated for.
@@ -64,17 +64,4 @@ public record AutomodTermsUpdateEvent
     /// The list of the terms that had a status change.
     /// </summary>
     public required string[] Terms { get; init; }
-
-}
-
-/// <summary>
-/// Contains static definitions for the possible Automod terms update actions.
-/// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<AutomodTermsUpdateAction, string>))]
-public record AutomodTermsUpdateAction(string Value) : ValueBackedEnum<string>(Value)
-{
-    public static AutomodTermsUpdateAction AddPermitted { get; } = new("add_permitted");
-    public static AutomodTermsUpdateAction RemovePermitted { get; } = new("remove_permitted");
-    public static AutomodTermsUpdateAction AddBlocked { get; } = new("add_blocked");
-    public static AutomodTermsUpdateAction RemoveBlocked { get; } = new("remove_blocked");
 }
