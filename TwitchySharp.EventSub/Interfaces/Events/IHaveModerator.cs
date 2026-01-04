@@ -14,13 +14,13 @@ public interface IHaveModerator
     /// <summary>
     /// The user id of the moderator associated with the event.
     /// </summary>
-    string ModeratorUserId { get; init; }
+    string ModeratorUserId { get; }
     /// <summary>
     /// The display name of the moderator associated with the event.
     /// </summary>
-    string ModeratorUserName { get; init; }
+    string ModeratorUserName { get; }
     /// <summary>
     /// The login (username) of the moderator associated with the event.
     /// </summary>
-    string ModeratorUserLogin { get; init; }
+    string ModeratorUserLogin { get; }
 }

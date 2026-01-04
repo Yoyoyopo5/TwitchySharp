@@ -13,15 +13,15 @@ namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 /// </remarks>
 public interface IAutomodMessageV2Event
 {
-    AutomodHoldReason Reason { get; init; }
+    AutomodHoldReason Reason { get; }
     /// <summary>
     /// Contains information about the Automod settings that caused the hold.
     /// Is <see langword="null"/> unless <see cref="Reason"/> is <see cref="AutomodHoldReason.Automod"/>.
     /// </summary>
-    AutomodHold? Automod { get; init; }
+    AutomodHold? Automod { get; }
     /// <summary>
     /// Contains information about the blocked term that caused the hold.
     /// Is <see langword="null"/> unless <see cref="Reason"/> is <see cref="AutomodHoldReason.BlockedTerm"/>.
     /// </summary>
-    BlockedTermHold? BlockedTerm { get; init; }
+    BlockedTermHold? BlockedTerm { get; }
 }

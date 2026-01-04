@@ -15,13 +15,13 @@ public interface IHaveAutomodHeldMessage
     /// <summary>
     /// The id of the message that was flagged by the Automod.
     /// </summary>
-    string MessageId { get; init; }
+    string MessageId { get; }
     /// <summary>
     /// The message that was flagged.
     /// </summary>
-    AutomodCaughtChatMessage Message { get; init; }
+    AutomodCaughtChatMessage Message { get; }
     /// <summary>
     /// The date and time when the Automod caught the message.
     /// </summary>
-    DateTimeOffset HeldAt { get; init; }
+    DateTimeOffset HeldAt { get; }
 }
