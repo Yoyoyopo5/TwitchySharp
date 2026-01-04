@@ -14,13 +14,13 @@ public interface IHaveUser
     /// <summary>
     /// The user id of the user associated with the event.
     /// </summary>
-    string UserId { get; init; }
+    string UserId { get; }
     /// <summary>
     /// The login (username) of the user associated with the event.
     /// </summary>
-    string UserLogin { get; init; }
+    string UserLogin { get; }
     /// <summary>
     /// The display name of the user associated with the event.
     /// </summary>
-    string UserName { get; init; }
+    string UserName { get; }
 }

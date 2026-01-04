@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.EventSub.Models.Automod.Message;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 
