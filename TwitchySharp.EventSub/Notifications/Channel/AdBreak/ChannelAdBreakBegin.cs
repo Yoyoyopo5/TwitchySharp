@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.EventSub.Interfaces;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.AdBreak;
 
