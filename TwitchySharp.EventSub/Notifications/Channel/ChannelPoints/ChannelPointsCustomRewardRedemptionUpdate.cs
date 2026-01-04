@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.EventSub.Enums.Events.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
 
@@ -23,4 +25,35 @@ public record ChannelPointsCustomRewardRedemptionUpdateCondition : BroadcasterRe
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate"/> event.
 /// </summary>
-public record ChannelPointsCustomRewardRedemptionUpdateEvent : ChannelPointsCustomRewardRedemptionEvent;
+public record ChannelPointsCustomRewardRedemptionUpdateEvent : IChannelPointsCustomRewardRedemptionEvent
+{
+    public required string Id { get; init; }
+    /// <summary>
+    /// The user id of the broadcaster (channel) that the redeemed reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) that the redeemed reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) that the redeemed reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    /// <summary>
+    /// The id of the user that redeemed the reward.
+    /// </summary>
+    public required string UserId { get; init; }
+    /// <summary>
+    /// The login (username) of the user that redeemed the reward.
+    /// </summary>
+    public required string UserLogin { get; init; }
+    /// <summary>
+    /// The display name of the user that redeemed the reward.
+    /// </summary>
+    public required string UserName { get; init; }
+    public required string UserInput { get; init; }
+    public required ChannelPointsCustomRewardRedemptionStatus Status { get; init; }
+    public required ChannelPointsCustomReward Reward { get; init; }
+    public required DateTimeOffset RedeemedAt { get; init; }
+}

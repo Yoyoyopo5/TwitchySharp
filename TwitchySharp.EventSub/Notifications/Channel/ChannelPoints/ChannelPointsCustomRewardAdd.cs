@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
 /// <summary>
@@ -24,4 +25,36 @@ public record ChannelPointsCustomRewardAddCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/> event.
 /// </summary>
-public record ChannelPointsCustomRewardAddEvent : ChannelPointsCustomRewardEvent;
+public record ChannelPointsCustomRewardAddEvent : IChannelPointsCustomRewardEvent
+{
+    public required string Id { get; init; }
+    /// <summary>
+    /// The user id of the broadcaster (channel) that the reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) that the reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) that the reward belongs to.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    public required bool IsEnabled { get; init; }
+    public required bool IsPaused { get; init; }
+    public required bool IsInStock { get; init; }
+    public required string Title { get; init; }
+    public required int Cost { get; init; }
+    public required string Prompt { get; init; }
+    public required bool IsUserInputRequired { get; init; }
+    public required bool ShouldRedemptionsSkipRequestQueue { get; init; }
+    public required MaxPerStreamSetting MaxPerStream { get; init; }
+    public required MaxPerUserPerStreamSetting MaxPerUserPerStream { get; init; }
+    public required string BackgroundColor { get; init; }
+    public ChannelPointsRewardImage? Image { get; init; }
+    public required ChannelPointsRewardImage DefaultImage { get; init; }
+    public required GlobalCooldownSetting GlobalCooldown { get; init; }
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public DateTimeOffset? CooldownExpiresAt { get; init; }
+    public int? RedemptionsRedeemedCurrentStream { get; init; }
+}
