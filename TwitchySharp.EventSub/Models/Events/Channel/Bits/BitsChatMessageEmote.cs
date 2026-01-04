@@ -12,4 +12,5 @@ public record BitsChatMessageEmote : IChatMessageEmote
     public required string EmoteSetId { get; init; }
     public required string OwnerId { get; init; }
     public required ChatMessageEmoteFormat[] Format { get; init; }
+    IEnumerable<ChatMessageEmoteFormat> IChatMessageEmote.Format => Format;
 }
