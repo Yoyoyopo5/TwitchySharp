@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.ChatSettings;
 
@@ -26,7 +27,7 @@ public record ChannelChatSettingsUpdateCondition : BroadcasterUserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelChatSettingsUpdate"/> event.
 /// </summary>
-public record ChannelChatSettingsUpdateEvent
+public record ChannelChatSettingsUpdateEvent : IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that changed their chat settings.
