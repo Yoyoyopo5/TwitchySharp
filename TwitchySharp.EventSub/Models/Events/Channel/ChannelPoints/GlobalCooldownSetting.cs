@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
