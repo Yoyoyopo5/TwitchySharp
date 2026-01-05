@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Channel.GuestStar;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.GuestStar;
@@ -23,7 +23,7 @@ public record ChannelGuestStarSettingsUpdateCondition : BroadcasterModeratorCond
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelGuestStarSettingsUpdate"/> event.
 /// </summary>
-public record ChannelGuestStarSettingsUpdateEvent
+public record ChannelGuestStarSettingsUpdateEvent : IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) who is hosting the Guest Star session.
@@ -53,38 +53,4 @@ public record ChannelGuestStarSettingsUpdateEvent
     /// The layout of guests within a Guest Star session.
     /// </summary>
     public required GuestStarGroupLayout GroupLayout { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for possible Guest Star group layout types.
-/// </summary>
-/// <param name="Value">The string value of the layout type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<GuestStarGroupLayout, string>))]
-public record GuestStarGroupLayout(string Value) : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// All live guests are tiled within the browser source with the same size. 
-    /// </summary>
-    public static GuestStarGroupLayout Tiled { get; } = new("tiled");
-    /// <summary>
-    /// All live guests are tiled within the browser source with the same size. 
-    /// If there is an active screen share, it is sized larger than the other guests.
-    /// </summary>
-    public static GuestStarGroupLayout Screenshare { get; } = new("screenshare");
-    /// <summary>
-    /// Indicates the group layout will contain all participants in a top-aligned horizontal stack.
-    /// </summary>
-    public static GuestStarGroupLayout HorizontalTop { get; } = new("horizontal_top");
-    /// <summary>
-    /// Indicates the group layout will contain all participants in a bottom-aligned horizontal stack.
-    /// </summary>
-    public static GuestStarGroupLayout HorizontalBottom { get; } = new("horizontal_bottom");
-    /// <summary>
-    /// Indicates the group layout will contain all participants in a left-aligned vertical stack.
-    /// </summary>
-    public static GuestStarGroupLayout VerticalLeft { get; } = new("vertical_left");
-    /// <summary>
-    /// Indicates the group layout will contain all participants in a right-aligned vertical stack.
-    /// </summary>
-    public static GuestStarGroupLayout VerticalRight { get; } = new("vertical_right");
 }
