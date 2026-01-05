@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.GuestStar;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +23,7 @@ public record ChannelGuestStarSessionEndCondition : BroadcasterModeratorConditio
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelGuestStarSessionEnd"/> event.
 /// </summary>
-public record ChannelGuestStarSessionEndEvent
+public record ChannelGuestStarSessionEndEvent : IHaveGuestStarSession, IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that was in the ended Guest Star session who this subscription is associated with.
@@ -35,13 +37,7 @@ public record ChannelGuestStarSessionEndEvent
     /// The login (username) of the broadcaster (channel) that was in the ended Guest Star session who this subscription is associated with..
     /// </summary>
     public required string BroadcasterUserLogin { get; init; }
-    /// <summary>
-    /// The id of the Guest Star session that was ended.
-    /// </summary>
     public required string SessionId { get; init; }
-    /// <summary>
-    /// The date and time when the Guest Star session began.
-    /// </summary>
     public required DateTimeOffset StartedAt { get; init; }
     /// <summary>
     /// The date and time when the Guest Star session ended.
