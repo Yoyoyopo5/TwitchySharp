@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +22,7 @@ public record ChannelModeratorAddCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelModeratorAdd"/> event.
 /// </summary>
-public record ChannelModeratorAddEvent
+public record ChannelModeratorAddEvent : IHaveBroadcaster, IHaveUser
 {
     /// <summary>
     /// The user id of the broadcaster (channel) in whose chat the moderator was added.
