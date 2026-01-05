@@ -16,4 +16,9 @@ public record BitsChatMessageFragment : IChatMessageFragment
     IChatMessageEmote? IChatMessageFragment.Emote => Emote;
     public BitsChatMessageCheermote? Cheermote { get; init; }
     IChatMessageCheermote? IChatMessageFragment.Cheermote => Cheermote;
+    /// <summary>
+    /// Not supported for this fragment type.
+    /// Set to <see langword="null"/>
+    /// </summary>
+    IChatMessageMention? IChatMessageFragment.Mention => null;
 }
