@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.EventSub.Enums.Events.Channel.Goals;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Goals;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.EventSub.Models;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Goals;
 /// <summary>
@@ -22,8 +23,26 @@ public record GoalEndCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.GoalEnd"/> event.
 /// </summary>
-public record GoalEndEvent : GoalEvent
+public record GoalEndEvent : IGoalEvent
 {
+    public required string Id { get; init; }
+    /// <summary>
+    /// The user id of the broadcaster (channel) hosting the goal.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) hosting the goal.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) hosting the goal.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    public required ChannelGoalType Type { get; init; }
+    public required string Description { get; init; }
+    public required int CurrentAmount { get; init; }
+    public required int TargetAmount { get; init; }
+    public required DateTimeOffset StartedAt { get; init; }
     /// <summary>
     /// Indicates whether the goal was achieved (i.e., the target amount was reached when the goal ended).
     /// </summary>
