@@ -6,7 +6,37 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Notifications.Automod;
+using TwitchySharp.EventSub.Notifications.Automod.Message;
+using TwitchySharp.EventSub.Notifications.Automod.Settings;
+using TwitchySharp.EventSub.Notifications.Automod.Terms;
 using TwitchySharp.EventSub.Notifications.Channel;
+using TwitchySharp.EventSub.Notifications.Channel.AdBreak;
+using TwitchySharp.EventSub.Notifications.Channel.Bits;
+using TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Notifications.Channel.CharityCampaign;
+using TwitchySharp.EventSub.Notifications.Channel.Chat;
+using TwitchySharp.EventSub.Notifications.Channel.ChatSettings;
+using TwitchySharp.EventSub.Notifications.Channel.Goals;
+using TwitchySharp.EventSub.Notifications.Channel.GuestStar;
+using TwitchySharp.EventSub.Notifications.Channel.HypeTrain;
+using TwitchySharp.EventSub.Notifications.Channel.Moderator;
+using TwitchySharp.EventSub.Notifications.Channel.Polls;
+using TwitchySharp.EventSub.Notifications.Channel.Predictions;
+using TwitchySharp.EventSub.Notifications.Channel.SharedChat;
+using TwitchySharp.EventSub.Notifications.Channel.ShieldMode;
+using TwitchySharp.EventSub.Notifications.Channel.Shoutout;
+using TwitchySharp.EventSub.Notifications.Channel.Subscription;
+using TwitchySharp.EventSub.Notifications.Channel.SuspiciousUser;
+using TwitchySharp.EventSub.Notifications.Channel.UnbanRequest;
+using TwitchySharp.EventSub.Notifications.Channel.Vip;
+using TwitchySharp.EventSub.Notifications.Channel.Warning;
+using TwitchySharp.EventSub.Notifications.Conduit;
+using TwitchySharp.EventSub.Notifications.Drops;
+using TwitchySharp.EventSub.Notifications.Extension;
+using TwitchySharp.EventSub.Notifications.Stream;
+using TwitchySharp.EventSub.Notifications.User;
+using TwitchySharp.EventSub.Notifications.User.Authorization;
+using TwitchySharp.EventSub.Notifications.User.Whisper;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -85,7 +115,86 @@ public class NotificationConverter(IReadOnlyDictionary<EventSubSubscriptionType,
     {
         { EventSubSubscriptionType.AutomodMessageHold, typeof(AutomodMessageHoldNotification) },
         { EventSubSubscriptionType.AutomodMessageHoldV2, typeof(AutomodMessageHoldV2Notification) },
-        { EventSubSubscriptionType.ChannelChatMessage, typeof(ChannelChatMessageNotification) }
+        { EventSubSubscriptionType.AutomodMessageUpdate, typeof(AutomodMessageUpdateNotification) },
+        { EventSubSubscriptionType.AutomodMessageUpdateV2, typeof(AutomodMessageUpdateV2Notification) },
+        { EventSubSubscriptionType.AutomodSettingsUpdate, typeof(AutomodSettingsUpdateNotification) },
+        { EventSubSubscriptionType.AutomodTermsUpdate, typeof(AutomodTermsUpdateNotification) },
+        { EventSubSubscriptionType.ChannelBitsUse, typeof(ChannelBitsUseNotification) },
+        { EventSubSubscriptionType.ChannelUpdate, typeof(ChannelUpdateNotification) },
+        { EventSubSubscriptionType.ChannelFollow, typeof(ChannelFollowNotification) },
+        { EventSubSubscriptionType.ChannelAdBreakBegin, typeof(ChannelAdBreakBeginNotification) },
+        { EventSubSubscriptionType.ChannelChatClear, typeof(ChannelChatClearNotification) },
+        { EventSubSubscriptionType.ChannelChatClearUserMessages, typeof(ChannelChatClearUserMessagesNotification) },
+        { EventSubSubscriptionType.ChannelChatMessage, typeof(ChannelChatMessageNotification) },
+        { EventSubSubscriptionType.ChannelChatMessageDelete, typeof(ChannelChatMessageDeleteNotification) },
+        { EventSubSubscriptionType.ChannelChatNotification, typeof(ChannelChatNotificationNotification) },
+        { EventSubSubscriptionType.ChannelChatSettingsUpdate, typeof(ChannelChatSettingsUpdateNotification) },
+        { EventSubSubscriptionType.ChannelChatUserMessageHold, typeof(ChannelChatUserMessageHoldNotification) },
+        { EventSubSubscriptionType.ChannelChatUserMessageUpdate, typeof(ChannelChatUserMessageUpdateNotification) },
+        { EventSubSubscriptionType.ChannelSharedChatSessionBegin, typeof(ChannelSharedChatBeginNotification) },
+        { EventSubSubscriptionType.ChannelSharedChatSessionUpdate, typeof(ChannelSharedChatUpdateNotification) },
+        { EventSubSubscriptionType.ChannelSharedChatSessionEnd, typeof(ChannelSharedChatEndNotification) },
+        { EventSubSubscriptionType.ChannelSubscribe, typeof(ChannelSubscribeNotification) },
+        { EventSubSubscriptionType.ChannelSubscriptionEnd, typeof(ChannelSubscriptionEndNotification) },
+        { EventSubSubscriptionType.ChannelSubscriptionGift, typeof(ChannelSubscriptionGiftNotification) },
+        { EventSubSubscriptionType.ChannelSubscriptionMessage, typeof(ChannelSubscriptionMessageNotification) },
+        { EventSubSubscriptionType.ChannelCheer, typeof(ChannelCheerNotification) },
+        { EventSubSubscriptionType.ChannelRaid, typeof(ChannelRaidNotification) },
+        { EventSubSubscriptionType.ChannelBan, typeof(ChannelBanNotification) },
+        { EventSubSubscriptionType.ChannelUnban, typeof(ChannelUnbanNotification) },
+        { EventSubSubscriptionType.ChannelUnbanRequestCreate, typeof(ChannelUnbanRequestCreateNotification) },
+        { EventSubSubscriptionType.ChannelUnbanRequestResolve, typeof(ChannelUnbanRequestResolveNotification) },
+        { EventSubSubscriptionType.ChannelModerate, typeof(ChannelModerateNotification) },
+        { EventSubSubscriptionType.ChannelModerateV2, typeof(ChannelModerateV2Notification) },
+        { EventSubSubscriptionType.ChannelModeratorAdd, typeof(ChannelModeratorAddNotification) },
+        { EventSubSubscriptionType.ChannelModeratorRemove, typeof(ChannelModeratorRemoveNotification) },
+        { EventSubSubscriptionType.ChannelGuestStarSessionBegin, typeof(ChannelGuestStarSessionBeginNotification) },
+        { EventSubSubscriptionType.ChannelGuestStarSessionEnd, typeof(ChannelGuestStarSessionEndNotification) },
+        { EventSubSubscriptionType.ChannelGuestStarGuestUpdate, typeof(ChannelGuestStarGuestUpdateNotification) },
+        { EventSubSubscriptionType.ChannelGuestStarSettingsUpdate, typeof(ChannelGuestStarSettingsUpdateNotification) },
+        { EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAdd, typeof(ChannelPointsAutomaticRewardRedemptionAddNotification) },
+        { EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2, typeof(ChannelPointsAutomaticRewardRedemptionAddV2Notification) },
+        { EventSubSubscriptionType.ChannelPointsCustomRewardAdd, typeof(ChannelPointsCustomRewardAddNotification) },
+        { EventSubSubscriptionType.ChannelPointsCustomRewardUpdate, typeof(ChannelPointsCustomRewardUpdateNotification) },
+        { EventSubSubscriptionType.ChannelPointsCustomRewardRemove, typeof(ChannelPointsCustomRewardRemoveNotification) },
+        { EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionAdd, typeof(ChannelPointsCustomRewardRedemptionAddNotification) },
+        { EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate, typeof(ChannelPointsCustomRewardRedemptionUpdateNotification) },
+        { EventSubSubscriptionType.ChannelPollBegin, typeof(ChannelPollBeginNotification) },
+        { EventSubSubscriptionType.ChannelPollProgress, typeof(ChannelPollProgressNotification) },
+        { EventSubSubscriptionType.ChannelPollEnd, typeof(ChannelPollEndNotification) },
+        { EventSubSubscriptionType.ChannelPredictionBegin, typeof(ChannelPredictionBeginNotification) },
+        { EventSubSubscriptionType.ChannelPredictionProgress, typeof(ChannelPredictionProgressNotification) },
+        { EventSubSubscriptionType.ChannelPredictionLock, typeof(ChannelPredictionLockNotification) },
+        { EventSubSubscriptionType.ChannelPredictionEnd, typeof(ChannelPredictionEndNotification) },
+        { EventSubSubscriptionType.ChannelSuspiciousUserMessage, typeof(ChannelSuspiciousUserMessageNotification) },
+        { EventSubSubscriptionType.ChannelSuspiciousUserUpdate, typeof(ChannelSuspiciousUserUpdateNotification) },
+        { EventSubSubscriptionType.ChannelVIPAdd, typeof(ChannelVipAddNotification) },
+        { EventSubSubscriptionType.ChannelVIPRemove, typeof(ChannelVipRemoveNotification) },
+        { EventSubSubscriptionType.ChannelWarningAcknowledgement, typeof(ChannelWarningAcknowledgementNotification) },
+        { EventSubSubscriptionType.ChannelWarningSend, typeof(ChannelWarningSendNotification) },
+        { EventSubSubscriptionType.CharityDonation, typeof(CharityDonationNotification) },
+        { EventSubSubscriptionType.CharityCampaignStart, typeof(CharityCampaignStartNotification) },
+        { EventSubSubscriptionType.CharityCampaignProgress, typeof(CharityCampaignProgressNotification) },
+        { EventSubSubscriptionType.CharityCampaignStop, typeof(CharityCampaignStopNotification) },
+        { EventSubSubscriptionType.ConduitShardDisabled, typeof(ConduitShardDisabledNotification) },
+        { EventSubSubscriptionType.DropEntitlementGrant, typeof(DropEntitlementGrantNotification) },
+        { EventSubSubscriptionType.ExtensionBitsTransactionCreate, typeof(ExtensionBitsTransactionCreateNotification) },
+        { EventSubSubscriptionType.GoalBegin, typeof(GoalBeginNotification) },
+        { EventSubSubscriptionType.GoalProgress, typeof(GoalProgressNotification) },
+        { EventSubSubscriptionType.GoalEnd, typeof(GoalEndNotification) },
+        { EventSubSubscriptionType.HypeTrainBeginV2, typeof(HypeTrainBeginV2Notification) },
+        { EventSubSubscriptionType.HypeTrainProgressV2, typeof(HypeTrainProgressV2Notification) },
+        { EventSubSubscriptionType.HypeTrainEndV2, typeof(HypeTrainEndV2Notification) },
+        { EventSubSubscriptionType.ShieldModeBegin, typeof(ShieldModeBeginNotification) },
+        { EventSubSubscriptionType.ShieldModeEnd, typeof(ShieldModeEndNotification) },
+        { EventSubSubscriptionType.ShoutoutCreate, typeof(ShoutoutCreateNotification) },
+        { EventSubSubscriptionType.ShoutoutReceived, typeof(ShoutoutReceivedNotification) },
+        { EventSubSubscriptionType.StreamOnline, typeof(StreamOnlineNotification) },
+        { EventSubSubscriptionType.StreamOffline, typeof(StreamOfflineNotification) },
+        { EventSubSubscriptionType.UserAuthorizationGrant, typeof(UserAuthorizationGrantNotification) },
+        { EventSubSubscriptionType.UserAuthorizationRevoke, typeof(UserAuthorizationRevokeNotification) },
+        { EventSubSubscriptionType.UserUpdate, typeof(UserUpdateNotification) },
+        { EventSubSubscriptionType.WhisperReceived, typeof(WhisperReceivedNotification) }
     };
 
     private JsonSerializerOptions _serializerOptions = JsonConfig.ApiOptions;
