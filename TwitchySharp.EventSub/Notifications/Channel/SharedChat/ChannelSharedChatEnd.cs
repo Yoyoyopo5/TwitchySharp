@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.SharedChat;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel.SharedChat;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.SharedChat;
@@ -22,11 +25,8 @@ public record ChannelSharedChatEndCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSharedChatSessionEnd"/> event.
 /// </summary>
-public record ChannelSharedChatEndEvent
+public record ChannelSharedChatEndEvent : IHaveSharedChat, IHaveBroadcaster
 {
-    /// <summary>
-    /// The id of the shared chat session.
-    /// </summary>
     public required string SessionId { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) from the subscription condition that is no longer active in the shared chat session.
@@ -40,16 +40,11 @@ public record ChannelSharedChatEndEvent
     /// The login (username) of the broadcaster (channel) from the subscription condition that is no longer active in the shared chat session.
     /// </summary>
     public required string BroadcasterUserLogin { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster (channel) that was hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserId { get; init; }
-    /// <summary>
-    /// The display name of the broadcaster (channel) that was hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the broadcaster (channel) that was hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// Unsupported for this event type, defaults to empty array.
+    /// </summary>
+    SharedChatParticipant[] IHaveSharedChat.Participant => [];
 }

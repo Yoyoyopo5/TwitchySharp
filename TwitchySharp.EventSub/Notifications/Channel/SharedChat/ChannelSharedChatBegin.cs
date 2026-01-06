@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.SharedChat;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel.SharedChat;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.SharedChat;
@@ -23,11 +26,8 @@ public record ChannelSharedChatBeginCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSharedChatSessionBegin"/> event.
 /// </summary>
-public record ChannelSharedChatBeginEvent
+public record ChannelSharedChatBeginEvent : IHaveSharedChat, IHaveBroadcaster
 {
-    /// <summary>
-    /// The id of the shared chat session.
-    /// </summary>
     public required string SessionId { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) from the subscription condition that is active in the shared chat session.
@@ -41,39 +41,8 @@ public record ChannelSharedChatBeginEvent
     /// The login (username) of the broadcaster (channel) from the subscription condition that is active in the shared chat session.
     /// </summary>
     public required string BroadcasterUserLogin { get; init; }
-    /// <summary>
-    /// The user id of the broadcaster (channel) that is hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserId { get; init; }
-    /// <summary>
-    /// The display name of the broadcaster (channel) that is hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the broadcaster (channel) that is hosting the shared chat session.
-    /// </summary>
     public required string HostBroadcasterUserLogin { get; init; }
-    /// <summary>
-    /// The list of broadcasters participating in the shared chat session.
-    /// </summary>
-    public required SharedChatParticipant[] Paritipicants { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific broadcaster participant in a shared chat session.
-/// </summary>
-public record SharedChatParticipant
-{
-    /// <summary>
-    /// The user id of the broadcaster (channel) that is participating in the shared chat session.
-    /// </summary>
-    public required string BroadcasterUserId { get; init; }
-    /// <summary>
-    /// The display name of the broadcaster (channel) that is participating in the shared chat session.
-    /// </summary>
-    public required string BroadcasterUserName { get; init; }
-    /// <summary>
-    /// The login (username) of the broadcaster (channel) that is participating in the shared chat session.
-    /// </summary>
-    public required string BroadcasterUserLogin { get; init; }
+    public required SharedChatParticipant[] Participant { get; init; }
 }
