@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.ShieldMode;
 /// <summary>
@@ -22,8 +23,32 @@ public record ShieldModeBeginCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ShieldModeBegin"/> event.
 /// </summary>
-public record ShieldModeBeginEvent : ShieldModeEvent
+public record ShieldModeBeginEvent : IHaveBroadcaster, IHaveModerator
 {
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose Shield Mode status was changed.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) whose Shield Mode status was changed.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) whose Shield Mode status was changed.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    /// <summary>
+    /// The user id of the moderator who changed the Shield Mode status.
+    /// </summary>
+    public required string ModeratorUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the moderator who changed the Shield Mode status.
+    /// </summary>
+    public required string ModeratorUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the moderator who changed the Shield Mode status.
+    /// </summary>
+    public required string ModeratorUserName { get; init; }
     /// <summary>
     /// The date and time when Shield Mode was enabled.
     /// </summary>
