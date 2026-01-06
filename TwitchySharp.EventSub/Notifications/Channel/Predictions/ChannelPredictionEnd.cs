@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Enums.Events.Channel.Predictions;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Predictions;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
+using TwitchySharp.EventSub.Models.Events.Channel.Predictions;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Predictions;
@@ -23,8 +25,24 @@ public record ChannelPredictionEndCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPredictionEnd"/> event.
 /// </summary>
-public record ChannelPredictionEndEvent : ChannelPredictionEvent
+public record ChannelPredictionEndEvent : IHavePrediction, IHaveBroadcaster
 {
+    /// <summary>
+    /// The user id of the broadcaster (channel) that is hosting the prediction.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) that is hosting the prediction.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) that is hosting the prediction.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    public required string Id { get; init; }
+    public required string Title { get; init; }
+    public required ChannePredictionOutcome[] Outcomes { get; init; }
+    public required DateTimeOffset StartedAt { get; init; }
     /// <summary>
     /// The status of the ended prediction.
     /// </summary>
@@ -33,13 +51,4 @@ public record ChannelPredictionEndEvent : ChannelPredictionEvent
     /// The date and time when the prediction ended.
     /// </summary>
     public required DateTimeOffset EndedAt { get; init; }
-}
-/// <summary>
-/// Contains static definitions for possible ended channel prediction statuses.
-/// </summary>
-/// <param name="Value">The string value of the prediction status.</param>
-public record ChannelPredictionStatus(string Value) : ValueBackedEnum<string>(Value)
-{
-    public static ChannelPredictionStatus Resolved { get; } = new("resolved");
-    public static ChannelPredictionStatus Canceled { get; } = new("canceled");
 }
