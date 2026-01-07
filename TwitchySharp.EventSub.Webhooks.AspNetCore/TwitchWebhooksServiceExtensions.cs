@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
 using TwitchySharp.EventSub.Webhooks.MessageVerifiers;

@@ -4,92 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Notifications.Automod;
-using TwitchySharp.EventSub.Notifications.Automod.Message;
-using TwitchySharp.EventSub.Notifications.Automod.Settings;
-using TwitchySharp.EventSub.Notifications.Automod.Terms;
-using TwitchySharp.EventSub.Notifications.Channel;
-using TwitchySharp.EventSub.Notifications.Channel.AdBreak;
-using TwitchySharp.EventSub.Notifications.Channel.Bits;
-using TwitchySharp.EventSub.Notifications.Channel.ChannelPoints;
-using TwitchySharp.EventSub.Notifications.Channel.CharityCampaign;
-using TwitchySharp.EventSub.Notifications.Channel.Chat;
-using TwitchySharp.EventSub.Notifications.Channel.ChatSettings;
-using TwitchySharp.EventSub.Notifications.Channel.Goals;
-using TwitchySharp.EventSub.Notifications.Channel.GuestStar;
-using TwitchySharp.EventSub.Notifications.Channel.HypeTrain;
-using TwitchySharp.EventSub.Notifications.Channel.Moderator;
-using TwitchySharp.EventSub.Notifications.Channel.Polls;
-using TwitchySharp.EventSub.Notifications.Channel.Predictions;
-using TwitchySharp.EventSub.Notifications.Channel.SharedChat;
-using TwitchySharp.EventSub.Notifications.Channel.ShieldMode;
-using TwitchySharp.EventSub.Notifications.Channel.Shoutout;
-using TwitchySharp.EventSub.Notifications.Channel.Subscription;
-using TwitchySharp.EventSub.Notifications.Channel.SuspiciousUser;
-using TwitchySharp.EventSub.Notifications.Channel.UnbanRequest;
-using TwitchySharp.EventSub.Notifications.Channel.Vip;
-using TwitchySharp.EventSub.Notifications.Channel.Warning;
-using TwitchySharp.EventSub.Notifications.Conduit;
-using TwitchySharp.EventSub.Notifications.Drops;
-using TwitchySharp.EventSub.Notifications.Extension;
-using TwitchySharp.EventSub.Notifications.Stream;
-using TwitchySharp.EventSub.Notifications.User;
-using TwitchySharp.EventSub.Notifications.User.Authorization;
-using TwitchySharp.EventSub.Notifications.User.Whisper;
+using TwitchySharp.EventSub.Interfaces;
+using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Models.Notifications.Automod.Message;
+using TwitchySharp.EventSub.Models.Notifications.Automod.Settings;
+using TwitchySharp.EventSub.Models.Notifications.Automod.Terms;
+using TwitchySharp.EventSub.Models.Notifications.Channel;
+using TwitchySharp.EventSub.Models.Notifications.Channel.AdBreak;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Bits;
+using TwitchySharp.EventSub.Models.Notifications.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Models.Notifications.Channel.CharityCampaign;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
+using TwitchySharp.EventSub.Models.Notifications.Channel.ChatSettings;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Goals;
+using TwitchySharp.EventSub.Models.Notifications.Channel.GuestStar;
+using TwitchySharp.EventSub.Models.Notifications.Channel.HypeTrain;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Moderator;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Polls;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Predictions;
+using TwitchySharp.EventSub.Models.Notifications.Channel.SharedChat;
+using TwitchySharp.EventSub.Models.Notifications.Channel.ShieldMode;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Shoutout;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Subscription;
+using TwitchySharp.EventSub.Models.Notifications.Channel.SuspiciousUser;
+using TwitchySharp.EventSub.Models.Notifications.Channel.UnbanRequest;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Vip;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Warning;
+using TwitchySharp.EventSub.Models.Notifications.Conduit;
+using TwitchySharp.EventSub.Models.Notifications.Drops;
+using TwitchySharp.EventSub.Models.Notifications.Extension;
+using TwitchySharp.EventSub.Models.Notifications.Stream;
+using TwitchySharp.EventSub.Models.Notifications.User;
+using TwitchySharp.EventSub.Models.Notifications.User.Authorization;
+using TwitchySharp.EventSub.Models.Notifications.User.Whisper;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.NotificationConverters;
-
-/// <summary>
-/// Enables conversion between JSON inputs from EventSub notifications and their respective C# instance types.
-/// </summary>
-public interface INotificationConverter
-{
-    /// <summary>
-    /// Deserializes a JSON document into a type implementing <see cref="IEventSubNotification"/> using a given <see cref="EventSubSubscriptionType"/>.
-    /// </summary>
-    /// <param name="json">The parsed EventSub notification to deserialize.</param>
-    /// <param name="subscriptionType">The subscription type of the EventSub notification.</param>
-    /// <returns>An instance of a type that implements <see cref="IEventSubNotification"/>.</returns>
-    IEventSubNotification Deserialize(JsonDocument json, EventSubSubscriptionType subscriptionType);
-    /// <summary>
-    /// Deserializes a JSON document into a type implementing <see cref="IEventSubNotification"/>.
-    /// The type is determined based on the subscription property of the <paramref name="json"/>.
-    /// </summary>
-    /// <param name="json"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
-    /// <returns><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></returns>
-    IEventSubNotification Deserialize(JsonDocument json);
-
-    /// <summary>
-    /// <inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/>
-    /// </summary>
-    /// <param name="json"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
-    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
-    /// <returns><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></returns>
-    IEventSubNotification Deserialize(JsonElement json, EventSubSubscriptionType subscriptionType);
-    /// <summary>
-    /// <inheritdoc cref="Deserialize(JsonDocument)"/>
-    /// </summary>
-    /// <param name="json"><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"/></param>
-    /// <returns><inheritdoc cref="Deserialize(JsonElement, EventSubSubscriptionType)"></returns>
-    IEventSubNotification Deserialize(JsonElement json);
-
-    /// <summary>
-    /// <inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/>
-    /// </summary>
-    /// <param name="json">A JSON string of the EventSub notification to deserialize.</param>
-    /// <param name="subscriptionType"><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></param>
-    /// <returns><inheritdoc cref="Deserialize(JsonDocument, EventSubSubscriptionType)"/></returns>
-    IEventSubNotification Deserialize(string json, EventSubSubscriptionType subscriptionType);
-    /// <summary>
-    /// <inheritdoc cref="Deserialize(JsonDocument)"/>
-    /// </summary>
-    /// <param name="json"><inheritdoc cref="Deserialize(string, EventSubSubscriptionType)"/></param>
-    /// <returns><inheritdoc cref="Deserialize(string, EventSubSubscriptionType)"/></returns>
-    IEventSubNotification Deserialize(string json);
-}
 
 /// <summary>
 /// The default implementation of <see cref="INotificationConverter"/>.

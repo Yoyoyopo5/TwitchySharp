@@ -1,5 +1,5 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Channel.Chat;
-using TwitchySharp.EventSub.Interfaces;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.Chat;
