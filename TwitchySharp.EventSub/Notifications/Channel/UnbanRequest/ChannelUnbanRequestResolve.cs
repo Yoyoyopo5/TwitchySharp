@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Channel.UnbanRequest;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.UnbanRequest;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.UnbanRequest;
@@ -23,7 +24,7 @@ public record ChannelUnbanRequestResolveCondition : BroadcasterModeratorConditio
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUnbanRequestResolve"/> event.
 /// </summary>
-public record ChannelUnbanRequestResolveEvent
+public record ChannelUnbanRequestResolveEvent : IHaveUnbanRequest, IHaveBroadcaster, IHaveModerator, IHaveUser
 {
     /// <summary>
     /// The id of the unban request that was resolved.
@@ -73,29 +74,4 @@ public record ChannelUnbanRequestResolveEvent
     /// The status of the unban request after resolution.
     /// </summary>
     public required ChannelUnbanRequestResolutionStatus Status { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for possible statuses for channel unban requests.
-/// </summary>
-/// <param name="Value">The string value of the status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelUnbanRequestResolutionStatus, string>))]
-public record ChannelUnbanRequestResolutionStatus(string Value) : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// The unban request was approved by a moderator.
-    /// </summary>
-    public static ChannelUnbanRequestResolutionStatus Approved { get; } = new("approved");
-    /// <summary>
-    /// The unban request was canceled.
-    /// </summary>
-    /// <remarks>
-    /// Dev Note: Not exactly sure when this applies. It might be that the user canceled their own request,
-    /// or potentially that the user was unbanned before the request was resolved.
-    /// </remarks>
-    public static ChannelUnbanRequestResolutionStatus Canceled { get; } = new("canceled");
-    /// <summary>
-    /// The unban request was denied by a moderator.
-    /// </summary>
-    public static ChannelUnbanRequestResolutionStatus Denied { get; } = new("denied");
 }
