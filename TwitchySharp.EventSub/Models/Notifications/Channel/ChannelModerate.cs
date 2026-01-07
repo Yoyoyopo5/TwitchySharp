@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.EventSub.Models.Conditions;
+﻿using TwitchySharp.EventSub.Enums.Events.Channel;
 using TwitchySharp.EventSub.Interfaces.Events;
-using TwitchySharp.EventSub.Enums.Events.Channel;
-using TwitchySharp.EventSub.Models.Events.Channel;
 using TwitchySharp.EventSub.Interfaces.Events.Channel;
-using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel;
 /// <summary>

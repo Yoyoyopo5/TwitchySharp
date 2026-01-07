@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Enums.Events.Automod.Message;
+﻿using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Models.Events.Automod.Message;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;

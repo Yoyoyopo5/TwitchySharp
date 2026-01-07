@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using TwitchySharp.Shared.EventSub.Enums;
+﻿using System.Text.Json.Serialization;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
 using TwitchySharp.Helpers.JsonConverters;
 

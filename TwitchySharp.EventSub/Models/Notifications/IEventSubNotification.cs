@@ -1,6 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-
-namespace TwitchySharp.EventSub.Models.Notifications;
+﻿namespace TwitchySharp.EventSub.Models.Notifications;
 
 /// <summary>
 /// Contains basic functionality for untyped notifications.

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Models.Events.Channel.Chat;
+﻿using TwitchySharp.EventSub.Models.Events.Channel.Chat;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.Chat;
 
