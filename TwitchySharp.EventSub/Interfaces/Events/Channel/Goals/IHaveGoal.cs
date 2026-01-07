@@ -9,14 +9,9 @@ using TwitchySharp.Shared.EventSub.Enums;
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.Goals;
 
 /// <summary>
-/// The interface for Channel Goal events.
+/// A channel goal.
 /// </summary>
-/// <remarks>
-/// <see cref="EventSubSubscriptionType.GoalBegin"/>,
-/// <see cref="EventSubSubscriptionType.GoalProgress"/>,
-/// <see cref="EventSubSubscriptionType.GoalEnd"/>.
-/// </remarks>
-public interface IGoalEvent : IHaveBroadcaster
+public interface IHaveGoal
 {
     /// <summary>
     /// The id of the event.
