@@ -28,12 +28,13 @@ public record ExtensionBitsTransactionCreateCondition
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ExtensionBitsTransactionCreate"/> event.
 /// </summary>
-public record ExtensionBitsTransactionCreateEvent : IHaveBroadcaster, IHaveUser
+public record ExtensionBitsTransactionCreateEvent : IHaveBroadcaster, IHaveUser, IHaveClient
 {
     /// <summary>
     /// The client id of the extension the transaction took place in.
     /// </summary>
     public required string ExtensionClientId { get; init; }
+    string IHaveClient.ClientId => ExtensionClientId;
     /// <summary>
     /// The id of the transaction.
     /// </summary>
