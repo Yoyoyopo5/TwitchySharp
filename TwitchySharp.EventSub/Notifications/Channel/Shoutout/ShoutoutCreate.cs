@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Shoutout;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Shoutout;
 /// <summary>
@@ -22,7 +24,7 @@ public record ShoutoutCreateCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ShoutoutCreate"/> event.
 /// </summary>
-public record ShoutoutCreateEvent : ShoutoutEvent
+public record ShoutoutCreateEvent : IHaveShoutout, IHaveBroadcaster, IHaveModerator
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that sent the shoutout.
@@ -68,4 +70,6 @@ public record ShoutoutCreateEvent : ShoutoutEvent
     /// The date and time when the broadcaster may send another shoutout to the same broadcaster.
     /// </summary>
     public required DateTimeOffset TargetCooldownEndsAt { get; init; }
+    public required int ViewerCount { get; init; }
+    public required DateTimeOffset StartedAt { get; init; }
 }
