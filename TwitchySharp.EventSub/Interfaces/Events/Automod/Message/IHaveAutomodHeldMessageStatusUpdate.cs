@@ -9,13 +9,9 @@ using TwitchySharp.Shared.EventSub.Enums;
 namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 
 /// <summary>
-/// The interface for Automod Message Update events.
+/// A status update for an Automod held message.
 /// </summary>
-/// <remarks>
-/// <see cref="EventSubSubscriptionType.AutomodMessageUpdate"/>,
-/// <see cref="EventSubSubscriptionType.AutomodMessageUpdateV2"/>,
-/// </remarks>
-public interface IAutomodMessageUpdateEvent : IHaveModerator
+public interface IHaveAutomodHeldMessageStatusUpdate
 {
     /// <summary>
     /// The status of the updated automod message.

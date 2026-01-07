@@ -1,18 +1,28 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Models.Events.Automod.Message;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 
 /// <summary>
-/// The interface for Automod message V2 events.
+/// An Automod held message.
 /// </summary>
-/// <remarks>
-/// <see cref="EventSubSubscriptionType.AutomodMessageHoldV2"/>,
-/// <see cref="EventSubSubscriptionType.AutomodMessageUpdateV2"/>.
-/// </remarks>
-public interface IAutomodMessageV2Event
+public interface IHaveAutomodHeldMessageV2
 {
+    /// <summary>
+    /// The id of the message that was flagged by the Automod.
+    /// </summary>
+    string MessageId { get; }
+    /// <summary>
+    /// The message that was flagged.
+    /// </summary>
+    AutomodCaughtChatMessage Message { get; }
+    /// <summary>
+    /// The date and time when the Automod caught the message.
+    /// </summary>
+    DateTimeOffset HeldAt { get; }
+    /// <summary>
+    /// The reason the Automod caught the message.
+    /// </summary>
     AutomodHoldReason Reason { get; }
     /// <summary>
     /// Contains information about the Automod settings that caused the hold.
