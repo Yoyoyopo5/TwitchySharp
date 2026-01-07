@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Models.Events.Extension;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Extension;
@@ -26,7 +28,7 @@ public record ExtensionBitsTransactionCreateCondition
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ExtensionBitsTransactionCreate"/> event.
 /// </summary>
-public record ExtensionBitsTransactionCreateEvent
+public record ExtensionBitsTransactionCreateEvent : IHaveBroadcaster, IHaveUser
 {
     /// <summary>
     /// The client id of the extension the transaction took place in.
@@ -67,27 +69,4 @@ public record ExtensionBitsTransactionCreateEvent
     /// Additional information about the product that was transacted.
     /// </summary>
     public required ExtensionBitsProduct Product { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific Extension Bits product.
-/// </summary>
-public record ExtensionBitsProduct
-{
-    /// <summary>
-    /// The name of the product.
-    /// </summary>
-    public required string Name { get; init; }
-    /// <summary>
-    /// The amount of Bits involved in the transaction.
-    /// </summary>
-    public required int Bits { get; init; }
-    /// <summary>
-    /// Unique identifier for the product.
-    /// </summary>
-    public required string Sku { get; init; }
-    /// <summary>
-    /// Indicates whether the product is in development.
-    /// </summary>
-    public required bool InDevelopment { get; init; }
 }
