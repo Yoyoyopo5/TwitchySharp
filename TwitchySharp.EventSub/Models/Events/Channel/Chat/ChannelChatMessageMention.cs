@@ -1,5 +1,4 @@
-﻿using TwitchySharp.EventSub.Interfaces;
-using TwitchySharp.EventSub.Interfaces.Events;
+﻿using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.Chat;
 

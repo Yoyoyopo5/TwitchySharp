@@ -1,4 +1,4 @@
-﻿using TwitchySharp.EventSub.Interfaces;
+﻿using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Notifications.Automod;
