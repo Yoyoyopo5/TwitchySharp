@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.SuspiciousUser;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel.SuspiciousUser;
 using TwitchySharp.EventSub.Notifications.Channel.Chat;
-using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.SuspiciousUser;
@@ -24,8 +27,36 @@ public record ChannelSuspiciousUserMessageCondition : BroadcasterModeratorCondit
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSuspiciousUserMessage"/> event.
 /// </summary>
-public record ChannelSuspiciousUserMessageEvent : ChannelSuspiciousUserEvent
+public record ChannelSuspiciousUserMessageEvent : IHaveSuspiciousUser, IHaveBroadcaster
 {
+    /// <summary>
+    /// The user id of the broadcaster (channel) in whose chat the suspicious user event occurred.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) in whose chat the suspicious user event occurred.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) in whose chat the suspicious user event occurred.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The user id of the suspicious user.
+    /// </summary>
+    public required string UserId { get; init; }
+    /// <summary>
+    /// The display name of the suspicious user.
+    /// </summary>
+    public required string UserName { get; init; }
+    /// <summary>
+    /// The login (username) of the suspicious user.
+    /// </summary>
+    public required string UserLogin { get; init; }
+    /// <summary>
+    /// The current status of the suspicious user as set by a moderator.
+    /// </summary>
+    public required SuspiciousUserStatus LowTrustStatus { get; init; }
     /// <summary>
     /// An array of broadcaster (channel) user ids that the broadcaster is sharing bans with where the suspicious user is also banned.
     /// </summary>
@@ -42,46 +73,4 @@ public record ChannelSuspiciousUserMessageEvent : ChannelSuspiciousUserEvent
     /// The chat message sent by the suspicious user.
     /// </summary>
     public required SuspiciousUserChatMessage Message { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for possible suspicious user types.
-/// </summary>
-/// <param name="Value">The string value of the suspicious user type.</param>
-public record ChannelSuspiciousUserType(string Value) : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// The suspicious user was manually tagged by a moderator.
-    /// </summary>
-    public static ChannelSuspiciousUserType ManuallyAdded { get; } = new("manually_added");
-    /// <summary>
-    /// The suspicious user was marked by Twitch as a potential ban evader.
-    /// </summary>
-    public static ChannelSuspiciousUserType BanEvader { get; } = new("ban_evader");
-    /// <summary>
-    /// The suspicious user was banned in a channel sharing bans with the broadcaster.
-    /// </summary>
-    public static ChannelSuspiciousUserType BannedInSharedChannel { get; } = new("banned_in_shared_channel");
-}
-
-/// <summary>
-/// Contains static definitions for possible ban evasion likelihoods for suspicious chat users.
-/// </summary>
-/// <param name="Value">The string value for the ban evasion evaluation.</param>
-public record SuspiciousUserBanEvasionEvaluationLevel(string Value) : ValueBackedEnum<string>(Value)
-{
-    public static SuspiciousUserBanEvasionEvaluationLevel Unknown { get; } = new("unknown");
-    public static SuspiciousUserBanEvasionEvaluationLevel Possible { get; } = new("possible");
-    public static SuspiciousUserBanEvasionEvaluationLevel Likely { get; } = new("likely");
-}
-
-/// <summary>
-/// Contains information about a specific chat message from a suspicious user.
-/// </summary>
-public record SuspiciousUserChatMessage : ChannelChatMessage
-{
-    /// <summary>
-    /// The id of the message.
-    /// </summary>
-    public required string MessageId { get; init; }
 }
