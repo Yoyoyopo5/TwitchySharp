@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +22,7 @@ public record ChannelWarningSendCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelWarningSend"/> event.
 /// </summary>
-public record ChannelWarningSendEvent
+public record ChannelWarningSendEvent : IHaveBroadcaster, IHaveModerator, IHaveUser
 {
     /// <summary>
     /// The user id of the broadcaster (channel) where the warning was issued.
