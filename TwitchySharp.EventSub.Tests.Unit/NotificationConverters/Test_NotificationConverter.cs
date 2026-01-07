@@ -5,10 +5,10 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Interfaces;
+using TwitchySharp.EventSub.Models.Notifications.Automod.Message;
 using TwitchySharp.EventSub.NotificationConverters;
-using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Notifications.Automod;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -47,7 +47,7 @@ public class Test_NotificationConverter
                 UserId = "456789012",
                 UserName = "baduser",
                 UserLogin = "baduserbla",
-                Category = "aggressive",
+                Category = new("aggressive"),
                 HeldAt = DateTimeOffset.UtcNow,
                 Level = 1,
                 MessageId = "bad-message-id",
