@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Subscription;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.EventSub.Enums;
@@ -22,7 +24,7 @@ public record ChannelSubscriptionGiftCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSubscriptionGift"/> event.
 /// </summary>
-public record ChannelSubscriptionGiftEvent
+public record ChannelSubscriptionGiftEvent : IHaveSubscription, IHaveBroadcaster
 {
     /// <summary>
     /// The id of the user that sent the subscription gift.
