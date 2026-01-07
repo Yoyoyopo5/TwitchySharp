@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.User.Whisper;
 
 namespace TwitchySharp.EventSub.Notifications.User.Whisper;
 /// <summary>
@@ -55,15 +56,4 @@ public record WhisperReceivedEvent
     /// The whisper message.
     /// </summary>
     public required WhisperMessage Message { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific message sent using Twitch Whispers.
-/// </summary>
-public record WhisperMessage
-{
-    /// <summary>
-    /// The text of the message.
-    /// </summary>
-    public required string Text { get; init; }
 }
