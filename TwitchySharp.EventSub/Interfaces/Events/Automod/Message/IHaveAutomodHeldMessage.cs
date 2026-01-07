@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Models.Events.Automod.Message;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 
 /// <summary>
-/// An event that has a message that was held by the Automod.
+/// An Automod held message.
 /// </summary>
 public interface IHaveAutomodHeldMessage
 {
-    /// <summary>
-    /// The id of the message that was flagged by the Automod.
-    /// </summary>
-    string MessageId { get; }
     /// <summary>
     /// The message that was flagged.
     /// </summary>
@@ -24,4 +21,13 @@ public interface IHaveAutomodHeldMessage
     /// The date and time when the Automod caught the message.
     /// </summary>
     DateTimeOffset HeldAt { get; }
+    /// <summary>
+    /// The category that the message was flagged under.
+    /// </summary>
+    AutomodMessageCategory Category { get; }
+    /// <summary>
+    /// The level of severity for the caught message.
+    /// Ranges from 1 to 4.
+    /// </summary>
+    int Level { get; }
 }
