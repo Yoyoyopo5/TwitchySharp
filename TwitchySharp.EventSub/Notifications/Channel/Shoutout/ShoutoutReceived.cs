@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Shoutout;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Notifications.Channel.Shoutout;
 /// <summary>
@@ -22,7 +24,7 @@ public record ShoutoutReceivedCondition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ShoutoutReceived"/> event.
 /// </summary>
-public record ShoutoutReceivedEvent : ShoutoutEvent
+public record ShoutoutReceivedEvent : IHaveShoutout, IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that received the shoutout.
@@ -48,4 +50,6 @@ public record ShoutoutReceivedEvent : ShoutoutEvent
     /// The display name of the broadcaster (channel) that sent the shoutout.
     /// </summary>
     public required string FromBroadcasterUserName { get; init; }
+    public required int ViewerCount { get; init; }
+    public required DateTimeOffset StartedAt { get; init; }
 }
