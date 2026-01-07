@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.Subscription;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Models.Events.Channel.Subscription;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -22,7 +25,7 @@ public record ChannelSubscriptionMessageCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelSubscriptionMessage"/> event.
 /// </summary>
-public record ChannelSubscriptionMessageEvent
+public record ChannelSubscriptionMessageEvent : IHaveSubscription, IHaveBroadcaster
 {
     /// <summary>
     /// The id of the user that sent the resubscription chat message.
@@ -74,38 +77,4 @@ public record ChannelSubscriptionMessageEvent
     /// original subscription, or even the duration of the original subscription itself.
     /// </remarks>
     public int DurationMonths { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific resubscription chat message.
-/// </summary>
-public record ResubscriptionMessage
-{
-    /// <summary>
-    /// The full text of the message.
-    /// </summary>
-    public required string Text { get; init; }
-    /// <summary>
-    /// The emotes present in the message.
-    /// </summary>
-    public required ResubscriptionMessageEmote[] Emotes { get; init; }
-}
-
-/// <summary>
-/// Contains information about a specific emote used in a resubscription message.
-/// </summary>
-public record ResubscriptionMessageEmote
-{
-    /// <summary>
-    /// The id of the emote.
-    /// </summary>
-    public required string Id { get; init; }
-    /// <summary>
-    /// The character index at which the emote starts in the message.
-    /// </summary>
-    public required int Begin { get; init; }
-    /// <summary>
-    /// The character index at which the emote ends in the message.
-    /// </summary>
-    public required int End { get; init; }
 }
