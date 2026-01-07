@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.User;
 /// <summary>
@@ -21,7 +22,7 @@ public record UserUpdateCondition : UserCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.UserUpdate"/> event.
 /// </summary>
-public record UserUpdateEvent
+public record UserUpdateEvent : IHaveUser
 {
     /// <summary>
     /// The id of the user.
