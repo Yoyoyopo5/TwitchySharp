@@ -10,14 +10,9 @@ using TwitchySharp.Helpers.JsonConverters;
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 
 /// <summary>
-/// The interface for Channel Points Custom Reward events.
+/// A Channel Points custom reward.
 /// </summary>
-/// <remarks>
-/// <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/>, 
-/// <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardUpdate"/>, 
-/// <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRemove"/>.
-/// </remarks>
-public interface IChannelPointsCustomRewardEvent : IHaveBroadcaster
+public interface IHaveChannelPointsCustomReward
 {
     /// <summary>
     /// The id of the reward.

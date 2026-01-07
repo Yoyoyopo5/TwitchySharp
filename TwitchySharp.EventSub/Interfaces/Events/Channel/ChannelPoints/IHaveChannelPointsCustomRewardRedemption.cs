@@ -10,13 +10,9 @@ using TwitchySharp.Shared.EventSub.Enums;
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 
 /// <summary>
-/// The interface for Channel Points Custom Reward Redemption events.
+/// A custom Channel Points reward redemption.
 /// </summary>
-/// <remarks>
-/// <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionAdd"/>, 
-/// <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate"/>.
-/// </remarks>
-public interface IChannelPointsCustomRewardRedemptionEvent : IHaveBroadcaster, IHaveUser, IChannelPointsRewardRedemptionEvent
+public interface IHaveChannelPointsCustomRewardRedemption : IHaveChannelPointsRewardRedemption
 {
     /// <summary>
     /// The message provided by the user when redeeming the reward.

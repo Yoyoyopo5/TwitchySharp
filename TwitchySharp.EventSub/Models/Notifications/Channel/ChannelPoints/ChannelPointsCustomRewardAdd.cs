@@ -10,6 +10,7 @@ using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.ChannelPoints;
 /// <summary>
@@ -26,7 +27,7 @@ public record ChannelPointsCustomRewardAddCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardAdd"/> event.
 /// </summary>
-public record ChannelPointsCustomRewardAddEvent : IChannelPointsCustomRewardEvent
+public record ChannelPointsCustomRewardAddEvent : IHaveChannelPointsCustomReward, IHaveBroadcaster
 {
     public required string Id { get; init; }
     /// <summary>

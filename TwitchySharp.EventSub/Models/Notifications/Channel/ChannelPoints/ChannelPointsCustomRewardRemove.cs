@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
@@ -26,7 +27,7 @@ public record ChannelPointsCustomRewardRemoveCondition : BroadcasterRewardCondit
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRemove"/> event.
 /// </summary>
-public record ChannelPointsCustomRewardRemoveEvent : IChannelPointsCustomRewardEvent
+public record ChannelPointsCustomRewardRemoveEvent : IHaveChannelPointsCustomReward, IHaveBroadcaster
 {
     public required string Id { get; init; }
     /// <summary>
