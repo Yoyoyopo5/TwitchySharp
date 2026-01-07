@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.User.Authorization;
 /// <summary>
@@ -22,14 +23,22 @@ public record UserAuthorizationGrantCondition : ClientCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.UserAuthorizationGrant"/> event.
 /// </summary>
-public record UserAuthorizationGrantEvent : UserAuthorizationEvent
+public record UserAuthorizationGrantEvent : IHaveClient, IHaveUser
 {
     /// <summary>
-    /// <inheritdoc cref="UserAuthorizationEvent.UserLogin"/>
+    /// The client id of the application the authorization is associated with.
     /// </summary>
-    public new required string UserLogin { get; init; }
+    public required string ClientId { get; init; }
     /// <summary>
-    /// <inheritdoc cref="UserAuthorizationEvent.UserName"/>
+    /// The id of the user who granted access to the app.
     /// </summary>
-    public new required string UserName { get; init; }
+    public required string UserId { get; init; }
+    /// <summary>
+    /// The login (username) of the user who granted access to the app.
+    /// </summary>
+    public required string UserLogin { get; init; }
+    /// <summary>
+    /// The display name of the user who granted access to the app.
+    /// </summary>
+    public required string UserName { get; init; }
 }
