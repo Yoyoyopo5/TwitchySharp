@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Notifications;
@@ -24,7 +25,7 @@ public record CharityCampaignProgressCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.CharityCampaignProgress"/> event.
 /// </summary>
-public record CharityCampaignProgressEvent : ICharityCampaignLifecycleEvent
+public record CharityCampaignProgressEvent : IHaveCharityCampaign, IHaveCharity, IHaveBroadcaster
 {
     /// <summary>
     /// The user id of the broadcaster (channel) who is hosting the charity campaign.
