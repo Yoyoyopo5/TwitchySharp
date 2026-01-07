@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.EventSub.Notifications.Channel;
+using TwitchySharp.EventSub.Models.Notifications.Channel;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel;

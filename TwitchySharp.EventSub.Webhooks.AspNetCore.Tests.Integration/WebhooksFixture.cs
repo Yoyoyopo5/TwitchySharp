@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Models.Notifications;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration;
 
