@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Enums.Events.Automod.Message;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Automod.Message;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Automod.Message;
@@ -27,7 +28,7 @@ public record AutomodMessageUpdateV2Condition : BroadcasterModeratorCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.AutomodMessageUpdateV2"/> event.
 /// </summary>
-public record AutomodMessageUpdateV2Event : IAutomodMessageEvent, IAutomodMessageV2Event, IAutomodMessageUpdateEvent
+public record AutomodMessageUpdateV2Event : IHaveAutomodHeldMessageV2, IHaveAutomodHeldMessageStatusUpdate, IHaveBroadcaster, IHaveUser, IHaveModerator
 {
     /// <summary>
     /// The user id of the broadcaster (channel) that the Automod caught the message for.
