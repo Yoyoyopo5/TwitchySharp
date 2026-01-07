@@ -13,48 +13,33 @@ Expect breaking changes.
 ### Completed Features
 - [X] Authorization API
 - [X] Helix API
-- [X] API Integration Tests
+- [X] API E2E Tests
 
 ## TODO
 
 ### API
+- [ ] Bring API up to date with new changes
 - [ ] Change duration type properties to use TimeSpan
+- [ ] Replace existing enums with ValueBackedEnums
+- [ ] Rework Existing Tests
 
 ### EventSub 
-- [ ] Notification Models
-    - [ ] Automod
-    - [ ] Channel
-        - [ ] Ad Break
-        - [ ] Channel Points
-        - [ ] Charity Campaign
-        - [ ] Chat
-        - [ ] Chat Settings
-        - [ ] Goals
-        - [ ] Guest Star
-        - [ ] Hype Train
-        - [ ] Moderator
-        - [ ] Polls
-        - [ ] Predictions
-        - [ ] Shared Chat
-        - [ ] Shield Mode
-        - [ ] Shoutout
-        - [ ] Subscription
-        - [ ] Suspicious User
-        - [ ] Unban Request
-        - [ ] VIPs
-        - [ ] Warnings
-    - [ ] Conduit
-    - [ ] Drops
-    - [ ] Extension
-    - [ ] Stream
-    - [ ] User 
+- [X] Notification Models
 - [X] Websockets Notification Handler
 - [X] Webhooks Notification Handler
 - [X] ASP.NET Core Integration
+- [ ] E2E Tests for Webhooks
+- [ ] Manual E2E Testing Pass (to verify event shapes)
 
 ### Documentation
 - [ ] API Example Project
 - [ ] API Quick Start Guide
+- [ ] EventSub Websockets Quick Start Guide
+- [ ] EventSub Webhooks Quick Start Guide
+
+### Deployment
+- [ ] Create Testing Workflow
+- [ ] Create Tag Deployment to NuGet Workflow
 
 ## Not Planned (Obsolete)
 - PubSub

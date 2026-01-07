@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Models;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>

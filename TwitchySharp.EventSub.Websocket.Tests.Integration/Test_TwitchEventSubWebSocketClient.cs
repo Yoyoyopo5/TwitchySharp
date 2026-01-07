@@ -5,8 +5,7 @@ using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.Models.Types;
-using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Notifications.Channel;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
@@ -53,7 +52,7 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
             await Task.Delay(1000);
 
             Assert.Null(_fixture.Handler.ReceivedException);
-            Assert.NotNull(_fixture.Handler.ReceivedNotification as Notifications.Channel.ChannelChatMessageNotification);
+            Assert.NotNull(_fixture.Handler.ReceivedNotification as ChannelChatMessageNotification);
         }
         finally
         {

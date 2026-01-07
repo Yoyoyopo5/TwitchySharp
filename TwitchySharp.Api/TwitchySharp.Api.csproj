@@ -11,7 +11,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit"/>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Shared\TwitchySharp.Shared.csproj" />
   </ItemGroup>
 
 </Project>

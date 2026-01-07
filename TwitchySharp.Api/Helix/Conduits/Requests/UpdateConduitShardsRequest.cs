@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -123,7 +124,6 @@ public abstract record ConduitTransportUpdate
     /// <summary>
     /// The method to use for the transport.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseLowerJsonStringEnumConverter<ConduitTransportMethod>))]
     public ConduitTransportMethod? Method { get; protected set; }
     /// <summary>
     /// The callback url where webhook notifications are sent.
