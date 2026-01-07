@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Enums.Events.Channel.Goals;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.Goals;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Notifications;
@@ -24,7 +25,7 @@ public record GoalProgressCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.GoalProgress"/> event.
 /// </summary>
-public record GoalProgressEvent : IGoalEvent
+public record GoalProgressEvent : IHaveGoal, IHaveBroadcaster
 {
     public required string Id { get; init; }
     /// <summary>
