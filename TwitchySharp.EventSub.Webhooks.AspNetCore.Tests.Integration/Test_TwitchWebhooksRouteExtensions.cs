@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Notifications.Channel;
+using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 using TwitchySharp.EventSub.Webhooks.SignatureComputers;
 using TwitchySharp.Shared.EventSub.Enums;
 
