@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.UnbanRequest;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +23,7 @@ public record ChannelUnbanRequestCreateCondition : BroadcasterModeratorCondition
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUnbanRequestCreate"/> event.
 /// </summary>
-public record ChannelUnbanRequestCreateEvent
+public record ChannelUnbanRequestCreateEvent : IHaveUnbanRequest, IHaveBroadcaster, IHaveUser
 {
     /// <summary>
     /// The id of the unban request that was created.
