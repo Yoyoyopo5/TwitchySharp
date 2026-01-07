@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +22,7 @@ public record ChannelUnbanCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelUnban"/> event.
 /// </summary>
-public record ChannelUnbanEvent
+public record ChannelUnbanEvent : IHaveBroadcaster, IHaveModerator, IHaveUser
 {
     /// <summary>
     /// The id of the user who was unbanned or untimedout.

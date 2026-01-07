@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.Shared.EventSub.Enums;
 
@@ -21,7 +22,7 @@ public record ChannelCheerCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelCheer"/> event.
 /// </summary>
-public record ChannelCheerEvent
+public record ChannelCheerEvent : IHaveBroadcaster
 {
     /// <summary>
     /// Indicates whether the cheer was made anonymously.
