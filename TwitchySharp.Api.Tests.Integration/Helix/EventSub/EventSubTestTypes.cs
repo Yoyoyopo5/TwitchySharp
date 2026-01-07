@@ -50,7 +50,7 @@ public class EventSubTestTypes : TheoryData<string>
         nameof(AutomodSettingsUpdate),
         nameof(AutomodTermsUpdate),
         nameof(ChannelAdBreakBegin),
-        nameof(ChannelPointsAutomaticRewardRedemption),
+        nameof(ChannelPointsAutomaticRewardRedemptionAdd),
         nameof(ChannelPointsCustomRewardAdd),
         nameof(ChannelPointsCustomRewardRemove),
         nameof(ChannelPointsCustomRewardUpdate),

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Moderation;
 [Collection("helix")]
@@ -16,7 +17,7 @@ public class Test_UpdateAutoModSettings(HelixFixture fixture)
     {
         string broadcasterId = await _fixture.GetUserIdFromAccessTokenAsync();
 
-        await UpdateAutoModSettings(broadcasterId, new UpdateAutoModOverallLevelData(AutoModFilteringLevel.Less));
+        await UpdateAutoModSettings(broadcasterId, new UpdateAutoModOverallLevelData(AutomodFilteringLevel.Less));
     }
 
     [Fact]
@@ -26,8 +27,8 @@ public class Test_UpdateAutoModSettings(HelixFixture fixture)
 
         await UpdateAutoModSettings(broadcasterId, new UpdateAutoModCustomLevelsData()
         {
-            Aggression = AutoModFilteringLevel.Less,
-            Swearing = AutoModFilteringLevel.None
+            Aggression = AutomodFilteringLevel.Less,
+            Swearing = AutomodFilteringLevel.None
         });
     }
 

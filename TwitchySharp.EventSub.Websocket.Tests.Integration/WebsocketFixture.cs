@@ -6,7 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api;
-using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Models;
+using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Integration;

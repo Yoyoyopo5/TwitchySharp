@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Models;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Charity;
 /// <summary>
