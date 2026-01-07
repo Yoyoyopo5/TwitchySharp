@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.SharedChat;
 /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.Polls;
 /// <summary>

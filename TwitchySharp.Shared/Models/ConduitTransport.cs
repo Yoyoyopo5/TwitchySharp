@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Enums;
+
+namespace TwitchySharp.Shared.Models;
+
+/// <summary>
+/// Contains data about a conduit shard's transport mechanism.
+/// </summary>
+public record ConduitTransport
+{
+    /// <summary>
+    /// The transport method.
+    /// Shards can either send events over Webhooks or WebSocket connections.
+    /// </summary>
+    public required ConduitTransportMethod Method { get; init; }
+    /// <summary>
+    /// The callback URL where the notifications are sent. 
+    /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Webhook"/>.
+    /// </summary>
+    public string? Callback { get; init; }
+    /// <summary>
+    /// An ID that identifies the WebSocket that notifications are sent to.
+    /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Websocket"/>.
+    /// </summary>
+    public string? SessionId { get; init; }
+    /// <summary>
+    /// The date and time that the WebSocket connection was established.
+    /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Websocket"/>.
+    /// </summary>
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public DateTimeOffset? ConnectedAt { get; init; }
+    /// <summary>
+    /// The date and time that the WebSocket connection was lost.
+    /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Websocket"/>.
+    /// </summary>
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public DateTimeOffset? DisconnectedAt { get; init; }
+}

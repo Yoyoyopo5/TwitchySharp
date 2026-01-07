@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
 internal class NotificationMessagePayload
