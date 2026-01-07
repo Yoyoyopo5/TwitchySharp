@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.Stream;
 /// <summary>
@@ -22,4 +23,18 @@ public record StreamOfflineCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.StreamOffline"/> event.
 /// </summary>
-public record StreamOfflineEvent : StreamEvent;
+public record StreamOfflineEvent : IHaveBroadcaster
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose stream went offline.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) whose stream went offline.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) whose stream went offline.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
+}

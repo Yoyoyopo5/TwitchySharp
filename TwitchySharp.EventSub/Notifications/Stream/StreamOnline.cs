@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers;
-using System.Text.Json.Serialization;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Enums.Events.Stream;
 
 namespace TwitchySharp.EventSub.Notifications.Stream;
 /// <summary>
@@ -24,8 +24,20 @@ public record StreamOnlineCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.StreamOnline"/> event.
 /// </summary>
-public record StreamOnlineEvent : StreamEvent
+public record StreamOnlineEvent : IHaveBroadcaster
 {
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose stream went online.
+    /// </summary>
+    public required string BroadcasterUserId { get; init; }
+    /// <summary>
+    /// The login (username) of the broadcaster (channel) whose stream went online.
+    /// </summary>
+    public required string BroadcasterUserLogin { get; init; }
+    /// <summary>
+    /// The display name of the broadcaster (channel) whose stream went online.
+    /// </summary>
+    public required string BroadcasterUserName { get; init; }
     /// <summary>
     /// The id of the stream.
     /// </summary>
@@ -38,18 +50,4 @@ public record StreamOnlineEvent : StreamEvent
     /// The date and time when the stream went online.
     /// </summary>
     public required DateTimeOffset StartedAt { get; init; }
-}
-
-/// <summary>
-/// Contains static definitions for possible Stream types.
-/// </summary>
-/// <param name="Value">The string value for the Stream type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<StreamType, string>))]
-public record StreamType(string Value) : ValueBackedEnum<string>(Value)
-{
-    public static StreamType Live { get; } = new("live");
-    public static StreamType Playlist { get; } = new("playlist");
-    public static StreamType WatchParty { get; } = new("watch_party");
-    public static StreamType Premiere { get; } = new("premiere");
-    public static StreamType Rerun { get; } = new("rerun");
 }
