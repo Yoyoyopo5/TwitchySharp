@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.EventSub.Interfaces.Events;
+﻿namespace TwitchySharp.EventSub.Interfaces.Events;
 
 /// <summary>
 /// An event associated with a specific client (app).

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Enums.Events.Channel.Goals;
-using TwitchySharp.Shared.EventSub.Enums;
+﻿using TwitchySharp.EventSub.Enums.Events.Channel.Goals;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.Goals;
 

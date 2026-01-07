@@ -1,5 +1,5 @@
-﻿using TwitchySharp.Helpers;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Stream;
 

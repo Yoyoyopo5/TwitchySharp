@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Helpers.JsonConverters;
+﻿using System.Text.Json.Serialization;
+using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
-using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
-using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Interfaces.Events;
+using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.ChannelPoints;
 /// <summary>
