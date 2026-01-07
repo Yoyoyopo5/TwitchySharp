@@ -36,6 +36,8 @@ public class Test_HttpQueryParameters
         Assert.Equal(mockParametersString, actual);
     }
 
+    [Theory]
+    [InlineData("key", "value", "another_value")]
     public void Add_SingleEnumerableParameter_ReturnParametersString(string key, string value1, string value2)
     {
         string mockParametersString = $"?{key}={value1}&{key}={value2}";

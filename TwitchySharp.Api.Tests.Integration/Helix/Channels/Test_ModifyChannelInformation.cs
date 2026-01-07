@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Models;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Channels;
 [Collection("helix")]
@@ -27,7 +28,7 @@ public class Test_ModifyChannelInformation(HelixFixture fixture)
                 BroadcasterLanguage = "en",
                 Title = "test title pls ignore",
                 Tags = ["testtag"],
-                ContentClassificationLabels = [new ContentClassificationLabel(ContentClassificationLabelType.DrugsIntoxication, true)],
+                ContentClassificationLabels = [new ContentClassificationLabel(ContentClassificationLabelId.DrugsIntoxication, true)],
                 IsBrandedContent = false
             }
             ));
