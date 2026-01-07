@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 
-public interface IChannelPointsRewardRedemptionEvent
+/// <summary>
+/// A Channel Points reward redemption.
+/// </summary>
+public interface IHaveChannelPointsRewardRedemption
 {
     /// <summary>
     /// The id of the redemption.

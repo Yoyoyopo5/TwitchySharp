@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Enums.Events.Channel.ChannelPoints;
+using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
@@ -26,7 +27,7 @@ public record ChannelPointsCustomRewardRedemptionUpdateCondition : BroadcasterRe
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate"/> event.
 /// </summary>
-public record ChannelPointsCustomRewardRedemptionUpdateEvent : IChannelPointsCustomRewardRedemptionEvent
+public record ChannelPointsCustomRewardRedemptionUpdateEvent : IHaveChannelPointsCustomRewardRedemption, IHaveBroadcaster, IHaveUser
 {
     public required string Id { get; init; }
     /// <summary>

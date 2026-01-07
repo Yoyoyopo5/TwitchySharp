@@ -25,7 +25,7 @@ public record ChannelPointsAutomaticRewardRedemptionAddV2Condition : Broadcaster
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2"/> event.
 /// </summary>
-public record ChannelPointsAutomaticRewardRedemptionAddV2Event : IHaveBroadcaster, IHaveUser, IChannelPointsRewardRedemptionEvent
+public record ChannelPointsAutomaticRewardRedemptionAddV2Event : IHaveBroadcaster, IHaveUser, IHaveChannelPointsRewardRedemption
 {
     public required string Id { get; init; }
     /// <summary>
