@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
 using TwitchySharp.EventSub.Enums.Events.Channel;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Shared.Models;
+﻿using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
 

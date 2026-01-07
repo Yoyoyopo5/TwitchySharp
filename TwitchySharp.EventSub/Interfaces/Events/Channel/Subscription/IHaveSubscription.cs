@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Shared.Enums;
+﻿using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.Subscription;
 

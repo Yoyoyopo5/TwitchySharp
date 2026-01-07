@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
+﻿namespace TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
 
 /// <summary>
 /// A charity in a Twitch charity campaign.

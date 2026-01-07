@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Models.Notifications.Automod.Message;

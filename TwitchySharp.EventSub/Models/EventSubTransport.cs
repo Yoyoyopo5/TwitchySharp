@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.EventSub.Enums;
+﻿using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models;
 /// <summary>

@@ -1,5 +1,5 @@
-﻿using TwitchySharp.EventSub.Interfaces.Events;
-using TwitchySharp.EventSub.Enums.Events.Channel;
+﻿using TwitchySharp.EventSub.Enums.Events.Channel;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel;
 
