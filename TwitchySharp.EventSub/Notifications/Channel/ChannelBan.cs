@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.EventSub.Models.Conditions;
+using TwitchySharp.EventSub.Interfaces.Events;
 
 namespace TwitchySharp.EventSub.Notifications.Channel;
 /// <summary>
@@ -23,7 +24,7 @@ public record ChannelBanCondition : BroadcasterCondition;
 /// <summary>
 /// Contains information about a specific <see cref="EventSubSubscriptionType.ChannelBan"/> event.
 /// </summary>
-public record ChannelBanEvent
+public record ChannelBanEvent : IHaveBroadcaster, IHaveModerator, IHaveUser
 {
     /// <summary>
     /// The id of the user who was banned or timed out.
