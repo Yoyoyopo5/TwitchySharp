@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub.Websocket", "TwitchySharp.EventSub.Websocket\TwitchySharp.EventSub.Websocket.csproj", "{786E6C2D-59F3-482E-8377-C4D1687EAFBF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub.Websocket.Tests.Integration", "TwitchySharp.EventSub.Websocket.Tests.Integration\TwitchySharp.EventSub.Websocket.Tests.Integration.csproj", "{604D376D-CC7D-4759-8A91-7709FD61A93F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.EventSub.Websocket.Tests.E2E", "TwitchySharp.EventSub.Websocket.Tests.E2E\TwitchySharp.EventSub.Websocket.Tests.E2E.csproj", "{604D376D-CC7D-4759-8A91-7709FD61A93F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks", "TwitchySharp.EventSub.Webhooks\TwitchySharp.EventSub.Webhooks.csproj", "{2856906B-D8C1-4ECB-8BB1-0C879BD4368B}"
 EndProject
