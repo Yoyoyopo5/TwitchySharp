@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration", "TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration\TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration.csproj", "{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.EventSub.Websocket.Tests.Integration", "TwitchySharp.EventSub.Websocket.Tests.Integration\TwitchySharp.EventSub.Websocket.Tests.Integration.csproj", "{C0CBB5E3-DAFB-4653-95B1-BE81B9380C7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FE1C282-A74F-479E-B791-C0B7C0CB3AA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0CBB5E3-DAFB-4653-95B1-BE81B9380C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0CBB5E3-DAFB-4653-95B1-BE81B9380C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0CBB5E3-DAFB-4653-95B1-BE81B9380C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0CBB5E3-DAFB-4653-95B1-BE81B9380C7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
