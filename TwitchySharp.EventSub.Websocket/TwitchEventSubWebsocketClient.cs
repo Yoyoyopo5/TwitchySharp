@@ -40,14 +40,15 @@ namespace TwitchySharp.EventSub.Websocket;
 /// </param>
 public class TwitchEventSubWebsocketClient(
     IWebsocketEventSubHandler eventSubHandler,
-    string url = "wss://eventsub.wss.twitch.tv/ws",
+    Uri? websocketUri = null,
     IWebsocketClient? websocketClient = null,
     INotificationConverter? converter = null,
     JsonSerializerOptions? messageDeserializerOptions = null
     )
     : IEventSubWebsocketMessageProcessor, IDisposable, IHostedService
 {
-    private readonly IWebsocketClient _ws = websocketClient ?? new WebsocketClient(new Uri(url));
+    private readonly static Uri DefaultUri = new("wss://eventsub.wss.twitch.tv/ws");
+    private readonly IWebsocketClient _ws = websocketClient ?? new WebsocketClient(websocketUri ?? DefaultUri);
     private readonly INotificationConverter _converter = converter ?? new NotificationConverter();
     private readonly IWebsocketEventSubHandler _handler = eventSubHandler;
     private readonly JsonSerializerOptions _serializerOptions = messageDeserializerOptions ?? JsonConfig.ApiOptions;
@@ -141,8 +142,8 @@ public class TwitchEventSubWebsocketClient(
         _ws.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text))
             .Subscribe(
-                async message => await HandleMessage(message.Text!, cancellationToken),
-                async exception => await _handler.OnException(exception, cancellationToken)
+                async message => await HandleMessage(message.Text!),
+                async exception => await _handler.OnException(exception)
                 );
         await _ws.StartOrFail();
     }
