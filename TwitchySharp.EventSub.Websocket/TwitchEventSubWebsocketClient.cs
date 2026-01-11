@@ -84,7 +84,7 @@ public class TwitchEventSubWebsocketClient(
             EventSubMessageTypes.KEEPALIVE => Keepalive(ct),
             EventSubMessageTypes.NOTIFICATION => Notification(_converter.Deserialize(message.Payload), ct),
             EventSubMessageTypes.REVOCATION => Revocation(JsonSerializer.Deserialize<RevocationMessagePayload>(message.Payload, options)!.Subscription, ct),
-            EventSubMessageTypes.RECONNECT => Reconnect(JsonSerializer.Deserialize<ReconnectMessagePayload>(message.Payload)!.Session, ct),
+            EventSubMessageTypes.RECONNECT => Reconnect(JsonSerializer.Deserialize<ReconnectMessagePayload>(message.Payload, options)!.Session, ct),
             _ => ValueTask.CompletedTask
         };
 
@@ -129,8 +129,22 @@ public class TwitchEventSubWebsocketClient(
     /// <param name="session">The reconnect session details.</param>
     internal async ValueTask Reconnect(EventSubReconnectSession session, CancellationToken ct = default)
     {
+        // TODO: According to Twitch docs, we should not disconnect from the first server until
+        // receiving a welcome message from the new server. This is likely to require significant
+        // changes to implement correctly (spawning additional connections). Without it, there
+        // is a risk of dropped notifications during a reconnect. To implement, we could try
+        // a collection of WebSocketClient objects that aggregate messages.
         _ws.Url = new Uri(session.ReconnectUrl);
-        await _ws.ReconnectOrFail();
+        try
+        {
+            await _ws.ReconnectOrFail();
+        }
+        catch (Exception ex)
+        {
+            await _handler.OnException(ex, ct);
+        }
+        
+        await _handler.OnReconnected(session, ct);
     }
 
     public void Dispose()

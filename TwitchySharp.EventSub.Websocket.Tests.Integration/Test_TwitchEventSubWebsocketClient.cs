@@ -12,9 +12,25 @@ using Xunit;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
 
-public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
+public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : 
+    IClassFixture<WebsocketFixture>, 
+    IAsyncLifetime
 {
     private readonly WebsocketFixture _fixture = fixture;
+
+    public async Task InitializeAsync()
+    {
+        using CancellationTokenSource initTimeout = new(TimeSpan.FromSeconds(3));
+        _fixture.Handler.Reset();
+        await _fixture.Client.StartAsync(initTimeout.Token);
+    }
+
+    public async Task DisposeAsync()
+    {
+        using CancellationTokenSource disposeTimeout = new(TimeSpan.FromSeconds(3));
+        await _fixture.Client.StopAsync(disposeTimeout.Token);
+    }
+
     [Fact]
     public async Task ProcessWelcomeMessage_ValidWelcomeMessage_ReturnValidSession()
     {
@@ -38,17 +54,8 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
             }
             """;
 
-        CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
-
-        _fixture.Handler.Reset();
-        TwitchEventSubWebsocketClient client = _fixture.Client;
-        await client.StartAsync(taskTimeout.Token);
-
-        WebSocket server = await _fixture.GetCurrentWebSocketAsync(taskTimeout.Token);
-        await server.SendAsync(FAKE_WELCOME_MESSAGE);
-        await _fixture.Handler.MessageProcessed();
-
-        await client.StopAsync(taskTimeout.Token);
+        using CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
+        await _fixture.SendTestMessageAsync(FAKE_WELCOME_MESSAGE, taskTimeout.Token);
 
         Assert.Null(_fixture.Handler.LastException);
         Assert.NotNull(_fixture.Handler.Session);
@@ -69,17 +76,8 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
             }
             """;
 
-        CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
-
-        _fixture.Handler.Reset();
-        TwitchEventSubWebsocketClient client = _fixture.Client;
-        await client.StartAsync(taskTimeout.Token);
-
-        WebSocket server = await _fixture.GetCurrentWebSocketAsync(taskTimeout.Token);
-        await server.SendAsync(FAKE_KEEPALIVE_MESSAGE);
-        await _fixture.Handler.MessageProcessed();
-
-        await client.StopAsync(taskTimeout.Token);
+        using CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
+        await _fixture.SendTestMessageAsync(FAKE_KEEPALIVE_MESSAGE, taskTimeout.Token);
 
         Assert.Null(_fixture.Handler.LastException);
         Assert.Equal(1, _fixture.Handler.KeepaliveCounter);
@@ -127,17 +125,8 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
             }
             """;
 
-        CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
-
-        _fixture.Handler.Reset();
-        TwitchEventSubWebsocketClient client = _fixture.Client;
-        await client.StartAsync(taskTimeout.Token);
-
-        WebSocket server = await _fixture.GetCurrentWebSocketAsync(taskTimeout.Token);
-        await server.SendAsync(FAKE_NOTIFICATION_MESSAGE);
-        await _fixture.Handler.MessageProcessed();
-
-        await client.StopAsync(taskTimeout.Token);
+        using CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
+        await _fixture.SendTestMessageAsync(FAKE_NOTIFICATION_MESSAGE, taskTimeout.Token);
 
         Assert.Null(_fixture.Handler.LastException);
         Assert.NotNull(_fixture.Handler.LastNotification);
@@ -159,7 +148,7 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
                        "id": "AQoQexAWVYKSTIu4ec_2VAxyuhAB",
                        "status": "reconnecting",
                        "keepalive_timeout_seconds": null,
-                       "reconnect_url": "ws://{{WebsocketFixture.Path}}",
+                       "reconnect_url": "{{WebsocketFixture.Path}}",
                        "connected_at": "2022-11-16T10:11:12.634234626Z"
                     }
                 }
@@ -186,19 +175,9 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
             }
             """;
 
-        CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
-
-        _fixture.Handler.Reset();
-        TwitchEventSubWebsocketClient client = _fixture.Client;
-        await client.StartAsync(taskTimeout.Token);
-
-        WebSocket server = await _fixture.GetCurrentWebSocketAsync(taskTimeout.Token);
-        await server.SendAsync(fakeReconnectMessage);
-        await _fixture.Handler.MessageProcessed();
-        await server.SendAsync(FAKE_WELCOME_MESSAGE);
-        await _fixture.Handler.MessageProcessed();
-
-        await client.StopAsync(taskTimeout.Token);
+        using CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
+        await _fixture.SendTestMessageAsync(fakeReconnectMessage, taskTimeout.Token);
+        await _fixture.SendTestMessageAsync(FAKE_WELCOME_MESSAGE, taskTimeout.Token);
 
         Assert.Null(_fixture.Handler.LastException);
         Assert.NotNull(_fixture.Handler.Session);
@@ -238,17 +217,8 @@ public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : ICla
             }
             """;
 
-        CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
-
-        _fixture.Handler.Reset();
-        TwitchEventSubWebsocketClient client = _fixture.Client;
-        await client.StartAsync(taskTimeout.Token);
-
-        WebSocket server = await _fixture.GetCurrentWebSocketAsync(taskTimeout.Token);
-        await server.SendAsync(FAKE_REVOCATION_MESSAGE);
-        await _fixture.Handler.MessageProcessed();
-
-        await client.StopAsync(taskTimeout.Token);
+        using CancellationTokenSource taskTimeout = new(TimeSpan.FromSeconds(5));
+        await _fixture.SendTestMessageAsync(FAKE_REVOCATION_MESSAGE, taskTimeout.Token);
 
         Assert.Null(_fixture.Handler.LastException);
         Assert.NotNull(_fixture.Handler.RevokedSubscription);

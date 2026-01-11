@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains information about the current session in the context of a reconnect request from Twitch.
 /// </summary>
-internal record EventSubReconnectSession
+public record EventSubReconnectSession
 {
     /// <summary>
     /// <inheritdoc cref="EventSubWebsocketSession.Id"/>

@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
@@ -22,7 +24,7 @@ public class Program { }
 public class WebsocketFixture : WebApplicationFactory<Program>
 {
     private const int TEST_PORT = 28390;
-    private TaskCompletionSource<WebSocket> _serverWebSocket = new();
+    private readonly Channel<WebSocket> _sockets = Channel.CreateUnbounded<WebSocket>();
     public TestHandler Handler => Services.GetRequiredService<IWebsocketEventSubHandler>() as TestHandler ?? throw new InvalidOperationException("The IWebsocketEventSubHandler is not registered as TestHandler.");
     public TwitchEventSubWebsocketClient Client => Services.GetRequiredService<TwitchEventSubWebsocketClient>();
     public static Uri Path => new UriBuilder()
@@ -38,11 +40,10 @@ public class WebsocketFixture : WebApplicationFactory<Program>
         UseKestrel(TEST_PORT);
     }
 
-    public async Task<WebSocket> GetCurrentWebSocketAsync(CancellationToken ct = default)
+    public async Task SendTestMessageAsync(string message, CancellationToken ct = default)
     {
-        WebSocket socket = await _serverWebSocket.Task.WaitAsync(ct);
-        _serverWebSocket = new(); // Only allow getting it once.
-        return socket;
+        await (await _sockets.Reader.ReadAsync(ct)).SendAsync(message, ct);
+        await Handler.MessageProcessed(ct);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -60,7 +61,6 @@ public class WebsocketFixture : WebApplicationFactory<Program>
             app.UseWebSockets();
             app.Run(async ctx =>
             {
-                await Task.Delay(100);
                 if (!ctx.WebSockets.IsWebSocketRequest)
                 {
                     ctx.Response.StatusCode = 400;
@@ -68,8 +68,7 @@ public class WebsocketFixture : WebApplicationFactory<Program>
                 }
 
                 using WebSocket ws = await ctx.WebSockets.AcceptWebSocketAsync();
-                _serverWebSocket.TrySetResult(ws); // Allow test methods to send their own messages.
-
+                await _sockets.Writer.WriteAsync(ws);
                 await ws.WaitForClientClose();
             });
         });
@@ -137,6 +136,12 @@ public class TestHandler : IWebsocketEventSubHandler
         _messageProcessed.TrySetResult();
         return ValueTask.CompletedTask;
     }
+
+    public ValueTask OnReconnected(EventSubReconnectSession reconnect, CancellationToken ct = default)
+    {
+        _messageProcessed.TrySetResult();
+        return ValueTask.CompletedTask;
+    }
 }
 
 public static class WebsocketTestExtensions
@@ -153,11 +158,17 @@ public static class WebsocketTestExtensions
         byte[] buffer = new byte[1024 * 4];
         while (ws.State == WebSocketState.Open)
         {
-            var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-
-            if (result.MessageType == WebSocketMessageType.Close)
+            try
             {
-                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
+                var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
+                }
+            }
+            catch
+            {
+                await ws.CloseAsync(WebSocketCloseStatus.ProtocolError, "Closing", ct);
             }
         }
     }
