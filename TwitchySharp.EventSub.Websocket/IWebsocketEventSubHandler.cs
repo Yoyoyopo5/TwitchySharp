@@ -52,4 +52,13 @@ public interface IWebsocketEventSubHandler
     /// Called when a keepalive message is recieved from the server.
     /// </summary>
     ValueTask OnKeepalive(CancellationToken ct = default);
+    /// <summary>
+    /// Called when a reconnect message is recieved from the server.
+    /// </summary>
+    /// <remarks>
+    /// The default <see cref="TwitchEventSubWebsocketClient"/> handles the reconnect process automatically.
+    /// Subscriptions do NOT need to be remade after a reconnect, according to Twitch documentation.
+    /// This method allows you to detect when a reconnect occurred.
+    /// </remarks>
+    ValueTask OnReconnected(EventSubReconnectSession reconnect, CancellationToken ct = default);
 }
