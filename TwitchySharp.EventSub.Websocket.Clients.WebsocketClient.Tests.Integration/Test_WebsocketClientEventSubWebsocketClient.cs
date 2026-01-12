@@ -10,25 +10,28 @@ using TwitchySharp.EventSub.Models.Notifications.Channel;
 using Websocket.Client;
 using Xunit;
 
-namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
+namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client.Tests.Integration;
 
-public class Test_TwitchEventSubWebsocketClient(WebsocketFixture fixture) : 
+public class Test_WebsocketClientEventSubWebsocketClient(WebsocketFixture fixture) : 
     IClassFixture<WebsocketFixture>, 
     IAsyncLifetime
 {
     private readonly WebsocketFixture _fixture = fixture;
+    private WebsocketClientEventSubWebsocketClient _client = default!;
 
     public async Task InitializeAsync()
     {
         using CancellationTokenSource initTimeout = new(TimeSpan.FromSeconds(3));
         _fixture.Handler.Reset();
-        await _fixture.Client.StartAsync(initTimeout.Token);
+        _client = _fixture.Client; // Grab transient.
+        await _client.StartAsync(initTimeout.Token);
     }
 
     public async Task DisposeAsync()
     {
         using CancellationTokenSource disposeTimeout = new(TimeSpan.FromSeconds(3));
-        await _fixture.Client.StopAsync(disposeTimeout.Token);
+        await _client.StopAsync(disposeTimeout.Token);
+        _client.Dispose();
     }
 
     [Fact]
