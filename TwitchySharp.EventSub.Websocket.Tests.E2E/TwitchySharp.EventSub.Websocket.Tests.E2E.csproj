@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Api\TwitchySharp.Api.csproj" />
+    <ProjectReference Include="..\TwitchySharp.EventSub.Websocket.Clients.WebsocketClient\TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.csproj" />
     <ProjectReference Include="..\TwitchySharp.EventSub.Websocket\TwitchySharp.EventSub.Websocket.csproj" />
     <ProjectReference Include="..\TwitchySharp.EventSub\TwitchySharp.EventSub.csproj" />
   </ItemGroup>

@@ -5,4 +5,4 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
-internal class KeepaliveMessagePayload { }
+public class KeepaliveMessagePayload;
