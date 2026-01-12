@@ -17,23 +17,8 @@ namespace TwitchySharp.EventSub.Websocket;
 /// Pass an instance of your class into a new <see cref="TwitchEventSubWebsocketClient"/> and call <see cref="TwitchEventSubWebsocketClient.StartAsync(CancellationToken)"/>,
 /// then these interface methods will be called as messages are received.
 /// </remarks>
-public interface IWebsocketEventSubHandler
+public interface IWebsocketEventSubHandler : IEventSubHandler
 {
-    /// <summary>
-    /// Called when a subscription notification is received.
-    /// </summary>
-    /// <param name="notification">The notification that was received.</param>
-    ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default);
-
-    /// <summary>
-    /// Called when a subscription is revoked.
-    /// </summary>
-    /// <param name="subscription">
-    /// The subscription that was revoked.
-    /// See the <see cref="EventSubSubscription.Status"/> property for information about the revocation.
-    /// </param>
-    ValueTask OnSubscriptionRevoked(EventSubSubscription subscription, CancellationToken ct = default);
-
     /// <summary>
     /// Called when a welcome message is received from the server.
     /// Note that this can be called multiple times throughout the life of the object due to reconnects.
