@@ -6,6 +6,7 @@ using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 namespace TwitchySharp.EventSub.Websocket.Deserialization;
 /// <summary>
 /// Defines methods for interpreting text data from a Twitch EventSub WebSocket session.
+/// See <see cref="DefaultWebsocketMessageDeserializer"/>.
 /// </summary>
 public interface IEventSubWebsocketMessageDeserializer
 {

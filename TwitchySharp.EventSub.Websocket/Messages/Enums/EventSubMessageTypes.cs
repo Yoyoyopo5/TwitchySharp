@@ -1,5 +1,8 @@
 ﻿namespace TwitchySharp.EventSub.Websocket.Messages.Enums;
 
+/// <summary>
+/// Constant message type definitions for switching.
+/// </summary>
 internal static class EventSubMessageTypes
 {
     public const string WELCOME = "session_welcome";
