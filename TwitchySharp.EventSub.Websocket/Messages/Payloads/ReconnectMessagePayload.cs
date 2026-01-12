@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
-internal class ReconnectMessagePayload
+public class ReconnectMessagePayload
 {
     public required EventSubReconnectSession Session { get; init; }
 }

@@ -4,13 +4,18 @@ using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
 namespace TwitchySharp.EventSub.Websocket.Messages;
 
-internal record EventSubWebsocketMessage<TPayload> : IEventSubWebsocketMessage
+public record EventSubWebsocketMessage<TPayload> : IEventSubWebsocketMessage
 {
     public required EventSubMessageMetadata Metadata { get; init; }
     public required TPayload Payload { get; init; }
 }
 
-internal interface IEventSubWebsocketMessage
+internal record EventSubWebsocketMessage : IEventSubWebsocketMessage
+{
+    public required EventSubMessageMetadata Metadata { get; init; }
+}
+
+public interface IEventSubWebsocketMessage
 {
     EventSubMessageMetadata Metadata { get; }
 }

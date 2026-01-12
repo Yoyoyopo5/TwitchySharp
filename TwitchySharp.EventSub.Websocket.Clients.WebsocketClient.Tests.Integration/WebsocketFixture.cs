@@ -15,10 +15,11 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 using Websocket.Client;
 
-namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
+namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client.Tests.Integration;
 
 public class Program { }
 public class WebsocketFixture : WebApplicationFactory<Program>
@@ -26,7 +27,7 @@ public class WebsocketFixture : WebApplicationFactory<Program>
     private const int TEST_PORT = 28390;
     private readonly Channel<WebSocket> _sockets = Channel.CreateUnbounded<WebSocket>();
     public TestHandler Handler => Services.GetRequiredService<IWebsocketEventSubHandler>() as TestHandler ?? throw new InvalidOperationException("The IWebsocketEventSubHandler is not registered as TestHandler.");
-    public TwitchEventSubWebsocketClient Client => Services.GetRequiredService<TwitchEventSubWebsocketClient>();
+    public WebsocketClientEventSubWebsocketClient Client => Services.GetRequiredService<WebsocketClientEventSubWebsocketClient>();
     public static Uri Path => new UriBuilder()
         {
             Host = "localhost",
@@ -51,9 +52,10 @@ public class WebsocketFixture : WebApplicationFactory<Program>
         builder.ConfigureServices((ctx, s) =>
         {
             s.AddSingleton<IWebsocketEventSubHandler, TestHandler>();
-            s.AddTransient(sp => new TwitchEventSubWebsocketClient(
+            s.AddTransient<IWebsocketClientFactory>(sp => new TestWebsocketClientFactory(Path));
+            s.AddTransient(sp => new WebsocketClientEventSubWebsocketClient(
                 sp.GetRequiredService<IWebsocketEventSubHandler>(),
-                Path
+                websocketClientFactory: sp.GetRequiredService<IWebsocketClientFactory>()
                 ));
         });
         builder.Configure(app =>
@@ -76,6 +78,12 @@ public class WebsocketFixture : WebApplicationFactory<Program>
 
     protected override IHostBuilder? CreateHostBuilder()
         => Host.CreateDefaultBuilder();
+}
+
+public class TestWebsocketClientFactory(Uri testServerUri) : IWebsocketClientFactory
+{
+    public IWebsocketClient CreateWebsocketClient()
+        => new WebsocketClient(testServerUri);
 }
 
 public class TestHandler : IWebsocketEventSubHandler

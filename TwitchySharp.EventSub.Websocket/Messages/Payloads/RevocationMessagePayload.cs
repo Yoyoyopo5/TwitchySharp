@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TwitchySharp.EventSub.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
-internal class RevocationMessagePayload
+public class RevocationMessagePayload
 {
     public required EventSubSubscription Subscription { get; init; }
 }
