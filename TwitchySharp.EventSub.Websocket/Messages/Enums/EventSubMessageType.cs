@@ -2,7 +2,10 @@
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Enums;
-
+/// <summary>
+/// Contains static definitions for possible Twitch EventSub message types.
+/// </summary>
+/// <param name="Value">The string value of the message type.</param>
 [JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubMessageType, string>))]
 public record EventSubMessageType(string Value) : ValueBackedEnum<string>(Value)
 {

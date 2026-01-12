@@ -16,6 +16,18 @@ using TwitchySharp.Shared;
 
 namespace TwitchySharp.EventSub.Websocket.Deserialization;
 
+/// <summary>
+/// The default implementation for <see cref="IEventSubWebsocketMessageDeserializer"/>.
+/// Converts raw messages from a Twitch EventSub Websocket server into C# objects.
+/// </summary>
+/// <param name="notificationConverter">
+/// The notification converter to use when deserializing notifications.
+/// Defaults to <see cref="NotificationConverter"/> if left <see langword="null"/>.
+/// </param>
+/// <param name="jsonSerializerOptions">
+/// The JSON serializer options to use when deserializing messages.
+/// Defaults to <see cref="JsonConfig.ApiOptions"/> if left <see langword="null"/>.
+/// </param>
 public class DefaultWebsocketMessageDeserializer(
     INotificationConverter? notificationConverter = null,
     JsonSerializerOptions? jsonSerializerOptions = null

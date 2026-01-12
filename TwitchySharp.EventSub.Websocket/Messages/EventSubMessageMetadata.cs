@@ -2,6 +2,10 @@
 
 namespace TwitchySharp.EventSub.Websocket.Messages;
 
+/// <summary>
+/// Contains information about a specific Websocket EventSub message.
+/// This is sent with every message.
+/// </summary>
 public record EventSubMessageMetadata
 {
     public required string MessageId { get; init; }
