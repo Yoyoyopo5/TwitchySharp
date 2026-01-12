@@ -8,20 +8,21 @@ using System.Threading.Tasks;
 using TwitchySharp.Api;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
-namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
+namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
 public class WebsocketFixture : IDisposable
 {
     public TestHandler Handler { get; }
-    public TwitchEventSubWebsocketClient Client { get; }
+    public WebsocketClientEventSubWebsocketClient Client { get; }
     public TwitchApi Api { get; }
     public WebsocketSecrets Secrets { get; }
 
     public WebsocketFixture()
     {
         Handler = new TestHandler();
-        Client = new TwitchEventSubWebsocketClient(Handler);
+        Client = new WebsocketClientEventSubWebsocketClient(Handler);
         Api = new TwitchApi(new());
         Secrets = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build().GetRequiredSection("Secrets").Get<WebsocketSecrets>()!;
 
@@ -80,4 +81,7 @@ public class TestHandler : IWebsocketEventSubHandler
         ReceivedRevocation = subscription;
         return ValueTask.CompletedTask;
     }
+
+    public ValueTask OnReconnected(EventSubReconnectSession reconnect, CancellationToken ct = default)
+        => ValueTask.CompletedTask;
 }

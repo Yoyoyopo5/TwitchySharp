@@ -8,7 +8,7 @@ using TwitchySharp.Api.Helix.EventSub.Models.Types;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
-namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
+namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
 
 public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
 {
