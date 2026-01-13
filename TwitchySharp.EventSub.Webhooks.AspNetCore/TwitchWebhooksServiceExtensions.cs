@@ -21,14 +21,15 @@ public static class TwitchEventSubWebhooksServiceExtensions
 {
     public static IServiceCollection AddTwitchEventSubWebhooksVerification(
         this IServiceCollection services, 
-        Action<TwitchEventSubWebhooksVerificationOptions> configureOptions
+        Action<TwitchEventSubWebhooksVerificationOptions>? configureOptions = null
         )
     {
-        services.Configure(configureOptions);
+        if (configureOptions is not null)
+            services.Configure(configureOptions);
 
         services.TryAddScoped<ITwitchWebhooksHeaderConverter, DefaultTwitchWebhooksHeaderConverter>();
         services.TryAddScoped<ITwitchEventSubWebhookSecretsResolver>(sp =>
-            new FixedSecretTwitchWebhookSecretsResolver(sp.GetRequiredService<IOptions<TwitchEventSubWebhooksVerificationOptions>>().Value.Secret ?? throw new NotSupportedException($"The {nameof(TwitchEventSubWebhooksVerificationOptions.Secret)} must be configured in the {nameof(TwitchEventSubWebhooksVerificationOptions)}."))
+            new FixedSecretTwitchWebhookSecretsResolver(sp.GetService<IOptions<TwitchEventSubWebhooksVerificationOptions>>()?.Value.Secret ?? throw new NotSupportedException($"The {nameof(TwitchEventSubWebhooksVerificationOptions.Secret)} must be configured in the {nameof(TwitchEventSubWebhooksVerificationOptions)}."))
             );
         services.TryAddScoped<IComputeTwitchWebhookSignature, DefaultTwitchWebhookCrypto>();
         services.TryAddScoped<ITwitchWebhookMessageVerifier>(sp => 
