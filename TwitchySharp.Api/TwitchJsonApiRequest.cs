@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using TwitchySharp.Shared;
 
 namespace TwitchySharp.Api;
 public abstract class TwitchJsonApiRequest<TResponse, TRequestData>

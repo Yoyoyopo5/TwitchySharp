@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using TwitchySharp.Api.ApiResponseConverters;
+using TwitchySharp.Shared;
 
 namespace TwitchySharp.Api;
 /// <summary>

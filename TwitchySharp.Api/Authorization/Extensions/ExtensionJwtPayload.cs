@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters.DateTime;
+using TwitchySharp.Shared;
 
 namespace TwitchySharp.Api.Authorization.Extensions;
 /// <summary>
