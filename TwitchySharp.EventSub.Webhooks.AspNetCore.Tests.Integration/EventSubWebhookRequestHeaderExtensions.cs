@@ -14,7 +14,7 @@ internal static class EventSubWebhookRequestHeaderExtensions
         {
             { "Twitch-Eventsub-Message-Id", header.TwitchEventsubMessageId },
             { "Twitch-Eventsub-Message-Retry", header.TwitchEventsubMessageRetry ?? string.Empty },
-            { "Twitch-Eventsub-Message-Type", header.TwitchEventsubMessageType },
+            { "Twitch-Eventsub-Message-Type", header.TwitchEventsubMessageType.Value },
             { "Twitch-Eventsub-Message-Signature", header.TwitchEventsubMessageSignature },
             { "Twitch-Eventsub-Message-Timestamp",  header.TwitchEventsubMessageTimestamp },
             { "Twitch-Eventsub-Subscription-Type", header.TwitchEventsubSubscriptionType },

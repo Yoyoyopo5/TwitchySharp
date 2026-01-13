@@ -9,87 +9,67 @@ using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
+using TwitchySharp.EventSub.Webhooks.Deserialization;
+using TwitchySharp.EventSub.Webhooks.Enums;
 using TwitchySharp.EventSub.Webhooks.Requests;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.Shared;
 
 namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
+/// <summary>
+/// The default <see cref="IEventSubWebhookMessageProcessor"/>.
+/// Handles deserialization of requests and generates responses. 
+/// </summary>
+/// <param name="handler">
+/// The notification handler to use.
+/// Supply your own custom <see cref="IWebhookEventSubHandler"/> to define what
+/// you want to happen when notifications are received.
+/// </param>
+/// <param name="callbackVerifier">
+/// The callback verifier to use.
+/// Defaults to <see cref="DefaultWebhookCallbackVerifier"/> if left <see langword="null"/>.
+/// </param>
+/// <param name="requestDeserializer">
+/// The request deserializer to use.
+/// Defaults to <see cref="DefaultWebhookRequestDeserializer"/> if left <see langword="null"/>.
+/// </param>
 public class DefaultEventSubWebhookMessageProcessor(
     IWebhookEventSubHandler handler,
-    INotificationConverter? converter = null,
     IWebhookCallbackVerifier? callbackVerifier = null,
-    JsonSerializerOptions? serializerOptions = null
+    IWebhookRequestBodyDeserializer? requestDeserializer = null
     )
     : IEventSubWebhookMessageProcessor
 {
     private readonly IWebhookEventSubHandler _handler = handler;
-    private readonly INotificationConverter _converter = converter ?? new NotificationConverter();
+    private readonly IWebhookRequestBodyDeserializer _deserializer = requestDeserializer ?? new DefaultWebhookRequestDeserializer();
     private readonly IWebhookCallbackVerifier _callbackVerifier = callbackVerifier ?? new DefaultWebhookCallbackVerifier();
-    private readonly JsonSerializerOptions _serializerOptions = serializerOptions ?? JsonConfig.ApiOptions;
 
     /// <exception cref="NotSupportedException"></exception>
     /// <exception cref="JsonException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidCastException"></exception>
     public async ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, Stream bodyStream, CancellationToken ct = default)
-        => requestHeader.TwitchEventsubMessageType switch
+        => await _deserializer.DeserializeRequestBody(requestHeader.TwitchEventsubMessageType, bodyStream, ct) switch
         {
-            TwitchEventSubMessageTypes.NOTIFICATION => await JsonSerializer.DeserializeAsync<JsonElement>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
-            {
-                { ValueKind: JsonValueKind.Undefined or JsonValueKind.Null } => throw new NotSupportedException("Notification request body cannot be null or undefined literal."),
-                { } json => await Notification(_converter.Deserialize(json), ct)
-            }, 
-            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => await JsonSerializer.DeserializeAsync<CallbackVerificationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
-            {
-                { } data => await CallbackVerification(data.Subscription, data.Challenge, ct),
-                _ => throw new NotSupportedException("Callback verification request body cannot be null or undefined literal.")
-            },
-            TwitchEventSubMessageTypes.REVOCATION => await JsonSerializer.DeserializeAsync<RevocationRequestData>(bodyStream, _serializerOptions, ct).ConfigureAwait(false) switch
-            {
-                { } data => await Revocation(data.Subscription, ct),
-                _ => throw new NotSupportedException("Revocation request body cannot be null or undefined literal.")
-            },
-            _ => throw new NotSupportedException($"Unsupported EventSub message type: {requestHeader.TwitchEventsubMessageType}"),
+            NotificationRequestData notification => await Notification(notification.Notification, ct),
+            CallbackVerificationRequestData callback => await CallbackVerification(callback.Subscription, callback.Challenge, ct),
+            RevocationRequestData revocation => await Revocation(revocation.Subscription, ct),
+            _ => throw new NotSupportedException($"Request body was not a supported type.")
         };
 
-    /// <exception cref="NotSupportedException"></exception>
-    /// <exception cref="JsonException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidCastException"></exception>
-    public async ValueTask<WebhookResponseData> HandleRequest(EventSubWebhookRequestHeader requestHeader, string body, CancellationToken ct = default)
-        => requestHeader.TwitchEventsubMessageType switch
-        {
-            TwitchEventSubMessageTypes.NOTIFICATION => JsonSerializer.Deserialize<JsonElement>(body, _serializerOptions) switch
-            {
-                { ValueKind: JsonValueKind.Undefined or JsonValueKind.Null } => throw new NotSupportedException("Notification request body cannot be null or undefined literal."),
-                { } json => await Notification(_converter.Deserialize(json), ct)
-            },
-            TwitchEventSubMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => JsonSerializer.Deserialize<CallbackVerificationRequestData>(body, _serializerOptions) switch 
-            {
-                { } data => await CallbackVerification(data.Subscription, data.Challenge, ct),
-                _ => throw new NotSupportedException("Callback verification request body cannot be null or undefined literal.")
-            },
-            TwitchEventSubMessageTypes.REVOCATION => JsonSerializer.Deserialize<RevocationRequestData>(body, _serializerOptions) switch
-            {
-                { } data => await Revocation(data.Subscription, ct),
-                _ => throw new NotSupportedException("Revocation request body cannot be null or undefined literal.")
-            },
-            _ => throw new NotSupportedException($"Unsupported EventSub message type: {requestHeader.TwitchEventsubMessageType}"),
-        };
-
-    public async ValueTask<CallbackVerificationResponseData> CallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
+    private async ValueTask<CallbackVerificationResponseData> CallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
     {
         await _handler.OnCallbackVerification(newSubscription, challenge, ct);
         return await _callbackVerifier.VerifyCallback(challenge, ct);
     }
 
-    public async ValueTask<NotificationResponseData> Notification(IEventSubNotification notification, CancellationToken ct = default)
+    private async ValueTask<NotificationResponseData> Notification(IEventSubNotification notification, CancellationToken ct = default)
     {
         await _handler.OnNotified(notification, ct);
         return new NotificationResponseData();
     }
 
-    public async ValueTask<RevocationResponseData> Revocation(EventSubSubscription revokedSubscription, CancellationToken ct = default)
+    private async ValueTask<RevocationResponseData> Revocation(EventSubSubscription revokedSubscription, CancellationToken ct = default)
     {
         await _handler.OnSubscriptionRevoked(revokedSubscription, ct);
         return new RevocationResponseData();
