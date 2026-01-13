@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
+using TwitchySharp.EventSub.Webhooks.Deserialization;
 using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 using TwitchySharp.EventSub.Webhooks.SecretResolvers;
 using TwitchySharp.EventSub.Webhooks.SignatureComputers;
@@ -49,12 +50,15 @@ public static class TwitchEventSubWebhooksServiceExtensions
         services.TryAddScoped<INotificationConverter>(sp => 
             new NotificationConverter(sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.NotificationTypes)
             );
+        services.TryAddScoped<IWebhookRequestBodyDeserializer>(sp => new DefaultWebhookRequestDeserializer(
+            sp.GetService<INotificationConverter>(),
+            sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.JsonSerializerOptions
+            ));
         services.TryAddScoped<IEventSubWebhookMessageProcessor>(sp => 
             new DefaultEventSubWebhookMessageProcessor(
                 sp.GetRequiredService<IWebhookEventSubHandler>(), // You must register an IWebhookEventSubHandler implementation separately
-                sp.GetService<INotificationConverter>(),
                 sp.GetService<IWebhookCallbackVerifier>(),
-                sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.JsonSerializerOptions
+                sp.GetService<IWebhookRequestBodyDeserializer>()
                 )
             );
 

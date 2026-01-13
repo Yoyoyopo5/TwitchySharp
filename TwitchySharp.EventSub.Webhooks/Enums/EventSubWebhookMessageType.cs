@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using TwitchySharp.Helpers;
+
+namespace TwitchySharp.EventSub.Webhooks.Enums;
+
+/// <summary>
+/// Contains static definitions for possible Twitch EventSub webhook message types.
+/// </summary>
+/// <remarks>
+/// See more about EventSub webhook request header types at <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events/#list-of-request-headers">Handling Webhook Events</see>.
+/// </remarks>
+/// <param name="Value">The string value of the message type.</param>
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubWebhookMessageType, string>))]
+public record EventSubWebhookMessageType(string Value) : ValueBackedEnum<string>(Value)
+{
+    /// <summary>
+    /// This type of webhook contains a specific event's data.
+    /// </summary>
+    public static EventSubWebhookMessageType Notification { get; } = new("notification");
+    /// <summary>
+    /// This type of webhook contains the challenge used to verify that you own the event handler.
+    /// </summary>
+    public static EventSubWebhookMessageType WebhookCallbackVerification { get; } = new("webhook_callback_verification");
+    /// <summary>
+    /// This type of webhook contains the reason why Twitch revoked your subscription.
+    /// </summary>
+    public static EventSubWebhookMessageType Revocation { get; } = new("revocation");
+}
