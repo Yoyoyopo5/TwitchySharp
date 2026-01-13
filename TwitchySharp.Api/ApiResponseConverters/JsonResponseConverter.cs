@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.ApiResponseConverters;
 internal class JsonResponseConverter(JsonSerializerOptions? serializerOptions) : IConvertApiResponse
 {
     public async ValueTask<TResponse> Convert<TResponse>(HttpResponseMessage httpResponse, CancellationToken ct = default)
-        => await JsonSerializer.DeserializeAsync<TResponse>(httpResponse.Content.ReadAsStream(), serializerOptions, ct).ConfigureAwait(false) switch
+        => await JsonSerializer.DeserializeAsync<TResponse>(httpResponse.Content.ReadAsStream(ct), serializerOptions, ct).ConfigureAwait(false) switch
         {
             TResponse deserialized => deserialized,
             _ => throw new NotSupportedException("This converter does not support null literal responses.")
