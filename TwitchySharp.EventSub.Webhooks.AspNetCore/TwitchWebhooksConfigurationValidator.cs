@@ -16,7 +16,8 @@ internal class TwitchWebhooksConfigurationValidator(IServiceProvider serviceProv
 
     public Task StartAsync(CancellationToken ct)
     {
-        if (_serviceProvider.GetService<ITwitchWebhookMessageVerifier>() is null)
+        using var scope = _serviceProvider.CreateScope();
+        if (scope.ServiceProvider.GetService<ITwitchWebhookMessageVerifier>() is null)
             logger?.LogWarning("Security Warning: Twitch webhook requests will not be validated with secrets. Please use the AddTwitchEventSubWebhooksVerification IServiceCollection extension method, register an {VerifierType} in the service provider for improved security, or disable this warning by registering a stub verifier.", nameof(ITwitchWebhookMessageVerifier));
         return Task.CompletedTask;
     }
