@@ -52,7 +52,7 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
         IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
-            TwitchEventsubMessageType = "webhook_callback_verification",
+            TwitchEventsubMessageType = new("webhook_callback_verification"),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
             TwitchEventsubSubscriptionType = "channel.follow",
@@ -159,7 +159,7 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
         IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
-            TwitchEventsubMessageType = "notification",
+            TwitchEventsubMessageType = new("notification"),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
             TwitchEventsubSubscriptionType = "channel.chat.message",
@@ -214,7 +214,7 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
         IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
-            TwitchEventsubMessageType = "revocation",
+            TwitchEventsubMessageType = new("revocation"),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
             TwitchEventsubSubscriptionType = "channel.follow",
@@ -285,7 +285,7 @@ public class Test_TwitchWebhooksRouteExtensions(WebhooksFixture fixture)
         IHeaderDictionary fakeHeaders = new EventSubWebhookRequestHeader()
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
-            TwitchEventsubMessageType = "notification",
+            TwitchEventsubMessageType = new("notification"),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubMessageTimestamp = FAKE_TIMESTAMP,
             TwitchEventsubSubscriptionType = "channel.follow",
