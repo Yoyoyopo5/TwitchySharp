@@ -18,7 +18,7 @@ public class MinutesTimeSpanJsonConverter : JsonConverter<TimeSpan>
                 string value => TimeSpan.FromMinutes(double.Parse(value)),
                 _ => default
             },
-            _ => default
+            _ => throw new JsonException($"Unexpected token {reader.TokenType} when parsing TimeSpan.")
         };
 
     public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
