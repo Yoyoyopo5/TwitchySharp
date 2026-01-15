@@ -10,13 +10,11 @@ namespace TwitchySharp.Helpers;
 /// </summary>
 public class HttpQueryParameters
 {
-    private List<KeyValuePair<string, string>> _parameters = [];
+    private readonly List<KeyValuePair<string, string?>> _parameters = [];
 
     public HttpQueryParameters Add(string key, string? value)
     {
-        if (string.IsNullOrEmpty(value))
-            return this;
-        _parameters.Add(new KeyValuePair<string, string>(key, value!)); // dumb compiler
+        _parameters.Add(new KeyValuePair<string, string?>(key, value));
         return this;
     }
 
@@ -32,14 +30,37 @@ public class HttpQueryParameters
     }
 
     public override string ToString()
+        => ToStringEfficient();
+
+    private string ToStringLinq()
         => _parameters switch
         {
-            { Count: > 0 } parameters => "?" + 
+            { Count: > 0 } parameters => "?" +
                 string.Join(
                     '&',
                     parameters
-                        .Where(p => !string.IsNullOrEmpty(p.Value))
-                        .Select(p => $"{p.Key}={p.Value}")),
+                        .Select(p => $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value ?? string.Empty)}")),
             _ => string.Empty
         };
+
+    private string ToStringEfficient()
+    {
+        if (_parameters is null || _parameters.Count == 0)
+            return string.Empty;
+
+        StringBuilder sb = new('?');
+        bool first = true;
+        foreach ((string key, string? value) in _parameters)
+        {
+            if (string.IsNullOrEmpty(key))
+                continue;
+            if (!first)
+                sb.Append('&');
+            sb.Append(Uri.EscapeDataString(key));
+            sb.Append('=');
+            sb.Append(Uri.EscapeDataString(value ?? string.Empty));
+            first = false;
+        }
+        return sb.Length > 1 ? sb.ToString() : string.Empty;
+    }
 }
