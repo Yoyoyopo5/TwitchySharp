@@ -34,6 +34,41 @@ public class ValueBackedEnumJsonConverter<TValueBackedEnum, T> : JsonConverter<T
 
     public override void Write(Utf8JsonWriter writer, TValueBackedEnum value, JsonSerializerOptions options)
     {
-        JsonSerializer.Serialize<T>(writer, value.Value, options);
+        JsonSerializer.Serialize(writer, value.Value, options);
+    }
+}
+
+/// <summary>
+/// Creates a <see cref="ValueBackedEnumJsonConverter{TValueBackedEnum, T}"/> for types inheriting from <see cref="ValueBackedEnum{T}"/>.
+/// </summary>
+/// <remarks>
+/// Register this factory in <see cref="JsonSerializerOptions"/> to support deserialization of <see cref="ValueBackedEnum{T}"/> derived types without attributes.
+/// </remarks>
+public class ValueBackedEnumConverterFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type typeToConvert)
+        => GetValueBackedEnumType(typeToConvert) != null;
+
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (GetValueBackedEnumType(typeToConvert) is not Type baseType)
+            return null;
+        Type tValue = baseType.GetGenericArguments()[0];
+        Type converterType = typeof(ValueBackedEnumJsonConverter<,>).MakeGenericType(typeToConvert, tValue);
+        return (JsonConverter?)Activator.CreateInstance(converterType);
+    }
+
+    private static Type? GetValueBackedEnumType(Type type)
+    {
+        // Walk up the inheritance chain to find ValueBackedEnum<T>
+        while (type != null && type != typeof(object))
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ValueBackedEnum<>))
+            {
+                return type;
+            }
+            type = type.BaseType!;
+        }
+        return null;
     }
 }
