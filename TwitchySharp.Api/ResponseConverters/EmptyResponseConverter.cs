@@ -1,14 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace TwitchySharp.Api.ResponseConverters;
-internal class EmptyResponseConverter : IConvertResponseContent
+/// <summary>
+/// Creates a new TResponseContent from a response with no content.
+/// </summary>
+/// <remarks>
+/// Only works with types that have parameterless constructors.
+/// </remarks>
+public class EmptyResponseConverter : IConvertResponseContent
 {
-    public ValueTask<TResponse> Convert<TResponse>(HttpResponseMessage httpResponse, CancellationToken ct = default)
-        => ValueTask.FromResult(Activator.CreateInstance<TResponse>());
+    public ValueTask<TResponseContent> Convert<TResponseContent>(HttpResponseMessage httpResponse, CancellationToken ct = default)
+        => ValueTask.FromResult(TypeFactory<TResponseContent>.Create());
+
+    // Inner helper to cache the compiled constructor
+    private static class TypeFactory<T>
+    {
+        public static readonly Func<T> Create =
+            System.Linq.Expressions.Expression.Lambda<Func<T>>(
+                System.Linq.Expressions.Expression.New(typeof(T))
+            ).Compile();
+    }
 }
