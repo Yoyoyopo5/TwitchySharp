@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using TwitchySharp.Api.Models.Shared;
 
-namespace TwitchySharp.Api.Core;
-
+namespace TwitchySharp.Api;
+/// <summary>
+/// A general Twitch API response with no content.
+/// </summary>
 public record TwitchResponse : ITwitchResponse
 {
     public TwitchRateLimitDetails? RateLimitDetails { get; init; }
@@ -14,6 +12,10 @@ public record TwitchResponse : ITwitchResponse
     public required HttpStatusCode StatusCode { get; init; }
 }
 
+/// <summary>
+/// A general Twitch API response with strongly-typed content.
+/// </summary>
+/// <typeparam name="TResponseContent">The response content type.</typeparam>
 public record TwitchResponse<TResponseContent> : TwitchResponse, ITwitchResponse<TResponseContent>
 {
     public required TResponseContent Content { get; init; }

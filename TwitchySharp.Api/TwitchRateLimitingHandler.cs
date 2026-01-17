@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
-using System.Threading.RateLimiting;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Core;
-using TwitchySharp.Api.Extensions;
 using TwitchySharp.Api.Models.Shared;
 
-namespace TwitchySharp.Api.Handlers;
+namespace TwitchySharp.Api;
 
 /// <summary>
 /// Resolves and updates <see cref="TwitchRateLimitDetails"/> based on client id.
@@ -48,7 +41,6 @@ public class DefaultTwitchRateLimitResolver
 /// </summary>
 /// <remarks>
 /// Rate limits should be resolved via client id.
-/// Rate limits should be resolved via client id.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch Rate Limits</see> for more information.
 /// </remarks>
@@ -71,7 +63,7 @@ public class TwitchRateLimitingHandler(IResolveTwitchRateLimits rateLimitResolve
 
         if (DateTimeOffset.UtcNow < limitResetsAt.Value)
             await Task.Delay(limitResetsAt.Value - DateTimeOffset.UtcNow, ct);
-        
+
         return await SendAndUpdateRateLimiterAsync(rateLimiterKey, request, rateLimitResolver, ct);
     }
 

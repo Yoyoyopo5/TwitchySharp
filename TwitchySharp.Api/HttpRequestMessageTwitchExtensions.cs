@@ -1,8 +1,7 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using TwitchySharp.Api.Core;
 
-namespace TwitchySharp.Api.Extensions;
+namespace TwitchySharp.Api;
 
 internal static class HttpRequestMessageTwitchExtensions
 {
