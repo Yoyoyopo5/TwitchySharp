@@ -1,5 +1,4 @@
 ﻿using System;
-using TwitchySharp.Api.Core;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Models.Helix;

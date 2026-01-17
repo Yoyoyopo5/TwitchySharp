@@ -1,17 +1,30 @@
-﻿using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
+﻿using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Exceptions;
-using TwitchySharp.Api.Extensions;
+using TwitchySharp.Api.Core;
 using TwitchySharp.Api.ResponseConverters;
 using TwitchySharp.Shared;
 
-namespace TwitchySharp.Api.Core;
-
+namespace TwitchySharp.Api;
+/// <summary>
+/// The default Twitch API client implementation.
+/// </summary>
+/// <remarks>
+/// Sends <see cref="ITwitchRequest"/>s with a provided <see cref="HttpClient"/>.
+/// Handles adding required authorization headers and deserializing responses into response types.
+/// </remarks>
+/// <param name="httpClient">The client to use.</param>
+/// <param name="responseContentConverter">
+/// The response content converter.
+/// Defaults to <see cref="AttributeFirstResponseContentConverter"/> if left <see langword="null"/>.
+/// Don't change this unless you know what you're doing.
+/// </param>
+/// <param name="requestContentSerializerOptions">
+/// The JSON serializer options to use when serializing <see cref="ITwitchRequest"/>s into <see cref="HttpRequestMessage"/>s.
+/// Defaults to <see cref="JsonConfig.ApiOptions"/> if left <see langword="null"/>.
+/// Don't change this unless you know what you're doing.
+/// </param>
 public class TwitchClient(HttpClient httpClient, IConvertResponseContent? responseContentConverter = null, JsonSerializerOptions? requestContentSerializerOptions = null) : ITwitchClient
 {
     private readonly HttpClient _httpClient = httpClient;
@@ -41,7 +54,7 @@ public class TwitchClient(HttpClient httpClient, IConvertResponseContent? respon
     }
 
     public async ValueTask<ITwitchResponse<TResponseContent>> SendAsync<TResponseContent>(
-        ITwitchRequest<TResponseContent> request, 
+        ITwitchRequest<TResponseContent> request,
         CancellationToken ct = default
         )
     {
