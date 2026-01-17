@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Chat;
+using TwitchySharp.Api.Models.Helix.Chat.Enums;
+using TwitchySharp.Api.Models.Helix.Chat.Requests;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Chat;
 [Collection("helix")]

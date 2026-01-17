@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Models.Authorization.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 public class Test_TwitchOidc

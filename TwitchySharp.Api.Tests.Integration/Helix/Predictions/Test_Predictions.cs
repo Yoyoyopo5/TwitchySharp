@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Predictions;
+using TwitchySharp.Api.Models.Helix.Predictions.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Predictions;
 [Collection("helix")]

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Models.Authorization.Requests;
+using TwitchySharp.Api.Models.Authorization.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Authorization;
 [Collection("authorization")]

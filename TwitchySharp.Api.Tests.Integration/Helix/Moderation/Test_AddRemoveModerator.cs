@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Api.Models.Helix.Moderation.Responses;
 using TwitchySharp.Api.Tests.Integration.Helix.Channels;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Moderation;

@@ -7,6 +7,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Helix.EventSub;
+using TwitchySharp.Api.Models.Helix.EventSub.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.EventSub;
 

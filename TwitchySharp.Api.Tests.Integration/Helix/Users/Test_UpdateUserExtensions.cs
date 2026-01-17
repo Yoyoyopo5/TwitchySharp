@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Users;
+using TwitchySharp.Api.Models.Helix.Users.Enums;
+using TwitchySharp.Api.Models.Helix.Users.Models;
+using TwitchySharp.Api.Models.Helix.Users.Requests;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Users;
 [Collection("helix")]

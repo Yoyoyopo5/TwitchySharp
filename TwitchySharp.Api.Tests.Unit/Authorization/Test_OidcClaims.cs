@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Models.Authorization.Enums;
+using TwitchySharp.Api.Models.Authorization.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 public class Test_OidcClaims
