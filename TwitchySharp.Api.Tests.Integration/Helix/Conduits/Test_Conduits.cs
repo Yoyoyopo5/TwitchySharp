@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.Helix.Conduits;
+using TwitchySharp.Api.Models.Helix.Conduits.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Conduits;
 [Collection("helix")]

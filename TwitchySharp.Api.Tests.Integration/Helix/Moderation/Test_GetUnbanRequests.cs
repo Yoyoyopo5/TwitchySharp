@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Api.Models.Helix.Moderation.Enums;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Moderation;
 [Collection("helix")]

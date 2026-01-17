@@ -6,12 +6,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
 using System.Threading.Tasks;
+using TwitchySharp.Api.Core;
 using TwitchySharp.Api.Tests.Integration.Authorization;
 
 namespace TwitchySharp.Api.Tests.Integration;
 public class ApiFixture<TSecrets> : IDisposable
 {
-    public TwitchApi Api { get; }
+    public TwitchClient Api { get; }
     private readonly TwitchHttpClient _twitchHttpClient;
     private readonly HttpClient _httpClient;
     private readonly RateLimiter _rateLimiter;

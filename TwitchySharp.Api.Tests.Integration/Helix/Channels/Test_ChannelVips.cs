@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Channels;
+using TwitchySharp.Api.Models.Helix.Channels.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Channels;
 [Collection("helix")]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Helix.GuestStar;
+using TwitchySharp.Api.Models.Helix.GuestStar.Enums;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.GuestStar;
 [Collection("helix")]

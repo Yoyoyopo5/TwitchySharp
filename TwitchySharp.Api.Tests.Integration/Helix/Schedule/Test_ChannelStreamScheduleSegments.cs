@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Schedule;
+using TwitchySharp.Api.Models.Helix.Schedule.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Schedule;
 [Collection("helix")]
