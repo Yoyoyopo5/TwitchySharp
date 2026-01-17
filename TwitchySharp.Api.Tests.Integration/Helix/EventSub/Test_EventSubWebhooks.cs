@@ -15,6 +15,7 @@ using TwitchySharp.Api.Helix.EventSub.Models.Types.Automod.Terms;
 using TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.AdBreak;
 using TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.ChannelPoints;
 using TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.Chat;
+using TwitchySharp.Api.Models.Helix.EventSub.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.EventSub;
 public class Test_EventSubWebhooks(EventSubFixture fixture) : IClassFixture<EventSubFixture>

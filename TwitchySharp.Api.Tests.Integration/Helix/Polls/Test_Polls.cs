@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Polls;
+using TwitchySharp.Api.Models.Helix.Polls.Requests;
+using TwitchySharp.Api.Models.Helix.Polls.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Polls;
 [Collection("helix")]

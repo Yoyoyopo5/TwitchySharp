@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization.Extensions;
-using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Api.Models.Helix.Extensions.Enums;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Extensions;
 [Collection("helix")]

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Models.Authorization.Models;
+using TwitchySharp.Api.Models.Authorization.Requests;
 
 namespace TwitchySharp.Api.Tests.Integration.Authorization;
 [Collection("authorization")]

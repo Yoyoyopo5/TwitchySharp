@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Bits;
+using TwitchySharp.Api.Models.Helix.Bits.Enums;
+using TwitchySharp.Api.Models.Helix.Bits.Requests;
+using TwitchySharp.Api.Models.Helix.Bits.Responses;
 
 namespace TwitchySharp.Api.Tests.Integration.Helix.Bits;
 [Collection("helix")]
