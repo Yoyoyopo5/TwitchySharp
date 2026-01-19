@@ -63,4 +63,15 @@ public record SendChatMessageRequestData
     /// The message id of the chat message being replied to.
     /// </summary>
     public string? ReplyParentMessageId { get; init; }
+    /// <summary>
+    /// Determines if the chat message is sent only to the source channel (defined by broadcaster_id) during a shared chat session. 
+    /// This has no effect if the message is not sent during a shared chat session.
+    /// </summary>
+    /// <remarks>
+    /// This parameter can only be set when utilizing an app access token. 
+    /// It cannot be specified when a user access token is used, and will instead result in an HTTP 400 error.
+    /// <br/>
+    /// The default value is <see langword="true"/>.
+    /// </remarks>
+    public bool? ForSourceOnly { get; init; }
 }
