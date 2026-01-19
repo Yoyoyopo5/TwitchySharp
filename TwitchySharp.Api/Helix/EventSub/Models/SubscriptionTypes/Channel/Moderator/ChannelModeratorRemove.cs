@@ -1,0 +1,26 @@
+﻿using System.Collections.Generic;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Constants;
+
+namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
+/// <summary>
+/// Moderator privileges were removed from a user on a specified channel.
+/// </summary>
+/// <remarks>
+/// Requires a user access token with <see cref="Scope.ModerationRead"/>.
+/// </remarks>
+/// <param name="BroadcasterUserId">
+/// The user id of the broadcaster for the channel you want to get moderator removal notifications for.
+/// This user must have created a user access token that includes <see cref="Scope.ModerationRead"/> for your application.
+/// </param>
+public sealed record ChannelModeratorRemove(string BroadcasterUserId)
+    : IEventSubSubscriptionType
+{
+    public string Type => EventSubSubscriptionTypeNames.CHANNEL_MODERATOR_REMOVE;
+    public string Version => EventSubSubscriptionTypeVersions.V1;
+
+    private readonly EventSubSubscriptionCondition _condition =
+        new EventSubSubscriptionCondition()
+            .Set("broadcaster_user_id", BroadcasterUserId);
+    public IReadOnlyDictionary<string, object> Condition => _condition;
+}
