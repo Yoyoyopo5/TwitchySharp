@@ -23,6 +23,7 @@ public record GetExtensionLiveChannelsRequest
     /// </param>
     /// <param name="first">
     /// The maximum number of items to return per page in the response. 
+    /// The actual number returned may be less than this limit.
     /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
     /// The default is 20.
     /// </param>
