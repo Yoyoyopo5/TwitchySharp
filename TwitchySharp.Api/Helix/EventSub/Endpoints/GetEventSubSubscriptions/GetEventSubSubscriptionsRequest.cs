@@ -28,6 +28,10 @@ public record GetEventSubSubscriptionsRequest
     /// <param name="userId">Specify this parameter to filter the returned list by a specific user. 
     /// Only subscriptions that were created for this user are returned.
     /// </param>
+    /// <param name="subscriptionId">
+    /// Specify this parameter to get a specific subscription by its id, as long as the subscription is owned by the client making the request.
+    /// If a matching subscription does not exist, an empty array is returned.
+    /// </param>
     /// <param name="after">
     /// The cursor used to get the next page of results. 
     /// The <see cref="Pagination"/> property in the response contains the cursor's value.
@@ -38,6 +42,7 @@ public record GetEventSubSubscriptionsRequest
         EventSubSubscriptionStatus? status = null,
         EventSubSubscriptionType? type = null,
         string? userId = null,
+        string? subscriptionId = null,
         string? after = null
         )
         : base(
@@ -48,6 +53,7 @@ public record GetEventSubSubscriptionsRequest
                 .Add("status", status?.Value)
                 .Add("type", type?.Type)
                 .Add("user_id", userId)
+                .Add("subscription_id", subscriptionId)
                 .Add("after", after)
             )
     {
