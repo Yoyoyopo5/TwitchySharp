@@ -2,7 +2,6 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Core;
 using TwitchySharp.Api.ResponseConverters;
 using TwitchySharp.Shared;
 

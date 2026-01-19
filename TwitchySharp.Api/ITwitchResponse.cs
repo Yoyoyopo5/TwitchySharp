@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using TwitchySharp.Api.Models.Shared;
 
 namespace TwitchySharp.Api;
 /// <summary>
