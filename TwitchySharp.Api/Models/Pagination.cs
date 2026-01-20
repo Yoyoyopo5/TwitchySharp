@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -11,6 +12,12 @@ public record Pagination
     /// <summary>
     /// The cursor used to get the next page of results. Usage depends on request type.
     /// </summary>
-    [JsonInclude]
-    public string? Cursor { get; private set; }
+    public Cursor? Cursor { get; init; }
 }
+
+/// <summary>
+/// A cursor used for pagination.
+/// </summary>
+/// <param name="Value">The cursor's string value.</param>
+[JsonConverter(typeof(WrapperJsonConverter<Cursor, string>))]
+public readonly record struct Cursor(string Value) : IWrapValue<string>;
