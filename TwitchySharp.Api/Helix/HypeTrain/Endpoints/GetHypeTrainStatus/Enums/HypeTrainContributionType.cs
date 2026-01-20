@@ -17,7 +17,7 @@ public record HypeTrainContributionType(string Value) : ValueBackedEnum<string>(
     /// <summary>
     /// Contributed by subscribing or gifting subscriptions.
     /// </summary>
-    public static HypeTrainContributionType Subs { get; } = new("subs");
+    public static HypeTrainContributionType Subs { get; } = new("subscription");
     /// <summary>
     /// Contributed in any other way.
     /// </summary>
