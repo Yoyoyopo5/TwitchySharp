@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -31,7 +32,7 @@ public record TwitchRequest : ITwitchRequest
     /// If you are sending the <see cref="HttpRequestMessage"/> manually, use the <see cref="TwitchAuthorizationHandler"/> delegating handler
     /// or set the <c>Client-Id</c> header manually.
     /// </remarks>
-    public string? ClientId { get; init; }
+    public ClientId? ClientId { get; init; }
     /// <summary>
     /// The access token (app or user) to use with the request, if any.
     /// </summary>
@@ -42,7 +43,7 @@ public record TwitchRequest : ITwitchRequest
     /// If you are sending the <see cref="HttpRequestMessage"/> manually, use the <see cref="TwitchAuthorizationHandler"/> delegating handler
     /// or set the <c>Authorization</c> header manually.
     /// </remarks>
-    public string? AccessToken { get; init; }
+    public AccessToken? AccessToken { get; init; }
     /// <summary>
     /// The content (data) of the request, as an <see cref="object"/>.
     /// </summary>
@@ -86,8 +87,8 @@ public record TwitchRequest : ITwitchRequest
         };
         httpRequest.Options.Set(TwitchRequestOptionsKeys.Authorization, new TwitchAuthorizationRequestOptions
         {
-            ClientId = ClientId,
-            AccessToken = AccessToken
+            ClientId = ClientId?.Value,
+            AccessToken = AccessToken?.Value
         });
         return httpRequest;
     }

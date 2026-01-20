@@ -16,7 +16,7 @@ public record UserInfoRequest
     /// The user access token of the user to get claims information for.
     /// Requires <see cref="Scope.OpenId"/>.
     /// </param>
-    public UserInfoRequest(string accessToken)
+    public UserInfoRequest(UserAccessToken accessToken)
         : base("/userinfo")
     {
         Method = HttpMethod.Get;
