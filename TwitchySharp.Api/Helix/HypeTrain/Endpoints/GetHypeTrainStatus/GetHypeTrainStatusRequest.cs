@@ -1,0 +1,40 @@
+﻿using System.Net.Http;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers;
+
+namespace TwitchySharp.Api.Helix.HypeTrain;
+/// <summary>
+/// Get the status of a Hype Train for the specified broadcaster.
+/// </summary>
+/// <remarks>
+/// Requires a user access token that includes <see cref="Scope.ChannelReadHypeTrain"/>.
+/// <br/>
+/// See <see href="https://dev.twitch.tv/docs/api/reference/#get-hype-train-status">Get Hype Train Status</see> for more information.
+/// </remarks>
+public record GetHypeTrainStatusRequest
+    : TwitchHelixRequest<GetHypeTrainStatusResponse>
+{
+    /// <param name="clientId">The client id of the application.</param>
+    /// <param name="accessToken">
+    /// A user access token for that includes <see cref="Scope.ChannelReadHypeTrain"/>.
+    /// </param>
+    /// <param name="broadcasterId">
+    /// The user id of the broadcaster (channel) to get the Hype Train status for.
+    /// This must be the same user that created the <paramref name="accessToken"/>.
+    /// </param>
+    public GetHypeTrainStatusRequest(
+        string clientId,
+        string accessToken,
+        string broadcasterId
+        )
+        : base(
+            "/hypetrain/status",
+            clientId,
+            accessToken,
+            new HttpQueryParameters()
+                .Add("broadcaster_id", broadcasterId)
+            )
+    {
+        Method = HttpMethod.Get;
+    }
+}
