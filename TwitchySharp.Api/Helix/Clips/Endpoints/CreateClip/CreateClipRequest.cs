@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 
@@ -34,27 +35,45 @@ public record CreateClipRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ClipsEdit"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose stream you want to create a clip from.</param>
-    /// <param name="hasDelay">
-    /// Determines whether the API captures the clip at the moment the viewer requests it or after a delay. 
-    /// If <see langword="false"/> (default), Twitch captures the clip at the moment the viewer requests it (this is the same clip experience as the Twitch UX). 
-    /// If <see langword="true"/>, Twitch adds a delay before capturing the clip (this basically shifts the capture window to the right slightly).
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public CreateClipRequest(
         string clientId,
         string accessToken,
-        string broadcasterId,
-        bool? hasDelay = null
+        CreateClipRequestParameters parameters
         )
         : base(
             "/clips",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("has_delay", hasDelay?.ToString())
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("title", parameters.Title)
+                .Add("duration", parameters.Duration?.TotalSeconds.ToString())
             )
     {
         Method = HttpMethod.Post;
     }
+}
+
+/// <summary>
+/// Parameters for a <see cref="CreateClipRequest"/>.
+/// </summary>
+public record CreateClipRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to create a clip for.
+    /// </summary>
+    public required string BroadcasterId { get; set; }
+    /// <summary>
+    /// The title of the clip to create.
+    /// </summary>
+    public string? Title { get; set; }
+    /// <summary>
+    /// The length of the clip to create.
+    /// </summary>
+    /// <remarks>
+    /// Can range from 5 to 60 seconds, with a resolution of 100ms.
+    /// Defaults to 30 seconds if left <see langword="null"/>.
+    /// </remarks>
+    public TimeSpan? Duration { get; set; }
 }
