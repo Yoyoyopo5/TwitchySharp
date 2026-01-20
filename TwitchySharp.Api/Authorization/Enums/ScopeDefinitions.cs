@@ -45,6 +45,10 @@ public partial record Scope
     /// </summary>
     public static Scope ChannelReadCharity { get; } = new("channel:read:charity");
     /// <summary>
+    /// Manage Clips for a channel.
+    /// </summary>
+    public static Scope ChannelManageClips { get; } = new("channel:manage:clips");
+    /// <summary>
     /// Run commercials on a channel.
     /// </summary>
     public static Scope ChannelEditCommercial { get; } = new("channel:edit:commercial");
@@ -132,6 +136,10 @@ public partial record Scope
     /// Manage Clips for a channel.
     /// </summary>
     public static Scope ClipsEdit { get; } = new("clips:edit");
+    /// <summary>
+    /// Manage Clips as an editor.
+    /// </summary>
+    public static Scope EditorManageClips { get; } = new("editor:manage:clips");
     /// <summary>
     /// View a channel’s moderation data including Moderators, Bans, Timeouts, and Automod settings.
     /// </summary>
