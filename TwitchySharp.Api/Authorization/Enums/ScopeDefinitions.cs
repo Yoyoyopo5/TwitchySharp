@@ -233,6 +233,10 @@ public partial record Scope
     /// </summary>
     public static Scope ModeratorReadSuspiciousUsers { get; } = new("moderator:read:suspicious_users");
     /// <summary>
+    /// Manage suspicious user statuses in channels where the user has the moderator role.
+    /// </summary>
+    public static Scope ModeratorManageSuspiciousUsers { get; } = new("moderator:manage:suspicious_users");
+    /// <summary>
     /// View a broadcaster’s unban requests.
     /// </summary>
     public static Scope ModeratorReadUnbanRequests { get; } = new("moderator:read:unban_requests");
