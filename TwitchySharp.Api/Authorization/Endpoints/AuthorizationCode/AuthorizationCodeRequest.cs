@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization.ClientUrls;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -22,7 +24,7 @@ public record AuthorizationCodeRequest
     /// The redirect URI of the application (this is registered via the Twitch developer console).
     /// This should be the URI that the <see cref="AuthorizationCodeGrantUrl"/> redirected to.
     /// </param>
-    public AuthorizationCodeRequest(string clientId, string clientSecret, string code, string redirectUri)
+    public AuthorizationCodeRequest(ClientId clientId, ClientSecret clientSecret, string code, Uri redirectUri)
         : base("/token")
     {
         Method = HttpMethod.Post;
@@ -33,7 +35,7 @@ public record AuthorizationCodeRequest
             { "client_secret", clientSecret },
             { "code", code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", redirectUri }
+            { "redirect_uri", redirectUri.ToString() }
         });
     }
 }

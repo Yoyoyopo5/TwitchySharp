@@ -13,7 +13,7 @@ public record ValidateAccessTokenRequest
     : TwitchAuthorizationRequest<ValidateAccessTokenResponse>
 {
     /// <param name="accessToken">The user access token to validate.</param>
-    public ValidateAccessTokenRequest(string accessToken)
+    public ValidateAccessTokenRequest(UserAccessToken accessToken)
         : base("/validate")
     {
         Method = HttpMethod.Get;

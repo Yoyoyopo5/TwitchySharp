@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization.ClientUrls;
 /// <summary>
@@ -15,8 +17,8 @@ public record ImplicitGrantUrl : AuthorizationUrl
     /// <param name="claims">A collection of <see cref="OidcClaim"/>s that will be requested in addition to the default claims. See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#requesting-claims">requesting claims</see> for more info.</param>
     /// <param name="forceVerify">If set to <see langword="true"/>, this will force the authorizing user to click an authorization button even if they have authorized this app in the past.</param>
     public ImplicitGrantUrl(
-        string clientId,
-        string redirectUri,
+        ClientId clientId,
+        Uri redirectUri,
         IEnumerable<Scope> scopes,
         string? state = null,
         OidcResponseType responseType = OidcResponseType.Token,

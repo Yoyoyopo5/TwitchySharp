@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -11,7 +12,7 @@ public record DeviceCodeTokenRequest
     /// <param name="clientId">The client id of the application making the request.</param>
     /// <param name="scopes">The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> to request.</param>
     /// <param name="deviceCode">The device code obtained from a <see cref="DeviceCodeRequest"/></param>
-    public DeviceCodeTokenRequest(string clientId, IEnumerable<Scope> scopes, string deviceCode)
+    public DeviceCodeTokenRequest(ClientId clientId, IEnumerable<Scope> scopes, DeviceCode deviceCode)
         : base("/token")
     {
         Method = HttpMethod.Post;
