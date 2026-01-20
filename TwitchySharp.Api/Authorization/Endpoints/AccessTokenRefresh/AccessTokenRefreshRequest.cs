@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -16,7 +17,7 @@ public record AccessTokenRefreshRequest
     /// <param name="clientId">The client ID of the application that the user originally authorized.</param>
     /// <param name="clientSecret">The client secret of the application that the user originally authorized.</param>
     /// <param name="refreshToken">The refresh token for the user access token.</param>
-    public AccessTokenRefreshRequest(string clientId, string clientSecret, string refreshToken)
+    public AccessTokenRefreshRequest(ClientId clientId, ClientSecret clientSecret, RefreshToken refreshToken)
         : base("/token")
     {
         Method = HttpMethod.Post;

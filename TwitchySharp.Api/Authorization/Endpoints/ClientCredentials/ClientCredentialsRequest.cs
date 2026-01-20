@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -13,7 +14,7 @@ public record ClientCredentialsRequest
 {
     /// <param name="clientId">The client id of the application to get an access token for.</param>
     /// <param name="clientSecret">The client secret of the application to get an access token for.</param>
-    public ClientCredentialsRequest(string clientId, string clientSecret)
+    public ClientCredentialsRequest(ClientId clientId, ClientSecret clientSecret)
         : base("/token")
     {
         Method = HttpMethod.Post;

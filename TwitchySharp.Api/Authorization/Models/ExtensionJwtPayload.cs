@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters.DateTime;
 using TwitchySharp.Shared;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -13,7 +14,7 @@ namespace TwitchySharp.Api.Authorization;
 /// <param name="UserId">
 /// The user id of the owner of the extension.
 /// </param>
-public record ExtensionJwtPayload(string UserId)
+public record ExtensionJwtPayload(UserId UserId)
 {
     /// <summary>
     /// When the JWT is set to expire. 
@@ -25,7 +26,7 @@ public record ExtensionJwtPayload(string UserId)
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    public string UserId { get; set; } = UserId;
+    public UserId UserId { get; set; } = new(UserId);
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
@@ -41,11 +42,15 @@ public record ExtensionJwtPayload(string UserId)
     /// Creates an encoded JWT used to make various Extensions API calls.
     /// </summary>
     /// <param name="extensionSecret">An extension secret.</param>
+    /// <param name="serializerOptions">
+    /// Custom serializer options to use. 
+    /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
+    /// </param>
     /// <returns>A signed JWT.</returns>
-    public string Sign(string extensionSecret)
+    public string Sign(string extensionSecret, JsonSerializerOptions? serializerOptions = null)
         => new JsonWebTokenHandler()
             .CreateToken(
-                JsonSerializer.Serialize(this, JsonConfig.ApiOptions),
+                JsonSerializer.Serialize(this, serializerOptions ?? JsonConfig.ApiOptions),
                 new SigningCredentials(
                     new SymmetricSecurityKey(
                         Convert.FromBase64String(extensionSecret)

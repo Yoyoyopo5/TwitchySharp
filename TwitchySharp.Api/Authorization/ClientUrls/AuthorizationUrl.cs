@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization.ClientUrls;
 /// <summary>
@@ -19,8 +20,8 @@ public abstract record AuthorizationUrl
         => Uri.ToString();
 
     protected AuthorizationUrl(
-        string clientId,
-        string redirectUri,
+        ClientId clientId,
+        Uri redirectUri,
         string repsonseType,
         IEnumerable<Scope> scopes,
         string? state = null,
@@ -37,7 +38,7 @@ public abstract record AuthorizationUrl
             Query = new HttpQueryParameters()
                     .Add("response_type", repsonseType)
                     .Add("client_id", clientId)
-                    .Add("redirect_uri", redirectUri)
+                    .Add("redirect_uri", redirectUri.ToString())
                     .Add("scope", scopes.FormatScopes())
                     .Add("force_verify", forceVerify.ToString())
                     .Add("state", state)
