@@ -1,0 +1,42 @@
+﻿using System.Text.Json.Serialization;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers;
+
+namespace TwitchySharp.Api;
+/// <summary>
+/// A Twitch API access token.
+/// </summary>
+/// <remarks>
+/// Use <see cref="AppAccessToken"/> or <see cref="UserAccessToken"/>, depending on the endpoint.
+/// </remarks>
+/// <param name="Value">The string value of the access token.</param>
+[JsonConverter(typeof(WrapperJsonConverter<AccessToken, string>))]
+public abstract record AccessToken(string Value) : IWrapValue<string>
+{
+    public static implicit operator string(AccessToken token)
+        => token.Value;
+    public sealed override string ToString()
+        => Value;
+}
+
+/// <summary>
+/// A Twitch app access token.
+/// </summary>
+/// <remarks>
+/// APIs that don’t require the user’s permission to access resources use app access tokens.
+/// <br/>
+/// See <see href="https://dev.twitch.tv/docs/authentication/#app-access-tokens">App Access Tokens</see> for more information.
+/// </remarks>
+[JsonConverter(typeof(WrapperJsonConverter<AppAccessToken, string>))]
+public record AppAccessToken(string Value) : AccessToken(Value);
+
+/// <summary>
+/// A Twitch user access token.
+/// </summary>
+/// <remarks>
+/// APIs that require the user’s permission to access resources use user access tokens. Can include various <see cref="Scope"/>s.
+/// <br/>
+/// See <see href="https://dev.twitch.tv/docs/authentication/#user-access-tokens">User Access Tokens</see> for more information.
+/// </remarks>
+[JsonConverter(typeof(WrapperJsonConverter<UserAccessToken, string>))]
+public record UserAccessToken(string Value) : AccessToken(Value);
