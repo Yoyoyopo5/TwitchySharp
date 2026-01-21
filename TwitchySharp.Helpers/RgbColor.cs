@@ -51,6 +51,7 @@ public readonly record struct RgbColor
         return new RgbColor(r, g, b);
     }
 
+    /// <returns>The HTML hex color code (including the #) as a string.</returns>
     public override string ToString() => $"#{R:X2}{G:X2}{B:X2}";
 }
 
