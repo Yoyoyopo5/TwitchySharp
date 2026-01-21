@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Charity;
 /// <summary>
@@ -30,22 +31,44 @@ public record GetCharityCampaignDonationsRequest
     /// The <see cref="Pagination"/> property in the response contains the cursor’s value.
     /// </param>
     public GetCharityCampaignDonationsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetCharityCampaignDonationsRequestParameters parameters
         )
         : base(
             "/charity/donations",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetCharityCampaignDonationsRequest"/>.
+/// </summary>
+public record GetCharityCampaignDonationsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster that you want to get charity donations for. 
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }
