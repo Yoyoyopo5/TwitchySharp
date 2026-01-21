@@ -1,5 +1,6 @@
 ﻿using System;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix;
 /// <summary>
@@ -17,7 +18,7 @@ public record TwitchHelixRequest<TResponseContent>
     /// <param name="path">The path of the endpoint (after <c>/helix</c>).</param>
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An access token used to authorize the request. This is used in the <c>Authorization</c> header.</param>
-    public TwitchHelixRequest(string path, string clientId, string accessToken, HttpQueryParameters? queryParams = null)
+    public TwitchHelixRequest(string path, ClientId clientId, AccessToken accessToken, HttpQueryParameters? queryParams = null)
     {
         ClientId = clientId;
         AccessToken = accessToken;
