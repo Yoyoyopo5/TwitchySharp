@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -19,29 +20,42 @@ public record RemoveChannelVipRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageVips"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to remove a VIP for.
-    /// If removing a user's VIP status on behalf of the broadcaster, the broadcaster must have created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="userId">
-    /// The id of the user to revoke VIP status for.
-    /// If removing this user's VIP status on behalf of the user themselves, this user can have created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public RemoveChannelVipRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string userId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        RemoveChannelVipRequestParameters parameters
         )
         : base(
             "/channels/vips",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="RemoveChannelVipRequest"/>.
+/// </summary>
+public record RemoveChannelVipRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to remove a VIP for.
+    /// </summary>
+    /// <remarks>
+    /// If removing a user's VIP status on behalf of the broadcaster, the broadcaster must have created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the user to revoke VIP status for.
+    /// </summary>
+    /// <remarks>
+    /// If removing this user's VIP status on behalf of the user themselves, this user can have created the access token used in the request.
+    /// </remarks>
+    public required UserId UserId { get; set; }
 }

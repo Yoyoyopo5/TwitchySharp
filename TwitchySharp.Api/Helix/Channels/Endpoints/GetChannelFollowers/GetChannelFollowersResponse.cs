@@ -3,6 +3,7 @@
 namespace TwitchySharp.Api.Helix.Channels;
 
 public record GetChannelFollowersResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of users that follow the specified broadcaster. 

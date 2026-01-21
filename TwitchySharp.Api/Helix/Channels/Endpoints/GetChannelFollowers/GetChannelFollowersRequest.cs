@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -22,39 +23,51 @@ public record GetChannelFollowersRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ModeratorReadFollowers"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster to get followers for.</param>
-    /// <param name="userId">
-    /// Use this parameter to see whether a specific user follows this broadcaster. 
-    /// If specified, the response contains this user if they follow the broadcaster. 
-    /// If not specified, the response contains all users that follow the broadcaster.</param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetChannelFollowersRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string? userId = null,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetChannelFollowersRequestParameters parameters
         )
         : base(
             "/channels/followers",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelFollowersRequest"/>.
+/// </summary>
+public record GetChannelFollowersRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster to get followers for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// Use this parameter to see whether a specific user follows this broadcaster. 
+    /// </summary>
+    /// <remarks>
+    /// If specified, the response contains this user if they follow the broadcaster. 
+    /// If not specified, the response contains all users that follow the broadcaster.
+    /// </remarks>
+    public UserId? UserId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100. 
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

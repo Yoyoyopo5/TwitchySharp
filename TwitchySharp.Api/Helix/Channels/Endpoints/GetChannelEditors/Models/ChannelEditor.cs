@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 
@@ -10,11 +11,11 @@ public record ChannelEditor
     /// <summary>
     /// The user ID of the channel editor.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The editor's Twitch display name.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The date and time when the user became one of the broadcaster’s editors.
     /// </summary>
