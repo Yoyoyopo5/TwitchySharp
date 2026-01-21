@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -20,24 +22,12 @@ public record UpdateRedemptionStatusRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageRedemptions"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster who owns the custom reward.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="rewardId">The unique id of the custom reward.</param>
-    /// <param name="redemptionIds">
-    /// A list of ids for the redemptions you want to update.
-    /// You may specify a maximum of 50 IDs.
-    /// </param>
-    /// <param name="redemptionStatus">
-    /// The status to set the redemption to.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
+    /// <param name="redemptionStatus">The status to set the redemption to.</param>
     public UpdateRedemptionStatusRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string rewardId,
-        IEnumerable<string> redemptionIds,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateRedemptionStatusRequestParameters parameters,
         RewardRedemptionStatus redemptionStatus
         )
         : base(
@@ -45,9 +35,9 @@ public record UpdateRedemptionStatusRequest
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("id", redemptionIds)
-                .Add("broadcaster_id", broadcasterId)
-                .Add("reward_id", rewardId)
+                .Add("id", parameters.Ids.Select(x => x.ToString()))
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("reward_id", parameters.RewardId)
             )
     {
         Method = HttpMethod.Patch;
@@ -55,6 +45,34 @@ public record UpdateRedemptionStatusRequest
     }
 }
 
+/// <summary>
+/// Request parameters for a <see cref="UpdateRedemptionStatusRequest"/>.
+/// </summary>
+public record UpdateRedemptionStatusRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster who owns the custom reward.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token for the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the custom reward to update redemptions on.
+    /// </summary>
+    public required RewardId RewardId { get; set; }
+    /// <summary>
+    /// A list of ids for the redemptions you want to update.
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 50 ids.
+    /// </remarks>
+    public required IEnumerable<RewardRedemptionId> Ids { get; set; }
+}
+
+/// <summary>
+/// Request data for a <see cref="UpdateRedemptionStatusRequest"/>.
+/// </summary>
 public record UpdateRedemptionStatusRequestData
 {
     /// <summary>
