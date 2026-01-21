@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Ads;
 /// <summary>
@@ -18,13 +19,11 @@ public record StartCommercialRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelEditCommercial"/></param>
-    /// <param name="broadcasterId">The user ID of the partner or affiliate broadcaster that wants to run the commercial. This ID must match the user ID of the access token.</param>
-    /// <param name="length">The length of the commercial to run. Twitch tries to serve a commercial that’s the requested length, but it may be shorter or longer. The maximum length you should request is 180 seconds.</param>
+    /// <param name="data">The request data.</param>
     public StartCommercialRequest(
         string clientId,
         string accessToken,
-        string broadcasterId,
-        TimeSpan length
+        StartCommericalRequestData data
         )
         : base(
             "/channels/commercial",
@@ -33,18 +32,26 @@ public record StartCommercialRequest
             )
     {
         Method = HttpMethod.Post;
-        ContentObject = new StartCommericalRequestData(broadcasterId, length);
+        ContentObject = data;
     }
 }
 
 /// <summary>
-/// See <see cref="StartCommercialRequest"/> for usage.
+/// Request data for a <see cref="StartCommercialRequest"/>.
 /// </summary>
-/// <param name="BroadcasterId">The user ID of the partner or affiliate broadcaster that wants to run the commercial. This ID must match the user ID of the access token.</param>
-/// <param name="Length">The length of the commercial to run. Twitch tries to serve a commercial that’s the requested length, but it may be shorter or longer. The maximum length you should request is 180 seconds.</param>
-internal record StartCommericalRequestData(string BroadcasterId, TimeSpan Length)
+public record StartCommericalRequestData
 {
-    public string BroadcasterId { get; set; } = BroadcasterId;
+    /// <summary>
+    /// The user id of the partner or affiliate broadcaster that wants to run the commercial. This ID must match the user ID of the access token.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The length of the commercial to run. 
+    /// </summary>
+    /// <remarks>
+    /// Twitch tries to serve a commercial that’s the requested length, but it may be shorter or longer.
+    /// The maximum length you should request is 180 seconds.
+    /// </remarks>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public TimeSpan Length { get; set; } = Length;
+    public required TimeSpan Length { get; set; }
 }
