@@ -29,7 +29,7 @@ public readonly record struct RgbColor
     /// Creates an <see cref="RgbColor"/> from a hex string (e.g. "#FF5733")
     /// </summary>
     /// <remarks>
-    /// Empty or <see langword="null"/> inputs default to white.
+    /// Empty or <see langword="null"/> inputs default to #000000.
     /// </remarks>
     public static RgbColor FromHex(string? hex)
     {
