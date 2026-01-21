@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Ads;
 /// <summary>
@@ -18,20 +19,29 @@ public record GetAdScheduleRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ChannelReadAds"/>.</param>
-    /// <param name="broadcasterId">The user id to get the ad schedule from. This must be the same user that provided the <paramref name="accessToken"/>.</param>
+    /// <param name="parameters">The request parameters.</param>
     public GetAdScheduleRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetAdScheduleRequestParameters parameters
         )
         : base(
             "/channels/ads",
             clientId,
             accessToken,
             new HttpQueryParameters()
-              .Add("broadcaster_id", broadcasterId)
+              .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+public record GetAdScheduleRequestParameters
+{
+    /// <summary>
+    /// The user id to get the ad schedule from. 
+    /// This must be the same user that provided the user access token.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }

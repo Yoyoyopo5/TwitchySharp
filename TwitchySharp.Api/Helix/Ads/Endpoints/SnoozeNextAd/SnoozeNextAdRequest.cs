@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Ads;
 /// <summary>
@@ -19,20 +20,32 @@ public record SnoozeNextAdRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageAds"/>.</param>
-    /// <param name="broadcasterId">The user id of the channel to snooze an ad on. This must be the same user that provided the <paramref name="accessToken"/></param>
+    /// <param name="parameters">The request parameters.</param>
     public SnoozeNextAdRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        SnoozeNextAdRequestParameters parameters
         )
         : base(
             "/channels/ads/schedule/snooze",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Post;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SnoozeNextAdRequest"/>.
+/// </summary>
+public record SnoozeNextAdRequestParameters
+{
+    /// <summary>
+    /// The user id of the channel to snooze an ad on. 
+    /// This must be the same user that provided the access token for the request.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
