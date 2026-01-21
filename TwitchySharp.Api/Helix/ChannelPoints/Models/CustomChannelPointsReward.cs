@@ -1,4 +1,6 @@
 ﻿using System;
+using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -9,19 +11,19 @@ public record CustomChannelPointsReward
     /// <summary>
     /// The user id of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// An id that uniquely indentifies this custom reward.
     /// </summary>
-    public required string Id { get; init; }
+    public required RewardId Id { get; init; }
     /// <summary>
     /// The title of the reward.
     /// </summary>
@@ -44,10 +46,9 @@ public record CustomChannelPointsReward
     /// </summary>
     public required RewardImage DefaultImage { get; init; }
     /// <summary>
-    /// The background color of the reward. 
-    /// The color is in Hex format (for example, #00E5CB).
+    /// The background color of the reward.
     /// </summary>
-    public required string BackgroundColor { get; init; }
+    public required RgbColor BackgroundColor { get; init; }
     /// <summary>
     /// Determines whether the reward is enabled. 
     /// Is <see langword="true"/> if enabled; otherwise, <see langword="false"/>. 

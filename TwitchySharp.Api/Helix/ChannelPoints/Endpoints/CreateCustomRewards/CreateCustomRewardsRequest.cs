@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -27,9 +28,9 @@ public record CreateCustomRewardsRequest
     /// </param>
     /// <param name="reward">The reward to create.</param>
     public CreateCustomRewardsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        CreateCustomRewardsRequestParameters parameters,
         CreateCustomRewardsRequestData reward
         )
         : base(
@@ -37,12 +38,26 @@ public record CreateCustomRewardsRequest
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
         )
     {
         Method = HttpMethod.Post;
         ContentObject = reward;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="CreateCustomRewardsRequest"/>.
+/// </summary>
+public record CreateCustomRewardsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to add the custom reward for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the user access token for the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>
@@ -72,10 +87,9 @@ public record CreateCustomRewardsRequestData
     /// </summary>
     public bool IsEnabled { get; init; } = true;
     /// <summary>
-    /// The background color to use for the reward. 
-    /// Specify the color using Hex format (for example, #9147FF).
+    /// The background color to use for the reward.
     /// </summary>
-    public string? BackgroundColor { get; init; }
+    public RgbColor? BackgroundColor { get; init; }
     /// <summary>
     /// Determines whether the user needs to enter information when redeeming the reward. 
     /// The default is <see langword="false"/>.
