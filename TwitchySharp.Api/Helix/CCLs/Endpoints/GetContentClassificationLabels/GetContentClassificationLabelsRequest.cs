@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.CCLs;
 
@@ -16,23 +17,34 @@ public record GetContentClassificationLabelsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="locale">
-    /// Locale to get content classification labels in.
-    /// Defaults to <see cref="ContentClassificationLocale.EnglishUnitedStates"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetContentClassificationLabelsRequest(
-        string clientId,
-        string accessToken,
-        ContentClassificationLocale? locale = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetContentClassificationLabelsRequestParameters? parameters = null
         )
         : base(
             "/content_classification_labels",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("locale", locale?.Value)
+                .Add("locale", parameters?.Locale?.Value)
         )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetContentClassificationLabelsRequest"/>.
+/// </summary>
+public record GetContentClassificationLabelsRequestParameters
+{
+    /// <summary>
+    /// Locale to get content classification labels in.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to <see cref="ContentClassificationLocale.EnglishUnitedStates"/> if left <see langword="null"/>.
+    /// </remarks>
+    public ContentClassificationLocale? Locale { get; set; }
 }
