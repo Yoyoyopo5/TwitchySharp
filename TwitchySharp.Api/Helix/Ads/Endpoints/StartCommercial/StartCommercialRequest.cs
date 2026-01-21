@@ -21,8 +21,8 @@ public record StartCommercialRequest
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelEditCommercial"/></param>
     /// <param name="data">The request data.</param>
     public StartCommercialRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         StartCommericalRequestData data
         )
         : base(
