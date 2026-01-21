@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Bits;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Bits;
 
 /// <summary>
 /// Contains information about a single entry (user) on a bits leaderboard.
@@ -8,15 +10,15 @@ public record BitsLeaderboardData
     /// <summary>
     /// The user's user id.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The user’s login name (username).
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The user’s display name.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The user’s position on the leaderboard.
     /// </summary>

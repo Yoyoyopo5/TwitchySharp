@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Bits;
 /// <summary>
@@ -18,25 +19,36 @@ public record GetCheermotesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token. Does not require any specific <see cref="Scope"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user ID of the broadcaster whose custom Cheermotes you want to get. 
-    /// Specify this if you want to include the broadcaster’s Cheermotes in the response (not all broadcasters upload Cheermotes). 
-    /// If not specified, the response contains only global Cheermotes.
-    /// If the broadcaster uploaded Cheermotes, the <see cref="Cheermote.Type"/> in the response is set to <see cref="CheermoteType.ChannelCustom"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetCheermotesRequest(
-        string clientId,
-        string accessToken,
-        string? broadcasterId = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetCheermotesRequestParameters? parameters = null
         )
         : base(
             "/bits/cheermotes",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters?.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetCheermotesRequest"/>.
+/// </summary>
+public record GetCheermotesRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster whose custom Cheermotes you want to get. 
+    /// </summary>
+    /// <remarks>
+    /// Specify this if you want to include the broadcaster’s Cheermotes in the response (not all broadcasters upload Cheermotes). 
+    /// If <see langword="null"/>, the response contains only global Cheermotes.
+    /// If the broadcaster uploaded Cheermotes, the <see cref="Cheermote.Type"/> in the response is set to <see cref="CheermoteType.ChannelCustom"/>.
+    /// </remarks>
+    public UserId? BroadcasterId { get; set; }
 }
