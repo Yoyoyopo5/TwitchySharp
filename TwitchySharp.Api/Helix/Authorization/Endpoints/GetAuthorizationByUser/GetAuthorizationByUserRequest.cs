@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Authorization;
 /// <summary>
@@ -16,23 +18,34 @@ public record GetAuthorizationByUserRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app access token.</param>
-    /// <param name="userIds">
-    /// The user id(s) of the user(s) you want to check authorization for.
-    /// A maximum of 10 user ids can be specified.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetAuthorizationByUserRequest(
-        string clientId,
-        string accessToken,
-        IEnumerable<string> userIds
+        ClientId clientId,
+        AppAccessToken accessToken,
+        GetAuthorizationByUserRequestParameters parameters
         )
         : base(
             "/authorization/users",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", userIds)
+                .Add("user_id", parameters.UserIds.Select(x => x.Value))
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetAuthorizationByUserRequest"/>.
+/// </summary>
+public record GetAuthorizationByUserRequestParameters
+{
+    /// <summary>
+    /// The user id(s) of the user(s) you want to check authorization for.
+    /// </summary>
+    /// <remarks>
+    /// A maximum of 10 user ids can be specified.
+    /// </remarks>
+    public required IEnumerable<UserId> UserIds { get; set; }
 }
