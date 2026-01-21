@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -19,17 +20,12 @@ public record UpdateChatSettingsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageChatSettings"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose chat settings you want to update.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel. 
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="newSettings">The settings that you want to change.</param>
     public UpdateChatSettingsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateChatSettingsRequestParameters parameters,
         UpdateChatSettingsRequestData newSettings
         )
         : base(
@@ -37,13 +33,31 @@ public record UpdateChatSettingsRequest
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Patch;
         ContentObject = newSettings;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateChatSettingsRequest"/>.
+/// </summary>
+public record UpdateChatSettingsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster whose chat settings you want to update.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel. 
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
 
 /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -18,20 +19,31 @@ public record GetChannelChatBadgesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="broadcasterId">The user ID of the broadcaster whose chat badges you want to get.</param>
+    /// <param name="parameters">The request parameters.</param>
     public GetChannelChatBadgesRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        AccessToken accessToken,
+        GetChannelChatBadgesRequestParameters parameters
         )
         : base(
             "/chat/badges",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelChatBadgesRequest"/>.
+/// </summary>
+public record GetChannelChatBadgesRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose chat badges you want to get.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }

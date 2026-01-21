@@ -11,6 +11,8 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record ChatColor(string Value)
     : ValueBackedEnum<string>(Value)
 {
+    public ChatColor(RgbColor color)
+        : this(color.ToString()) { }
     public static ChatColor Blue { get; } = new("blue");
     public static ChatColor BlueViolet { get; } = new("blue_violet");
     public static ChatColor CadetBlue { get; } = new("cadet_blue");

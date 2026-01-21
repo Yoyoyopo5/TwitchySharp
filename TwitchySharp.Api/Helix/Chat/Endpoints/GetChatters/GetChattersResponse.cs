@@ -3,6 +3,7 @@
 /// Contains a list of chatters in a broadcaster's channel.
 /// </summary>
 public record GetChattersResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of users that are connected to the broadcaster’s chat room.

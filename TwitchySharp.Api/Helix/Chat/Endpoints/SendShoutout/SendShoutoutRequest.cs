@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -18,29 +19,43 @@ public record SendShoutoutRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageShoutouts"/>.</param>
-    /// <param name="fromBroadcasterId">The user id of the broadcaster that's sending the shoutout.</param>
-    /// <param name="toBroadcasterId">The user id of the broadcaster that's receiving the shoutout.</param>
-    /// <param name="moderatorId">
-    /// The user id of the sending broadcaster or a moderator of the broadcaster's channel. 
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public SendShoutoutRequest(
-        string clientId,
-        string accessToken,
-        string fromBroadcasterId,
-        string toBroadcasterId,
-        string moderatorId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        SendShoutoutRequestParameters parameters
         )
         : base(
             "/chat/shoutouts",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("from_broadcaster_id", fromBroadcasterId)
-                .Add("to_broadcaster_id", toBroadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("from_broadcaster_id", parameters.FromBroadcasterId)
+                .Add("to_broadcaster_id", parameters.ToBroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Post;
     }
+}
+/// <summary>
+/// Request parameters for a <see cref="SendShoutoutRequest"/>.
+/// </summary>
+public record SendShoutoutRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster that's sending the shoutout.
+    /// </summary>
+    public required UserId FromBroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster that's receiving the shoutout.
+    /// </summary>
+    public required UserId ToBroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the moderator (or the broadcaster) to send the shoutout on behalf of.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -19,24 +21,35 @@ public record GetEmoteSetsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="emoteSetIds">
-    /// A list of IDs for the emote sets to get. 
-    /// You may specify a maximum of 25 IDs. 
-    /// The response contains only the IDs that were found and ignores duplicate IDs.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetEmoteSetsRequest(
-        string clientId,
-        string accessToken,
-        IEnumerable<string> emoteSetIds
+        ClientId clientId,
+        AccessToken accessToken,
+        GetEmoteSetsRequestParameters parameters
         )
         : base(
             "/chat/emotes/set",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("emote_set_id", emoteSetIds)
+                .Add("emote_set_id", parameters.EmoteSetIds.Select(x => x.ToString()))
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetEmoteSetsRequest"/>.
+/// </summary>
+public record GetEmoteSetsRequestParameters
+{
+    /// <summary>
+    /// A list of ids for the emote sets to get. 
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 25 IDs. 
+    /// The response contains only the IDs that were found and ignores duplicate IDs.
+    /// </remarks>
+    public required IEnumerable<EmoteSetId> EmoteSetIds { get; set; }
 }
