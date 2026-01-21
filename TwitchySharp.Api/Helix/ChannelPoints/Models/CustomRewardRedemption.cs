@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -9,31 +10,31 @@ public record CustomRewardRedemption
     /// <summary>
     /// The user id of the broadcaster that owns the custom reward.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user login (username) of the broadcaster that owns the custom reward.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster that owns the custom reward.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// An id that uniquely identifies this redemption.
     /// </summary>
-    public required string Id { get; init; }
+    public required RewardRedemptionId Id { get; init; }
     /// <summary>
     /// The user login (username) of the user that redeemed the custom reward.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The user id of the user that redeemed the custom reward.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The display name of the user that redeemed the custom reward.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The text the user entered at the prompt when they redeemed the reward; otherwise, an empty string if user input was not required.
     /// </summary>

@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.ChannelPoints;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.ChannelPoints;
 
 /// <summary>
 /// A custom reward that was redeemed.
@@ -8,7 +10,7 @@ public record RedeemedReward
     /// <summary>
     /// The unique id of the reward.
     /// </summary>
-    public required string Id { get; init; }
+    public required RewardId Id { get; init; }
     /// <summary>
     /// The title of the reward.
     /// </summary>
