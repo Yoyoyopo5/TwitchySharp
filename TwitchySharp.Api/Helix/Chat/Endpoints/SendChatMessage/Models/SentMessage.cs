@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains information about a message that was sent through the API.
@@ -8,7 +10,7 @@ public record SentMessage
     /// <summary>
     /// The message id of the message that was sent.
     /// </summary>
-    public required string MessageId { get; init; }
+    public required MessageId MessageId { get; init; }
     /// <summary>
     /// If the message passed all checks and was sent.
     /// </summary>

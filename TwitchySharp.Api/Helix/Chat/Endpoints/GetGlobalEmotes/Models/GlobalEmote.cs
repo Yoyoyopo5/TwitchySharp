@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains information about a global emote.
@@ -8,7 +10,7 @@ public record GlobalEmote
     /// <summary>
     /// An ID that identifies this emote.
     /// </summary>
-    public required string Id { get; init; }
+    public required EmoteId Id { get; init; }
     /// <summary>
     /// The name of the emote. 
     /// This is the name that viewers type in the chat window to get the emote to appear.

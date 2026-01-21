@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
 /// A channel emote.
 /// </summary>
@@ -7,7 +9,7 @@ public record ChannelEmote
     /// <summary>
     /// An ID that identifies this emote.
     /// </summary>
-    public required string Id { get; init; }
+    public required EmoteId Id { get; init; }
     /// <summary>
     /// The name of the emote. 
     /// This is the name that viewers type in the chat window to get the emote to appear.
@@ -23,7 +25,7 @@ public record ChannelEmote
     /// The subscriber tier at which the emote is unlocked. 
     /// This field contains the tier information only if <see cref="EmoteType"/> is set to <see cref="EmoteType.Subscriptions"/>, otherwise, it's an empty string.
     /// </summary>
-    public required string Tier { get; init; }
+    public required string Tier { get; init; } // Need to look into possible values for this, not indicated on the docs.
     /// <summary>
     /// The type of emote.
     /// </summary>
@@ -31,7 +33,7 @@ public record ChannelEmote
     /// <summary>
     /// An ID that identifies the emote set that the emote belongs to.
     /// </summary>
-    public required string EmoteSetId { get; init; }
+    public required EmoteSetId EmoteSetId { get; init; }
     /// <summary>
     /// The formats that the emote is available in. 
     /// For example, if the emote is available only as a static PNG, the array contains only <see cref="EmoteFormat.Static"/>. 

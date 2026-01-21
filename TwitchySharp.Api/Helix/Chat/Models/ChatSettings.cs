@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 
@@ -10,7 +11,7 @@ public record ChatSettings
     /// <summary>
     /// The user id of the broadcaster who has the chat settings.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// Determines whether chat messages must contain only emotes. 
     /// Is <see langword="true"/> if chat messages may contain only emotes; otherwise, <see langword="false"/>.

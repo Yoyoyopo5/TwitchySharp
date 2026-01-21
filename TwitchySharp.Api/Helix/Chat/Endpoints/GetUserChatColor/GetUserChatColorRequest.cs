@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -16,24 +18,35 @@ public record GetUserChatColorRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="userIds">
-    /// The user ids of the users whose username colors you want to get.
-    /// The maximum number of IDs that you may specify is 100.
-    /// The API ignores duplicate IDs and IDs that weren’t found.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetUserChatColorRequest(
-        string clientId,
-        string accessToken,
-        IEnumerable<string> userIds
+        ClientId clientId,
+        AccessToken accessToken,
+        GetUserChatColorRequestParameters parameters
         )
         : base(
             "/chat/color",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", userIds)
+                .Add("user_id", parameters.UserIds.Select(x => x.ToString()))
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetUserChatColorRequest"/>.
+/// </summary>
+public record GetUserChatColorRequestParameters
+{
+    /// <summary>
+    /// The user ids of the users whose username colors you want to get.
+    /// </summary>
+    /// <remarks>
+    /// The maximum number of ids that you may specify is 100.
+    /// The API ignores duplicate ids and ids that weren’t found.
+    /// </remarks>
+    public required IEnumerable<UserId> UserIds { get; set; }
 }

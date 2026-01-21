@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -26,10 +27,10 @@ public readonly record struct EmoteImageTemplateString
     /// <param name="theme">The background theme to get the image in.</param>
     /// <param name="scale">The scale to get the emote in.</param>
     /// <returns></returns>
-    public string CreateEmoteImageUrl(string emoteId, EmoteFormat format, EmoteTheme theme, EmoteScale scale)
+    public string CreateEmoteImageUrl(EmoteId emoteId, EmoteFormat format, EmoteTheme theme, EmoteScale scale)
     {
         return TemplateString
-            .Replace("{{id}}", emoteId)
+            .Replace("{{id}}", emoteId.Value)
             .Replace("{{format}}", format.Value)
             .Replace("{{theme_mode}}", theme.Value)
             .Replace("{{scale}}", scale.Value);

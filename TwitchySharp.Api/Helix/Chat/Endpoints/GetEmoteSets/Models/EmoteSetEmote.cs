@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains information about an emote in a set.
@@ -8,7 +10,7 @@ public record EmoteSetEmote
     /// <summary>
     /// An ID that identifies this emote.
     /// </summary>
-    public required string Id { get; init; }
+    public required EmoteId Id { get; init; }
     /// <summary>
     /// The name of the emote. 
     /// This is the name that viewers type in the chat window to get the emote to appear.
@@ -27,11 +29,11 @@ public record EmoteSetEmote
     /// <summary>
     /// An ID that identifies the emote set that the emote belongs to.
     /// </summary>
-    public required string EmoteSetId { get; init; }
+    public required EmoteSetId EmoteSetId { get; init; }
     /// <summary>
     /// The user ID of the broadcaster who owns the emote.
     /// </summary>
-    public required string OwnerId { get; init; }
+    public required UserId OwnerId { get; init; }
     /// <summary>
     /// The formats that the emote is available in. 
     /// For example, if the emote is available only as a static PNG, the array contains only <see cref="EmoteFormat.Static"/>. 

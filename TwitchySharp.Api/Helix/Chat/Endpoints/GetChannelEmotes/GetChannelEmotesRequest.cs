@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -19,20 +20,31 @@ public record GetChannelEmotesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose emotes you want to get.</param>
+    /// <param name="parameters">The request parameters.</param>
     public GetChannelEmotesRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        AccessToken accessToken,
+        GetChannelEmotesRequestParameters parameters
         )
         : base(
             "/chat/emotes",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelEmotesRequest"/>.
+/// </summary>
+public record GetChannelEmotesRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose emotes you want to get.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
