@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 
@@ -11,13 +12,13 @@ public record ChannelFollower
     /// <summary>
     /// The user ID of the follower.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The follower's login name (username).
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The follower's display name.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
 }

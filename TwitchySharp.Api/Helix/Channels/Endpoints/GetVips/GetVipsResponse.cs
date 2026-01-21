@@ -3,6 +3,7 @@
 /// Contains a list of VIPs for a specific channel.
 /// </summary>
 public record GetVipsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of VIPs.
