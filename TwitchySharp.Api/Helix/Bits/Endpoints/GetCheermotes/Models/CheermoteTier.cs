@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Bits;
+﻿using TwitchySharp.Helpers;
+
+namespace TwitchySharp.Api.Helix.Bits;
 
 /// <summary>
 /// Contains information about a specific tier of a cheermote.
@@ -16,11 +18,11 @@ public record CheermoteTier
     /// The tier level. Possible tiers are:
     /// 1, 100, 500, 1000, 5000, 10000, 100000
     /// </summary>
-    public required string Id { get; init; }
+    public required CheermoteTierLevel Id { get; init; }
     /// <summary>
     /// The hex code of the color associated with this tier level (for example, #979797).
     /// </summary>
-    public required string Color { get; init; }
+    public required RgbColor Color { get; init; }
     /// <summary>
     /// The animated and static image sets for the Cheermote. 
     /// The dictionary of images is organized by theme, format, and size. 

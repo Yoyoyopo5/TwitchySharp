@@ -2,6 +2,7 @@
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Bits;
 /// <summary>
@@ -17,36 +18,51 @@ public record GetBitsLeaderboardRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.BitsRead"/>.</param>
-    /// <param name="count">The number of results (leaderboard entries) to return. The minimum count is 1 and the maximum is 100. The default is 10.</param>
-    /// <param name="period">The time period over which data is aggregated.</param>
-    /// <param name="StartedAt">
-    /// The start date used for determining the aggregation period. 
-    /// Specify this parameter only if you specify <paramref name="period"/>. The start date is ignored if <paramref name="period"/> is <see cref="LeaderboardPeriod.All"/>.
-    /// </param>
-    /// <param name="userId">
-    /// The user ID of a user that has cheered bits in the channel. 
-    /// If count is greater than 1, the response may include users ranked above and below the specified user. 
-    /// To get the leaderboard’s top leaders, set this to <see langword="null"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetBitsLeaderboardRequest(
-        string clientId,
-        string accessToken,
-        int? count = null,
-        LeaderboardPeriod? period = null,
-        DateTimeOffset? StartedAt = null,
-        string? userId = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetBitsLeaderboardRequestParameters? parameters = null
         )
         : base(
             "/bits/leaderboard",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("count", count?.ToString())
-                .Add("period", period?.Value)
-                .Add("started_at", StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
-                .Add("user_id", userId)
+                .Add("count", parameters?.Count?.ToString())
+                .Add("period", parameters?.Period?.Value)
+                .Add("started_at", parameters?.StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+                .Add("user_id", parameters?.UserId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+public record GetBitsLeaderboardRequestParameters
+{
+    /// <summary>
+    /// The number of results (leaderboard entries) to return.
+    /// </summary>
+    /// <remarks>
+    /// The minimum count is 1 and the maximum is 100. The default is 10.
+    /// </remarks>
+    public int? Count { get; set; }
+    /// <summary>
+    /// The time period over which data is aggregated.
+    /// </summary>
+    public LeaderboardPeriod? Period { get; set; }
+    /// <summary>
+    /// The start date used for determining the aggregation period.
+    /// The start date is ignored if <see cref="Period"/> is <see cref="LeaderboardPeriod.All"/> or <see langword="null"/>.
+    /// </summary>
+    public DateTimeOffset? StartedAt { get; set; }
+    /// <summary>
+    /// The id of a user that has cheered bits in the channel.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="Count"/> is greater than <c>1</c>, the response may include users ranked above and below the specified user. 
+    /// To get the leaderboard’s top leaders, set this to <see langword="null"/>.
+    /// </remarks>
+    public UserId UserId { get; set; }
 }
