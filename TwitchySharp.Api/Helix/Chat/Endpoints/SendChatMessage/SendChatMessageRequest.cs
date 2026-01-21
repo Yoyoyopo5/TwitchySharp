@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -21,8 +22,8 @@ public record SendChatMessageRequest
     /// </param>
     /// <param name="messageData">The message to send.</param>
     public SendChatMessageRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AccessToken accessToken,
         SendChatMessageRequestData messageData
         )
         : base(
@@ -44,13 +45,13 @@ public record SendChatMessageRequestData
     /// <summary>
     /// The user id of the broadcaster whose chat room the message will be sent to.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user id of the user sending the message.
     /// If a user access token was used in the <see cref="SendChatMessageRequest"/>, this must be the same user who created the token.
     /// If an app access token was used, this user must have created a user access token with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>, and it must be the broadcaster or a moderator in the broadcaster's chat room.
     /// </summary>
-    public required string SenderId { get; init; }
+    public required UserId SenderId { get; init; }
     /// <summary>
     /// The message to send. 
     /// The message is limited to a maximum of 500 characters. 
@@ -62,7 +63,7 @@ public record SendChatMessageRequestData
     /// <summary>
     /// The message id of the chat message being replied to.
     /// </summary>
-    public string? ReplyParentMessageId { get; init; }
+    public MessageId? ReplyParentMessageId { get; init; }
     /// <summary>
     /// Determines if the chat message is sent only to the source channel (defined by broadcaster_id) during a shared chat session. 
     /// This has no effect if the message is not sent during a shared chat session.

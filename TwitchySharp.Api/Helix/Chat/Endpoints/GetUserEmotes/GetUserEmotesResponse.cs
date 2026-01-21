@@ -3,6 +3,7 @@
 /// Contains a list of emotes that a user has access to.
 /// </summary>
 public record GetUserEmotesResponse
+    : IPageableResponse
 {
     /// <summary>
     /// A list of emotes that the user has access to.

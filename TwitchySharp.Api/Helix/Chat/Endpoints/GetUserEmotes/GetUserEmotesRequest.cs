@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -16,33 +17,45 @@ public record GetUserEmotesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadEmotes"/>.</param>
-    /// <param name="userId">The user id of the user you want to get emotes for. This much be the same user that created the <paramref name="accessToken"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of a broadcaster you wish to get follower emotes of. 
-    /// Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body.
-    /// <b>Note:</b> If the user specified in <paramref name="userId"/> is subscribed to the broadcaster specified, their follower emotes will appear in the response body regardless if this query parameter is used.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="GetUserEmotesResponse.Pagination"/> in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetUserEmotesRequest(
-        string clientId,
-        string accessToken,
-        string userId,
-        string? broadcasterId = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetUserEmotesRequestParameters parameters
         )
         : base(
             "/chat/emotes/user",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", userId)
-                .Add("broadcaster_id", broadcasterId)
-                .Add("after", after)
+                .Add("user_id", parameters.UserId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetUserEmotesRequest"/>.
+/// </summary>
+public record GetUserEmotesRequestParameters
+{
+    /// <summary>
+    /// The user id of the user you want to get emotes for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId UserId { get; set; }
+    /// <summary>
+    /// The user id of a broadcaster you wish to get follower emotes of. 
+    /// </summary>
+    /// <remarks>
+    /// Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body.
+    /// <b>Note:</b> If the user specified in <see cref="UserId"/> is subscribed to the broadcaster specified, their follower emotes will appear in the response body regardless if this query parameter is used.
+    /// </remarks>
+    public UserId? BroadcasterId { get; set; }
+    public PaginationCursor? After { get; set; } // Not sure why first is not in the docs for this one.
 }

@@ -3,6 +3,7 @@ using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -25,39 +26,51 @@ public record GetChattersRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ModeratorReadChatters"/></param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose chatters you want to get.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster OR one of the broadcaster's moderators.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 1,000. 
-    /// The default is 100.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetChattersRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetChattersRequestParameters parameters
         )
         : base(
             "/chat/chatters",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChattersRequest"/>.
+/// </summary>
+public record GetChattersRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster whose chatters you want to get.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster OR one of the broadcaster's moderators.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 1,000. 
+    /// The default is 100.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

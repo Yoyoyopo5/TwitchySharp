@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -16,7 +17,7 @@ public record GetGlobalEmotesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    public GetGlobalEmotesRequest(string clientId, string accessToken)
+    public GetGlobalEmotesRequest(ClientId clientId, AccessToken accessToken)
         : base(
             "/chat/emotes/global",
             clientId,

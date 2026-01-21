@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains information about a broadcaster in a shared chat session.
@@ -8,5 +10,5 @@ public record SharedChatParticipant
     /// <summary>
     /// The user id of the participant broadcaster.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
 }

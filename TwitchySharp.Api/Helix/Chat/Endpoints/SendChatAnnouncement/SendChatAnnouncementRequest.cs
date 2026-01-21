@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -16,14 +17,12 @@ public record SendChatAnnouncementRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageAnnouncements"/.></param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose chat room you want to send the announcement to.</param>
-    /// <param name="moderatorId">The user id of the broadcaster or a moderator of the broadcaster's channel. This must be the same user who created the <paramref name="accessToken"/>.</param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="announcement">The announcement to send.</param>
     public SendChatAnnouncementRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        SendChatAnnouncementRequestParameters parameters,
         SendChatAnnouncementRequestData announcement
         )
         : base(
@@ -31,13 +30,31 @@ public record SendChatAnnouncementRequest
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Post;
         ContentObject = announcement;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SendChatAnnouncementRequest"/>.
+/// </summary>
+public record SendChatAnnouncementRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) whose chat room you want to send the announcement to.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user who created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
 
 /// <summary>

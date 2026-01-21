@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
@@ -15,20 +16,31 @@ public record GetSharedChatSessionRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster whose shared chat you want to get.</param>
+    /// <param name="parameters">The request parameters.</param>
     public GetSharedChatSessionRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        AccessToken accessToken,
+        GetSharedChatSessionRequestParameters parameters
         )
         : base(
             "/shared_chat/session",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetSharedChatSessionRequest"/>.
+/// </summary>
+public record GetSharedChatSessionRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster whose shared chat you want to get.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
