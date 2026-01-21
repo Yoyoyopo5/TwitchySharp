@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TwitchySharp.Api.Helix.Bits;
 
@@ -10,9 +11,9 @@ public record CheermoteImageTheme
     /// <summary>
     /// The animated format of the cheermote. The keys represent sizes (1, 1.5, 2, 3, 4), and the values are URIs to the image data.
     /// </summary>
-    public required Dictionary<string, string> Animated { get; init; }
+    public required Dictionary<string, Uri> Animated { get; init; }
     /// <summary>
     /// The static (non-animated) format of the cheermote. The keys represent sizes (1, 1.5, 2, 3, 4), and the values are URIs to the image data.
     /// </summary>
-    public required Dictionary<string, string> Static { get; init; }
+    public required Dictionary<string, Uri> Static { get; init; }
 }
