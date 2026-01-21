@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -21,18 +22,32 @@ public record GetChannelEditorsRequest
     /// This ID must match the user ID in the <paramref name="accessToken"/>.
     /// </param>
     public GetChannelEditorsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetChannelEditorsRequestParameters parameters
         )
         : base(
             "/channels/editors",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelEditorsRequest"/>.
+/// </summary>
+public record GetChannelEditorsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster that owns the channel. 
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }

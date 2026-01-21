@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -19,17 +20,14 @@ public record ModifyChannelInformationRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageBroadcast"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user ID of the broadcaster whose channel you want to update. 
-    /// This ID must match the user ID in the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="channelInformation">
     /// The channel information to be set on the broadcaster's channel.
     /// </param>
     public ModifyChannelInformationRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        ModifyChannelInformationRequestParameters parameters,
         ModifyChannelInformationRequestData channelInformation
         )
         : base(
@@ -37,12 +35,26 @@ public record ModifyChannelInformationRequest
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Patch;
         ContentObject = channelInformation;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="ModifyChannelInformationRequest"/>.
+/// </summary>
+public record ModifyChannelInformationRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster whose channel you want to update.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same used that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>
@@ -55,7 +67,7 @@ public record ModifyChannelInformationRequestData
     /// The game is not updated if the ID isn’t a game ID that Twitch recognizes. 
     /// To unset this field, use <c>"0"</c> or <see cref="string.Empty"/>.
     /// </summary>
-    public string? GameId { get; set; }
+    public GameId? GameId { get; set; }
     /// <summary>
     /// The user’s preferred language. 
     /// Set the value to an ISO 639-1 two-letter language code (for example, en for English). 

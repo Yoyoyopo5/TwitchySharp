@@ -3,6 +3,7 @@
 /// Contains the list of a user's followed channels.
 /// </summary>
 public record GetFollowedChannelsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of broadcasters that the user follows. 

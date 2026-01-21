@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -17,43 +19,55 @@ public record GetVipsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadVips"/> or <see cref="Scope.ChannelManageVips"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to get VIPs for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="userIds">
-    /// Filter the list by specific users.
-    /// The maximum number of ids that you may specify is 100. 
-    /// Ignores the ids of users that aren’t VIPs on the broadcaster's channel.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetVipsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        IEnumerable<string>? userIds = null,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetVipsRequestParameters parameters
         )
         : base(
             "/channels/vips",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userIds)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserIds?.Select(x => x.ToString()))
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetVipsRequest"/>.
+/// </summary>
+public record GetVipsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get VIPs for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// Filter the list by specific users.
+    /// </summary>
+    /// <remarks>
+    /// The maximum number of ids that you may specify is 100. 
+    /// Ignores the ids of users that aren’t VIPs on the broadcaster's channel.
+    /// </remarks>
+    public IEnumerable<UserId>? UserIds { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }
