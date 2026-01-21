@@ -3,6 +3,7 @@
 /// Contains a list of donations for a charity campaign.
 /// </summary>
 public record GetCharityCampaignDonationsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// A list that contains the donations that users have made to the broadcaster’s charity campaign. 
