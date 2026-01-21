@@ -7,17 +7,60 @@ namespace TwitchySharp.Api;
 /// The <see cref="Cursor"/> is <see langword="null"/> if there are no more pages left to page through.
 /// See <see href="https://dev.twitch.tv/docs/api/guide/#pagination">pagination</see> for more information.
 /// </summary>
-public record Pagination
+public readonly record struct Pagination
 {
     /// <summary>
-    /// The cursor used to get the next page of results. Usage depends on request type.
+    /// The cursor used to get the next page of results.
     /// </summary>
-    public Cursor? Cursor { get; init; }
+    /// <remarks>
+    /// This is <see langword="null"/> if the there are no more pages to get.
+    /// </remarks>
+    public PaginationCursor? Cursor { get; init; }
 }
 
 /// <summary>
 /// A cursor used for pagination.
 /// </summary>
 /// <param name="Value">The cursor's string value.</param>
-[JsonConverter(typeof(WrapperJsonConverter<Cursor, string>))]
-public readonly record struct Cursor(string Value) : IWrapValue<string>;
+[JsonConverter(typeof(WrapperJsonConverter<PaginationCursor, string>))]
+public readonly record struct PaginationCursor(string Value) : IWrapValue<string>;
+
+/// <summary>
+/// Represents the amount of results per page to fetch.
+/// </summary>
+/// <param name="Value">The integer value of the amount.</param>
+[JsonConverter(typeof(WrapperJsonConverter<PaginationAmount, int>))]
+public readonly record struct PaginationAmount(int Value) : IWrapValue<int>
+{
+    public static implicit operator int(PaginationAmount value)
+        => value.Value;
+    public override string ToString()
+        => Value.ToString();
+}
+
+public interface IPageableResponse
+{
+    /// <summary>
+    /// Contains the <see cref="PaginationCursor"/> needed to get the next page of results.
+    /// </summary>
+    Pagination Pagination { get; }
+}
+
+/// <summary>
+/// Supports fetching pages via a <see cref="PaginationCursor"/> and <see cref="PaginationAmount"/>.
+/// </summary>
+public interface IPageableRequest
+{
+    /// <summary>
+    /// The cursor of the result to get results after.
+    /// </summary>
+    /// <remarks>
+    /// This value can be obtained from a <see cref="Pagination"/> object inside of a <see cref="IPageableResponse"/>.
+    /// Set this value to that value to get the next page of results.
+    /// </remarks>
+    PaginationCursor? After { get; set; }
+    /// <summary>
+    /// The maximum number of results to include per page in the response.
+    /// </summary>
+    PaginationAmount? First { get; set; }
+}
