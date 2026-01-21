@@ -10,23 +10,23 @@ public record CharityDonation
     /// <summary>
     /// The unique id of the specific donation.
     /// </summary>
-    public required string Id { get; init; }
+    public required CharityId Id { get; init; }
     /// <summary>
     /// The id of the charity campaign this donation belongs to.
     /// </summary>
-    public required string CampaignId { get; init; }
+    public required CharityCampaignId CampaignId { get; init; }
     /// <summary>
     /// The user id of the user that made the donation.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The user login (username) of the user that made the donation.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The display name of the user that made the donation.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// Contains information on the amount of money the user donated.
     /// </summary>
