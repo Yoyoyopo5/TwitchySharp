@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.HypeTrain;
 
@@ -10,19 +11,19 @@ public record HypeTrain
     /// <summary>
     /// The id of the Hype Train.
     /// </summary>
-    public required string Id { get; init; }
+    public required HypeTrainId Id { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) the Hype Train is for.
     /// </summary>
-    public required string BroadcasterUserId { get; init; }
+    public required UserId BroadcasterUserId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster (channel) the Hype Train is for.
     /// </summary>
-    public required string BroadcasterUserLogin { get; init; }
+    public required UserLogin BroadcasterUserLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster (channel) the Hype Train is for.
     /// </summary>
-    public required string BroadcasterUserName { get; init; }
+    public required UserName BroadcasterUserName { get; init; }
     /// <summary>
     /// The current level of the Hype Train.
     /// </summary>
