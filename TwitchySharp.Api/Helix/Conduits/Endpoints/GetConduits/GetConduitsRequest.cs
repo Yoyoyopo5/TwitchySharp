@@ -1,8 +1,9 @@
 ﻿using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
-/// Gets the conduits for a client ID.
+/// Gets the conduits for a specific client id.
 /// </summary>
 /// <remarks>
 /// Requires an app access token.
@@ -14,7 +15,7 @@ public record GetConduitsRequest
 {
     /// <param name="clientId">The client id of the application. This will be the application to get conduits for.</param>
     /// <param name="accessToken">An app access token.</param>
-    public GetConduitsRequest(string clientId, string accessToken)
+    public GetConduitsRequest(ClientId clientId, AppAccessToken accessToken)
         : base(
             "/eventsub/conduits",
             clientId,

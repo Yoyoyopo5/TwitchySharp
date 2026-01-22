@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Shared.Enums;
+﻿using System;
+using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 
@@ -17,7 +18,7 @@ public record ConduitWebhookTransportUpdate
     /// <summary>
     /// <inheritdoc cref="ConduitTransportUpdate.Callback/"/>
     /// </summary>
-    public new string? Callback
+    public new Uri? Callback
     {
         get => base.Callback;
         set => base.Callback = value;

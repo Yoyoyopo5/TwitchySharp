@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Conduits;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Conduits;
 
 /// <summary>
 /// Contains data about a specific conduit.
@@ -8,7 +10,7 @@ public record Conduit
     /// <summary>
     /// The id of the conduit.
     /// </summary>
-    public required string Id { get; init; }
+    public required ConduitId Id { get; init; }
     /// <summary>
     /// The number of shards associated with this conduit.
     /// </summary>

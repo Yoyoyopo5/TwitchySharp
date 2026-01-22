@@ -1,4 +1,6 @@
-﻿using TwitchySharp.Shared.Enums;
+﻿using System;
+using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 
@@ -17,7 +19,7 @@ public abstract record ConduitTransportUpdate
     /// The URL must use the HTTPS protocol and port 443.
     /// <b>Note:</b> Redirects are not followed.
     /// </summary>
-    public string? Callback { get; protected set; }
+    public Uri? Callback { get; protected set; }
     /// <summary>
     /// The secret used to verify the signature of a webhook notification.
     /// The secret must be an ASCII string that’s a minimum of 10 characters long and a maximum of 100 characters long.
@@ -27,5 +29,5 @@ public abstract record ConduitTransportUpdate
     /// The id of the WebSocket connection to send notifications to.
     /// When you connect to EventSub using WebSockets, the server returns this id in the Welcome message.
     /// </summary>
-    public string? SessionId { get; protected set; }
+    public EventSubWebsocketSessionId? SessionId { get; protected set; }
 }
