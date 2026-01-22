@@ -1,4 +1,7 @@
-﻿namespace TwitchySharp.Api.Helix.Clips;
+﻿using System;
+using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Clips;
 /// <summary>
 /// Contains information related to a newly captured clip.
 /// </summary>
@@ -9,9 +12,9 @@ public record CreateClipResponse
     /// The URL is valid for up to 24 hours or until the clip is published, whichever comes first.
     /// <see href="https://help.twitch.tv/s/article/how-to-use-clips">Learn More</see>.
     /// </summary>
-    public required string EditUrl { get; init; }
+    public required Uri EditUrl { get; init; }
     /// <summary>
     /// An id that uniquely identifies the clip.
     /// </summary>
-    public required string Id { get; init; }
+    public required ClipId Id { get; init; }
 }

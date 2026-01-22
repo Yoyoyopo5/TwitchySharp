@@ -1,4 +1,7 @@
-﻿namespace TwitchySharp.Api.Helix.Clips;
+﻿using System;
+using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Clips;
 
 /// <summary>
 /// Contains information about Twitch clip downloads.
@@ -8,19 +11,19 @@ public record TwitchClipDownload
     /// <summary>
     /// The id of the clip.
     /// </summary>
-    public required string ClipId { get; init; }
+    public required ClipId ClipId { get; init; }
     /// <summary>
     /// A URL pointing to a downloadable landscape format video of the clip.
     /// </summary>
     /// <remarks>
     /// This is <see langword="null"/> if the download is unavailable.
     /// </remarks>
-    public string? LandscapeDownloadUrl { get; init; }
+    public Uri? LandscapeDownloadUrl { get; init; }
     /// <summary>
     /// A URL pointing to a downloadable portrait format video of the clip.
     /// </summary>
     /// <remarks>
     /// This is <see langword="null"/> if the download is unavailable.
     /// </remarks>
-    public string? PortraitDownloadUrl { get; init; }
+    public Uri? PortraitDownloadUrl { get; init; }
 }
