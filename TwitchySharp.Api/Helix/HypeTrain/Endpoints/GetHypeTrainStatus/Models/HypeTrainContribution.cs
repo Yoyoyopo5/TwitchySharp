@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.HypeTrain;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.HypeTrain;
 
 /// <summary>
 /// Contains information about a specific Hype Train contribution.
@@ -8,15 +10,15 @@ public record HypeTrainContribution
     /// <summary>
     /// The user id of the contributor.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The login (username) of the contributor.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The display name of the contributor.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The type of contribution.
     /// </summary>
