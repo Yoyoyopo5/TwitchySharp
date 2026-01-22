@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -18,26 +19,39 @@ public record GetExtensionsRequest : TwitchHelixRequest<GetExtensionsResponse>
 {
     /// <param name="clientId">The client id of the extension.</param>
     /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="extensionId">The id of the extension to get.</param>
-    /// <param name="extensionVersion">
-    /// The version of the extension to get. 
-    /// If not specified, it returns the latest, released version. 
-    /// If the extension doesn't have a released version, you must specify a version; otherwise, <see cref="GetExtensionsResponse.Data"/> is empty.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetExtensionsRequest(
-        string clientId,
-        string jwt,
-        string extensionId,
-        string? extensionVersion = null
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
+        GetExtensionsRequestParameters parameters
         ) : base(
             "/extensions",
             clientId,
             jwt,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
-                .Add("extension_version", extensionVersion)
+                .Add("extension_id", parameters.ExtensionId)
+                .Add("extension_version", parameters.ExtensionVersion)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request data for a <see cref="GetExtensionsRequest"/>.
+/// </summary>
+public record GetExtensionsRequestParameters
+{
+    /// <summary>
+    /// The id of the extension to get.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; set; }
+    /// <summary>
+    /// The version of the extension to get. 
+    /// </summary>
+    /// <remarks>
+    /// If <see langword="null"/>, it returns the latest, released version. 
+    /// If the extension doesn't have a released version, you must specify a version; otherwise, <see cref="GetExtensionsResponse.Data"/> is empty.
+    /// </remarks>
+    public ExtensionVersion? ExtensionVersion { get; set; }
 }

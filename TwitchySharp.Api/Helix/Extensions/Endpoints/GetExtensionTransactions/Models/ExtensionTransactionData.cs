@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
@@ -10,7 +13,7 @@ public record ExtensionTransactionData
     /// <summary>
     /// An ID that identifies the transaction.
     /// </summary>
-    public required string Id { get; init; }
+    public required ExtensionTransactionId Id { get; init; }
     /// <summary>
     /// The date and time of the transaction.
     /// </summary>
@@ -18,31 +21,31 @@ public record ExtensionTransactionData
     /// <summary>
     /// The user ID of the broadcaster that owns the channel where the transaction occurred.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The broadcaster’s login name (username).
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The broadcaster’s display name.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The user ID of the user that purchased the digital product.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The user’s login name (username).
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The user’s display name.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
-    /// The type of transaction. This should always be BITS_IN_EXTENSION.
+    /// The type of transaction. This should always be <see cref="ExtensionProductType.BitsInExtension"/>.
     /// </summary>
-    public required string ProductType { get; init; }
+    public required ExtensionProductType ProductType { get; init; }
     /// <summary>
     /// Contains details about the digital product.
     /// </summary>
@@ -57,11 +60,12 @@ public record ExtensionTransactionData
     /// </summary>
     public required string DisplayName { get; init; }
     /// <summary>
-    /// This field is always empty since you may purchase only unexpired products.
+    /// This field is always <see langword="null"/> since you may purchase only unexpired products.
     /// </summary>
-    public required string Expiration { get; init; }
+    [JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
+    public required DateTimeOffset? Expiration { get; init; }
     /// <summary>
-    /// A boolean value that determines whether the data was broadcast to all instances of the extension. 
+    /// Indicates whether the data was broadcast to all instances of the extension. 
     /// Is true if the data was broadcast to all instances.
     /// </summary>
     public required bool Broadcast { get; init; }

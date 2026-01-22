@@ -1,5 +1,7 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -22,27 +24,40 @@ public record CreateExtensionSecretRequest
 {
     /// <param name="clientId">The client id of the extension.</param>
     /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="extensionId">The id of the extension to apply the shared secret to.</param>
-    /// <param name="delay">
-    /// The amount of time, in <b>seconds</b>, to delay activating the secret. 
-    /// The delay should provide enough time for instances of the extension to gracefully switch over to the new secret. 
-    /// The minimum delay is 300 seconds (5 minutes). 
-    /// The default is 300 seconds.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public CreateExtensionSecretRequest(
-        string clientId,
-        string jwt,
-        string extensionId,
-        int? delay = null
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
+        CreateExtensionSecretRequestParameters parameters
         ) : base(
             "/extensions/jwt/secrets",
             clientId,
             jwt,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
-                .Add("delay", delay?.ToString())
+                .Add("extension_id", parameters.ExtensionId)
+                .Add("delay", parameters.Delay?.TotalSeconds.ToString())
             )
     {
         Method = HttpMethod.Post;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="CreateExtensionSecretRequest"/>.
+/// </summary>
+public record CreateExtensionSecretRequestParameters
+{
+    /// <summary>
+    /// The id of the extension to apply the shared secret to.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; set; }
+    /// <summary>
+    /// The amount of time to delay activating the secret. 
+    /// </summary>
+    /// <remarks>
+    /// The delay should provide enough time for instances of the extension to gracefully switch over to the new secret. 
+    /// The minimum delay is 300 seconds (5 minutes). 
+    /// The default is 300 seconds.
+    /// </remarks>
+    public TimeSpan? Delay { get; set; }
 }

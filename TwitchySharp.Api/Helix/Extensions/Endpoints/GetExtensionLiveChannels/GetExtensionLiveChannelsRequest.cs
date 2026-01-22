@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -17,36 +18,45 @@ public record GetExtensionLiveChannelsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="extensionId">
-    /// The id of the extension to get.
-    /// Returns the list of broadcasters that are live and that have installed or activated this extension.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The actual number returned may be less than this limit.
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="GetExtensionTransactionsResponse.Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetExtensionLiveChannelsRequest(
-        string clientId,
-        string accessToken,
-        string extensionId,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetExtensionLiveChannelsRequestParameters parameters
         ) : base(
             "/extensions/live",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("extension_id", parameters.ExtensionId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetExtensionLiveChannelsRequest"/>.
+/// </summary>
+public record GetExtensionLiveChannelsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The id of the extension to get.
+    /// </summary>
+    /// <remarks>
+    /// The response will contain the list of broadcasters that are live and that have installed or activated this extension.
+    /// </remarks>
+    public required ExtensionId ExtensionId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

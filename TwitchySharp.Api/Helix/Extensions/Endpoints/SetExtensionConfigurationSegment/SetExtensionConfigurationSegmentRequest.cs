@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -30,8 +31,8 @@ public record SetExtensionConfigurationSegmentRequest
     /// Data used to set the configuration.
     /// </param>
     public SetExtensionConfigurationSegmentRequest(
-        string clientId,
-        string jwt,
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
         SetExtensionConfigurationSegmentRequestData data
         ) : base(
             "/extensions/configurations",
@@ -58,7 +59,7 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
     /// <summary>
     /// The id of the extension to update.
     /// </summary>
-    public required string ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; set; }
     /// <summary>
     /// The configuration segment to update.
     /// </summary>
@@ -67,7 +68,7 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
     /// The user id of the broadcaster that installed the extension.
     /// Include this property only if the <see cref="Segment"/> is set to <see cref="ExtensionConfigurationSegmentType.Developer"/> or <see cref="ExtensionConfigurationSegmentType.Broadcaster"/>.
     /// </summary>
-    public string? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected set; }
     /// <summary>
     /// The contents of the segment.
     /// This may be in plain-text or string-encoded JSON.
@@ -77,7 +78,7 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
     /// The version number that identifies this definition of the segment’s data. 
     /// If not specified, the latest definition is updated.
     /// </summary>
-    public string? Version { get; set; }
+    public ExtensionVersion? Version { get; set; }
 }
 
 /// <summary>
@@ -95,7 +96,7 @@ public record SetExtensionConfigurationDeveloperSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required string BroadcasterId { get => base.BroadcasterId!; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
 }
 
 /// <summary>
@@ -107,5 +108,5 @@ public record SetExtensionConfigurationBroadcasterSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required string BroadcasterId { get => base.BroadcasterId!; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
 }

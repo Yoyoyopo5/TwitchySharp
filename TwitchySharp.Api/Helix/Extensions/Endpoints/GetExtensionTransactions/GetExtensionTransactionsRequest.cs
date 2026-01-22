@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -18,38 +20,50 @@ public record GetExtensionTransactionsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app access token.</param>
-    /// <param name="extensionId">The ID of the extension whose list of transactions you want to get.</param>
-    /// <param name="transactionIds">
-    /// The transaction IDs used to filter the list of transactions. 
-    /// You may specify a maximum of 100 IDs.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="GetExtensionTransactionsResponse.Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetExtensionTransactionsRequest(
-        string clientId,
-        string accessToken,
-        string extensionId,
-        IEnumerable<string>? transactionIds = null,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        AppAccessToken accessToken,
+        GetExtensionTransactionsRequestParameters parameters
         ) : base(
             "/extensions/transactions",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
-                .Add("id", transactionIds)
+                .Add("extension_id", parameters.ExtensionId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
+                .Add("id", parameters.TransactionIds?.Select(x => x.ToString()))
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetExtensionTransactionsRequest"/>.
+/// </summary>
+public record GetExtensionTransactionsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The id of the extension whose list of transactions you want to get.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; set; }
+    /// <summary>
+    /// The transaction ids used to filter the list of transactions
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 100 ids.
+    /// </remarks>
+    public IEnumerable<ExtensionTransactionId>? TransactionIds { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

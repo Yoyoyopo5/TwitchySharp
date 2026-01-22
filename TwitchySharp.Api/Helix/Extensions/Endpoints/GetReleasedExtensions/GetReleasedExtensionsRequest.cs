@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -17,25 +18,38 @@ public record GetReleasedExtensionsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="extensionId">The id of the extension to get.</param>
-    /// <param name="extensionVersion">
-    /// The version of the extension to get. 
-    /// If not specified, it returns the latest version.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetReleasedExtensionsRequest(
-        string clientId,
-        string accessToken,
-        string extensionId,
-        string? extensionVersion = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetReleasedExtensionsRequestParameters parameters
         ) : base(
             "/extensions/released",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
-                .Add("extension_version", extensionVersion)
+                .Add("extension_id", parameters.ExtensionId)
+                .Add("extension_version", parameters.ExtensionVersion)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetReleasedExtensionsRequest"/>.
+/// </summary>
+public record GetReleasedExtensionsRequestParameters
+{
+    /// <summary>
+    /// The id of the extension to get.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; set; }
+    /// <summary>
+    /// The version of the extension to get. 
+    /// </summary>
+    /// <remarks>
+    /// If <see langword="null"/>, it returns the latest version.
+    /// </remarks>
+    public ExtensionVersion? ExtensionVersion { get; set; }
 }
