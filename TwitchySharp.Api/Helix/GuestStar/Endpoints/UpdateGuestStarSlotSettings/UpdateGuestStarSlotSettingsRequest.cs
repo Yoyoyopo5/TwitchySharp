@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -19,39 +20,62 @@ public record UpdateGuestStarSlotSettingsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/> or <see cref="Scope.ModeratorManageGuestStar"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster hosting the Guest Star session.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="sessionId">The id of the Guest Star session.</param>
-    /// <param name="slotId">The id of the slot you want to update settings for.</param>
-    /// <param name="settings">The settings to update.</param>
+    /// <param name="parameters">The request parameters.</param>
     public UpdateGuestStarSlotSettingsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
-        string sessionId,
-        string slotId,
-        GuestStarSlotSettings settings
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateGuestStarSlotSettingsRequestParameters parameters
         ) : base(
             "/guest_star/slot_settings",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
-                .Add("session_id", sessionId)
-                .Add("slot_id", slotId)
-                .Add("is_audio_enabled", settings.IsAudioEnabled?.ToString())
-                .Add("is_video_enabled", settings.IsVideoEnabled?.ToString())
-                .Add("is_live", settings.IsLive?.ToString())
-                .Add("volume", settings.Volume?.ToString())
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+                .Add("session_id", parameters.SessionId)
+                .Add("slot_id", parameters.SlotId)
+                .Add("is_audio_enabled", parameters.Settings.IsAudioEnabled?.ToString())
+                .Add("is_video_enabled", parameters.Settings.IsVideoEnabled?.ToString())
+                .Add("is_live", parameters.Settings.IsLive?.ToString())
+                .Add("volume", parameters.Settings.Volume?.ToString())
             )
     {
         Method = HttpMethod.Patch;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateGuestStarSlotSettingsRequest"/>.
+/// </summary>
+public record UpdateGuestStarSlotSettingsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster hosting the Guest Star session.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
+
+    /// <summary>
+    /// The id of the Guest Star session.
+    /// </summary>
+    public required GuestStarSessionId SessionId { get; set; }
+
+    /// <summary>
+    /// The id of the slot you want to update settings for.
+    /// </summary>
+    public required GuestStarSlotId SlotId { get; set; }
+
+    /// <summary>
+    /// The settings to update.
+    /// </summary>
+    public required GuestStarSlotSettings Settings { get; set; }
 }
 
 /// <summary>

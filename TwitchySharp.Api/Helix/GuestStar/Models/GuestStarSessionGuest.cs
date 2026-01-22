@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 
@@ -18,7 +19,7 @@ public record GuestStarSessionGuest
     /// <item>Screen share is represented as <c>"SCREENSHARE"</c>.</item>
     /// </list>
     /// </remarks>
-    public required string SlotId { get; init; }
+    public required GuestStarSlotId SlotId { get; init; }
     /// <summary>
     /// Determines whether or not the guest is visible in the browser source in the host’s streaming software.
     /// </summary>
@@ -26,15 +27,15 @@ public record GuestStarSessionGuest
     /// <summary>
     /// User id of the guest assigned to this slot.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// Display name of the guest assigned to this slot.
     /// </summary>
-    public string? UserDisplayName { get; init; }
+    public UserName? UserDisplayName { get; init; }
     /// <summary>
     /// Login (username) of the guest assigned to this slot.
     /// </summary>
-    public string? UserLogin { get; init; }
+    public UserLogin? UserLogin { get; init; }
     /// <summary>
     /// Value from 0 to 100 representing the host’s volume setting for this guest.
     /// </summary>

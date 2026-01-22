@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 
@@ -10,7 +11,7 @@ public record GuestStarInvite
     /// <summary>
     /// The user id of the invited guest.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The time when this invite was created.
     /// </summary>
