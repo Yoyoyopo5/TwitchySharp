@@ -47,8 +47,8 @@ public record ExtensionJwtPayload(UserId UserId)
     /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
-    public string Sign(string extensionSecret, JsonSerializerOptions? serializerOptions = null)
-        => new JsonWebTokenHandler()
+    public ExtensionJsonWebToken Sign(string extensionSecret, JsonSerializerOptions? serializerOptions = null)
+        => new(new JsonWebTokenHandler()
             .CreateToken(
                 JsonSerializer.Serialize(this, serializerOptions ?? JsonConfig.ApiOptions),
                 new SigningCredentials(
@@ -56,7 +56,7 @@ public record ExtensionJwtPayload(UserId UserId)
                         Convert.FromBase64String(extensionSecret)
                     ),
                     "HS256"
-            ));
+            )));
 }
 
 public record ExtensionPubSubPermissions
