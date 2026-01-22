@@ -20,10 +20,10 @@ public record ImageUrlTemplate(string TemplateUrl)
     /// <param name="width">The width of the image to get, in pixels.</param>
     /// <param name="height">The height of the image to get, in pixels.</param>
     /// <returns>A url to an image of the specified size.</returns>
-    public string ToImageUrl(uint width, uint height)
-        => TemplateUrl
+    public Uri ToImageUrl(uint width, uint height)
+        => new(TemplateUrl
             .Replace(WidthTemplate, width.ToString())
-            .Replace(HeightTemplate, height.ToString());
+            .Replace(HeightTemplate, height.ToString()));
 }
 
 internal class ImageUrlTemplateJsonConverter : JsonConverter<ImageUrlTemplate>
