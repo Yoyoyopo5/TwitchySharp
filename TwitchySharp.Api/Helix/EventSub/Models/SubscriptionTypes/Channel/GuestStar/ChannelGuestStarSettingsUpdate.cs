@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -10,11 +11,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) hosting the Guest Star Session.</param>
 /// <param name="ModeratorUserId">The user id of the broadcaster or a moderator of the specified broadcaster.</param>
-public sealed record ChannelGuestStarSettingsUpdate(string BroadcasterUserId, string ModeratorUserId)
+public sealed record ChannelGuestStarSettingsUpdate(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SETTINGS_UPDATE;
-    public string Version => EventSubSubscriptionTypeVersions.BETA;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SETTINGS_UPDATE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.BETA);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

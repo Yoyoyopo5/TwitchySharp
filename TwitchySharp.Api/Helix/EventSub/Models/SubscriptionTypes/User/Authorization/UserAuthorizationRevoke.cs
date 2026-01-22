@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -14,11 +15,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// The client id of the application to get authorization revocation notifications for. 
 /// This must match the client id in the application access token used to make the request.
 /// </param>
-public sealed record UserAuthorizationRevoke(string ClientId)
+public sealed record UserAuthorizationRevoke(ClientId ClientId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.USER_AUTHORIZATION_REVOKE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.USER_AUTHORIZATION_REVOKE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

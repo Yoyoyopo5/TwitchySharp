@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -11,11 +12,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">User id of the broadcaster (channel).</param>
 /// <param name="ModeratorUserId">User id of a moderator in the broadcaster's chat. This can also be the broadcaster.</param>
-public sealed record AutomodMessageUpdateV2(string BroadcasterUserId, string ModeratorUserId)
+public sealed record AutomodMessageUpdateV2(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.AUTOMOD_MESSAGE_UPDATE;
-    public string Version => EventSubSubscriptionTypeVersions.V2;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.AUTOMOD_MESSAGE_UPDATE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

@@ -1,18 +1,15 @@
-﻿namespace TwitchySharp.Api.Helix.EventSub;
+﻿using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.EventSub;
 
 /// <summary>
 /// An EventSub transport that uses <see href="https://dev.twitch.tv/docs/eventsub/handling-conduit-events/">conduits</see>.
 /// </summary>
-/// <param name="ConduitId">The id of the conduit to use for the subscription notifications.</param>
-public sealed record ConduitSubscriptionTransport(string ConduitId)
+public sealed record ConduitSubscriptionTransport
     : NewEventSubSubscriptionTransport
 {
-    /// <summary>
-    /// The transport method identifier.
-    /// </summary>
-    public override string Method => "conduit";
-    /// <summary>
-    /// The id of the conduit that notifications are sent to.
-    /// </summary>
-    public override string ConduitId { get; } = ConduitId;
+    /// <param name="conduitId">The id of the conduit to use for the subscription notifications.</param>
+    public ConduitSubscriptionTransport(ConduitId conduitId)
+        => (Method, ConduitId) = (EventSubTransportMethod.Conduit, conduitId);
 }
