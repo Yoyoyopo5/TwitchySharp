@@ -3,6 +3,7 @@
 /// Contains a list of drops entitlements.
 /// </summary>
 public record GetDropsEntitlementsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of entitlements.

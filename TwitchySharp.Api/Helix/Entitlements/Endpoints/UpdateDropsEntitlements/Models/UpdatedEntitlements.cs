@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Entitlements;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Entitlements;
 
 /// <summary>
 /// Contains information on a group of entitlements updated with a specific <see cref="EntitlementUpdateStatus"/>.
@@ -12,5 +14,5 @@ public record UpdatedEntitlements
     /// <summary>
     /// The ids of the entitlements that were updated.
     /// </summary>
-    public required string[] Ids { get; init; }
+    public required DropsEntitlementId[] Ids { get; init; }
 }
