@@ -1,9 +1,10 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
-/// Gets the list of Bits products that belongs to the extension.
+/// Gets the list of Bits products that belong to the extension.
 /// </summary>
 /// <remarks>
 /// The client id identifies the extension (this must be the same application that created the access token).
@@ -18,19 +19,33 @@ public record GetExtensionBitsProductsRequest
 {
     /// <param name="clientId">The client id of the extension. This also identifies the extension to get products from.</param>
     /// <param name="accessToken">An app access token.</param>
-    /// <param name="shouldIncludeAll">Determines whether to include disabled or expired Bits products in the response. The default is <see langword="false"/>.</param>
+    /// <param name="parameters">The request parameters.</param>
     public GetExtensionBitsProductsRequest(
-        string clientId,
-        string accessToken,
-        bool? shouldIncludeAll = null
+        ClientId clientId,
+        AppAccessToken accessToken,
+        GetExtensionBitsProductsRequestParameters? parameters = null
         ) : base(
             "/bits/extensions",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("should_include_all", shouldIncludeAll?.ToString().ToLower())
+                .Add("should_include_all", parameters?.ShouldIncludeAll?.ToString())
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetExtensionBitsProductsRequest"/>.
+/// </summary>
+public record GetExtensionBitsProductsRequestParameters
+{
+    /// <summary>
+    /// Determines whether to include disabled or expired Bits products in the response. 
+    /// </summary>
+    /// <remarks>
+    /// The default is <see langword="false"/>.
+    /// </remarks>
+    public bool? ShouldIncludeAll { get; set; }
 }

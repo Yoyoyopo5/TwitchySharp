@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -29,8 +30,8 @@ public record SendExtensionPubSubMessageRequest
     /// Use derived classes <see cref="BroadcastPubSubMessageData"/> and <see cref="GlobalPubSubMessageData"/>.
     /// </param>
     public SendExtensionPubSubMessageRequest(
-        string clientId,
-        string jwt,
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
         SendExtensionPubSubMessageRequestData messageData
         ) : base(
             "/extensions/pubsub",
@@ -59,7 +60,7 @@ public record SendExtensionPubSubMessageRequestData
     /// The user id of the broadcaster to send the message to. 
     /// Don’t include this field if <see cref="IsGlobalBroadcast"/> is set to <see langword="true"/>.
     /// </summary>
-    public string? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected set; }
     /// <summary>
     /// Determines whether the message should be sent to all channels where your extension is active. 
     /// Set to <see langword="true"/> if the message should be sent to all channels. The default is <see langword="false"/>.
@@ -102,13 +103,13 @@ public record BroadcastPubSubMessageData
     /// Set the broadcaster the message should be sent to.
     /// </summary>
     /// <param name="broadcasterId">The user id of the broadcaster to send the PubSub message to.</param>
-    public BroadcastPubSubMessageData To(string broadcasterId)
+    public BroadcastPubSubMessageData To(UserId broadcasterId)
         => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Broadcast), BroadcasterId = broadcasterId };
 
     /// <summary>
     /// Set the user the message should be sent to through Whispers.
     /// </summary>
     /// <param name="userId">The id of the user to send the PubSub message to.</param>
-    public BroadcastPubSubMessageData WhisperTo(string userId)
+    public BroadcastPubSubMessageData WhisperTo(UserId userId)
         => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Whisper(userId)) };
 }

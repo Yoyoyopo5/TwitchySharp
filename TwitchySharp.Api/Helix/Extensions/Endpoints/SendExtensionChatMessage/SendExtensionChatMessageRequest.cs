@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -21,24 +22,35 @@ public record SendExtensionChatMessageRequest : TwitchHelixRequest<SendExtension
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster that has activated the extension.</param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="messageData">The data to send.</param>
     public SendExtensionChatMessageRequest(
-        string clientId,
-        string jwt,
-        string broadcasterId,
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
+        SendExtensionChatMessageRequestParameters parameters,
         SendExtensionChatMessageRequestData messageData
         ) : base(
             "/extensions/chat",
             clientId,
             jwt,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
         )
     {
         Method = HttpMethod.Post;
         ContentObject = messageData;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SendExtensionChatMessageRequest"/>.
+/// </summary>
+public record SendExtensionChatMessageRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster with the extension to send a message to.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>
@@ -54,9 +66,9 @@ public record SendExtensionChatMessageRequestData
     /// <summary>
     /// The id of the extension that's sending the chat message.
     /// </summary>
-    public required string ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; set; }
     /// <summary>
     /// The extension's version number.
     /// </summary>
-    public required string ExtensionVersion { get; set; }
+    public required ExtensionVersion ExtensionVersion { get; set; }
 }

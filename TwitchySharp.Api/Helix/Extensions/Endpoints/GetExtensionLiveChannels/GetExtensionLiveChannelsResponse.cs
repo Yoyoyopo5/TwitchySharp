@@ -3,6 +3,7 @@
 /// Contains a list of currently live broadcasters that are using a specific extension.
 /// </summary>
 public record GetExtensionLiveChannelsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// A list of broadcasters that are streaming live and have installed or activated the extension.

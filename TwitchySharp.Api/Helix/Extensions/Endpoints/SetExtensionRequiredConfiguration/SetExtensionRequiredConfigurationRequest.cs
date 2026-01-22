@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -21,24 +22,35 @@ public record SetExtensionRequiredConfigurationRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster that installed the extension on their channel.</param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="data">The data used to set the required configuration setting.</param>
     public SetExtensionRequiredConfigurationRequest(
-        string clientId,
-        string jwt,
-        string broadcasterId,
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
+        SetExtensionRequiredConfigurationRequestParameters parameters,
         SetExtensionRequiredConfigurationRequestData data
         ) : base(
             "/extensions/required_configuration",
             clientId,
             jwt,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Put;
         ContentObject = data;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SetExtensionRequiredConfigurationRequest"/>.
+/// </summary>
+public record SetExtensionRequiredConfigurationRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster with the extension to set required configuration for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>
@@ -49,11 +61,11 @@ public record SetExtensionRequiredConfigurationRequestData
     /// <summary>
     /// The id of the extension to update.
     /// </summary>
-    public required string ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; set; }
     /// <summary>
     /// The version of the extension to update.
     /// </summary>
-    public required string ExtensionVersion { get; set; }
+    public required ExtensionVersion ExtensionVersion { get; set; }
     /// <summary>
     /// The required_configuration string to use with the extension.
     /// </summary>
