@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -18,25 +19,38 @@ public record EndGuestStarSessionRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster to end a Guest Star session for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="sessionId">The id of the Guest Star session to end.</param>
+    /// <param name="parameters">The request parameters.</param>
     public EndGuestStarSessionRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string sessionId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        EndGuestStarSessionRequestParameters parameters
         ) : base(
             "/guest_star/session",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("session_id", sessionId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("session_id", parameters.SessionId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="EndGuestStarSessionRequest"/>.
+/// </summary>
+public record EndGuestStarSessionRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster to end a Guest Star session for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the Guest Star session to end.
+    /// </summary>
+    public required GuestStarSessionId SessionId { get; set; }
 }

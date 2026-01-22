@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -16,25 +17,38 @@ public record GetChannelGuestStarSettingsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes one of <see cref="Scope.ChannelReadGuestStar"/>, <see cref="Scope.ChannelManageGuestStar"/>, <see cref="Scope.ModeratorReadGuestStar"/>, or <see cref="Scope.ModeratorManageGuestStar"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster to get Guest Star settings for.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator in the broadcaster's chat.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetChannelGuestStarSettingsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetChannelGuestStarSettingsRequestParameters parameters
         ) : base(
             "/guest_star/channel_settings",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelGuestStarSettingsRequest"/>.
+/// </summary>
+public record GetChannelGuestStarSettingsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster to get Guest Star settings for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator in the broadcaster's chat.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
