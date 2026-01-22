@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -17,22 +18,19 @@ public record UpdateChannelGuestStarSettingsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster you want to update settings for. 
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="settings">The settings to update.</param>
     public UpdateChannelGuestStarSettingsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateChannelGuestStarSettingsRequestParameters parameters,
         UpdateChannelGuestStarSettingsRequestData settings
         ) : base(
             "/guest_star/channel_settings",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Patch;
@@ -40,6 +38,20 @@ public record UpdateChannelGuestStarSettingsRequest
         // Dev Note: Examples for this request show fields in the request data as query parameters.
         // The docs also show these as body fields.
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateChannelGuestStarSettingsRequest"/>.
+/// </summary>
+public record UpdateChannelGuestStarSettingsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster you want to update settings for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>

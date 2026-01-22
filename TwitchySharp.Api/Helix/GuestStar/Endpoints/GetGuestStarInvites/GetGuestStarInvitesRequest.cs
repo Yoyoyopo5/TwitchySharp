@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -24,21 +25,41 @@ public record GetGuestStarInvitesRequest
     /// </param>
     /// <param name="sessionId">The session id to query for invites.</param>
     public GetGuestStarInvitesRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
-        string sessionId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetGuestStarInvitesRequestParameters parameters
         ) : base(
             "/guest_star/invites",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
-                .Add("session_id", sessionId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+                .Add("session_id", parameters.SessionId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetGuestStarInvitesRequest"/>.
+/// </summary>
+public record GetGuestStarInvitesRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster hosting the Guest Star session to get invites for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator in the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user who created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
+    /// <summary>
+    /// The session id to query for invites.
+    /// </summary>
+    public required GuestStarSessionId SessionId { get; set; }
 }

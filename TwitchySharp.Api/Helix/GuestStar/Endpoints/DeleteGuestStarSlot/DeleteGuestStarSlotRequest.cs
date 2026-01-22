@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
@@ -18,37 +19,58 @@ public record DeleteGuestStarSlotRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/> or <see cref="Scope.ModeratorManageGuestStar"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster hosting the Guest Star session.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="sessionId">The id of the Guest Star session from which to remove a user.</param>
-    /// <param name="guestId">The user id of the user to remove from the Guest Star session.</param>
-    /// <param name="slotId">The id of the slot from which to remove the user from.</param>
-    /// <param name="shouldReinviteGuest">Determines whether the user should be reinvited to the session, sending them back to the invite queue.</param>
+    /// <param name="parameters">The request parameters.</param>
     public DeleteGuestStarSlotRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
-        string sessionId,
-        string guestId,
-        string slotId,
-        bool? shouldReinviteGuest = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        DeleteGuestStarSlotRequestParameters parameters
         ) : base(
             "/guest_star/slot",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
-                .Add("session_id", sessionId)
-                .Add("guest_id", guestId)
-                .Add("slot_id", slotId)
-                .Add("should_reinvite_guest", shouldReinviteGuest?.ToString())
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+                .Add("session_id", parameters.SessionId)
+                .Add("guest_id", parameters.GuestId)
+                .Add("slot_id", parameters.SlotId)
+                .Add("should_reinvite_guest", parameters.ShouldReinviteGuest?.ToString())
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="DeleteGuestStarInviteRequest"/>.
+/// </summary>
+public record DeleteGuestStarSlotRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster hosting the Guest Star session.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
+    /// <summary>
+    /// The id of the Guest Star session from which to remove a user.
+    /// </summary>
+    public required GuestStarSessionId SessionId { get; set; }
+    /// <summary>
+    /// The user id of the user to remove from the Guest Star session.
+    /// </summary>
+    public required UserId GuestId { get; set; }
+    /// <summary>
+    /// The id of the slot from which to remove the user from.
+    /// </summary>
+    public required GuestStarSlotId SlotId { get; set; }
+    /// <summary>
+    /// Determines whether the user should be reinvited to the session, sending them back to the invite queue.
+    /// </summary>
+    public bool? ShouldReinviteGuest { get; set; }
 }
