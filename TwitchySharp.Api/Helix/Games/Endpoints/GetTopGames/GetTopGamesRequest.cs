@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Games;
 /// <summary>
@@ -14,35 +15,42 @@ public record GetTopGamesRequest : TwitchHelixRequest<GetTopGamesResponse>
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value. 
-    /// </param>
-    /// <param name="before">
-    /// The cursor used to get the previous page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value. 
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetTopGamesRequest(
-        string clientId,
-        string accessToken,
-        int? first = null,
-        string? after = null,
-        string? before = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetTopGamesRequestParameters? parameters = null
         ) : base(
             "/games/top",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("first", first?.ToString())
-                .Add("after", after)
-                .Add("before", before)
+                .Add("first", parameters?.First?.ToString())
+                .Add("after", parameters?.After?.Value)
+                .Add("before", parameters?.Before?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetTopGamesRequest"/>.
+/// </summary>
+public record GetTopGamesRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
+    /// <summary>
+    /// The cursor of the result to get results before.
+    /// </summary>
+    public PaginationCursor? Before { get; set; }
 }

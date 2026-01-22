@@ -1,6 +1,7 @@
 ﻿namespace TwitchySharp.Api.Helix.Games;
 
 public record GetTopGamesResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of top games.

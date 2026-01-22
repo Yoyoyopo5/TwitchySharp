@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Games;
 /// <summary>
@@ -24,55 +25,58 @@ public record GetGamesRequest
     /// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/>.
     /// </param>
     public GetGamesRequest(
-        string clientId,
-        string accessToken,
-        IEnumerable<GameQuery> games
+        ClientId clientId,
+        AccessToken accessToken,
+        GetGamesRequestParameters parameters
         ) : base(
             "/games",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("id", games.GetValues(GameQueryType.Id))
-                .Add("name", games.GetValues(GameQueryType.Name))
-                .Add("igdb_id", games.GetValues(GameQueryType.Igdb))
+                .Add("id", parameters.Games.OfType<GameIdQuery>().Select(x => x.GameId.Value))
+                .Add("name", parameters.Games.OfType<GameNameQuery>().Select(x => x.GameName))
+                .Add("igdb_id", parameters.Games.OfType<GameIgdbQuery>().Select(x => x.IgdbId.Value))
             )
     {
         Method = HttpMethod.Get;
     }
 }
 
-public enum GameQueryType
+/// <summary>
+/// Request parameters for a <see cref="GetGamesRequest"/>.
+/// </summary>
+public record GetGamesRequestParameters
 {
-    Id,
-    Name,
-    Igdb
+    /// <summary>
+    /// The games to get data for.
+    /// </summary>
+    /// <remarks>
+    /// You may specify up to 100 games.
+    /// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/>.
+    /// </remarks>
+    public required IEnumerable<GameQuery> Games { get; set; }
 }
+
 
 /// <summary>
 /// Used in the <see cref="GetGamesRequest"/> API endpoint.
-/// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/> to filter the request.
 /// </summary>
-/// <param name="Type">The type of filter.</param>
-/// <param name="Value">The value of the filter.</param>
-public abstract record GameQuery(GameQueryType Type, string Value);
+/// <remarks>
+/// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/> to filter the request.
+/// </remarks>
+public abstract record GameQuery();
 /// <summary>
 /// Query games by game id.
 /// </summary>
 /// <param name="GameId">The game id to get.</param>
-public record GameIdQuery(string GameId) : GameQuery(GameQueryType.Id, GameId);
+public record GameIdQuery(GameId GameId) : GameQuery();
 /// <summary>
 /// Query games by game name.
 /// </summary>
 /// <param name="GameName">The name of the game to get.</param>
-public record GameNameQuery(string GameName) : GameQuery(GameQueryType.Name, GameName);
+public record GameNameQuery(string GameName) : GameQuery();
 /// <summary>
 /// Query games by <see href="https://www.igdb.com/">IGDB</see> id.
 /// </summary>
 /// <param name="IgdbId">The IGDB id of the game to get.</param>
-public record GameIgdbQuery(string IgdbId) : GameQuery(GameQueryType.Igdb, IgdbId);
-
-internal static class GameQueryEnumerableExtensions
-{
-    public static IEnumerable<string> GetValues(this IEnumerable<GameQuery> gameQueries, GameQueryType filter)
-        => gameQueries.Where(x => x.Type == filter).Select(x => x.Value);
-}
+public record GameIgdbQuery(IgdbId IgdbId) : GameQuery();
