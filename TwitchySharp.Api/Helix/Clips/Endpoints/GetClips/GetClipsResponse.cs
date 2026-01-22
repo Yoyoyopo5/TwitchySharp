@@ -3,6 +3,7 @@
 /// Contains a list of Twitch clips.
 /// </summary>
 public record GetClipsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of video clips.

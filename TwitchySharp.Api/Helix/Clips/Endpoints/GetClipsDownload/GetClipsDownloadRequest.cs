@@ -2,6 +2,8 @@
 using System.Net.Http;
 using TwitchySharp.Helpers;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
+using System.Linq;
 
 namespace TwitchySharp.Api.Helix.Clips;
 /// <summary>
@@ -19,32 +21,47 @@ public record GetClipsDownloadRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.</param>
-    /// <param name="editorId">
-    /// The user id of the editor of the channel you want to get clip downloads for.
-    /// This must be the user that created the <paramref name="accessToken"/>, and it can be the broadcaster.
-    /// </param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to get clip donwloads for.</param>
-    /// <param name="clipIds">
-    /// The id(s) of the clips to get downloads for.
-    /// A maximum of 10 clips can be requested at once.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetClipsDownloadRequest(
-        string clientId,
-        string accessToken,
-        string editorId,
-        string broadcasterId,
-        IEnumerable<string> clipIds
+        ClientId clientId,
+        AccessToken accessToken, // Seems like app token would not work, but docs says its allowed, so I'll leave this general.
+        GetClipsDownloadRequestParameters parameters
         )
         : base(
             "/clips/downloads",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("editor_id", editorId)
-                .Add("broadcaster_id", broadcasterId)
-                .Add("clip_id", clipIds)
+                .Add("editor_id", parameters.EditorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("clip_id", parameters.ClipIds.Select(x => x.ToString()))
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetClipsDownloadRequest"/>.
+/// </summary>
+public record GetClipsDownloadRequestParameters
+{
+    /// <summary>
+    /// The user id of broadcaster or an editor of the channel you want to get clip downloads for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the user that created the access token used in the request.
+    /// </remarks>
+    public required UserId EditorId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get clip donwloads for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id(s) of the clips to get downloads for.
+    /// </summary>
+    /// <remarks>
+    /// A maximum of 10 clips can be requested at once.
+    /// </remarks>
+    public required IEnumerable<ClipId> ClipIds { get; set; }
 }

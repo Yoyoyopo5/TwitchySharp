@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Api.Helix.Clips;
+﻿namespace TwitchySharp.Api.Helix.Clips;
 
 /// <summary>
 /// Contains an array of download information for a set of Twitch clips.
