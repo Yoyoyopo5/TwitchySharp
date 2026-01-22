@@ -3,6 +3,7 @@
 /// Contains a list of extension transactions.
 /// </summary>
 public record GetExtensionTransactionsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of transactions.
@@ -11,5 +12,5 @@ public record GetExtensionTransactionsResponse
     /// <summary>
     /// The cursor used to get the next page of results. Use the <see cref="Pagination.Cursor"/> property to set the request’s after parameter.
     /// </summary>
-    public Pagination? Pagination { get; init; }
+    public Pagination Pagination { get; init; } = new();
 }

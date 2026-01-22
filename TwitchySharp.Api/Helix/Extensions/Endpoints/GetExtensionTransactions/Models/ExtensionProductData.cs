@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Extensions;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Contains details about a digital product for an extension (bits used in extension).
@@ -6,9 +8,9 @@
 public record ExtensionProductData
 {
     /// <summary>
-    /// An ID that identifies the digital product.
+    /// An id that identifies the digital product.
     /// </summary>
-    public required string Sku { get; init; }
+    public required ExtensionProductSku Sku { get; init; }
     /// <summary>
     /// Set to: "twitch.ext.{the extension's ID}".
     /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
@@ -11,7 +12,7 @@ public record ExtensionBitsProduct
     /// The product’s SKU. 
     /// The SKU is unique across an extension’s products.
     /// </summary>
-    public required string Sku { get; init; }
+    public required ExtensionProductSku Sku { get; init; }
     /// <summary>
     /// An object that contains the product’s cost information.
     /// </summary>

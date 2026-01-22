@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -21,17 +22,28 @@ public record GetExtensionSecretsRequest
     /// <param name="jwt">A signed JWT created by an EBS.</param>
     /// <param name="extensionId">The id of the extension whose shared secrets you want to get.</param>
     public GetExtensionSecretsRequest(
-        string clientId,
-        string jwt,
-        string extensionId
+        ClientId clientId,
+        ExtensionJsonWebToken jwt,
+        GetExtensionSecretsRequestParameters parameters
         ) : base(
             "/extensions/jwt/secrets",
             clientId,
             jwt,
             new HttpQueryParameters()
-                .Add("extension_id", extensionId)
+                .Add("extension_id", parameters.ExtensionId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetExtensionSecretsRequest"/>.
+/// </summary>
+public record GetExtensionSecretsRequestParameters
+{
+    /// <summary>
+    /// The id of the extension whose shared secrets you want to get.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; set; }
 }
