@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -16,8 +17,8 @@ public record CreateConduitRequest
     /// <param name="accessToken">An app access token.</param>
     /// <param name="conduitData">Data used to construct the conduit.</param>
     public CreateConduitRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AppAccessToken accessToken,
         CreateConduitRequestData conduitData
         )
         : base(
