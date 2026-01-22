@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -13,11 +14,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// The user id of the broadcaster for which prediction lock events will be received.
 /// This user must have created a user access token including <see cref="Scope.ChannelReadPredictions"/> or <see cref="Scope.ChannelManagePredictions"/> for this application.
 /// </param>
-public sealed record ChannelPredictionLock(string BroadcasterUserId)
+public sealed record ChannelPredictionLock(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_LOCK;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_LOCK);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

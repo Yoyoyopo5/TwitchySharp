@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -13,11 +14,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// The user id of the broadcaster (channel) you want to get resubscription chat notifications for.
 /// This user must have created a user access token that includes <see cref="Scope.ChannelReadSubscriptions"/> for this application.
 /// </param>
-public sealed record ChannelSubscriptionMessage(string BroadcasterUserId)
+public sealed record ChannelSubscriptionMessage(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIPTION_MESSAGE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIPTION_MESSAGE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

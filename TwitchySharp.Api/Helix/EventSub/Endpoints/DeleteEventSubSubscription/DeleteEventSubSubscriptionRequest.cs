@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
@@ -22,16 +23,31 @@ public record DeleteEventSubSubscriptionRequest
     /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, an app access token. 
     /// If using <see cref="WebsocketSubscriptionTransport"/>, a user access token.
     /// </param>
-    /// <param name="subscriptionId">The id of the subscription to delete.</param>
-    public DeleteEventSubSubscriptionRequest(string clientId, string accessToken, string subscriptionId)
+    /// <param name="parameters">The request parameters.</param>
+    public DeleteEventSubSubscriptionRequest(
+        ClientId clientId, 
+        AccessToken accessToken,
+        DeleteEventSubSubscriptionRequestParameters parameters
+        )
         : base(
             "/eventsub/subscriptions",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("id", subscriptionId)
+                .Add("id", parameters.SubscriptionId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="DeleteEventSubSubscriptionRequest"/>.
+/// </summary>
+public record DeleteEventSubSubscriptionRequestParameters
+{
+    /// <summary>
+    /// The id of the subscription to delete.
+    /// </summary>
+    public required EventSubSubscriptionId SubscriptionId { get; set; }
 }

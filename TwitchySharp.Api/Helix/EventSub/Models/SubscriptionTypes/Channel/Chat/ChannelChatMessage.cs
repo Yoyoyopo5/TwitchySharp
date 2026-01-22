@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -13,11 +14,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">The User ID of the channel to receive chat message events for.</param>
 /// <param name="UserId">The User ID to read chat as.</param>
-public sealed record ChannelChatMessage(string BroadcasterUserId, string UserId)
+public sealed record ChannelChatMessage(UserId BroadcasterUserId, UserId UserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_CHAT_MESSAGE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_CHAT_MESSAGE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

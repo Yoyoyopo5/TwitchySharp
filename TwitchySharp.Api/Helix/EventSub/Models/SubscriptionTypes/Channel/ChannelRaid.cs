@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -19,7 +20,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// Use this parameter if you want to know when a specific broadcaster is raided by another broadcaster. 
 /// The channel raid condition must include either <paramref name="FromBroadcasterUserId"/> or <paramref name="ToBroadcasterUserId"/>.
 /// </param>
-public sealed record ChannelRaid(string? ToBroadcasterUserId, string? FromBroadcasterUserId = null) // May need to remove this primary constuctor IF setting both conditions is not allowed.
+public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadcasterUserId = null) // May need to remove this primary constuctor IF setting both conditions is not allowed.
     : IEventSubSubscriptionType
 {
     /// <summary>
@@ -28,7 +29,7 @@ public sealed record ChannelRaid(string? ToBroadcasterUserId, string? FromBroadc
     /// </summary>
     /// <param name="fromBroadcasterUserId">The broadcaster user ID that created the channel raid you want to get notifications for.</param>
     /// <returns></returns>
-    public static ChannelRaid From(string fromBroadcasterUserId)
+    public static ChannelRaid From(UserId fromBroadcasterUserId)
         => new(null, fromBroadcasterUserId);
 
     /// <summary>
@@ -37,11 +38,11 @@ public sealed record ChannelRaid(string? ToBroadcasterUserId, string? FromBroadc
     /// </summary>
     /// <param name="toBroadcasterUserId">The broadcaster user ID that received the channel raid you want to get notifications for.</param>
     /// <returns></returns>
-    public static ChannelRaid To(string toBroadcasterUserId)
+    public static ChannelRaid To(UserId toBroadcasterUserId)
         => new(toBroadcasterUserId, null);
 
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_RAID;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_RAID);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
@@ -62,7 +63,7 @@ public static class ChannelRaidFluentExtensions
     /// </summary>
     /// <param name="fromBroadcasterUserId">The broadcaster user ID that created the channel raid you want to get notifications for.</param>
     /// <returns></returns>
-    public static ChannelRaid From(this ChannelRaid sub, string fromBroadcasterUserId)
+    public static ChannelRaid From(this ChannelRaid sub, UserId fromBroadcasterUserId)
         => sub with { FromBroadcasterUserId = fromBroadcasterUserId };
 
     /// <summary>
@@ -71,6 +72,6 @@ public static class ChannelRaidFluentExtensions
     /// </summary>
     /// <param name="toBroadcasterUserId">The broadcaster user ID that received the channel raid you want to get notifications for.</param>
     /// <returns></returns>
-    public static ChannelRaid To(this ChannelRaid sub, string toBroadcasterUserId)
+    public static ChannelRaid To(this ChannelRaid sub, UserId toBroadcasterUserId)
         => sub with { ToBroadcasterUserId = toBroadcasterUserId };
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -14,11 +15,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// The user id of the broadcaster to get notified about. 
 /// This user must have created a user access token for this application that includes <see cref="Scope.ChannelReadGoals"/>.
 /// </param>
-public sealed record GoalProgress(string BroadcasterUserId)
+public sealed record GoalProgress(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.GOAL_PROGRESS;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.GOAL_PROGRESS);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

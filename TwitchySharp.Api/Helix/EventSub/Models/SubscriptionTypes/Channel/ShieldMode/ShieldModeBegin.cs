@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -14,11 +15,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// The user id of the broadcaster or one of the broadcaster’s moderators.
 /// This user must have created a user access token for this application that includes <see cref="Scope.ModeratorReadShieldMode"/> or <see cref="Scope.ModeratorManageShieldMode"/>.
 /// </param>
-public sealed record ShieldModeBegin(string BroadcasterUserId, string ModeratorUserId)
+public sealed record ShieldModeBegin(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.SHIELD_MODE_BEGIN;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.SHIELD_MODE_BEGIN);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

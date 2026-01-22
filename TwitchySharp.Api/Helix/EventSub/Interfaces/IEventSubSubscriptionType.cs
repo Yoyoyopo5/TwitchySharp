@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
@@ -10,11 +11,11 @@ public interface IEventSubSubscriptionType
     /// The type name of the subscription that will be created.
     /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types#subscription-types">Subscription Types</see>.
     /// </summary>
-    string Type { get; }
+    EventSubSubscriptionTypeName Name { get; } // Twitch API uses "type", but we will use "Name" as "Type" encompasses the name + version of the subscription.
     /// <summary>
     /// The version number that identifies the definition of the subscription type that the response will use.
     /// </summary>
-    string Version { get; }
+    EventSubSubscriptionTypeVersion Version { get; }
     /// <summary>
     /// A dictionary that contains the parameter values that are specific to the specified subscription type. 
     /// For the object’s required and optional fields, see the subscription type’s documentation.

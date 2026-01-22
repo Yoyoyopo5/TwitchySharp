@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -12,11 +13,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster whose channel you want to get follow notifications for.</param>
 /// <param name="ModeratorUserId">The ID of a moderator of the channel you want to get follow notifications for. If you have authorization from the broadcaster rather than a moderator, specify the broadcaster’s user ID here.</param>
-public sealed record ChannelFollow(string BroadcasterUserId, string ModeratorUserId)
+public sealed record ChannelFollow(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_FOLLOW;
-    public string Version => EventSubSubscriptionTypeVersions.V2;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_FOLLOW);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

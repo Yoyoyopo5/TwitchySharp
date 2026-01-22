@@ -2,6 +2,7 @@
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
@@ -32,8 +33,8 @@ public record CreateEventSubSubscriptionRequest
     /// </param>
     /// <param name="subscription">The subscription to create.</param>
     public CreateEventSubSubscriptionRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AccessToken accessToken,
         NewEventSubSubscription subscription
         )
         : base(
@@ -49,11 +50,11 @@ public record CreateEventSubSubscriptionRequest
 
 internal record CreateEventSubSubscriptionRequestData
 {
-    public required string Type { get; init; }
-    public required string Version { get; init; }
+    public required EventSubSubscriptionTypeName Type { get; init; }
+    public required EventSubSubscriptionTypeVersion Version { get; init; }
     public required IReadOnlyDictionary<string, object> Condition { get; init; }
     public required NewEventSubSubscriptionTransport Transport { get; init; }
-    public bool? IsBatchingEnabled => Type switch // Kind of jank but this is the only type that requires this.
+    public bool? IsBatchingEnabled => Type.Value switch // Kind of jank but this is the only type that requires this.
     {
         EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT => true,
         _ => null
@@ -62,7 +63,7 @@ internal record CreateEventSubSubscriptionRequestData
     public static explicit operator CreateEventSubSubscriptionRequestData(NewEventSubSubscription subscription)
         => new()
         {
-            Type = subscription.Type.Type,
+            Type = subscription.Type.Name,
             Version = subscription.Type.Version,
             Condition = subscription.Type.Condition,
             Transport = subscription.Transport

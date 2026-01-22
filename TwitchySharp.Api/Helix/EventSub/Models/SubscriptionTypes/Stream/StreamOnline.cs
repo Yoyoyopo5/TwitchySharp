@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -9,11 +10,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// No authorization required.
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) you want to get stream online notifications for.</param>
-public sealed record StreamOnline(string BroadcasterUserId)
+public sealed record StreamOnline(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.STREAM_ONLINE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.STREAM_ONLINE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
