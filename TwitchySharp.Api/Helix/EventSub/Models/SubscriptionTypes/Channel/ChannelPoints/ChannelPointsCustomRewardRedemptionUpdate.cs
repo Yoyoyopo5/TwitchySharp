@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -7,11 +8,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </summary>
 /// <param name="BroadcasterUserId">The broadcaster user ID for the channel you want to receive channel points custom reward redemption update notifications for.</param>
 /// <param name="RewardId">Optional. Specify a reward id to only receive notifications for a specific reward.</param>
-public sealed record ChannelPointsCustomRewardRedemptionUpdate(string BroadcasterUserId, string? RewardId = null)
+public sealed record ChannelPointsCustomRewardRedemptionUpdate(UserId BroadcasterUserId, string? RewardId = null)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REDEMPTION_UPDATE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REDEMPTION_UPDATE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

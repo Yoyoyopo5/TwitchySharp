@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -16,11 +17,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <param name="ConduitId">
 /// The conduit ID to receive events for. 
 /// If <see langword="null"/>, events for all of this client’s conduits are sent.</param>
-public sealed record ConduitShardDisabled(string ClientId, string? ConduitId = null)
+public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitId = null)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CONDUIT_SHARD_DISABLED;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CONDUIT_SHARD_DISABLED);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

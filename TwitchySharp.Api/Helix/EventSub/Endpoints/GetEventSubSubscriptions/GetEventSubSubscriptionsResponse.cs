@@ -3,6 +3,7 @@
 /// Contains a list of existing EventSub subscriptions.
 /// </summary>
 public record GetEventSubSubscriptionsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of subscriptions ordered by creation time (ascending).

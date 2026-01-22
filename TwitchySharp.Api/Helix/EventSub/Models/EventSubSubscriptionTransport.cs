@@ -1,4 +1,6 @@
 ﻿using System;
+using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 
@@ -15,12 +17,12 @@ public record EventSubSubscriptionTransport
     /// The callback URL where the notifications are sent. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Webhook"/>.
     /// </summary>
-    public string? Callback { get; init; }
+    public Uri? Callback { get; init; }
     /// <summary>
     /// An id that identifies the WebSocket that notifications are sent to. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Websocket"/>.
     /// </summary>
-    public string? SessionId { get; init; }
+    public EventSubWebsocketSessionId? SessionId { get; init; }
     /// <summary>
     /// The date and time that the WebSocket connection was established. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Websocket"/>.
@@ -30,5 +32,5 @@ public record EventSubSubscriptionTransport
     /// An id that identifies the conduit to send notifications to. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Conduit"/>.
     /// </summary>
-    public string? ConduitId { get; init; }
+    public ConduitId? ConduitId { get; init; }
 }

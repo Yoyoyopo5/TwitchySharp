@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -10,11 +11,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// Requires an app access token created by the <paramref name="ExtensionClientId"/>.
 /// </remarks>
 /// <param name="ExtensionClientId">The client id of the extension.</param>
-public sealed record ExtensionBitsTransactionCreate(string ExtensionClientId)
+public sealed record ExtensionBitsTransactionCreate(ClientId ExtensionClientId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.EXTENSION_BITS_TRANSACTION_CREATE;
-    public string Version => EventSubSubscriptionTypeVersions.V1;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.EXTENSION_BITS_TRANSACTION_CREATE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

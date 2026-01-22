@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -9,11 +10,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// No authorization required.
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) you want to get updates for.</param>
-public sealed record ChannelUpdate(string BroadcasterUserId)
+public sealed record ChannelUpdate(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public string Type => EventSubSubscriptionTypeNames.CHANNEL_UPDATE;
-    public string Version => EventSubSubscriptionTypeVersions.V2;
+    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_UPDATE);
+    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
