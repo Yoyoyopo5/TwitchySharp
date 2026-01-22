@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Entitlements;
 /// <summary>
@@ -16,8 +18,8 @@ public record UpdateDropsEntitlementsRequest
     /// <param name="accessToken">An app or user access token. If a user access token is used, only entitlements owned by the user that created it can be updated.</param>
     /// <param name="updates">The updates to make.</param>
     public UpdateDropsEntitlementsRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AccessToken accessToken,
         UpdateDropsEntitlementsRequestData updates
         )
         : base(
@@ -39,7 +41,7 @@ public record UpdateDropsEntitlementsRequestData
     /// <summary>
     /// The ids of the entitlements to update.
     /// </summary>
-    public string[]? EntitlementIds { get; set; }
+    public IEnumerable<DropsEntitlementId>? EntitlementIds { get; set; }
     /// <summary>
     /// The fulfillment status to update the entitlements to.
     /// </summary>
