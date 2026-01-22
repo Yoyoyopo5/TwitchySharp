@@ -2,6 +2,7 @@
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Clips;
 /// <summary>
@@ -37,8 +38,8 @@ public record CreateClipRequest
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ClipsEdit"/>.</param>
     /// <param name="parameters">The request parameters.</param>
     public CreateClipRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         CreateClipRequestParameters parameters
         )
         : base(
@@ -63,7 +64,7 @@ public record CreateClipRequestParameters
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The title of the clip to create.
     /// </summary>
