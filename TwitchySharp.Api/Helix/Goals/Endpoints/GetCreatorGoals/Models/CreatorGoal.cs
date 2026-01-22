@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Goals;
 
@@ -10,19 +11,19 @@ public record CreatorGoal
     /// <summary>
     /// The goal's id.
     /// </summary>
-    public required string Id { get; init; }
+    public required ChannelGoalId Id { get; init; }
     /// <summary>
     /// The user id of the broadcaster who created the goal.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The display name of the broadcaster who created the goal.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster who created the goal.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The type of goal.
     /// </summary>
