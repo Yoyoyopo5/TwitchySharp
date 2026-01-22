@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Conduits;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Conduits;
 
 /// <summary>
 /// Contains data about an error that occurred when updating a conduit shard.
@@ -8,7 +10,7 @@ public record ConduitUpdateError
     /// <summary>
     /// The id of the shard that had the error.
     /// </summary>
-    public required string Id { get; init; }
+    public required ConduitShardId Id { get; init; }
     /// <summary>
     /// The error that occurred while updating the shard.
     /// </summary>

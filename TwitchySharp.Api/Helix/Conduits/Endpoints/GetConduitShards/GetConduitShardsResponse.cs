@@ -3,6 +3,7 @@
 /// Contains information about a requested conduit's shards.
 /// </summary>
 public record GetConduitShardsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// List of information about a conduit's shards.

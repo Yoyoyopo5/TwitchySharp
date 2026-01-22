@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -23,22 +24,41 @@ public record GetConduitShardsRequest
     /// The <see cref="Pagination"/> in the response contains the cursor’s value.
     /// </param>
     public GetConduitShardsRequest(
-        string clientId,
-        string accessToken,
-        string conduitId,
-        ConduitShardStatus? status = null,
-        string? after = null
+        ClientId clientId,
+        AppAccessToken accessToken,
+        GetConduitShardsRequestParameters parameters
         )
         : base(
             "/eventsub/conduits/shards",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("conduit_id", conduitId)
-                .Add("status", status?.Value)
-                .Add("after", after)
+                .Add("conduit_id", parameters.ConduitId)
+                .Add("status", parameters.Status?.Value)
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetConduitShardsRequest"/>.
+/// </summary>
+public record GetConduitShardsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The conduit id of the conduit you want to get shards for.
+    /// </summary>
+    public required ConduitId ConduitId { get; set; }
+    /// <summary>
+    /// Status to filter returned shards by.
+    /// </summary>
+    public ConduitShardStatus? Status { get; set; }
+    public PaginationCursor? After { get; set; }
+    /// <summary>
+    /// Unused for this request type.
+    /// </summary>
+    public PaginationAmount? First { get; set; }
 }

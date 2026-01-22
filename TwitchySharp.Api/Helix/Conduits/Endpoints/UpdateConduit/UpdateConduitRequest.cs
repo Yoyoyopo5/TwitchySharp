@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -20,8 +21,8 @@ public record UpdateConduitRequest
     /// <param name="accessToken">An app access token.</param>
     /// <param name="conduitToUpdate">The data to update the conduit with.</param>
     public UpdateConduitRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AppAccessToken accessToken,
         UpdateConduitRequestData conduitToUpdate
         )
         : base(
@@ -43,7 +44,7 @@ public record UpdateConduitRequestData
     /// <summary>
     /// The conduit id of the conduit you want to update.
     /// </summary>
-    public required string Id { get; init; }
+    public required ConduitId Id { get; init; }
     /// <summary>
     /// The new number of shards to assign to this conduit.
     /// </summary>

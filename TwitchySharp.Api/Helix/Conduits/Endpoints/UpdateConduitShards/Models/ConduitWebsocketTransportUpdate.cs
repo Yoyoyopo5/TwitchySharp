@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 
@@ -17,7 +18,7 @@ public record ConduitWebsocketTransportUpdate
     /// <summary>
     /// <inheritdoc cref="ConduitTransportUpdate.SessionId"/>
     /// </summary>
-    public new string? SessionId
+    public new EventSubWebsocketSessionId? SessionId
     {
         get => base.SessionId;
         set => base.SessionId = value;

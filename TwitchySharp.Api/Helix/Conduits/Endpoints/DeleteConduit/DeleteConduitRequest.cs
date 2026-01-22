@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -17,20 +18,31 @@ public record DeleteConduitRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app access token.</param>
-    /// <param name="conduitId">The id of the conduit you want to delete.</param>
+    /// <param name="parameters">The request parameters.</param>
     public DeleteConduitRequest(
-        string clientId,
-        string accessToken,
-        string conduitId
+        ClientId clientId,
+        AppAccessToken accessToken,
+        DeleteConduitRequestParameters parameters
         )
         : base(
             "/eventsub/conduits",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("id", conduitId)
+                .Add("id", parameters.ConduitId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="DeleteConduitRequest"/>.
+/// </summary>
+public record DeleteConduitRequestParameters
+{
+    /// <summary>
+    /// The id of the conduit you want to delete.
+    /// </summary>
+    public required ConduitId ConduitId { get; set; }
 }
