@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -36,29 +37,40 @@ public record CheckAutoModStatusRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModerationRead"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster whose AutoMod settings and list of blocked terms are used to check the message. 
-    /// This must be the same user who created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="messages">
     /// The messages to check against the channel's AutoMod.
     /// </param>
     public CheckAutoModStatusRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        CheckAutoModStatusRequestParameters parameters,
         CheckAutoModStatusRequestData messages
         ) : base(
             "/moderation/enforcements/status",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Post;
         ContentObject = messages;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="CheckAutoModStatusRequest"/>.
+/// </summary>
+public record CheckAutoModStatusRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster whose AutoMod settings and list of blocked terms are used to check the message.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user who created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }
 
 /// <summary>

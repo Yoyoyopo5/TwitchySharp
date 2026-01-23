@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -18,27 +19,39 @@ public record AddChannelModeratorRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageModerators"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to add a moderator for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="userId">
-    /// The id of the user to add as a moderator.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public AddChannelModeratorRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string userId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        AddChannelModeratorRequestParameters parameters
         ) : base(
             "/moderation/moderators",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserId)
             )
     {
         Method = HttpMethod.Post;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="AddChannelModeratorRequest"/>.
+/// </summary>
+public record AddChannelModeratorRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to add a moderator for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The id of the user to add as a moderator.
+    /// </summary>
+    public required UserId UserId { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -10,15 +11,15 @@ public record SuspiciousUser
     /// <summary>
     /// The id of the user.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) in whose chat the user has the suspicious status.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user id of the moderator who applied the last suspicious status.
     /// </summary>
-    public required string ModeratorId { get; init; }
+    public required UserId ModeratorId { get; init; }
     /// <summary>
     /// The date and time when the status was last updated.
     /// </summary>

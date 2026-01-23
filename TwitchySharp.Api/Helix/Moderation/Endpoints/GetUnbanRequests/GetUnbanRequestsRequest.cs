@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -17,42 +18,53 @@ public record GetUnbanRequestsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorReadUnbanRequests"/> or <see cref="Scope.ModeratorManageUnbanRequests"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to get unban requests for.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="status">Filter unban requests by status.</param>
-    /// <param name="userId">Filter unban requests by banned user.</param>
-    /// <param name="after">
-    /// Cursor used to get next page of results. 
-    /// The <see cref="Pagination"/> property in response contains the cursor value.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetUnbanRequestsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
-        UnbanRequestStatus status,
-        string? userId = null,
-        string? after = null,
-        int? first = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetUnbanRequestsRequestParameters parameters
         ) : base(
             "/moderation/unban_requests",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
-                .Add("status", status.ToString().ToLowerInvariant())
-                .Add("user_id", userId)
-                .Add("after", after)
-                .Add("first", first?.ToString())
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+                .Add("status", parameters.Status.Value)
+                .Add("user_id", parameters.UserId)
+                .Add("after", parameters.After?.Value)
+                .Add("first", parameters.First?.ToString())
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetUnbanRequestsRequest"/>.
+/// </summary>
+public record GetUnbanRequestsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get unban requests for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
+    /// <summary>
+    /// Filter unban requests by status.
+    /// </summary>
+    public required UnbanRequestStatus Status { get; set; }
+    /// <summary>
+    /// Filter unban requests by banned user.
+    /// </summary>
+    public UserId? UserId { get; set; }
+    public PaginationCursor? After { get; set; }
+    public PaginationAmount? First { get; set; }
 }

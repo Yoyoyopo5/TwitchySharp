@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -19,8 +20,8 @@ public record AddSuspiciousStatusToChatUserRequest
     /// <param name="parameters">The request parameters.</param>
     /// <param name="data">The request data.</param>
     public AddSuspiciousStatusToChatUserRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AccessToken accessToken,
         AddSuspiciousStatusToChatUserRequestParameters parameters,
         AddSuspiciousStatusToChatUserRequestData data
         )
@@ -49,8 +50,10 @@ public record AddSuspiciousStatusToChatUserRequestParameters
     public required string BroadcasterId { get; set; }
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to update the suspicious user status on behalf of.
-    /// This should be the same user that created the user access token for the request.
     /// </summary>
+    /// <remarks>
+    /// This should be the same user that created the user access token for the request.
+    /// </remarks>
     public required string ModeratorId { get; set; }
 }
 

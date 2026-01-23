@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -19,30 +20,44 @@ public record BanUserRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageBannedUsers"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to ban or time out a user from.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="ban">Information used to set the user to ban or time out.</param>
     public BanUserRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        BanUserRequestParameters parameters,
         BanUserRequestData ban
         ) : base(
             "/moderation/bans",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Post;
         ContentObject = ban;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="BanUserRequest"/>.
+/// </summary>
+public record BanUserRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to ban or time out a user from.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
 
 /// <summary>
@@ -64,7 +79,7 @@ public record UserToBan
     /// <summary>
     /// The user id of the user to ban or time out.
     /// </summary>
-    public required string UserId { get; set; }
+    public required UserId UserId { get; set; }
     /// <summary>
     /// Set this property to issue a time-out, leave <see langword="null"/> to issue a ban.
     /// Time-out durations are measured in <b>seconds</b>, with the minimum duration being 1 second, and the maximum being 1,209,600 seconds (2 weeks).

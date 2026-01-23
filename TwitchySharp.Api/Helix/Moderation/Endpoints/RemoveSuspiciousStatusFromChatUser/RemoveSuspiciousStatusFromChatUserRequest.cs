@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -23,8 +19,8 @@ public record RemoveSuspiciousStatusFromChatUserRequest
     /// <param name="accessToken">An app or user access token that includes <see cref="Scope.ModeratorManageSuspiciousUsers"/>.</param>
     /// <param name="parameters">The request parameters.</param>
     public RemoveSuspiciousStatusFromChatUserRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        AccessToken accessToken,
         RemoveSuspiciousStatusFromChatUserRequestParameters parameters
         )
         : base(
@@ -49,13 +45,13 @@ public record RemoveSuspiciousStatusFromChatUserRequestParameters
     /// <summary>
     /// The user id of the broadcaster (channel) in whose chat to remove the suspicious user status.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to remove the suspicious user status on behalf of.
     /// </summary>
-    public required string ModeratorId { get; set; }
+    public required UserId ModeratorId { get; set; }
     /// <summary>
     /// The id of the user to remove the suspicious user status on.
     /// </summary>
-    public required string UserId { get; set; }
+    public required UserId UserId { get; set; }
 }

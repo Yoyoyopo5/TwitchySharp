@@ -2,6 +2,7 @@
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -19,33 +20,46 @@ public record UpdateAutoModSettingsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageAutomodSettings"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) that you want to update AutoMod settings for.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="settings">
     /// The settings to update.
     /// Use derived classes <see cref="UpdateAutoModOverallLevelData"/> and <see cref="UpdateAutoModCustomLevelsData"/>.
     /// </param>
     public UpdateAutoModSettingsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateAutoModSettingsRequestParameters parameters,
         UpdateAutoModSettingsRequestData settings
         ) : base(
             "/moderation/automod/settings",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("moderator_id", moderatorId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
             )
     {
         Method = HttpMethod.Put;
         ContentObject = settings;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateAutoModSettingsRequest"/>.
+/// </summary>
+public record UpdateAutoModSettingsRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) that you want to update AutoMod settings for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
 
 /// <summary>

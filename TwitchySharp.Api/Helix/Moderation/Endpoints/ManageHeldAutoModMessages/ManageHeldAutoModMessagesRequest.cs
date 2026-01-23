@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -22,8 +23,8 @@ public record ManageHeldAutoModMessagesRequest
     /// Data used to identify the message and select the action.
     /// </param>
     public ManageHeldAutoModMessagesRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         ManageHeldAutoModMessagesRequestData messageAction
         ) : base(
             "/moderation/automod/message",
@@ -45,12 +46,12 @@ public record ManageHeldAutoModMessagesRequestData
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// This must be the same user that created the access token used in the <see cref="ManageHeldAutoModMessagesRequest"/>.
     /// </summary>
-    public required string UserId { get; set; }
+    public required UserId UserId { get; set; }
     /// <summary>
     /// The id of the message to allow or deny.
     /// </summary>
     [JsonPropertyName("msg_id")]
-    public required string MessageId { get; set; }
+    public required MessageId MessageId { get; set; }
     /// <summary>
     /// The action to take for the message.
     /// Use the static definitions on the <see cref="AutoModAction"/> class to set this.

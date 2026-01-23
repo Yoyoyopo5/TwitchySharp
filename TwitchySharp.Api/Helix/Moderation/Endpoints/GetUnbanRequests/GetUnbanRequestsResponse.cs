@@ -3,6 +3,7 @@
 /// Contains a list of unban requests for a specific channel.
 /// </summary>
 public record GetUnbanRequestsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of unban requests.

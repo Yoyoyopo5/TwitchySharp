@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -16,35 +17,42 @@ public record GetModeratedChannelsRequest : TwitchHelixRequest<GetModeratedChann
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadModeratedChannels"/>.</param>
-    /// <param name="userId">
-    /// The user id of the user to get moderated channels for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response.
-    /// Minimum page size is 1 item per page and the maximum is 100. 
-    /// The default is 20.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetModeratedChannelsRequest(
-        string clientId,
-        string accessToken,
-        string userId,
-        string? after = null,
-        int? first = null
-    ) : base(
-        "/moderation/channels",
-        clientId,
-        accessToken,
-        new HttpQueryParameters()
-            .Add("user_id", userId)
-            .Add("after", after)
-            .Add("first", first?.ToString())
-    )
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetModeratedChannelsRequestParameters parameters
+        ) : base(
+            "/moderation/channels",
+            clientId,
+            accessToken,
+            new HttpQueryParameters()
+                .Add("user_id", parameters.UserId)
+                .Add("after", parameters.After?.Value)
+                .Add("first", parameters.First?.ToString())
+            )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetModeratedChannelsRequest"/>.
+/// </summary>
+public record GetModeratedChannelsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the user to get moderated channels for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the <paramref name="accessToken"/>.
+    /// </remarks>
+    public required UserId UserId { get; set; }
+    public PaginationCursor? After { get; set; }
+    /// <remarks>
+    /// Minimum page size is 1 item per page and the maximum is 100. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
 }
