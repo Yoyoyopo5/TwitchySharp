@@ -170,7 +170,7 @@ public abstract record GetVideosRequestQueryParameters
     /// For a list of supported languages, see <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">Supported Stream Language</see>. 
     /// If the language is not supported, use <c>"other"</c>.
     /// </summary>
-    public string? Language { get; protected set; }
+    public LanguageCode? Language { get; protected set; }
     /// <summary>
     /// Filters the returned list of videos by when they were published.
     /// Defaults to <see cref="VideoQueryPeriod.All"/>.

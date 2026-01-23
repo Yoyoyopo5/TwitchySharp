@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Videos;
 
@@ -69,7 +70,7 @@ public record TwitchVideo
     /// For a list of supported languages, see <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">Supported Stream Language</see>. 
     /// The language value is <c>"other"</c> if the video was broadcast in a language not in the list of supported languages.
     /// </summary>
-    public required string Language { get; init; }
+    public required LanguageCode Language { get; init; }
     /// <summary>
     /// The video's type.
     /// </summary>
