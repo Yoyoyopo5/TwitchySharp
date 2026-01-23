@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -17,30 +18,43 @@ public record UpdateShieldModeStatusRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageShieldMode"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to update Shield Mode status for.</param>
-    /// <param name="moderatorId">
-    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="shieldModeStatus">The Shield Mode status to update to.</param>
     public UpdateShieldModeStatusRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string moderatorId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateShieldModeStatusRequestParameters parameters,
         UpdateShieldModeStatusRequestData shieldModeStatus
-    ) : base(
-        "/moderation/shield_mode",
-        clientId,
-        accessToken,
-        new HttpQueryParameters()
-            .Add("broadcaster_id", broadcasterId)
-            .Add("moderator_id", moderatorId)
-    )
+        ) : base(
+            "/moderation/shield_mode",
+            clientId,
+            accessToken,
+            new HttpQueryParameters()
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("moderator_id", parameters.ModeratorId)
+            )
     {
         Method = HttpMethod.Put;
         ContentObject = shieldModeStatus;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateShieldModeStatusRequest"/>.
+/// </summary>
+public record UpdateShieldModeStatusRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to update Shield Mode status for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the broadcaster or a moderator of the broadcaster's channel.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId ModeratorId { get; set; }
 }
 
 /// <summary>
@@ -50,7 +64,9 @@ public record UpdateShieldModeStatusRequestData
 {
     /// <summary>
     /// Determines whether to activate or deactivate Shield Mode. 
-    /// Set to <see langword="true"/> to activate Shield Mode; otherwise, <see langword="false"/> to deactivate Shield Mode.
     /// </summary>
+    /// <remarks>
+    /// Set to <see langword="true"/> to activate Shield Mode; otherwise, <see langword="false"/> to deactivate Shield Mode.
+    /// </remarks>
     public required bool IsActive { get; set; }
 }

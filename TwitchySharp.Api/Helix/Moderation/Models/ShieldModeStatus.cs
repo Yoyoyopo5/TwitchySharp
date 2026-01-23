@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -17,15 +18,15 @@ public record ShieldModeStatus
     /// <summary>
     /// The user id of the moderator that last activated Shield Mode.
     /// </summary>
-    public required string ModeratorId { get; init; }
+    public required UserId ModeratorId { get; init; }
     /// <summary>
     /// The login (username) of the moderator that last activated Shield Mode.
     /// </summary>
-    public required string ModeratorLogin { get; init; }
+    public required UserLogin ModeratorLogin { get; init; }
     /// <summary>
     /// The display name of the moderator that last activated Shield Mode.
     /// </summary>
-    public required string ModeratorName { get; init; }
+    public required UserName ModeratorName { get; init; }
     /// <summary>
     /// The date and time when Shield Mode was last activated.
     /// </summary>

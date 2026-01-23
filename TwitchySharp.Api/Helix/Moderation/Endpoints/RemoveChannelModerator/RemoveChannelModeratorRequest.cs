@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
@@ -18,27 +19,38 @@ public record RemoveChannelModeratorRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageModerators"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to remove a moderator for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="userId">
-    /// The user id of the moderator to remove from the broadcaster's channel.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public RemoveChannelModeratorRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string userId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        RemoveChannelModeratorRequestParameters parameters
         ) : base(
             "/moderation/moderators",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="RemoveChannelModeratorRequest"/>.
+/// </summary>
+public record RemoveChannelModeratorRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to remove a moderator for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The user id of the moderator to remove from the broadcaster's channel.
+    /// </summary>
+    public required UserId UserId { get; set; }
 }
