@@ -3,6 +3,7 @@
 /// Contains a list of polls belonging to a specific channel.
 /// </summary>
 public record GetPollsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of polls.
