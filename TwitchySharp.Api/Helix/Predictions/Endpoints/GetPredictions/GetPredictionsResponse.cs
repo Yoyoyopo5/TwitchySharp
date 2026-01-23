@@ -3,6 +3,7 @@
 /// Contains information about a channel's past and current predictions.
 /// </summary>
 public record GetPredictionsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of predictions.

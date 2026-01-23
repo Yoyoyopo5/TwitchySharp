@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 
@@ -12,19 +13,19 @@ public record ChatPrediction
     /// <summary>
     /// The id of the prediction.
     /// </summary>
-    public required string Id { get; init; }
+    public required PredictionId Id { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) that the prediction belongs to.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The display name of the broadcaster (channel) that the prediction belongs to.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster (channel) that the prediction belongs to.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The question that the prediction asks.
     /// </summary>
@@ -33,7 +34,7 @@ public record ChatPrediction
     /// The id of the winning outcome.
     /// This property is <see langword="null"/> if <see cref="Status"/> is not <see cref="ChatPredictionStatus.Resolved"/>.
     /// </summary>
-    public string? WinningOutcomeId { get; init; }
+    public PredictionOutcomeId? WinningOutcomeId { get; init; }
     /// <summary>
     /// The list of possible outcomes for the prediction.
     /// </summary>
