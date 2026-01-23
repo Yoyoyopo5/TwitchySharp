@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -10,15 +11,15 @@ public record UserBan
     /// <summary>
     /// The user id of the broadcaster (channel) that the user is banned or timed out from.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user id of the moderator who issued the ban or time-out.
     /// </summary>
-    public required string ModeratorId { get; init; }
+    public required UserId ModeratorId { get; init; }
     /// <summary>
     /// The user id of the user that was banned or timed out.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The date and time that the user was banned or timed out.
     /// </summary>
