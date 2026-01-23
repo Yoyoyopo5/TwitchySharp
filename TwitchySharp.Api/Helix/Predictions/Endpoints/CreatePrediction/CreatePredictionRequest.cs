@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 /// <summary>
@@ -23,8 +24,8 @@ public record CreatePredictionRequest
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePredictions"/>.</param>
     /// <param name="prediction">The new prediction to create and start.</param>
     public CreatePredictionRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         CreatePredictionRequestData prediction
         ) : base(
             "/predictions",
@@ -46,7 +47,7 @@ public record CreatePredictionRequestData
     /// The user id of the broadcaster (channel) to create the prediction for.
     /// This must be the same user that created the user access token in the <see cref="CreatePredictionRequest"/>.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The question that the prediction is asking.
     /// This is limited to a maximum of 45 characters.
@@ -63,16 +64,4 @@ public record CreatePredictionRequestData
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
     public required TimeSpan PredictionWindow { get; set; }
-}
-
-/// <summary>
-/// Data used to create an individual outcome for a new prediction.
-/// </summary>
-public record CreatePredictionOutcome
-{
-    /// <summary>
-    /// The text of one of the outcomes that the viewer may select. 
-    /// The title is limited to a maximum of 25 characters.
-    /// </summary>
-    public required string Title { get; set; }
 }
