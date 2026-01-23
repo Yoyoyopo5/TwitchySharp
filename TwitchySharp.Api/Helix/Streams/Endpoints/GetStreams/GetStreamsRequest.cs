@@ -95,7 +95,7 @@ public record StreamQuery
     /// Specify the language using an ISO 639-1 two-letter language code or other if the broadcast uses a language not in the list of <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">supported stream languages</see>.
     /// You may specify a maximum of 100 language codes.
     /// </summary>
-    public IEnumerable<string>? Languages { get; set; }
+    public IEnumerable<LanguageCode>? Languages { get; set; }
 }
 
 /// <summary>

@@ -56,9 +56,9 @@ public record TwitchStream
     public required DateTimeOffset StartedAt { get; init; }
     /// <summary>
     /// The language that the stream uses. 
-    /// This is an ISO 639-1 two-letter language code or other if the stream uses a language not in the list of <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">supported stream languages</see>.
+    /// This is an ISO 639-1 two-letter language code or <see cref="LanguageCode.Other"/> if the stream uses a language not in the list of <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">supported stream languages</see>.
     /// </summary>
-    public required string Language { get; init; }
+    public required LanguageCode Language { get; init; }
     /// <summary>
     /// A URL template to an image of a frame from the last 5 minutes of the stream.
     /// </summary>

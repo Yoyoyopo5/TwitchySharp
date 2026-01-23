@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.Models;
@@ -24,7 +25,7 @@ public record ChannelInformation
     /// The broadcaster’s preferred language. The value is an ISO 639-1 two-letter language code (for example, en for English). 
     /// The value is set to "other" if the language is not a Twitch supported language.
     /// </summary>
-    public required string BroadcasterLanguage { get; init; } // Conflicted on whether I should make this an enum or leave as string
+    public required LanguageCode BroadcasterLanguage { get; init; }
     /// <summary>
     /// The name of the game that the broadcaster is playing or last played. 
     /// The value is an empty string if the broadcaster has never played a game.

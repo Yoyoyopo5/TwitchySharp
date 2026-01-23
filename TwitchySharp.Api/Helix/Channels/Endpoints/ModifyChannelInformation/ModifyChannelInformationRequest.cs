@@ -71,10 +71,10 @@ public record ModifyChannelInformationRequestData
     /// <summary>
     /// The user’s preferred language. 
     /// Set the value to an ISO 639-1 two-letter language code (for example, en for English). 
-    /// Set to “other” if the user’s preferred language is not a Twitch supported language. 
+    /// Set to "other" if the user’s preferred language is not a Twitch supported language. 
     /// The language isn’t updated if the language code isn’t a Twitch supported language.
     /// </summary>
-    public string? BroadcasterLanguage { get; set; }
+    public LanguageCode? BroadcasterLanguage { get; set; }
     /// <summary>
     /// The title of the user’s stream. 
     /// You may not set this field to an empty string.
