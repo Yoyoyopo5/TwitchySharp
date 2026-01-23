@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Models;
 
@@ -52,7 +53,7 @@ public record TwitchClip
     /// For example, <c>en</c> for English. 
     /// The value is other if the broadcaster uses a language that Twitch doesn’t support.
     /// </summary>
-    public required string Language { get; init; }
+    public required LanguageCode Language { get; init; }
     /// <summary>
     /// The title of the clip.
     /// </summary>

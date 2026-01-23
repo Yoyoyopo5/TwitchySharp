@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Search;
@@ -14,7 +15,7 @@ public record TwitchChannel
     /// For example, <c>"en"</c> for English. 
     /// If the broadcaster uses a language not in the list of <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">supported stream languages</see>, the value is <c>"other"</c>.
     /// </summary>
-    public required string BroadcasterLanguage { get; init; }
+    public required LanguageCode BroadcasterLanguage { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster.
     /// </summary>
