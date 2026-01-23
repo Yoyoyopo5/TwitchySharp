@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
@@ -18,43 +20,55 @@ public record GetPollsRequest : TwitchHelixRequest<GetPollsResponse>
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadPolls"/> or <see cref="Scope.ChannelManagePolls"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to get polls for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="pollIds">
-    /// Filter the list of polls by poll id.
-    /// You may specify a maximum of 20 ids.
-    /// Specify this parameter only if you want to filter the list that the request returns. 
-    /// The endpoint ignores duplicate ids and those not owned by this broadcaster.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 20 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> property in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetPollsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        IEnumerable<string>? pollIds = null,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetPollsRequestParameters parameters
         ) : base(
             "/polls",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("id", pollIds)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("id", parameters.PollIds?.Select(x => x.Value))
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetPollsRequest"/>.
+/// </summary>
+public record GetPollsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get polls for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// Filter the list of polls by poll id.
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 20 ids.
+    /// Specify this parameter only if you want to filter the list that the request returns. 
+    /// The endpoint ignores duplicate ids and those not owned by this broadcaster.
+    /// </remarks>
+    public IEnumerable<PollId>? PollIds { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 20 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

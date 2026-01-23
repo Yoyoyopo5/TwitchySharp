@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
@@ -22,8 +23,8 @@ public record CreatePollRequest
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePolls"/>.</param>
     /// <param name="poll">The poll to create.</param>
     public CreatePollRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         CreatePollRequestData poll
         ) : base(
             "/polls",
@@ -45,7 +46,7 @@ public record CreatePollRequestData
     /// The user id of the broadcaster (channel) to create the poll for.
     /// This must be the same user that created the user access token in the request.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The question that viewers will vote on.
     /// The question may contain a maximum of 60 characters.
@@ -73,16 +74,4 @@ public record CreatePollRequestData
     /// The minimum value is 1 and the maximum is 1,000,000.
     /// </summary>
     public int? ChannelPointsPerVote { get; set; }
-}
-
-/// <summary>
-/// A choice for a new poll.
-/// </summary>
-public record CreatePollChoice
-{
-    /// <summary>
-    /// The title of the choice that is visible to viewers.
-    /// This may contain up to 25 characters.
-    /// </summary>
-    public required string Title { get; set; }
 }
