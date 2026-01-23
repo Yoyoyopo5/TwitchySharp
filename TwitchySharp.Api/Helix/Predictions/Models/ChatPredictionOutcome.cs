@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Predictions;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Predictions;
 
 /// <summary>
 /// Contains information about a specific prediction outcome.
@@ -8,7 +10,7 @@ public record ChatPredictionOutcome
     /// <summary>
     /// The id of the outcome.
     /// </summary>
-    public required string Id { get; init; }
+    public required PredictionOutcomeId Id { get; init; }
     /// <summary>
     /// The outcome’s text as it is displayed to viewers.
     /// </summary>

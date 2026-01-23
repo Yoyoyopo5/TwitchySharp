@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
-using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 /// <summary>
@@ -22,8 +21,8 @@ public record EndPredictionRequest
     /// Use derived classes <see cref="ResolvePrediction"/>, <see cref="CancelPrediction"/>, and <see cref="LockPrediction"/>.
     /// </param>
     public EndPredictionRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         EndPredictionRequestData prediction
         ) : base(
             "/predictions",
@@ -44,7 +43,7 @@ public record ResolvePrediction
 {
     /// <inheritdoc cref="ResolvePrediction"/>
     /// <param name="winningOutcomeId">The id of the winning outcome to set.</param>
-    public ResolvePrediction(string winningOutcomeId)
+    public ResolvePrediction(PredictionOutcomeId winningOutcomeId)
         : base(UpdateChatPredictionStatus.Resolved)
         => WinningOutcomeId = winningOutcomeId;
 }
@@ -69,11 +68,11 @@ public record EndPredictionRequestData
     /// The user id of the broadcaster (channel) that owns the prediction.
     /// This must be the same user that created the user access token in the <see cref="EndPredictionRequest"/>.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The id of the prediction to update.
     /// </summary>
-    public required string Id { get; set; }
+    public required PredictionId Id { get; set; }
     /// <summary>
     /// The status to set the prediction to.
     /// Only currently running predictions can be updated, and <see cref="ChatPredictionStatus.Locked"/> predictions can only be set to <see cref="UpdateChatPredictionStatus.Resolved"/> or <see cref="UpdateChatPredictionStatus.Cancelled"/> (a locked prediction cannot be unlocked).
@@ -84,7 +83,7 @@ public record EndPredictionRequestData
     /// The id of the winning outcome.
     /// This must be set if <see cref="Status"/> is set to <see cref="UpdateChatPredictionStatus.Resolved"/>.
     /// </summary>
-    public string? WinningOutcomeId { get; protected set; }
+    public PredictionOutcomeId? WinningOutcomeId { get; protected set; }
     /// <summary>
     /// <inheritdoc cref="EndPredictionRequestData"/>
     /// Use this constructor to use a custom update status (e.g., if a new status is added to Twitch API and isn't available on the <see cref="UpdateChatPredictionStatus"/> class).
@@ -93,25 +92,4 @@ public record EndPredictionRequestData
 
     protected EndPredictionRequestData(UpdateChatPredictionStatus status)
         => Status = status;
-}
-
-/// <summary>
-/// Contains static definitions for possible statuses for API updated predictions.
-/// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<UpdateChatPredictionStatus, string>))]
-public record UpdateChatPredictionStatus(string Value)
-    : ValueBackedEnum<string>(Value)
-{
-    /// <summary>
-    /// The winning outcome is determined and the Channel Points are distributed to the viewers who predicted the correct outcome.
-    /// </summary>
-    public static UpdateChatPredictionStatus Resolved { get; } = new("RESOLVED");
-    /// <summary>
-    /// The broadcaster is canceling the prediction and sending refunds to the participants.
-    /// </summary>
-    public static UpdateChatPredictionStatus Cancelled { get; } = new("CANCELLED");
-    /// <summary>
-    /// The broadcaster is locking the prediction, which means viewers may no longer make predictions.
-    /// </summary>
-    public static UpdateChatPredictionStatus Locked { get; } = new("LOCKED");
 }
