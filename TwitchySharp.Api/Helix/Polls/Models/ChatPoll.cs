@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
 
@@ -12,19 +13,19 @@ public record ChatPoll
     /// <summary>
     /// The id of the poll.
     /// </summary>
-    public required string Id { get; init; }
+    public required PollId Id { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The display name of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The question that viewers are voting on.
     /// This may be up to 60 characters.
