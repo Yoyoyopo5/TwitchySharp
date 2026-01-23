@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -30,5 +31,5 @@ public readonly record struct CharityAmount
     /// <summary>
     /// The ISO-4217 three-letter currency code that identifies the type of currency in value.
     /// </summary>
-    public required string Currency { get; init; }
+    public required CurrencyCode Currency { get; init; }
 }
