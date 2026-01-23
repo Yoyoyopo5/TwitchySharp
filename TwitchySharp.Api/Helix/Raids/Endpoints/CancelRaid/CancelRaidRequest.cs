@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Raids;
 /// <summary>
@@ -19,19 +20,30 @@ public record CancelRaidRequest : TwitchHelixRequest<CancelRaidResponse>
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageRaids"/>.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to cancel a pending raid for.</param>
+    /// <param name="parameters">The request parameters.</param>
     public CancelRaidRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        CancelRaidRequestParameters parameters
         ) : base(
             "/raids",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="CancelRaidRequest"/>.
+/// </summary>
+public record CancelRaidRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to cancel a pending raid for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
