@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api", "Twitchy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Helpers", "TwitchySharp.Helpers\TwitchySharp.Helpers.csproj", "{3714BEF2-38A0-488F-B3DC-681156A45766}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api.Tests.Integration", "TwitchySharp.Api.Tests.Integration\TwitchySharp.Api.Tests.Integration.csproj", "{05BC92F1-60BD-463A-9B1A-A91E7EF71B3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Api.Tests.E2E", "TwitchySharp.Api.Tests.E2E\TwitchySharp.Api.Tests.E2E.csproj", "{05BC92F1-60BD-463A-9B1A-A91E7EF71B3F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchySharp.Helpers.Tests.Unit", "TwitchySharp.Helpers.Tests.Unit\TwitchySharp.Helpers.Tests.Unit.csproj", "{B62FF9FB-9A4D-4E6F-B3B3-2ADC2F12709E}"
 EndProject
