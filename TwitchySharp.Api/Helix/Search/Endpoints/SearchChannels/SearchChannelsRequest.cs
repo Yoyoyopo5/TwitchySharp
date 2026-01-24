@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Search;
 /// <summary>
@@ -15,50 +16,59 @@ public record SearchChannelsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="query">
-    /// The query string to search channels with.
-    /// <para>
-    /// The request will return channels where the beginning of the broadcaster’s name or category matches the <paramref name="query"/>.
-    /// The comparison is case insensitive.
-    /// If <paramref name="query"/> is <c>"angel_of_death"</c>, it matches all names that begin with angel_of_death.
-    /// However, if <paramref name="query"/> is a phrase like <c>"angel of death"</c>, it matches to names starting with angelofdeath or names starting with angel_of_death.
-    /// </para>
-    /// </param>
-    /// <param name="liveOnly">
-    /// Determines whether the response includes only channels that are currently streaming live. Defaults to <see langword="false"/>.
-    /// <para>
-    /// The comparison also depends on the value of this parameter.
-    /// If it is <see langword="false"/>, the API matches on the broadcaster’s login (username). 
-    /// However, if it is <see langword="true"/>, the API matches on the broadcaster’s name and category name.
-    /// </para>
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public SearchChannelsRequest(
-        string clientId,
-        string accessToken,
-        string query,
-        bool? liveOnly = null,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        AccessToken accessToken,
+        SearchChannelsRequestParameters parameters
         ) : base(
             "/search/channels",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("query", query)
-                .Add("live_only", liveOnly?.ToString())
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("query", parameters.Query)
+                .Add("live_only", parameters.LiveOnly?.ToString())
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SearchChannelsRequest"/>.
+/// </summary>
+public record SearchChannelsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The query string to search channels with.
+    /// </summary>
+    /// <remarks>
+    /// The request will return channels where the beginning of the broadcaster’s name or category matches the query.
+    /// The comparison is case insensitive.
+    /// If query is <c>"angel_of_death"</c>, it matches all names that begin with angel_of_death.
+    /// However, if query is a phrase like <c>"angel of death"</c>, it matches to names starting with angelofdeath or names starting with angel_of_death.
+    /// </remarks>
+    public required string Query { get; set; }
+    /// <summary>
+    /// Determines whether the response includes only channels that are currently streaming live.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to <see langword="false"/>.
+    /// The comparison also depends on the value of this parameter.
+    /// If it is <see langword="false"/>, the API matches on the broadcaster’s login (username). 
+    /// However, if it is <see langword="true"/>, the API matches on the broadcaster’s name and category name.
+    /// </remarks>
+    public bool? LiveOnly { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

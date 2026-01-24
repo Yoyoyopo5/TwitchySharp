@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Web;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Search;
 /// <summary>
@@ -21,32 +22,42 @@ public record SearchCategoriesRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="query">The search string.</param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value. 
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public SearchCategoriesRequest(
-        string clientId,
-        string accessToken,
-        string query,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        AccessToken accessToken,
+        SearchCategoriesRequestParameters parameters
         ) : base(
             "/search/categories",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("query", HttpUtility.UrlEncode(query))
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("query", parameters.Query)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SearchCategoriesRequest"/>.
+/// </summary>
+public record SearchCategoriesRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The search string.
+    /// </summary>
+    public required string Query { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

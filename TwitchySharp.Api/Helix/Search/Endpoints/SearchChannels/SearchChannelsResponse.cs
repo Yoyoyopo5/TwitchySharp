@@ -3,6 +3,7 @@
 /// Contains a list of found channels.
 /// </summary>
 public record SearchChannelsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of channels.

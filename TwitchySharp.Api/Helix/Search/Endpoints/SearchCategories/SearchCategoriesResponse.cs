@@ -3,6 +3,7 @@
 /// Contains a list of found categories.
 /// </summary>
 public record SearchCategoriesResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of categories.
