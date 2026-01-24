@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using TwitchySharp.Helpers;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Shared;
 public static class JsonConfig
@@ -14,6 +15,6 @@ public static class JsonConfig
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, 
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull, // This should be okay for writing optional params in requests, if something gets screwed up we can probably use an attribute to fix it for that case.
-        Converters = { new ValueBackedEnumConverterFactory() }
+        Converters = { new ValueBackedEnumConverterFactory(), new IanaTimeZoneJsonConverter() }
     };
 }
