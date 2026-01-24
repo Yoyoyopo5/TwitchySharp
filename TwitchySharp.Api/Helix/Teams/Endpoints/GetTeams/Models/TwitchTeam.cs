@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Teams;
 
@@ -14,11 +15,11 @@ public record TwitchTeam
     /// <summary>
     /// A URL to the team’s background image.
     /// </summary>
-    public required string BackgroundImageUrl { get; init; }
+    public required Uri BackgroundImageUrl { get; init; }
     /// <summary>
     /// A URL to the team’s banner.
     /// </summary>
-    public required string Banner { get; init; }
+    public required Uri Banner { get; init; }
     /// <summary>
     /// The date and time when the team was created.
     /// </summary>
@@ -35,7 +36,7 @@ public record TwitchTeam
     /// <summary>
     /// A URL to a thumbnail image of the team’s logo.
     /// </summary>
-    public required string ThumbnailUrl { get; init; }
+    public required Uri ThumbnailUrl { get; init; }
     /// <summary>
     /// The team’s name.
     /// </summary>
@@ -47,5 +48,5 @@ public record TwitchTeam
     /// <summary>
     /// The id of the team.
     /// </summary>
-    public required string Id { get; init; }
+    public required TeamId Id { get; init; }
 }

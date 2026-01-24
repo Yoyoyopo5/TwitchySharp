@@ -1,8 +1,10 @@
-﻿namespace TwitchySharp.Api.Helix.Teams;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Teams;
 
 public record TeamMember
 {
-    public required string UserId { get; init; }
-    public required string UserLogin { get; init; }
-    public required string UserName { get; init; }
+    public required UserId UserId { get; init; }
+    public required UserLogin UserLogin { get; init; }
+    public required UserName UserName { get; init; }
 }
