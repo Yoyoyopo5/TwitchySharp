@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 /// <summary>
@@ -18,25 +19,38 @@ public record CheckUserSubscriptionRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadSubscriptions"/>, or an app access token if the application is an extension and the broadcaster has granted <see cref="Scope.UserReadSubscriptions"/> from within the Twitch Extensions manager.</param>
-    /// <param name="broadcasterId">The user id of the broadcaster that the subscription is to.</param>
-    /// <param name="userId">
-    /// The id of the user to get the subscription for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public CheckUserSubscriptionRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string userId
+        ClientId clientId,
+        AccessToken accessToken,
+        CheckUserSubscriptionRequestParameters parameters
         ) : base(
             "/subscriptions/user",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="CheckUserSubscriptionRequest"/>.
+/// </summary>
+public record CheckUserSubscriptionRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster that the subscription is to.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the user to get the subscription for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token.
+    /// </remarks>
+    public required UserId UserId { get; set; }
 }
