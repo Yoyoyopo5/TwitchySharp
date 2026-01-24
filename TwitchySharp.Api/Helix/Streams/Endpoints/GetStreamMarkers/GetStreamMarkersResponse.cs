@@ -3,6 +3,7 @@
 /// Contains a list of stream markers.
 /// </summary>
 public record GetStreamMarkersResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of markers grouped by the user that created the marks.

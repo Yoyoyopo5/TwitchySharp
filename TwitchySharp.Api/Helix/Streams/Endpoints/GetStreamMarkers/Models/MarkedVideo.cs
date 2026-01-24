@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Streams;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Streams;
 
 /// <summary>
 /// Contains information about a video with markers.
@@ -8,7 +10,7 @@ public record MarkedVideo
     /// <summary>
     /// The id of the video.
     /// </summary>
-    public required string VideoId { get; init; }
+    public required VideoId VideoId { get; init; }
     /// <summary>
     /// The markers for the video.
     /// </summary>

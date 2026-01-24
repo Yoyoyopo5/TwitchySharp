@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
@@ -34,8 +35,8 @@ public record CreateStreamMarkerRequest : TwitchHelixRequest<CreateStreamMarkerR
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageBroadcast"/>.</param>
     /// <param name="marker">The marker to create.</param>
     public CreateStreamMarkerRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         CreateStreamMarkerRequestData marker
         ) : base(
             "/streams/markers",
@@ -57,7 +58,7 @@ public record CreateStreamMarkerRequestData
     /// The user id of the broadcaster to create a marker for.
     /// This user or one of this broadcaster's editors must have created the user access token used in the <see cref="CreateStreamMarkerRequest"/>.
     /// </summary>
-    public required string UserId { get; set; }
+    public required UserId UserId { get; set; }
     /// <summary>
     /// A short description of the marker to help the user remember why they marked the location. 
     /// The maximum length of the description is 140 characters.

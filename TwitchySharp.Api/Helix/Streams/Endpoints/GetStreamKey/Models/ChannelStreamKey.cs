@@ -8,5 +8,5 @@ public record ChannelStreamKey
     /// <summary>
     /// The broadcaster's stream key.
     /// </summary>
-    public required string StreamKey { get; init; }
+    public required StreamKey StreamKey { get; init; }
 }

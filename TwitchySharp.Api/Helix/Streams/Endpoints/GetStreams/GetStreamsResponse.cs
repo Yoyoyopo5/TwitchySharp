@@ -3,6 +3,7 @@
 /// Contains a list of found active streams.
 /// </summary>
 public record GetStreamsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The active streams that matched the request query.

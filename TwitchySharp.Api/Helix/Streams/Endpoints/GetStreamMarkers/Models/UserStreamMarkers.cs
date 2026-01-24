@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Streams;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Streams;
 
 /// <summary>
 /// Contains a list of stream markers made by a specific user on a specific video.
@@ -8,15 +10,15 @@ public record UserStreamMarkers
     /// <summary>
     /// The id of the user that created the markers.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The display name of the user that created the markers.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The login (username) of the user that created the markers.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The marked video.
     /// </summary>
