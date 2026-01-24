@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -25,8 +26,8 @@ public record CreateChannelStreamScheduleSegmentRequest
     /// </param>
     /// <param name="scheduleSegment">The segment to add.</param>
     public CreateChannelStreamScheduleSegmentRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         string broadcasterId,
         CreateChannelStreamScheduleSegmentRequestData scheduleSegment
         ) : base(
@@ -50,16 +51,18 @@ public record CreateChannelStreamScheduleSegmentRequestData
     /// <summary>
     /// The date and time that the broadcast segment starts.
     /// </summary>
-    public required DateTimeOffset StartTime { get; set; } // Need converter here?
+    public required DateTimeOffset StartTime { get; set; }
     /// <summary>
-    /// The time zone where the broadcast takes place. 
-    /// Specify the time zone using <see href="https://www.iana.org/time-zones">IANA time zone database</see> format (for example, <c>"America/New_York"</c>).
+    /// The time zone where the broadcast takes place.
     /// </summary>
-    public required string Timezone { get; set; }
+    [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
+    public required TimeZoneInfo Timezone { get; set; }
     /// <summary>
     /// The length of time that the broadcast is scheduled to run. 
-    /// The duration must be in the range 30 through 1380 (23 hours).
     /// </summary>
+    /// <remarks>
+    /// The duration can range from 30 minutes to 23 hours.
+    /// </remarks>
     [JsonConverter(typeof(MinutesTimeSpanJsonConverter))]
     public required TimeSpan Duration { get; set; }
     /// <summary>
@@ -71,7 +74,7 @@ public record CreateChannelStreamScheduleSegmentRequestData
     /// <summary>
     /// The id of the category for the scheduled stream segment.
     /// </summary>
-    public string? CategoryId { get; set; }
+    public GameId? CategoryId { get; set; }
     /// <summary>
     /// The title for the scheduled broadcast.
     /// This may contain up to a maximum of 140 characters.

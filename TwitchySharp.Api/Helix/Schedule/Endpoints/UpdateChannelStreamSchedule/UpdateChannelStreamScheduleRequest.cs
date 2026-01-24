@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -18,26 +21,21 @@ public record UpdateChannelStreamScheduleRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to update schedule settings for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="scheduleSettings">The settings to update.</param>
+    /// <param name="parameters">The request parameters.</param>
     public UpdateChannelStreamScheduleRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        UpdateChannelStreamScheduleRequestData scheduleSettings
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateChannelStreamScheduleRequestParameters parameters
         ) : base(
             "/schedule/settings",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("is_vacation_enabled", scheduleSettings.IsVacationEnabled?.ToString())
-                .Add("vacation_start_time", scheduleSettings.VacationStartTime?.ToUniversalTwitchQueryString())
-                .Add("vacation_end_time", scheduleSettings.VacationEndTime?.ToUniversalTwitchQueryString())
-                .Add("timezone", scheduleSettings.Timezone)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("is_vacation_enabled", parameters.IsVacationEnabled?.ToString())
+                .Add("vacation_start_time", parameters.VacationStartTime?.ToUniversalTwitchQueryString())
+                .Add("vacation_end_time", parameters.VacationEndTime?.ToUniversalTwitchQueryString())
+                .Add("timezone", parameters.Timezone?.Id)
             )
     {
         Method = HttpMethod.Patch;
@@ -45,9 +43,9 @@ public record UpdateChannelStreamScheduleRequest
 }
 
 /// <summary>
-/// Used to set a broadcaster's stream schedule settings.
+/// Request parameters for a <see cref="UpdateChannelStreamScheduleRequest"/>.
 /// </summary>
-public record UpdateChannelStreamScheduleRequestData
+public record UpdateChannelStreamScheduleRequestParameters
 {
     /// <summary>
     /// Sets the schedule settings to enable vacation mode.
@@ -55,8 +53,8 @@ public record UpdateChannelStreamScheduleRequestData
     /// <param name="start"><inheritdoc cref="VacationStartTime" path="/summary"/></param>
     /// <param name="end"><inheritdoc cref="VacationEndTime" path="/summary"/></param>
     /// <param name="timezone"><inheritdoc cref="Timezone" path="/summary"/></param>
-    /// <returns>A new instance of <see cref="UpdateChannelStreamScheduleRequestData"/> with vacation mode enabled.</returns>
-    public UpdateChannelStreamScheduleRequestData EnableVacationMode(DateTimeOffset start, DateTimeOffset end, string timezone)
+    /// <returns>A new instance of <see cref="UpdateChannelStreamScheduleRequestParameters"/> with vacation mode enabled.</returns>
+    public UpdateChannelStreamScheduleRequestParameters EnableVacationMode(DateTimeOffset start, DateTimeOffset end, TimeZoneInfo timezone)
         => this with
         {
             IsVacationEnabled = true,
@@ -68,8 +66,8 @@ public record UpdateChannelStreamScheduleRequestData
     /// <summary>
     /// Sets the schedule settings to disable vacation mode.
     /// </summary>
-    /// <returns>A new instance of <see cref="UpdateChannelStreamScheduleRequestData"/> with vacation mode disabled.</returns>
-    public UpdateChannelStreamScheduleRequestData DisableVacationMode()
+    /// <returns>A new instance of <see cref="UpdateChannelStreamScheduleRequestParameters"/> with vacation mode disabled.</returns>
+    public UpdateChannelStreamScheduleRequestParameters DisableVacationMode()
         => this with
         {
             IsVacationEnabled = false,
@@ -77,7 +75,13 @@ public record UpdateChannelStreamScheduleRequestData
             VacationEndTime = null,
             Timezone = null
         };
-
+    /// <summary>
+    /// The user id of the broadcaster (channel) to update schedule settings for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// Determines whether the broadcaster has scheduled a vacation. 
     /// Set to <see langword="true"/> to enable Vacation Mode and add vacation dates, or <see langword="false"/> to cancel a previously scheduled vacation.
@@ -92,8 +96,8 @@ public record UpdateChannelStreamScheduleRequestData
     /// </summary>
     public DateTimeOffset? VacationEndTime { get; private set; }
     /// <summary>
-    /// The time zone that the broadcaster broadcasts from. 
-    /// Specify the time zone using <see href="https://www.iana.org/time-zones">IANA time zone database</see> format (for example, <c>"America/New_York"</c>).
+    /// The time zone that the broadcaster broadcasts from.
     /// </summary>
-    public string? Timezone { get; private set; }
+    [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
+    public TimeZoneInfo? Timezone { get; private set; }
 }
