@@ -10,7 +10,7 @@ public record StreamMarker
     /// <summary>
     /// The id of the marker.
     /// </summary>
-    public required string Id { get; init; }
+    public required StreamMarkerId Id { get; init; }
     /// <summary>
     /// The date and time when the marker was created.
     /// </summary>

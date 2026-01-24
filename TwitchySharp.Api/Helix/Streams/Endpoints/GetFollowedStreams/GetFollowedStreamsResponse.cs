@@ -3,6 +3,7 @@
 /// Contains a list of active streams that a specific user follows.
 /// </summary>
 public record GetFollowedStreamsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of active followed streams.

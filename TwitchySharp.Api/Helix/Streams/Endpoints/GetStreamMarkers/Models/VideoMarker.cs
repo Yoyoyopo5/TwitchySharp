@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Streams;
 
@@ -11,7 +12,7 @@ public record VideoMarker
     /// <summary>
     /// The id of the marker.
     /// </summary>
-    public required string Id { get; init; }
+    public required StreamMarkerId Id { get; init; }
     /// <summary>
     /// The date and time when the marker was created.
     /// </summary>
@@ -22,12 +23,13 @@ public record VideoMarker
     /// </summary>
     public required string Description { get; init; }
     /// <summary>
-    /// The relative offset in seconds of the marker from the beginning of the stream.
+    /// The relative offset of the marker from the beginning of the stream.
     /// </summary>
-    public required int PositionSeconds { get; init; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public required TimeSpan PositionSeconds { get; init; }
     /// <summary>
     /// A URL that can be used to open the video in Twitch Highlighter.
     /// </summary>
     [JsonPropertyName("URL")]
-    public required string Url { get; init; }
+    public required Uri Url { get; init; }
 }

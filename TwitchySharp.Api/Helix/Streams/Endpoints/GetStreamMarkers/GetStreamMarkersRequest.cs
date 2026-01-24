@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
@@ -18,37 +19,21 @@ public record GetStreamMarkersRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.ChannelManageBroadcast"/>.</param>
-    /// <param name="query">The broadcaster or video to get markers for.</param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="before">
-    /// The cursor used to get the previous page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetStreamMarkersRequest(
-        string clientId,
-        string accessToken,
-        StreamMarkersQuery query,
-        int? first = null,
-        string? before = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetStreamMarkersRequestParameters parameters
         ) : base(
             "/streams/markers",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", query.UserId)
-                .Add("video_id", query.VideoId)
-                .Add("first", first?.ToString())
-                .Add("before", before)
-                .Add("after", after)
+                .Add("user_id", parameters.UserId)
+                .Add("video_id", parameters.VideoId)
+                .Add("first", parameters.First?.ToString())
+                .Add("before", parameters.Before?.Value)
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
@@ -59,15 +44,15 @@ public record GetStreamMarkersRequest
 /// Used to query for markers on a specific broadcaster's latest video.
 /// </summary>
 public record BroadcasterStreamMarkersQuery
-    : StreamMarkersQuery
+    : GetStreamMarkersRequestParameters
 {
     /// <summary>
     /// <inheritdoc cref="BroadcasterStreamMarkersQuery"/>
     /// </summary>
     /// <param name="userId">
-    /// <inheritdoc cref="StreamMarkersQuery.UserId" path="/summary"/>
+    /// <inheritdoc cref="GetStreamMarkersRequestParameters.UserId" path="/summary"/>
     /// </param>
-    public BroadcasterStreamMarkersQuery(string userId)
+    public BroadcasterStreamMarkersQuery(UserId userId)
         => UserId = userId;
 }
 
@@ -75,35 +60,49 @@ public record BroadcasterStreamMarkersQuery
 /// Used to query for markers on a specific video.
 /// </summary>
 public record VideoStreamMarkersQuery
-    : StreamMarkersQuery
+    : GetStreamMarkersRequestParameters
 {
     /// <summary>
     /// <inheritdoc cref="VideoStreamMarkersQuery"/>
     /// </summary>
     /// <param name="videoId">
-    /// <inheritdoc cref="StreamMarkersQuery.VideoId" path="/summary"/>
+    /// <inheritdoc cref="GetStreamMarkersRequestParameters.VideoId" path="/summary"/>
     /// </param>
-    public VideoStreamMarkersQuery(string videoId)
+    public VideoStreamMarkersQuery(VideoId videoId)
         => VideoId = videoId;
 }
 
 /// <summary>
-/// Used to set a query for a <see cref="GetStreamMarkersRequest"/>.
+/// Request parameters for a <see cref="GetStreamMarkersRequest"/>.
 /// Use derived classes <see cref="BroadcasterStreamMarkersQuery"/> and <see cref="VideoStreamMarkersQuery"/> to obey mutually exclusivity rules.
 /// </summary>
-public record StreamMarkersQuery
+public record GetStreamMarkersRequestParameters
+    : IPageableRequest
 {
     /// <summary>
     /// The user id of the broadcaster to get markers for.
     /// If set, the request will return markers from this user’s most recent video. 
     /// This user or one of this broadcaster's editors must have created the user access token used in the <see cref="GetStreamMarkersRequest"/>.
     /// </summary>
-    public string? UserId { get; protected set; }
+    public UserId? UserId { get; protected set; }
     /// <summary>
     /// The video id of the video to get markers for.
     /// If set, the request will return marks from this specific video.
     /// The broadcaster who created the video or one of the broadcaster's editors must have created the user access token used in the <see cref="GetStreamMarkersRequest"/>.
     /// </summary>
-    public string? VideoId { get; protected set; }
-    protected StreamMarkersQuery() { }
+    public VideoId? VideoId { get; protected set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
+    /// <summary>
+    /// The cursor of the result to get results before.
+    /// </summary>
+    public PaginationCursor? Before { get; set; }
+    protected GetStreamMarkersRequestParameters() { }
 }
