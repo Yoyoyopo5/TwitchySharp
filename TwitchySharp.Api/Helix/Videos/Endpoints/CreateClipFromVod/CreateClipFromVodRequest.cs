@@ -2,6 +2,7 @@
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Videos;
 /// <summary>
@@ -21,11 +22,11 @@ public record CreateClipFromVodRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.</param>
-    /// <param name="queryParameters">The parameters of the request.</param>
+    /// <param name="queryParameters">The request parameters.</param>
     public CreateClipFromVodRequest(
-        string clientId,
-        string accessToken,
-        CreateClipFromVodRequestQueryParameters queryParameters
+        ClientId clientId,
+        AccessToken accessToken,
+        CreateClipFromVodRequestParameters queryParameters
         )
         : base(
             "/videos/clips",
@@ -47,22 +48,22 @@ public record CreateClipFromVodRequest
 /// <summary>
 /// Query parameters for a <see cref="CreateClipFromVodRequest"/>.
 /// </summary>
-public record CreateClipFromVodRequestQueryParameters
+public record CreateClipFromVodRequestParameters
 {
     /// <summary>
     /// The user id of the editor of the channel to create a clip for.
     /// This should be the same user that created the user access token in the request,
     /// and it can be the broadcaster.
     /// </summary>
-    public required string EditorId { get; set; }
+    public required UserId EditorId { get; set; }
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.
     /// </summary>
-    public required string BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; set; }
     /// <summary>
     /// The id of the VOD to create a clip for.
     /// </summary>
-    public required string VodId { get; set; }
+    public required VideoId VodId { get; set; }
     /// <summary>
     /// The end time of clip to create, measured from the start of the VOD.
     /// </summary>
