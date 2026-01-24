@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Search;
 
@@ -19,17 +20,17 @@ public record TwitchChannel
     /// <summary>
     /// The login (username) of the broadcaster.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster.
     /// This is what is displayed to viewers as the name of the channel.
     /// </summary>
-    public required string DisplayName { get; init; }
+    public required UserName DisplayName { get; init; }
     /// <summary>
     /// The id of the game that the broadcaster is playing or last played.
     /// If the broadcaster hasn't streamed or has streamed without a category selected, this is an empty string.
     /// </summary>
-    public required string GameId { get; init; }
+    public required GameId GameId { get; init; }
     /// <summary>
     /// The name of the game that the broadcaster is playing or last played.
     /// If the broadcaster hasn't streamed or has streamed without a category selected, this is an empty string.
@@ -38,7 +39,7 @@ public record TwitchChannel
     /// <summary>
     /// The user id of the broadcaster.
     /// </summary>
-    public required string Id { get; init; }
+    public required UserId Id { get; init; }
     /// <summary>
     /// Indicates whether the broadcaster is streaming live. 
     /// Is <see langword="true"/> if the broadcaster is streaming live; otherwise, <see langword="false"/>.
@@ -51,7 +52,7 @@ public record TwitchChannel
     /// <summary>
     /// A URL to a thumbnail of the broadcaster’s profile image.
     /// </summary>
-    public required string ThumbnailUrl { get; init; }
+    public required Uri ThumbnailUrl { get; init; }
     /// <summary>
     /// The stream’s title. 
     /// This is an empty string if the broadcaster hasn't set a title.

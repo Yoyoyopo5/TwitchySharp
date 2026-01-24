@@ -1,4 +1,7 @@
-﻿namespace TwitchySharp.Api.Helix.Search;
+﻿using System;
+using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Search;
 
 /// <summary>
 /// Contains information about a specific Twitch category (game).
@@ -8,7 +11,7 @@ public record TwitchCategory
     /// <summary>
     /// A URL to an image of the game’s box art or streaming category.
     /// </summary>
-    public required string BoxArtUrl { get; init; }
+    public required Uri BoxArtUrl { get; init; }
     /// <summary>
     /// The name of the game or category.
     /// </summary>
@@ -16,5 +19,5 @@ public record TwitchCategory
     /// <summary>
     /// The id of the category.
     /// </summary>
-    public required string Id { get; init; }
+    public required GameId Id { get; init; }
 }
