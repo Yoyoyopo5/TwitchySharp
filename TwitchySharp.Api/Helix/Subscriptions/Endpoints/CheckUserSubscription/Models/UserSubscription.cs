@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 
@@ -8,17 +9,17 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 public record UserSubscription
 {
     /// <inheritdoc cref="BroadcasterSubscriber.BroadcasterId"/>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.BroadcasterLogin"/>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.BroadcasterName"/>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterId"/>
-    public string? GifterId { get; init; }
+    public UserId? GifterId { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterLogin"/>
-    public string? GifterLogin { get; init; }
+    public UserLogin? GifterLogin { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.GifterName"/>
-    public string? GifterName { get; init; }
+    public UserName? GifterName { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.IsGift"/>
     public required bool IsGift { get; init; }
     /// <inheritdoc cref="BroadcasterSubscriber.Tier"/>

@@ -3,6 +3,7 @@
 /// Contains a list of a specific broadcaster's subscribers.
 /// </summary>
 public record GetBroadcasterSubscriptionsResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The list of subscribers.
@@ -16,8 +17,10 @@ public record GetBroadcasterSubscriptionsResponse
     public required int Total { get; init; }
     /// <summary>
     /// The current number of subscriber points earned by this broadcaster. 
+    /// </summary>
+    /// <remarks>
     /// Points are based on the subscription tier of each user that subscribes to this broadcaster. 
     /// For example, a Tier 1 subscription is worth 1 point, Tier 2 is worth 2 points, and Tier 3 is worth 6 points.
-    /// </summary>
+    /// </remarks>
     public required int Points { get; init; }
 }
