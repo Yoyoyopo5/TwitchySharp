@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -21,8 +22,8 @@ public record GetUserExtensionsRequest
     /// The user who created the token is the broadcaster to get extensions for.
     /// </param>
     public GetUserExtensionsRequest(
-        string clientId,
-        string accessToken
+        ClientId clientId,
+        UserAccessToken accessToken
         ) : base(
             "/users/extensions/list",
             clientId,

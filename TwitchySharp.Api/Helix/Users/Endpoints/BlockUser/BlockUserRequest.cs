@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
-using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
-/// Blocks the specified user from interacting with or having contact with the broadcaster.
+/// Blocks the specified user from interacting with or having contact with the user.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.
@@ -18,23 +18,19 @@ public record BlockUserRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.</param>
-    /// <param name="targetUserId">The id of the user to block. If the user is already blocked, the request is ignored.</param>
-    /// <param name="sourceContext">The location where the harassment took place that is causing the brodcaster to block the user.</param>
-    /// <param name="reason">The reason that the broadcaster is blocking the user.</param>
+    /// <param name="parameters">The request parameters.</param>
     public BlockUserRequest(
-        string clientId,
-        string accessToken,
-        string targetUserId,
-        BlockUserContext? sourceContext = null,
-        BlockUserReason? reason = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        BlockUserRequestParameters parameters
         ) : base(
             "/users/blocks",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("target_user_id", targetUserId)
-                .Add("source_context", sourceContext?.Value)
-                .Add("reason", reason?.Value)
+                .Add("target_user_id", parameters.TargetUserId)
+                .Add("source_context", parameters.SourceContext?.Value)
+                .Add("reason", parameters.Reason?.Value)
             )
     {
         Method = HttpMethod.Put;
@@ -42,26 +38,23 @@ public record BlockUserRequest
 }
 
 /// <summary>
-/// Contains static definitions for block contexts.
+/// Request parameters for a <see cref="BlockUserRequest"/>.
 /// </summary>
-/// <param name="Value">The string value of the block context.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<BlockUserContext, string>))]
-public record BlockUserContext(string Value)
-    : ValueBackedEnum<string>(Value)
+public record BlockUserRequestParameters
 {
-    public static BlockUserContext Chat { get; } = new("chat");
-    public static BlockUserContext Whisper { get; } = new("whisper");
-}
-
-/// <summary>
-/// Contains static definitions for block reasons.
-/// </summary>
-/// <param name="Value">The string value of the block reason.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<BlockUserReason, string>))]
-public record BlockUserReason(string Value)
-    : ValueBackedEnum<string>(Value)
-{
-    public static BlockUserReason Harassment { get; } = new("harassment");
-    public static BlockUserReason Spam { get; } = new("spam");
-    public static BlockUserReason Other { get; } = new("other");
+    /// <summary>
+    /// The id of the user to block.
+    /// </summary>
+    /// <remarks>
+    /// If the user is already blocked, the request is ignored.
+    /// </remarks>
+    public required UserId TargetUserId { get; set; }
+    /// <summary>
+    /// The location where the harassment took place that is causing the brodcaster to block the user.
+    /// </summary>
+    public BlockUserContext? SourceContext { get; set; }
+    /// <summary>
+    /// The reason that the broadcaster is blocking the user.
+    /// </summary>
+    public BlockUserReason? Reason { get; set; }
 }

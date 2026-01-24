@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Users;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Users;
 
 /// <summary>
 /// Contains information about a specific blocked user.
@@ -8,13 +10,13 @@ public record BlockedUser
     /// <summary>
     /// The user id of the blocked user.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The login (username) of the blocked user.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The display name of the blocked user.
     /// </summary>
-    public required string DisplayName { get; init; }
+    public required UserName DisplayName { get; init; }
 }

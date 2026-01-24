@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -27,8 +28,8 @@ public record UpdateUserExtensionsRequest
     /// </param>
     /// <param name="extensions">The extensions to update.</param>
     public UpdateUserExtensionsRequest(
-        string clientId,
-        string accessToken,
+        ClientId clientId,
+        UserAccessToken accessToken,
         ExtensionsConfiguration extensions
         ) : base(
             "/users/extensions",
@@ -103,14 +104,14 @@ internal record UpdateUserExtensionsMaps
 /// </summary>
 /// <param name="Id">The id of the extension.</param>
 /// <param name="Version">The version of the extension.</param>
-internal record ExtensionIdentifier(string Id, string Version);
+internal readonly record struct ExtensionIdentifier(ExtensionId Id, ExtensionVersion Version);
 
 /// <summary>
 /// Used to serialize an extension configuration.
 /// </summary>
 /// /// <param name="Id">The id of the extension.</param>
 /// <param name="Version">The version of the extension.</param>
-public record UserExtensionUpdate(string Id, string Version)
+public record UserExtensionUpdate(ExtensionId Id, ExtensionVersion Version)
     : UpdateExtensionParameters();
 
 /// <summary>
@@ -118,7 +119,7 @@ public record UserExtensionUpdate(string Id, string Version)
 /// </summary>
 /// /// <param name="Id">The id of the extension.</param>
 /// <param name="Version">The version of the extension.</param>
-public record UserComponentExtensionUpdate(string Id, string Version)
+public record UserComponentExtensionUpdate(ExtensionId Id, ExtensionVersion Version)
     : UpdateComponentExtensionParameters();
 
 internal static class InstalledExtensionExtensions
@@ -206,18 +207,18 @@ public record ExtensionsConfigurationType<T>
     /// <param name="extensionVersion">The version of the extension.</param>
     /// <param name="config">The configuration to update the extension to.</param>
     /// <returns>A new instance that includes the updated configuration.</returns>
-    public ExtensionsConfigurationType<T> ConfigureExtension(string extensionId, string extensionVersion, T config)
+    public ExtensionsConfigurationType<T> ConfigureExtension(ExtensionId extensionId, ExtensionVersion extensionVersion, T config)
         => new(_extensions.SetItem(new ExtensionIdentifier(extensionId, extensionVersion), config));
 
     /// <summary>
-    /// <inheritdoc cref="ConfigureExtension(string, string, T)"/>
+    /// <inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)"/>
     /// </summary>
     /// <param name="installedExtension">
     /// The extension to configure. 
     /// This is returned from a <see cref="GetUserExtensionsRequest"/>.
     /// </param>
-    /// <param name="config"><inheritdoc cref="ConfigureExtension(string, string, T)" path="/param[@name='config']"/></param>
-    /// <returns><inheritdoc cref="ConfigureExtension(string, string, T)"/></returns>
+    /// <param name="config"><inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)" path="/param[@name='config']"/></param>
+    /// <returns><inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)"/></returns>
     public ExtensionsConfigurationType<T> ConfigureExtension(InstalledExtension installedExtension, T config)
         => new(_extensions.SetItem(installedExtension.ToIdentifier(), config));
 }
