@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Teams;
 
@@ -10,19 +11,19 @@ public record BroadcasterTeam
     /// <summary>
     /// The user id of the broadcaster.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <inheritdoc cref="TwitchTeam.BackgroundImageUrl"/>
-    public required string BackgroundImageUrl { get; init; }
+    public required Uri BackgroundImageUrl { get; init; }
     /// <inheritdoc cref="TwitchTeam.Banner"/>
-    public required string Banner { get; init; }
+    public required Uri Banner { get; init; }
     /// <inheritdoc cref="TwitchTeam.CreatedAt"/>
     public required DateTimeOffset CreatedAt { get; init; }
     /// <inheritdoc cref="TwitchTeam.UpdatedAt"/>
@@ -30,11 +31,11 @@ public record BroadcasterTeam
     /// <inheritdoc cref="TwitchTeam.Info"/>
     public required string Info { get; init; }
     /// <inheritdoc cref="TwitchTeam.ThumbnailUrl"/>
-    public required string ThumbnailUrl { get; init; }
+    public required Uri ThumbnailUrl { get; init; }
     /// <inheritdoc cref="TwitchTeam.TeamName"/>
     public required string TeamName { get; init; }
-    /// <inheritdoc cref="TwitchTeam.Name"/>
+    /// <inheritdoc cref="TwitchTeam.TeamDisplayName"/>
     public required string TeamDisplayName { get; init; }
     /// <inheritdoc cref="TwitchTeam.Id"/>
-    public required string Id { get; init; }
+    public required TeamId Id { get; init; }
 }

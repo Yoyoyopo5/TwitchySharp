@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Teams;
 /// <summary>
@@ -15,21 +16,21 @@ public record GetTeamsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="query">
-    /// The query to search for teams.
+    /// <param name="parameters">
+    /// The request parameters.
     /// Use an instance of <see cref="TeamsQueryById"/> or <see cref="TeamsQueryByName"/> depending on how you want to find the team.
     /// </param>
     public GetTeamsRequest(
-        string clientId,
-        string accessToken,
-        TeamsQuery query
+        ClientId clientId,
+        AccessToken accessToken,
+        GetTeamsRequestParameters parameters
         ) : base(
             "/teams",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("name", query.Name)
-                .Add("id", query.Id)
+                .Add("name", parameters.Name)
+                .Add("id", parameters.Id)
             )
     {
         Method = HttpMethod.Get;
@@ -37,9 +38,12 @@ public record GetTeamsRequest
 }
 
 /// <summary>
-/// Use derived classes <see cref="TeamsQueryById"/> and <see cref="TeamsQueryByName"/> to create a teams query.
+/// Request parameters for a <see cref="GetTeamsRequest"/>.
 /// </summary>
-public record TeamsQuery
+/// <remarks>
+/// Use derived classes <see cref="TeamsQueryById"/> and <see cref="TeamsQueryByName"/> to create a teams query.
+/// </remarks>
+public record GetTeamsRequestParameters
 {
     /// <summary>
     /// The name of the team to get. 
@@ -48,21 +52,21 @@ public record TeamsQuery
     /// <summary>
     /// The id of the team to get.
     /// </summary>
-    public string? Id { get; protected set; }
-    protected TeamsQuery() { }
+    public TeamId? Id { get; protected set; }
+    protected GetTeamsRequestParameters() { }
 }
 
 /// <summary>
 /// Query for a team by team name.
 /// </summary>
 public record TeamsQueryByName
-    : TeamsQuery
+    : GetTeamsRequestParameters
 {
     /// <summary>
     /// <inheritdoc cref="TeamsQueryByName"/>
     /// </summary>
     /// <param name="name">
-    /// <inheritdoc cref="TeamsQuery" path="/summary"/>
+    /// <inheritdoc cref="GetTeamsRequestParameters" path="/summary"/>
     /// </param>
     public TeamsQueryByName(string name)
         => Name = name;
@@ -72,14 +76,14 @@ public record TeamsQueryByName
 /// Query for a team by team id.
 /// </summary>
 public record TeamsQueryById
-    : TeamsQuery
+    : GetTeamsRequestParameters
 {
     /// <summary>
     /// <inheritdoc cref="TeamsQueryById"/>
     /// </summary>
     /// <param name="teamId">
-    /// <inheritdoc cref="TeamsQuery.Id" path="/summary"/>
+    /// <inheritdoc cref="GetTeamsRequestParameters.Id" path="/summary"/>
     /// </param>
-    public TeamsQueryById(string teamId)
+    public TeamsQueryById(TeamId teamId)
         => Id = teamId;
 }
