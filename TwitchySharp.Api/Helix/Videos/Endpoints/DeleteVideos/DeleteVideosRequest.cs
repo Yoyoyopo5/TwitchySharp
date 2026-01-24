@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Videos;
 /// <summary>
@@ -19,23 +21,34 @@ public record DeleteVideosRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageVideos"/>.</param>
-    /// <param name="ids">
-    /// The ids of the videos to delete.
-    /// You can delete a maximum of 5 videos per request. Ignores invalid video IDs.
-    /// If the user doesn’t have permission to delete one of the videos in the list, none of the videos are deleted.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public DeleteVideosRequest(
-        string clientId,
-        string accessToken,
-        IEnumerable<string> ids
+        ClientId clientId,
+        UserAccessToken accessToken,
+        DeleteVideosRequestParameters parameters
         ) : base(
             "/videos",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("id", ids)
+                .Add("id", parameters.Ids.Select(x => x.Value))
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="DeleteVideosRequest"/>.
+/// </summary>
+public record DeleteVideosRequestParameters
+{
+    /// <summary>
+    /// The ids of the videos to delete.
+    /// </summary>
+    /// <remarks>
+    /// You can delete a maximum of 5 videos per request. Ignores invalid video IDs.
+    /// If the user doesn’t have permission to delete one of the videos in the list, none of the videos are deleted.
+    /// </remarks>
+    public required IEnumerable<VideoId> Ids { get; set; }
 }

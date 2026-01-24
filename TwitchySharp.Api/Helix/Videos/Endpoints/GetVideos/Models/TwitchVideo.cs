@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Videos;
 
@@ -14,24 +15,24 @@ public record TwitchVideo
     /// <summary>
     /// The id of the video.
     /// </summary>
-    public required string Id { get; init; }
+    public required VideoId Id { get; init; }
     /// <summary>
     /// The id of the stream that the video originated from.
     /// If the <see cref="Type"/> is not <see cref="TwitchVideoType.Archive"/>, this is set to <see langword="null"/>.
     /// </summary>
-    public string? StreamId { get; init; }
+    public StreamId? StreamId { get; init; }
     /// <summary>
     /// The user id of the broadcaster who owns the video.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster who owns the video.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster who owns the video.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The title of the video.
     /// </summary>
@@ -51,7 +52,7 @@ public record TwitchVideo
     /// <summary>
     /// The url of the video.
     /// </summary>
-    public required string Url { get; init; }
+    public required Uri Url { get; init; }
     /// <summary>
     /// A templated url used to get a thumbnail image of the video.
     /// </summary>
