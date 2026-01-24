@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Whispers;
 /// <summary>
@@ -28,30 +29,43 @@ public record SendWhisperRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageWhispers"/>.</param>
-    /// <param name="fromUserId">
-    /// The id of the user sending the whisper.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="toUserId">The id of the user receiving the whisper.</param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="whisper">The whisper to send.</param>
     public SendWhisperRequest(
-        string clientId,
-        string accessToken,
-        string fromUserId,
-        string toUserId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        SendWhisperRequestParameters parameters,
         SendWhisperRequestData whisper
         ) : base(
             "/whispers",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("from_user_id", fromUserId)
-                .Add("to_user_id", toUserId)
+                .Add("from_user_id", parameters.FromUserId)
+                .Add("to_user_id", parameters.ToUserId)
             )
     {
         Method = HttpMethod.Post;
         ContentObject = whisper;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="SendWhisperRequest"/>.
+/// </summary>
+public record SendWhisperRequestParameters
+{
+    /// <summary>
+    /// The id of the user sending the whisper.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId FromUserId { get; set; }
+    /// <summary>
+    /// The id of the user receiving the whisper.
+    /// </summary>
+    public required UserId ToUserId { get; set; }
 }
 
 /// <summary>
@@ -61,9 +75,11 @@ public record SendWhisperRequestData
 {
     /// <summary>
     /// The message to send.
+    /// </summary>
+    /// <remarks>
     /// This cannot be an empty string.
     /// The message can be up to 10,000 characters if the to user has whispered the from user before, otherwise, the message can only be 500 characters long.
     /// Messages that exceed the maximum length are truncated.
-    /// </summary>
+    /// </remarks>
     public required string Message { get; set; }
 }
