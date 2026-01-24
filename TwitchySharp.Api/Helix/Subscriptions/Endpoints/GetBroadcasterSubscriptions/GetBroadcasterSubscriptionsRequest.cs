@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 /// <summary>
@@ -19,49 +21,69 @@ public record GetBroadcasterSubscriptionsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadSubscriptions"/>, or an app access token if this application is an extension and the broadcaster has granted <see cref="Scope.ChannelReadSubscriptions"/> from within the Twitch Extensions manager.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster to get subscribers for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="userIds">
-    /// Filter the list of subscribers by user id.
-    /// You may specify a maximum of 100 subscribers.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="before">
-    /// The cursor used to get the previous page of results. 
-    /// Do not specify if you set <paramref name="userIds"/>. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// Do not specify if you set <paramref name="userIds"/>. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetBroadcasterSubscriptionsRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        IEnumerable<string>? userIds = null,
-        int? first = null,
-        string? before = null,
-        string? after = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetBroadcasterSubscriptionsRequestParameters parameters
         ) : base(
             "/subscriptions",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("user_id", userIds)
-                .Add("first", first?.ToString())
-                .Add("before", before)
-                .Add("after", after)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("user_id", parameters.UserIds?.Select(x => x.Value))
+                .Add("first", parameters.First?.ToString())
+                .Add("before", parameters.Before?.Value)
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetBroadcasterSubscriptionsRequest"/>.
+/// </summary>
+public record GetBroadcasterSubscriptionsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The user id of the broadcaster to get subscribers for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// Filter the list of subscribers by user id.
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 100 subscribers.
+    /// </remarks>
+    public IEnumerable<UserId>? UserIds { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    /// <summary>
+    /// The cursor of the result to get results before.
+    /// </summary>
+    /// <remarks>
+    /// Do not specify if you set userIds. 
+    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
+    /// </remarks>
+    public PaginationCursor? Before { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="IPageableRequest.After"/>
+    /// </summary>
+    /// <remarks>
+    /// <inheritdoc cref="IPageableRequest.After"/>
+    /// Do not specify if you set userIds. 
+    /// </remarks>
+    public PaginationCursor? After { get; set; }
 }

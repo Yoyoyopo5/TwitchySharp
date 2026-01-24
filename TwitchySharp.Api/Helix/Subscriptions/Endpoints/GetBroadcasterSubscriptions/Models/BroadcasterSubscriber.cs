@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 
@@ -10,27 +11,27 @@ public record BroadcasterSubscriber
     /// <summary>
     /// The user id of the broadcaster the subscription is for.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster the subscription is for.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster the subscription is for.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The id of the user who gifted the subscription, if the subscription was gifted.
     /// </summary>
-    public required string GifterId { get; init; }
+    public required UserId GifterId { get; init; }
     /// <summary>
     /// The login (username) of the user who gifted the subscription, if the subscription was gifted.
     /// </summary>
-    public required string GifterLogin { get; init; }
+    public required UserLogin GifterLogin { get; init; }
     /// <summary>
     /// The display name of the user who gifted the subscription, if the subscription was gifted.
     /// </summary>
-    public required string GifterName { get; init; }
+    public required UserName GifterName { get; init; }
     /// <summary>
     /// Indicates whether the subscription was gifted.
     /// </summary>
@@ -46,13 +47,13 @@ public record BroadcasterSubscriber
     /// <summary>
     /// The user id of the subscriber.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The display name of the subscriber.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The login (username) of the subscriber.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
 }
