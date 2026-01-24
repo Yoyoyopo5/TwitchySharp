@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -18,25 +19,38 @@ public record DeleteChannelStreamScheduleSegmentRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster that owns the streaming schedule to delete a segment from.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="segmentId">The id of the segment to remove.</param>
+    /// <param name="parameters">The request parameters.</param>
     public DeleteChannelStreamScheduleSegmentRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string segmentId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        DeleteChannelStreamScheduleSegmentRequestParameters parameters
         ) : base(
             "/schedule/segment",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("id", segmentId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("id", parameters.SegmentId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="DeleteChannelStreamScheduleSegmentRequest"/>.
+/// </summary>
+public record DeleteChannelStreamScheduleSegmentRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster that owns the streaming schedule to delete a segment from.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the segment to remove.
+    /// </summary>
+    public required StreamScheduleSegmentId SegmentId { get; set; }
 }

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -21,30 +22,43 @@ public record UpdateChannelStreamScheduleSegmentRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to update a schedule segment for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="segmentId">The id of the segment to update.</param>
+    /// <param name="parameters">The request parameters.</param>
     /// <param name="segmentSettings">The new settings to update the segment to.</param>
     public UpdateChannelStreamScheduleSegmentRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId,
-        string segmentId,
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateChannelStreamScheduleSegmentRequestParameters parameters,
         UpdateChannelStreamScheduleSegmentRequestData segmentSettings
         ) : base(
             "/schedule/segment",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-                .Add("id", segmentId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
+                .Add("id", parameters.SegmentId)
             )
     {
         Method = HttpMethod.Patch;
         ContentObject = segmentSettings;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateChannelStreamScheduleSegmentRequest"/>.
+/// </summary>
+public record UpdateChannelStreamScheduleSegmentRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to update a schedule segment for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
+    /// <summary>
+    /// The id of the segment to update.
+    /// </summary>
+    public required StreamScheduleSegmentId SegmentId { get; set; }
 }
 
 /// <summary>
@@ -67,7 +81,7 @@ public record UpdateChannelStreamScheduleSegmentRequestData
     /// <summary>
     /// The id of the category for the scheduled stream segment.
     /// </summary>
-    public string? CategoryId { get; set; }
+    public GameId? CategoryId { get; set; }
     /// <summary>
     /// The title for the scheduled broadcast.
     /// This may contain up to a maximum of 140 characters.
@@ -85,5 +99,6 @@ public record UpdateChannelStreamScheduleSegmentRequestData
     /// The time zone where the broadcast takes place. 
     /// Specify the time zone using <see href="https://www.iana.org/time-zones">IANA time zone database</see> format (for example, <c>"America/New_York"</c>).
     /// </summary>
-    public string? Timezone { get; set; }
+    [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
+    public TimeZoneInfo? Timezone { get; set; }
 }
