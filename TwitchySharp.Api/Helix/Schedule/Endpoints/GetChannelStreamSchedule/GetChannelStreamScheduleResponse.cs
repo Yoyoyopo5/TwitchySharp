@@ -1,6 +1,7 @@
 ﻿namespace TwitchySharp.Api.Helix.Schedule;
 /// <inheritdoc cref="ChannelStreamSchedule"/>
 public record GetChannelStreamScheduleResponse
+    : IPageableResponse
 {
     /// <summary>
     /// The broadcaster’s streaming schedule.

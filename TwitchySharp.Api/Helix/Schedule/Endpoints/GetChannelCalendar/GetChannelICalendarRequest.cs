@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -13,16 +14,28 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record GetChannelICalendarRequest
     : TwitchHelixRequest<GetChannelICalendarResponse>
 {
-    /// <param name="broadcasterId">The user id of the broadcaster (channel) to get the streaming schedule for.</param>
-    public GetChannelICalendarRequest(string broadcasterId)
-        : base(
+    /// <param name="parameters">The request parameters.</param>
+    public GetChannelICalendarRequest(
+        GetChannelICalendarRequestParameters parameters
+        ) : base(
             "/schedule/icalendar",
-            null!, // We set these to null because this is the only helix endpoint
+            default!, // We set these to null because this is the only helix endpoint
             null!, // that does not require client id or authorization headers.
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetChannelICalendarRequest"/>.
+/// </summary>
+public record GetChannelICalendarRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get the streaming schedule for.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
 }
