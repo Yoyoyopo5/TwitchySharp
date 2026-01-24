@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
@@ -16,22 +17,33 @@ public record GetStreamKeyRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadStreamKey"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user id of the broadcaster (channel) to get the stream key for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetStreamKeyRequest(
-        string clientId,
-        string accessToken,
-        string broadcasterId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetStreamKeyRequestParameters parameters
         ) : base(
             "/streams/key",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
+                .Add("broadcaster_id", parameters.BroadcasterId)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetStreamKeyRequest"/>.
+/// </summary>
+public record GetStreamKeyRequestParameters
+{
+    /// <summary>
+    /// The user id of the broadcaster (channel) to get the stream key for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
+    public required UserId BroadcasterId { get; set; }
 }

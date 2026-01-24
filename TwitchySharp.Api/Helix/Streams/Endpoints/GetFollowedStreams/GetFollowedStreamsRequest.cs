@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
@@ -17,35 +18,45 @@ public record GetFollowedStreamsRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadFollows"/>.</param>
-    /// <param name="userId">
-    /// The id of the user to get followed streams for.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 100.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public GetFollowedStreamsRequest(
-        string clientId,
-        string accessToken,
-        string userId,
-        int? first = null,
-        string? after = null
+        ClientId clientId,
+        UserAccessToken accessToken,
+        GetFollowedStreamsRequestParameters parameters
         ) : base(
             "/streams/followed",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", userId)
-                .Add("first", first?.ToString())
-                .Add("after", after)
+                .Add("user_id", parameters.UserId)
+                .Add("first", parameters.First?.ToString())
+                .Add("after", parameters.After?.Value)
             )
     {
         Method = HttpMethod.Get;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="GetFollowedStreamsRequest"/>.
+/// </summary>
+public record GetFollowedStreamsRequestParameters
+    : IPageableRequest
+{
+    /// <summary>
+    /// The id of the user to get followed streams for.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the <paramref name="accessToken"/>.
+    /// </remarks>
+    public required UserId UserId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 100.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
 }

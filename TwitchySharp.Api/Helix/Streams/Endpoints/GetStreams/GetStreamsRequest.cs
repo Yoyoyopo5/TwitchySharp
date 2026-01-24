@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
@@ -18,43 +20,24 @@ public record GetStreamsRequest : TwitchHelixRequest<GetStreamsResponse>
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="searchQuery">
-    /// The query to use when searching active streams. 
-    /// Leave this <see langword="null"/> to return all streams.
-    /// </param>
-    /// <param name="first">
-    /// The maximum number of items to return per page in the response. 
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
-    /// The default is 20.
-    /// </param>
-    /// <param name="before">
-    /// The cursor used to get the previous page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
-    /// <param name="after">
-    /// The cursor used to get the next page of results. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
-    /// </param>
+    /// <param name="parameters">The request parameters. Leave this <see langword="null"/> to return all streams.</param>
     public GetStreamsRequest(
-        string clientId,
-        string accessToken,
-        StreamQuery? searchQuery = null,
-        int? first = null,
-        string? before = null,
-        string? after = null
+        ClientId clientId,
+        AccessToken accessToken,
+        GetStreamsRequestParameters? parameters = null
         ) : base(
             "/streams",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("user_id", searchQuery?.UserIds)
-                .Add("user_login", searchQuery?.UserLogins)
-                .Add("game_id", searchQuery?.GameIds)
-                .Add("type", searchQuery?.Type?.Value)
-                .Add("language", searchQuery?.Languages)
-                .Add("first", first?.ToString())
-                .Add("before", before)
-                .Add("after", after)
+                .Add("user_id", parameters?.UserIds?.Select(x => x.Value))
+                .Add("user_login", parameters?.UserLogins?.Select(x => x.Value))
+                .Add("game_id", parameters?.GameIds?.Select(x => x.Value))
+                .Add("type", parameters?.Type?.Value)
+                .Add("language", parameters?.Languages?.Select(x => x.Value))
+                .Add("first", parameters?.First?.ToString())
+                .Add("before", parameters?.Before?.Value)
+                .Add("after", parameters?.After?.Value)
             )
     {
         Method = HttpMethod.Get;
@@ -62,28 +45,29 @@ public record GetStreamsRequest : TwitchHelixRequest<GetStreamsResponse>
 }
 
 /// <summary>
-/// Used to search for active livestreams.
+/// Request parameters for a <see cref="GetStreamsRequest"/>.
 /// </summary>
-public record StreamQuery
+public record GetStreamsRequestParameters
+    : IPageableRequest
 {
     /// <summary>
     /// A list of user ids used to filter the list of streams. 
     /// Returns only the streams of those users that are broadcasting. 
     /// You may specify a maximum of 100 ids.
     /// </summary>
-    public IEnumerable<string>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; set; }
     /// <summary>
     /// A list of user logins (usernames) used to filter the list of streams. 
     /// Returns only the streams of those users that are broadcasting. 
     /// You may specify a maximum of 100 login names.
     /// </summary>
-    public IEnumerable<string>? UserLogins { get; set; }
+    public IEnumerable<UserLogin>? UserLogins { get; set; }
     /// <summary>
     /// A game (category) id used to filter the list of streams. 
     /// Returns only the streams that are broadcasting the game (category). 
     /// You may specify a maximum of 100 ids. 
     /// </summary>
-    public IEnumerable<string>? GameIds { get; set; }
+    public IEnumerable<GameId>? GameIds { get; set; }
     /// <summary>
     /// The type of stream to filter the list of streams by.
     /// The default is <see cref="StreamType.All"/>.
@@ -96,22 +80,17 @@ public record StreamQuery
     /// You may specify a maximum of 100 language codes.
     /// </summary>
     public IEnumerable<LanguageCode>? Languages { get; set; }
-}
-
-/// <summary>
-/// Contains static definitions for stream types.
-/// </summary>
-/// <remarks>
-/// Dev note: not sure what the difference is between <see cref="All"/> and <see cref="Live"/> at this point.
-/// </remarks>
-/// <param name="Value">
-/// The custom value for a stream type.
-/// Don't use this unless you know what you're doing. 
-/// Prefer using the static definitions on this class instead.
-/// </param>
-public record StreamType(string Value)
-    : ValueBackedEnum<string>(Value)
-{
-    public static StreamType All { get; } = new("all");
-    public static StreamType Live { get; } = new("live");
+    /// <summary>
+    /// <inheritdoc cref="PaginationAmount"/>
+    /// </summary>
+    /// <remarks>
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The default is 20.
+    /// </remarks>
+    public PaginationAmount? First { get; set; }
+    public PaginationCursor? After { get; set; }
+    /// <summary>
+    /// The cursor of the result to get results before.
+    /// </summary>
+    public PaginationCursor? Before { get; set; }
 }
