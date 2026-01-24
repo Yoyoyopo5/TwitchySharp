@@ -1,5 +1,6 @@
 ﻿using System;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 
@@ -11,19 +12,19 @@ public record TwitchUser
     /// <summary>
     /// The id of the user.
     /// </summary>
-    public required string Id { get; init; }
+    public required UserId Id { get; init; }
     /// <summary>
     /// The login (username) of the user.
     /// This is what users use to log in. 
     /// Usernames use only lowercase ASCII characters, numbers, and underscores.
     /// </summary>
-    public required string Login { get; init; }
+    public required UserLogin Login { get; init; }
     /// <summary>
     /// The display name of the user.
     /// This is how users display in chats and stream descriptions. 
     /// Display names can have capital letters and unicode symbols.
     /// </summary>
-    public required string DisplayName { get; init; }
+    public required UserName DisplayName { get; init; }
     /// <summary>
     /// The type of user.
     /// This is used to distinguish Twitch staff from normal users.
@@ -40,11 +41,11 @@ public record TwitchUser
     /// <summary>
     /// A URL to the user’s profile image.
     /// </summary>
-    public required string ProfileImageUrl { get; init; }
+    public required Uri ProfileImageUrl { get; init; }
     /// <summary>
     /// A URL to the user’s offline image.
     /// </summary>
-    public required string OfflineImageUrl { get; init; }
+    public required Uri OfflineImageUrl { get; init; }
     /// <summary>
     /// The user’s verified email address. 
     /// The object includes this field only if the user access token includes <see cref="Scope.UserReadEmail"/> and the token was created by this specific user.

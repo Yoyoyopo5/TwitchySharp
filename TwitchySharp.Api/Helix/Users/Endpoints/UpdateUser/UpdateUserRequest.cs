@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -20,23 +21,34 @@ public record UpdateUserRequest
     /// A user access token that includes <see cref="Scope.UserEdit"/>.
     /// The user that created the access token is the one who will be updated.
     /// </param>
-    /// <param name="description">
-    /// The string to update the channel’s description to. 
-    /// The description is limited to a maximum of 300 characters.
-    /// To remove the description, set this to <see cref="string.Empty"/>.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public UpdateUserRequest(
-        string clientId,
-        string accessToken,
-        string? description
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UpdateUserRequestParameters parameters
         ) : base(
             "/users",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("description", description)
+                .Add("description", parameters.Description)
             )
     {
         Method = HttpMethod.Put;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UpdateUserRequest"/>.
+/// </summary>
+public record UpdateUserRequestParameters
+{
+    /// <summary>
+    /// The string to update the channel’s description to.
+    /// </summary>
+    /// <remarks>
+    /// The description is limited to a maximum of 300 characters.
+    /// To remove the description, set this to <see cref="string.Empty"/>.
+    /// </remarks>
+    public required string? Description { get; set; }
 }

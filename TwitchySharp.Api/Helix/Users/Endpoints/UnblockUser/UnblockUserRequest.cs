@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -18,22 +19,33 @@ public record UnblockUserRequest
 {
     /// <param name="clientId">The client id of the application.</param>
     /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.</param>
-    /// <param name="targetUserId">
-    /// The id of the user to remove from the broadcaster's list of blocked users.
-    /// The API ignores the request if the broadcaster hasn’t blocked the user.
-    /// </param>
+    /// <param name="parameters">The request parameters.</param>
     public UnblockUserRequest(
-        string clientId,
-        string accessToken,
-        string targetUserId
+        ClientId clientId,
+        UserAccessToken accessToken,
+        UnblockUserRequestParameters parameters
         ) : base(
             "/users/blocks",
             clientId,
             accessToken,
             new HttpQueryParameters()
-                .Add("target_user_id", targetUserId)
+                .Add("target_user_id", parameters.TargetUserId)
             )
     {
         Method = HttpMethod.Delete;
     }
+}
+
+/// <summary>
+/// Request parameters for a <see cref="UnblockUserRequest"/>.
+/// </summary>
+public record UnblockUserRequestParameters
+{
+    /// <summary>
+    /// The id of the user to remove from the broadcaster's list of blocked users.
+    /// </summary>
+    /// <remarks>
+    /// The API ignores the request if the broadcaster hasn’t blocked the user.
+    /// </remarks>
+    public required UserId TargetUserId { get; set; }
 }
