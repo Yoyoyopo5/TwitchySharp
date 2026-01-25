@@ -14,22 +14,28 @@ namespace TwitchySharp.Api.Authorization;
 public record AccessTokenRefreshRequest
     : TwitchAuthorizationRequest<AccessTokenRefreshResponse>
 {
-    /// <param name="clientId">The client ID of the application that the user originally authorized.</param>
-    /// <param name="clientSecret">The client secret of the application that the user originally authorized.</param>
-    /// <param name="refreshToken">The refresh token for the user access token.</param>
-    public AccessTokenRefreshRequest(ClientId clientId, ClientSecret clientSecret, RefreshToken refreshToken)
-        : base("/token")
-    {
-        Method = HttpMethod.Post;
-        ClientId = clientId;
-        Content = new FormUrlEncodedContent(
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override string Path => "/token";
+    public override HttpContent? Content
+        => new FormUrlEncodedContent(
             new Dictionary<string, string>()
             {
-                { "client_id", clientId },
-                { "client_secret", clientSecret },
-                { "refresh_token", refreshToken },
+                { "client_id", ClientId },
+                { "client_secret", ClientSecret },
+                { "refresh_token", RefreshToken },
                 { "grant_type", "refresh_token" }
-            }
-        );
-    }
+            });
+
+    /// <summary>
+    /// The client id of the application that the user originally authorized.
+    /// </summary>
+    public required ClientId ClientId { get; init; }
+    /// <summary>
+    /// The client secret of the application that the user originally authorized.
+    /// </summary>
+    public required ClientSecret ClientSecret { get; init; }
+    /// <summary>
+    /// The refresh token for the user access token.
+    /// </summary>
+    public required RefreshToken RefreshToken { get; init; }
 }
