@@ -81,10 +81,11 @@ public class TwitchClient(HttpClient httpClient, IClientConfiguration clientConf
         using HttpRequestMessage requestMessage = request.ToHttpRequestMessage(_requestContentSerializerOptions);
         if (_authorizer is not null && request is IRequireAuthorization needsAuthorization)
         {
-            // Don't love this, but need a way to null coalesce the TwitchApiIdentity.ClientId on the incoming request.
             ClientIdentity? client = await _clientConfig.GetClientId(request, ct);
-            needsAuthorization = AuthorizationRequirement.FromRequest(needsAuthorization).WithClientFallback(client); // We are losing information sent to authorizer here!
-            requestMessage.AddTwitchAuthorizationHeaders(await _authorizer.GetAuthorization(needsAuthorization, ct).ConfigureAwait(false));
+            // WithClientFallback returns a copy of the original request type, preserving full context
+            // for custom IAuthorizeTwitchRequest implementations that may need endpoint-specific data.
+            IRequireAuthorization authContext = needsAuthorization.WithClientFallback(client);
+            requestMessage.AddTwitchAuthorizationHeaders(await _authorizer.GetAuthorization(authContext, ct).ConfigureAwait(false));
         }
         return await _httpClient.SendAsync(requestMessage, ct).ConfigureAwait(false);
     }

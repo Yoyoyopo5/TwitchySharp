@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api;
@@ -16,7 +12,7 @@ public interface IRequireAuthorization
     /// </summary>
     public TwitchApiIdentity Identity { get; }
     /// <summary>
-    /// One of these user scopes is required. 
+    /// One of these user scopes is required.
     /// </summary>
     public IEnumerable<Scope> ValidScopes { get; }
     /// <summary>
@@ -27,21 +23,16 @@ public interface IRequireAuthorization
     /// and be guaranteed to be the bearer authorization used for the request.
     /// </remarks>
     public AccessToken? OverrideAccessToken { get; }
-}
-
-internal record AuthorizationRequirement // Need this to assign a ClientIdentity after the request initialized.
-    : IRequireAuthorization
-{
-    public static AuthorizationRequirement FromRequest(IRequireAuthorization request)
-        => new()
-        {
-            Identity = request.Identity,
-            ValidScopes = request.ValidScopes,
-            OverrideAccessToken = request.OverrideAccessToken,
-        };
-    public AuthorizationRequirement WithClientFallback(ClientIdentity? client)
-        => this with { Identity = Identity.WithFallbackClient(client) };
-    public required TwitchApiIdentity Identity { get; init; }
-    public required IEnumerable<Scope> ValidScopes { get; init; }
-    public AccessToken? OverrideAccessToken { get; init; }
+    /// <summary>
+    /// Returns a copy of this request with the <see cref="Identity"/> modified to use
+    /// the specified <paramref name="client"/> as a fallback if <see cref="TwitchApiIdentity.ClientId"/> is not set.
+    /// </summary>
+    /// <remarks>
+    /// This method preserves the full request type and all its properties, unlike creating
+    /// a wrapper object which would lose endpoint-specific context.
+    /// Implementations using C# records can simply use: <c>this with { Identity = Identity.WithFallbackClient(client) }</c>
+    /// </remarks>
+    /// <param name="client">The fallback client identity to use if <see cref="TwitchApiIdentity.ClientId"/> is null.</param>
+    /// <returns>A copy of the request with the identity potentially updated.</returns>
+    public IRequireAuthorization WithClientFallback(ClientIdentity? client);
 }
