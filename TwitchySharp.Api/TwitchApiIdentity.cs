@@ -1,0 +1,62 @@
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api;
+
+/// <summary>
+/// An identity used to set Twitch request authorization headers.
+/// </summary>
+/// <remarks>
+/// Use <see cref="ClientIdentity"/>, <see cref="UserIdentity"/>, or <see cref="ExtensionIdentity"/>, depending on the endpoint requirement.
+/// Pattern matching can be used to determine the actual identity type and set request headers accordingly.
+/// </remarks>
+public record TwitchApiIdentity()
+{
+    /// <summary>
+    /// The id of the application registered on the <see href="https://dev.twitch.tv/">Twitch Developer Portal</see> to requests as.
+    /// </summary>
+    public ClientId? ClientId { get; init; }
+    public static TwitchApiIdentity None { get; } = new();
+}
+
+/// <summary>
+/// The Twitch developer application to make requests on behalf of.
+/// </summary>
+public record ClientIdentity : TwitchApiIdentity
+{
+    // Alias to enforce non-nullability.
+    public new ClientId ClientId { get => base.ClientId ?? default; init => base.ClientId = value; }
+    /// <param name="clientId"><inheritdoc cref="TwitchApiIdentity.ClientId" path="/summary"/></param>
+    public ClientIdentity(ClientId clientId)
+    {
+        ClientId = clientId;
+    }
+    public static implicit operator ClientIdentity(ClientId clientId)
+        => new(clientId);
+}
+
+/// <summary>
+/// A user to make requests on behalf of.
+/// </summary>
+/// <param name="UserId">The id of the user to make requests on behalf of.</param>
+public record UserIdentity(UserId UserId) : TwitchApiIdentity;
+
+/// <summary>
+/// The extension to make requests on behalf of.
+/// </summary>
+/// <param name="BroadcasterId">The user id of the broadcaster that owns the extension.</param>
+public record ExtensionIdentity(UserId BroadcasterId) : TwitchApiIdentity;
+
+internal static class TwitchApiIdentityExtensions
+{
+    public static TwitchApiIdentity WithFallbackClient(this TwitchApiIdentity identity, ClientIdentity? fallbackClientId)
+        => fallbackClientId switch
+        {
+            null => identity,
+            { } fallback => identity switch
+            {
+                null => fallback,
+                { ClientId: null } noClient => noClient with { ClientId = fallback.ClientId },
+                _ => identity
+            }
+        };
+}
