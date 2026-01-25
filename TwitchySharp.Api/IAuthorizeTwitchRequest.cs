@@ -22,15 +22,10 @@ public class DefaultRequestAuthorizer(ITokenResolver tokenResolver)
     private readonly ITokenResolver _tokenResolver = tokenResolver;
     public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(IRequireAuthorization request, CancellationToken ct = default)
     {
-        if (request is not IRequireAuthorization authorizedRequest)
-            return null;
+        AccessToken? token = request.OverrideAccessToken
+            ?? await _tokenResolver.GetToken(request.Identity, request.ValidScopes, ct).ConfigureAwait(false);
 
-        return authorizedRequest.Identity.ClientId.HasValue switch
-        {
-            false => null,
-            true => new TwitchAuthorizationRequestOptions(
-                authorizedRequest.Identity.ClientId.Value,
-                request.OverrideAccessToken ?? await _tokenResolver.GetToken(authorizedRequest.Identity, authorizedRequest.ValidScopes, ct).ConfigureAwait(false))
-        };
+        // Return options even if ClientId is null - some endpoints only need bearer token
+        return new TwitchAuthorizationRequestOptions(request.Identity.ClientId, token);
     }
 }

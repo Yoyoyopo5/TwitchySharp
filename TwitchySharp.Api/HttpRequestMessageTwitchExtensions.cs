@@ -9,7 +9,8 @@ internal static class HttpRequestMessageTwitchExtensions
     {
         if (auth is null)
             return request;
-        request.Headers.Add("Client-Id", auth.ClientId);
+        if (auth.ClientId.HasValue)
+            request.Headers.Add("Client-Id", auth.ClientId.Value);
         if (auth.BearerToken is not null)
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.BearerToken);
         return request;
