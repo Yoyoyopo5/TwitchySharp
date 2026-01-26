@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -9,7 +10,6 @@ namespace TwitchySharp.Api.Helix.Games;
 /// Gets information about specified categories or games.
 /// </summary>
 /// <remarks>
-/// <br/>
 /// Requires an app or user access token.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-games">Get Games</see> for more information.
@@ -17,36 +17,16 @@ namespace TwitchySharp.Api.Helix.Games;
 public record GetGamesRequest
     : TwitchHelixRequest<GetGamesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="games">
-    /// The games to get data for.
-    /// You may specify up to 100 games.
-    /// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/>.
-    /// </param>
-    public GetGamesRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetGamesRequestParameters parameters
-        ) : base(
-            "/games",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("id", parameters.Games.OfType<GameIdQuery>().Select(x => x.GameId.Value))
-                .Add("name", parameters.Games.OfType<GameNameQuery>().Select(x => x.GameName))
-                .Add("igdb_id", parameters.Games.OfType<GameIgdbQuery>().Select(x => x.IgdbId.Value))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/games";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("id", Games.OfType<GameIdQuery>().Select(x => x.GameId.Value))
+            .Add("name", Games.OfType<GameNameQuery>().Select(x => x.GameName))
+            .Add("igdb_id", Games.OfType<GameIgdbQuery>().Select(x => x.IgdbId.Value));
 
-/// <summary>
-/// Request parameters for a <see cref="GetGamesRequest"/>.
-/// </summary>
-public record GetGamesRequestParameters
-{
     /// <summary>
     /// The games to get data for.
     /// </summary>
