@@ -1,5 +1,6 @@
-﻿using System.Net.Http;
-using TwitchySharp.Shared.Models;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
@@ -13,15 +14,8 @@ namespace TwitchySharp.Api.Helix.Conduits;
 public record GetConduitsRequest
     : TwitchHelixRequest<GetConduitsResponse>
 {
-    /// <param name="clientId">The client id of the application. This will be the application to get conduits for.</param>
-    /// <param name="accessToken">An app access token.</param>
-    public GetConduitsRequest(ClientId clientId, AppAccessToken accessToken)
-        : base(
-            "/eventsub/conduits",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/eventsub/conduits";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
 }
