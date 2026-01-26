@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Shared.Models;
 
@@ -12,17 +12,21 @@ namespace TwitchySharp.Api.Authorization;
 public record DeviceCodeRequest
     : TwitchAuthorizationRequest<DeviceCodeResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="scopes">The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> to request.</param>
-    public DeviceCodeRequest(ClientId clientId, IEnumerable<Scope> scopes)
-        : base("/device")
-    {
-        Method = HttpMethod.Post;
-        ClientId = clientId;
-        Content = new FormUrlEncodedContent(new Dictionary<string, string>
+    protected override string Path => "/device";
+    public override HttpMethod Method => HttpMethod.Post;
+    public override HttpContent? Content
+        => new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            { "client_id", clientId },
-            { "scopes", scopes.FormatScopes() }
+            { "client_id", ClientId },
+            { "scopes", Scopes.FormatScopes() }
         });
-    }
+
+    /// <summary>
+    /// The client id of the application.
+    /// </summary>
+    public required ClientId ClientId { get; init; }
+    /// <summary>
+    /// The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> to request.
+    /// </summary>
+    public required IEnumerable<Scope> Scopes { get; init; }
 }
