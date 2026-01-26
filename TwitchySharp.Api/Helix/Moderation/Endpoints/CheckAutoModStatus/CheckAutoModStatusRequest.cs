@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -25,7 +26,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 ///     </item>
 /// </list>
 /// <br/>
-/// The above limits are in <b>addition to</b> the standard <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch API rate limits</see>. 
+/// The above limits are in <b>addition to</b> the standard <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch API rate limits</see>.
 /// The rate limit headers in the response represent the Twitch rate limits and not the above limits.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ModerationRead"/>.
@@ -35,35 +36,15 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record CheckAutoModStatusRequest
     : TwitchHelixRequest<CheckAutoModStatusResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModerationRead"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="messages">
-    /// The messages to check against the channel's AutoMod.
-    /// </param>
-    public CheckAutoModStatusRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CheckAutoModStatusRequestParameters parameters,
-        CheckAutoModStatusRequestData messages
-        ) : base(
-            "/moderation/enforcements/status",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = messages;
-    }
-}
+    protected override string Path => "/moderation/enforcements/status";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModerationRead];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
+    public override object? ContentObject => Messages;
 
-/// <summary>
-/// Request parameters for a <see cref="CheckAutoModStatusRequest"/>.
-/// </summary>
-public record CheckAutoModStatusRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster whose AutoMod settings and list of blocked terms are used to check the message.
     /// </summary>
@@ -71,6 +52,11 @@ public record CheckAutoModStatusRequestParameters
     /// This must be the same user who created the access token used in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The messages to check against the channel's AutoMod.
+    /// </summary>
+    public required CheckAutoModStatusRequestData Messages { get; set; }
 }
 
 /// <summary>
