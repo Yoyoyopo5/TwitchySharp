@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -12,38 +13,24 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#unban-user">Unban User</see> for more information.
 /// </remarks>
-public record UnbanUserRequest : TwitchHelixRequest<UnbanUserResponse>
+public record UnbanUserRequest
+    : TwitchHelixRequest<UnbanUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageBannedUsers"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public UnbanUserRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UnbanUserRequestParameters parameters
-    ) : base(
-        "/moderation/bans",
-        clientId,
-        accessToken,
-        new HttpQueryParameters()
-            .Add("broadcaster_id", parameters.BroadcasterId)
-            .Add("moderator_id", parameters.ModeratorId)
-            .Add("user_id", parameters.UserId)
-        )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/moderation/bans";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageBannedUsers];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId)
+            .Add("user_id", UserId);
 
-/// <summary>
-/// Request parameters for a <see cref="UnbanUserRequest"/>.
-/// </summary>
-public record UnbanUserRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) that the user will be unbanned on.
     /// </summary>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// </summary>
@@ -51,6 +38,7 @@ public record UnbanUserRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId ModeratorId { get; set; }
+
     /// <summary>
     /// The user id of the user to unban or remove a time-out on.
     /// </summary>
