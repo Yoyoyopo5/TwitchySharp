@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -14,31 +16,14 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetSharedChatSessionRequest
     : TwitchHelixRequest<GetSharedChatSessionResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetSharedChatSessionRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetSharedChatSessionRequestParameters parameters
-        )
-        : base(
-            "/shared_chat/session",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/shared_chat/session";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetSharedChatSessionRequest"/>.
-/// </summary>
-public record GetSharedChatSessionRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster whose shared chat you want to get.
     /// </summary>
