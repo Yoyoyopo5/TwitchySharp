@@ -25,8 +25,12 @@ public record UserInfoRequest
     public required UserAccessToken AccessToken { get; init; }
 
     /// <summary>
-    /// The identity for this request. UserInfo does not require a specific identity context.
+    /// The identity for this request.
     /// </summary>
+    /// <remarks>
+    /// UserInfo does not require a specific identity context.
+    /// The <see cref="AccessToken"/> will be used in the Authorization header.
+    /// </remarks>
     public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
 
     /// <summary>

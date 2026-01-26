@@ -4,7 +4,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
-/// Revokes a valid user access token so that it is no longer valid.
+/// Revokes a valid app or user access token so that it is no longer valid.
 /// </summary>
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/authentication/revoke-tokens/">Revoke Tokens</see> for more information.
