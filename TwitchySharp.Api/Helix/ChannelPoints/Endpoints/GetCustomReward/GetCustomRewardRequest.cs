@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -19,52 +19,41 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 public record GetCustomRewardRequest
     : TwitchHelixRequest<GetCustomRewardResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetCustomRewardRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetCustomRewardRequestParameters parameters
-        )
-        : base(
-            "/channel_points/custom_rewards",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("id", parameters?.RewardIds?.Select(x => x.ToString()))
-                .Add("only_manageable_rewards", parameters?.OnlyManageableRewards?.ToString())
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/channel_points/custom_rewards";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("id", RewardIds?.Select(x => x.ToString()))
+            .Add("only_manageable_rewards", OnlyManageableRewards?.ToString());
 
-public record GetCustomRewardRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster you want to get rewards for.
     /// </summary>
     /// <remarks>
     /// This should be the same user that created the access token for the request.
+    /// Requires <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
-    /// A list of reward ids to filter the rewards by. 
+    /// A list of reward ids to filter the rewards by.
     /// </summary>
     /// <remarks>
-    /// You may specify a maximum of 50 ids. 
+    /// You may specify a maximum of 50 ids.
     /// Duplicate ids are ignored.
-    /// The response contains only the ids that were found. 
+    /// The response contains only the ids that were found.
     /// If none of the ids were found, the response is 404 Not Found.
     /// </remarks>
     public IEnumerable<RewardId>? RewardIds { get; set; }
+
     /// <summary>
     /// Determines whether the response contains only the custom rewards that the app may manage.
     /// </summary>
     /// <remarks>
-    /// Set to <see langword="true"/> to get only the custom rewards that the app may manage. 
+    /// Set to <see langword="true"/> to get only the custom rewards that the app may manage.
     /// The default is <see langword="false"/>.
     /// </remarks>
     public bool? OnlyManageableRewards { get; set; }
