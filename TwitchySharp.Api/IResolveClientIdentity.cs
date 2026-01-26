@@ -18,11 +18,8 @@ public interface IResolveClientIdentity
     /// Gets the client identity to use for the given request.
     /// </summary>
     /// <param name="request">The request that needs a client identity.</param>
-    /// <param name="ct">Cancellation token.</param>
     /// <returns>
-    /// The client identity to use, or <see langword="null"/> if no client identity should be applied.
-    /// When returned, this value is used as a fallback if the request's <see cref="IRequireAuthorization.Identity"/>
-    /// does not already have a <see cref="TwitchApiIdentity.ClientId"/> set.
+    /// The client identity to use for the request, if any.
     /// </returns>
     ValueTask<ClientIdentity?> GetClientId(ITwitchRequest request, CancellationToken ct = default);
 }
