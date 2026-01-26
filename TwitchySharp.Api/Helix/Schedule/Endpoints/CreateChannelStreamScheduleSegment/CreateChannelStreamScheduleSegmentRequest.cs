@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -8,7 +9,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
-/// Adds a single or recurring broadcast to the broadcaster’s streaming schedule.
+/// Adds a single or recurring broadcast to the broadcaster's streaming schedule.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
@@ -18,29 +19,25 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record CreateChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<CreateChannelStreamScheduleSegmentResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="broadcasterId">
+    protected override string Path => "/schedule/segment";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageSchedule];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
+    public override object? ContentObject => ScheduleSegment;
+
+    /// <summary>
     /// The user id of the broadcaster (channel) that owns the schedule to add the broadcast segment to.
-    /// This must be the same user that created the <paramref name="accessToken"/>.
-    /// </param>
-    /// <param name="scheduleSegment">The segment to add.</param>
-    public CreateChannelStreamScheduleSegmentRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        string broadcasterId,
-        CreateChannelStreamScheduleSegmentRequestData scheduleSegment
-        ) : base(
-            "/schedule/segment",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", broadcasterId)
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = scheduleSegment;
-    }
+    /// This must be the same user that created the access token.
+    /// </summary>
+    public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The segment to add.
+    /// </summary>
+    public required CreateChannelStreamScheduleSegmentRequestData ScheduleSegment { get; set; }
 }
 
 /// <summary>
