@@ -20,11 +20,16 @@ public record UnblockUserRequest
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId);
+
+    /// <summary>
+    /// The user to unblock the target user as.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The id of the user to remove from the broadcaster's list of blocked users.

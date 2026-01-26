@@ -20,8 +20,7 @@ public record GetStreamMarkersRequest
 {
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Get;
-    // Identity is determined by the token holder (broadcaster or editor), not necessarily tied to UserId/VideoId parameters
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.ChannelManageBroadcast ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -30,6 +29,11 @@ public record GetStreamMarkersRequest
             .Add("first", First?.ToString())
             .Add("before", Before?.Value)
             .Add("after", After?.Value);
+
+    /// <summary>
+    /// The user to get stream markers as (broadcaster or editor).
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The user id of the broadcaster to get markers for.

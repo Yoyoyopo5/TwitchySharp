@@ -19,11 +19,16 @@ public record UpdateUserRequest
 {
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserEdit ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("description", Description);
+
+    /// <summary>
+    /// The user to update.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The string to update the channel's description to.

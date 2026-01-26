@@ -21,7 +21,7 @@ public record GetExtensionAnalyticsRequest
 {
     protected override string Path => "/analytics/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.AnalyticsReadExtensions ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -31,6 +31,11 @@ public record GetExtensionAnalyticsRequest
             .Add("ended_at", EndedAt?.ToUniversalTwitchQueryString())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
+
+    /// <summary>
+    /// The user to get extension analytics as.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The extension's client id.
