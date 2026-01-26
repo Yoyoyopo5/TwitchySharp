@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -7,7 +8,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// Gets a list of all extensions (both active and inactive) that a broadcaster has installed.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>. 
+/// Requires a user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>.
 /// <see cref="Scope.UserEditBroadcast"/> is required to get inactive extensions.
 /// The user who created the token is the broadcaster to get extensions for.
 /// <br/>
@@ -16,20 +17,8 @@ namespace TwitchySharp.Api.Helix.Users;
 public record GetUserExtensionsRequest
     : TwitchHelixRequest<GetUserExtensionsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">
-    /// A user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>.
-    /// The user who created the token is the broadcaster to get extensions for.
-    /// </param>
-    public GetUserExtensionsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken
-        ) : base(
-            "/users/extensions/list",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/users/extensions/list";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadBroadcast, Scope.UserEditBroadcast];
 }
