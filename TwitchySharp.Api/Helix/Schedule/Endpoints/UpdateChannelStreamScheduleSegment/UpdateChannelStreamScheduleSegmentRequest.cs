@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -11,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// Updates a scheduled broadcast segment.
 /// </summary>
 /// <remarks>
-/// For recurring segments, updating a segment’s title, category, duration, and timezone, changes all segments in the recurring schedule, not just the specified segment.
+/// For recurring segments, updating a segment's title, category, duration, and timezone, changes all segments in the recurring schedule, not just the specified segment.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
 /// <br/>
@@ -20,34 +21,16 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record UpdateChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<UpdateChannelStreamScheduleSegmentResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="segmentSettings">The new settings to update the segment to.</param>
-    public UpdateChannelStreamScheduleSegmentRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UpdateChannelStreamScheduleSegmentRequestParameters parameters,
-        UpdateChannelStreamScheduleSegmentRequestData segmentSettings
-        ) : base(
-            "/schedule/segment",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("id", parameters.SegmentId)
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = segmentSettings;
-    }
-}
+    protected override string Path => "/schedule/segment";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageSchedule];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("id", SegmentId);
+    public override object? ContentObject => SegmentSettings;
 
-/// <summary>
-/// Request parameters for a <see cref="UpdateChannelStreamScheduleSegmentRequest"/>.
-/// </summary>
-public record UpdateChannelStreamScheduleSegmentRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to update a schedule segment for.
     /// </summary>
@@ -55,10 +38,16 @@ public record UpdateChannelStreamScheduleSegmentRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The id of the segment to update.
     /// </summary>
     public required StreamScheduleSegmentId SegmentId { get; set; }
+
+    /// <summary>
+    /// The new settings to update the segment to.
+    /// </summary>
+    public required UpdateChannelStreamScheduleSegmentRequestData SegmentSettings { get; set; }
 }
 
 /// <summary>
