@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -16,22 +17,16 @@ namespace TwitchySharp.Api.Helix.Polls;
 public record EndPollRequest
     : TwitchHelixRequest<EndPollResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePolls"/>.</param>
-    /// <param name="poll">Data used to end the poll.</param>
-    public EndPollRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        EndPollRequestData poll
-        ) : base(
-            "/polls",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = poll;
-    }
+    protected override string Path => "/polls";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Poll.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePolls];
+    public override object? ContentObject => Poll;
+
+    /// <summary>
+    /// Data used to end the poll.
+    /// </summary>
+    public required EndPollRequestData Poll { get; set; }
 }
 
 /// <summary>
