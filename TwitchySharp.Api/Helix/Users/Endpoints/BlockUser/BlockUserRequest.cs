@@ -19,13 +19,18 @@ public record BlockUserRequest
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId)
             .Add("source_context", SourceContext?.Value)
             .Add("reason", Reason?.Value);
+
+    /// <summary>
+    /// The user to block the target user as.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The id of the user to block.

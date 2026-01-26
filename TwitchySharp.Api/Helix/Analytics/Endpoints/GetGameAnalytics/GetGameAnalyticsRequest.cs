@@ -21,7 +21,7 @@ public record GetGameAnalyticsRequest
 {
     protected override string Path => "/analytics/games";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.AnalyticsReadGames ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -31,6 +31,11 @@ public record GetGameAnalyticsRequest
             .Add("ended_at", EndedAt?.ToUniversalTwitchQueryString())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
+
+    /// <summary>
+    /// The user to get game analytics as.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The game's client ID.
