@@ -7,10 +7,10 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
-/// Updates an installed extension’s information.
+/// Updates an installed extension's information.
 /// </summary>
 /// <remarks>
-/// You can update the extension’s activation state, ID, and version number.
+/// You can update the extension's activation state, ID, and version number.
 /// If you try to activate an extension under multiple extension types, the last write wins (and there is no guarantee of write order).
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.UserEditBroadcast"/>.
@@ -21,28 +21,18 @@ namespace TwitchySharp.Api.Helix.Users;
 public record UpdateUserExtensionsRequest
     : TwitchHelixRequest<UpdateUserExtensionsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">
-    /// A user access token that includes <see cref="Scope.UserEditBroadcast"/>.
-    /// The broadcaster who created the token is the one whose extensions will be updated.
-    /// </param>
-    /// <param name="extensions">The extensions to update.</param>
-    public UpdateUserExtensionsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ExtensionsConfiguration extensions
-        ) : base(
-            "/users/extensions",
-            clientId,
-            accessToken
-            )
-    {
-        // Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
-        // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
-        // I tried to reconfigure things as best as possible to make using this endpoint a little easier, but I may have made some assumptions that prove false.
-        Method = HttpMethod.Put;
-        ContentObject = new UpdateUserExtensionsRequestData(extensions);
-    }
+    protected override string Path => "/users/extensions";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [Scope.UserEditBroadcast];
+    // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
+    // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
+    public override object? ContentObject => new UpdateUserExtensionsRequestData(Extensions);
+
+    /// <summary>
+    /// The extensions to update.
+    /// </summary>
+    public required ExtensionsConfiguration Extensions { get; set; }
 }
 
 /// <summary>
