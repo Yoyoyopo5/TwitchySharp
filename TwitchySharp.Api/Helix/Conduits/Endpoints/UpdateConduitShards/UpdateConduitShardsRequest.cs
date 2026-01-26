@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
@@ -13,23 +15,16 @@ namespace TwitchySharp.Api.Helix.Conduits;
 public record UpdateConduitShardsRequest
     : TwitchHelixRequest<UpdateConduitShardsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app access token.</param>
-    /// <param name="updates">Data used to update the shards.</param>
-    public UpdateConduitShardsRequest(
-        ClientId clientId,
-        AppAccessToken accessToken,
-        UpdateConduitShardsRequestData updates
-        )
-        : base(
-            "/eventsub/conduits/shards",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = updates;
-    }
+    protected override string Path => "/eventsub/conduits/shards";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    public override object? ContentObject => ShardUpdates;
+
+    /// <summary>
+    /// Data used to update the shards.
+    /// </summary>
+    public required UpdateConduitShardsRequestData ShardUpdates { get; set; }
 }
 
 /// <summary>
