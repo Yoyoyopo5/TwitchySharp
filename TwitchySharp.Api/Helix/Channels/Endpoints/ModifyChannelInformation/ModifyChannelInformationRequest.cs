@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -8,7 +9,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Updates a channel’s properties.
+/// Updates a channel's properties.
 /// </summary>
 /// <remarks>
 /// Requires a user access token with <see cref="Scope.ChannelManageBroadcast"/>.
@@ -18,43 +19,27 @@ namespace TwitchySharp.Api.Helix.Channels;
 public record ModifyChannelInformationRequest
     : TwitchHelixRequest<ModifyChannelInformationResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageBroadcast"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="channelInformation">
-    /// The channel information to be set on the broadcaster's channel.
-    /// </param>
-    public ModifyChannelInformationRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ModifyChannelInformationRequestParameters parameters,
-        ModifyChannelInformationRequestData channelInformation
-        )
-        : base(
-            "/channels",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = channelInformation;
-    }
-}
+    protected override string Path => "/channels";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageBroadcast];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
+    public override object? ContentObject => ChannelInformation;
 
-/// <summary>
-/// Request parameters for a <see cref="ModifyChannelInformationRequest"/>.
-/// </summary>
-public record ModifyChannelInformationRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster whose channel you want to update.
     /// </summary>
     /// <remarks>
-    /// This must be the same used that created the access token used in the request.
+    /// This must be the same user that created the access token used in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The channel information to be set on the broadcaster's channel.
+    /// </summary>
+    public required ModifyChannelInformationRequestData ChannelInformation { get; set; }
 }
 
 /// <summary>
