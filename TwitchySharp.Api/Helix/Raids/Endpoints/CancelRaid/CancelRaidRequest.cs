@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -16,32 +17,17 @@ namespace TwitchySharp.Api.Helix.Raids;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#cancel-a-raid">Cancel A Raid</see> for more information.
 /// </remarks>
-public record CancelRaidRequest : TwitchHelixRequest<CancelRaidResponse>
+public record CancelRaidRequest
+    : TwitchHelixRequest<CancelRaidResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageRaids"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public CancelRaidRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CancelRaidRequestParameters parameters
-        ) : base(
-            "/raids",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/raids";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageRaids];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="CancelRaidRequest"/>.
-/// </summary>
-public record CancelRaidRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to cancel a pending raid for.
     /// </summary>
