@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -6,12 +7,12 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Videos;
 /// <summary>
-/// <b>BETA</b> Creates a clip from a broadcaster’s VOD on behalf of the broadcaster or an editor of the channel.
+/// <b>BETA</b> Creates a clip from a broadcaster's VOD on behalf of the broadcaster or an editor of the channel.
 /// </summary>
 /// <remarks>
 /// <para>
 /// Since a live stream is actively creating a VOD, this endpoint can also be used to create a clip from earlier in the current stream.
-/// The <see cref="CreatedVodClip.EditUrl"/> allows you to edit the clip’s title, feature the clip, create a portrait version of the clip, download the clip media, and share the clip directly to social platforms.
+/// The <see cref="CreatedVodClip.EditUrl"/> allows you to edit the clip's title, feature the clip, create a portrait version of the clip, download the clip media, and share the clip directly to social platforms.
 /// </para>
 /// Requires an app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.
 /// <br/>
@@ -20,36 +21,19 @@ namespace TwitchySharp.Api.Helix.Videos;
 public record CreateClipFromVodRequest
     : TwitchHelixRequest<CreateClipFromVodResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.</param>
-    /// <param name="queryParameters">The request parameters.</param>
-    public CreateClipFromVodRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        CreateClipFromVodRequestParameters queryParameters
-        )
-        : base(
-            "/videos/clips",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("editor_id", queryParameters.EditorId)
-                .Add("broadcaster_id", queryParameters.BroadcasterId)
-                .Add("vod_id", queryParameters.VodId)
-                .Add("vod_offset", ((int)queryParameters.VodOffset.TotalSeconds).ToString())
-                .Add("duration", queryParameters.Duration?.TotalSeconds.ToString())
-                .Add("title", queryParameters.Title)
-            )
-    {
-        Method = HttpMethod.Post;
-    }
-}
+    protected override string Path => "/videos/clips";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(EditorId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.EditorManageClips, Scope.ChannelManageClips];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("editor_id", EditorId)
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("vod_id", VodId)
+            .Add("vod_offset", ((int)VodOffset.TotalSeconds).ToString())
+            .Add("duration", Duration?.TotalSeconds.ToString())
+            .Add("title", Title);
 
-/// <summary>
-/// Query parameters for a <see cref="CreateClipFromVodRequest"/>.
-/// </summary>
-public record CreateClipFromVodRequestParameters
-{
     /// <summary>
     /// The user id of the editor of the channel to create a clip for.
     /// This should be the same user that created the user access token in the request,
