@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -9,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Gets emotes for one or more specified emote sets.
 /// </summary>
 /// <remarks>
-/// An emote set groups emotes that have a similar context. 
+/// An emote set groups emotes that have a similar context.
 /// For example, Twitch places all the subscriber emotes that a broadcaster uploads for their channel in the same emote set.
 /// <br/>
 /// Requires an app or user access token.
@@ -19,36 +20,19 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetEmoteSetsRequest
     : TwitchHelixRequest<GetEmoteSetsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetEmoteSetsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetEmoteSetsRequestParameters parameters
-        )
-        : base(
-            "/chat/emotes/set",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("emote_set_id", parameters.EmoteSetIds.Select(x => x.ToString()))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/chat/emotes/set";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("emote_set_id", EmoteSetIds.Select(x => x.ToString()));
 
-/// <summary>
-/// Request parameters for a <see cref="GetEmoteSetsRequest"/>.
-/// </summary>
-public record GetEmoteSetsRequestParameters
-{
     /// <summary>
-    /// A list of ids for the emote sets to get. 
+    /// A list of ids for the emote sets to get.
     /// </summary>
     /// <remarks>
-    /// You may specify a maximum of 25 IDs. 
+    /// You may specify a maximum of 25 IDs.
     /// The response contains only the IDs that were found and ignores duplicate IDs.
     /// </remarks>
     public required IEnumerable<EmoteSetId> EmoteSetIds { get; set; }
