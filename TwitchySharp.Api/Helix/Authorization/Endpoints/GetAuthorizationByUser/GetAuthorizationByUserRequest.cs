@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -16,31 +17,14 @@ namespace TwitchySharp.Api.Helix.Authorization;
 public record GetAuthorizationByUserRequest
     : TwitchHelixRequest<GetAuthorizationByUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetAuthorizationByUserRequest(
-        ClientId clientId,
-        AppAccessToken accessToken,
-        GetAuthorizationByUserRequestParameters parameters
-        )
-        : base(
-            "/authorization/users",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("user_id", parameters.UserIds.Select(x => x.Value))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/authorization/users";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("user_id", UserIds.Select(x => x.Value));
 
-/// <summary>
-/// Request parameters for a <see cref="GetAuthorizationByUserRequest"/>.
-/// </summary>
-public record GetAuthorizationByUserRequestParameters
-{
     /// <summary>
     /// The user id(s) of the user(s) you want to check authorization for.
     /// </summary>
