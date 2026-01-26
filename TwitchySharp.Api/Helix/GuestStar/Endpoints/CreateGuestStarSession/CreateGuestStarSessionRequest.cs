@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 /// <summary>
-/// <b>BETA</b> Creates a Guest Star session on behalf of the broadcaster. 
+/// <b>BETA</b> Creates a Guest Star session on behalf of the broadcaster.
 /// </summary>
 /// <remarks>
 /// Requires the broadcaster to be present in the call interface, or the call will be ended automatically.
@@ -17,30 +18,14 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 public record CreateGuestStarSessionRequest
     : TwitchHelixRequest<CreateGuestStarSessionResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public CreateGuestStarSessionRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CreateGuestStarSessionRequestParameters parameters
-        ) : base(
-        "/guest_star/session",
-        clientId,
-        accessToken,
-        new HttpQueryParameters()
-            .Add("broadcaster_id", parameters.BroadcasterId)
-        )
-    {
-        Method = HttpMethod.Post;
-    }
-}
+    protected override string Path => "/guest_star/session";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="CreateGuestStarSessionRequest"/>.
-/// </summary>
-public record CreateGuestStarSessionRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster to create a Guest Star session for.
     /// </summary>
