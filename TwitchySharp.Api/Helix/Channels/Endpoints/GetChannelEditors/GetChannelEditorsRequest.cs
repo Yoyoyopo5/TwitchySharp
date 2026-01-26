@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Gets the broadcaster’s list editors.
+/// Gets the broadcaster's list editors.
 /// </summary>
 /// <remarks>
 /// Requires a user access token with <see cref="Scope.ChannelReadEditors"/>.
@@ -15,39 +16,20 @@ namespace TwitchySharp.Api.Helix.Channels;
 public record GetChannelEditorsRequest
     : TwitchHelixRequest<GetChannelEditorsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token with <see cref="Scope.ChannelReadEditors"/>.</param>
-    /// <param name="broadcasterId">
-    /// The user ID of the broadcaster that owns the channel. 
-    /// This ID must match the user ID in the <paramref name="accessToken"/>.
-    /// </param>
-    public GetChannelEditorsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetChannelEditorsRequestParameters parameters
-        )
-        : base(
-            "/channels/editors",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/channels/editors";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadEditors ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetChannelEditorsRequest"/>.
-/// </summary>
-public record GetChannelEditorsRequestParameters
-{
     /// <summary>
-    /// The user id of the broadcaster that owns the channel. 
+    /// The user id of the broadcaster that owns the channel.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
+    /// Requires <see cref="Scope.ChannelReadEditors"/>.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
 }
