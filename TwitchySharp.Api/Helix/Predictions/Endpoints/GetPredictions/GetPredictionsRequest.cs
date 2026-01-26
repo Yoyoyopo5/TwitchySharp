@@ -16,36 +16,19 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-predictions">Get Predictions</see> for more information.
 /// </remarks>
 public record GetPredictionsRequest
-    : TwitchHelixRequest<GetPredictionsResponse>
+    : TwitchHelixRequest<GetPredictionsResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadPredictions"/> or <see cref="Scope.ChannelManagePredictions"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetPredictionsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetPredictionsRequestParameters parameters
-        ) : base(
-            "/predictions",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("id", parameters.PredictionIds?.Select(x => x.Value))
-                .Add("first", parameters.First?.ToString())
-                .Add("after", parameters.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/predictions";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelReadPredictions, Scope.ChannelManagePredictions];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("id", PredictionIds?.Select(x => x.Value))
+            .Add("first", First?.ToString())
+            .Add("after", After?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="GetPredictionsRequest"/>.
-/// </summary>
-public record GetPredictionsRequestParameters
-    : IPageableRequest
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to get predictions for.
     /// </summary>
@@ -53,21 +36,25 @@ public record GetPredictionsRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// Filter the returned list by prediction id.
     /// </summary>
     /// <remarks>
-    /// You may specify a maximum of 25 ids. 
+    /// You may specify a maximum of 25 ids.
     /// The endpoint ignores duplicate ids and those not owned by the broadcaster.
     /// </remarks>
     public IEnumerable<PredictionId>? PredictionIds { get; set; }
+
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>.
     /// </summary>
     /// <remarks>
-    /// The minimum page size is 1 item per page and the maximum is 25 items per page. 
+    /// The minimum page size is 1 item per page and the maximum is 25 items per page.
     /// The default is 20.
     /// </remarks>
     public PaginationAmount? First { get; set; }
+
+    /// <inheritdoc/>
     public PaginationCursor? After { get; set; }
 }
