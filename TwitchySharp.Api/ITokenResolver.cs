@@ -10,10 +10,8 @@ namespace TwitchySharp.Api;
 
 public interface ITokenResolver
 {
-    ValueTask<AccessToken> GetToken(TwitchApiIdentity identity, IEnumerable<Scope> validScopes, CancellationToken ct = default);
+    ValueTask<AccessToken> GetToken(ITwitchRequest request, CancellationToken ct = default);
 }
-
-
 
 public class DefaultTokenResolver
     : ITokenResolver

@@ -15,7 +15,11 @@ public record TwitchApiIdentity()
     /// The id of the application registered on the <see href="https://dev.twitch.tv/">Twitch Developer Portal</see> to requests as.
     /// </summary>
     public ClientId? ClientId { get; init; }
-    public static TwitchApiIdentity None { get; } = new();
+    /// <summary>
+    /// Represents an explicit "no identity" value that will not have a fallback client applied
+    /// and will not write a Client-Id header.
+    /// </summary>
+    public static TwitchApiIdentity None { get; } = new() { ClientId = new ClientId("") };
 }
 
 /// <summary>

@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,11 +15,10 @@ namespace TwitchySharp.Api;
 /// Handles adding required authorization headers and deserializing responses into response types.
 /// </remarks>
 /// <param name="httpClient">The client to use.</param>
-/// <param name="clientConfig">
-/// The client configuration to use. 
-/// Use the <see cref="SingleClientConfiguration"/> for a simple static client id (fine for most cases).
+/// <param name="authorizer">
+/// The request authorizer to use. This is required for Helix endpoints.
+/// Use <see cref="DefaultRequestAuthorizer"/> with <see cref="SingleClientIdentityResolver"/> for simple scenarios.
 /// </param>
-/// <param name="authorizer">The request authorizer to use. This is required for Helix endpoints.</param>
 /// <param name="responseContentConverter">
 /// The response content converter.
 /// Defaults to <see cref="AttributeFirstResponseContentConverter"/> if left <see langword="null"/>.
@@ -30,10 +29,9 @@ namespace TwitchySharp.Api;
 /// Defaults to <see cref="JsonConfig.ApiOptions"/> if left <see langword="null"/>.
 /// Don't change this unless you know what you're doing.
 /// </param>
-public class TwitchClient(HttpClient httpClient, IClientConfiguration clientConfig, IAuthorizeTwitchRequest? authorizer, IConvertResponseContent? responseContentConverter = null, JsonSerializerOptions? requestContentSerializerOptions = null) : ITwitchClient
+public class TwitchClient(HttpClient httpClient, IAuthorizeTwitchRequest? authorizer, IConvertResponseContent? responseContentConverter = null, JsonSerializerOptions? requestContentSerializerOptions = null) : ITwitchClient
 {
     private readonly HttpClient _httpClient = httpClient;
-    private readonly IClientConfiguration _clientConfig = clientConfig;
     private readonly IAuthorizeTwitchRequest? _authorizer = authorizer;
     private readonly IConvertResponseContent _responseContentConverter = responseContentConverter ?? new AttributeFirstResponseContentConverter(new JsonResponseConverter(JsonConfig.ApiOptions));
     private readonly JsonSerializerOptions _requestContentSerializerOptions = requestContentSerializerOptions ?? JsonConfig.ApiOptions;
@@ -79,13 +77,8 @@ public class TwitchClient(HttpClient httpClient, IClientConfiguration clientConf
     private async ValueTask<HttpResponseMessage> ConfigureAndSend(ITwitchRequest request, CancellationToken ct = default)
     {
         using HttpRequestMessage requestMessage = request.ToHttpRequestMessage(_requestContentSerializerOptions);
-        if (_authorizer is not null && request is IRequireAuthorization needsAuthorization)
-        {
-            // Don't love this, but need a way to null coalesce the TwitchApiIdentity.ClientId on the incoming request.
-            ClientIdentity? client = await _clientConfig.GetClientId(request, ct);
-            needsAuthorization = AuthorizationRequirement.FromRequest(needsAuthorization).WithClientFallback(client); // We are losing information sent to authorizer here!
-            requestMessage.AddTwitchAuthorizationHeaders(await _authorizer.GetAuthorization(needsAuthorization, ct).ConfigureAwait(false));
-        }
+        if (_authorizer is not null)
+            requestMessage.AddTwitchAuthorizationHeaders(await _authorizer.GetAuthorization(request, ct).ConfigureAwait(false));
         return await _httpClient.SendAsync(requestMessage, ct).ConfigureAwait(false);
     }
 }
