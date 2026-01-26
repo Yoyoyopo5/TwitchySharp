@@ -25,8 +25,13 @@ public record SetExtensionConfigurationSegmentRequest
 {
     protected override string Path => "/extensions/configurations";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
     public override IEnumerable<Scope> ValidScopes => [];
+
+    /// <summary>
+    /// The extension identity used for JWT authentication.
+    /// </summary>
+    public required ExtensionIdentity ExtensionIdentity { get; set; }
     public override object? ContentObject => Configuration;
 
     /// <summary>

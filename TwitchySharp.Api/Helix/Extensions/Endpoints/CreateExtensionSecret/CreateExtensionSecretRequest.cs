@@ -26,8 +26,13 @@ public record CreateExtensionSecretRequest
 {
     protected override string Path => "/extensions/jwt/secrets";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
     public override IEnumerable<Scope> ValidScopes => [];
+
+    /// <summary>
+    /// The extension identity used for JWT authentication.
+    /// </summary>
+    public required ExtensionIdentity ExtensionIdentity { get; set; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
