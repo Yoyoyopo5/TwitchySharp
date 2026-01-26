@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
@@ -9,43 +9,29 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// Creates an EventSub subscription.
 /// </summary>
 /// <remarks>
-/// Requires an app (for webhooks, conduit) or user access token (for websocket) with scopes depending on the subscription type.
-/// <br/>
+/// <para>
+/// If you use the <see cref="WebsocketSubscriptionTransport"/>, an access token must be a user access token with the required <see cref="Scope"/> for the subscription type.
+/// </para>
+/// <para>
+/// If you use the <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, the access token must be an app access token.
+/// If the subscription type requires a user access token authorization, the user must have created a user access token with the required <see cref="Scope"/> for this application (i.e., for this application's client id).
+/// It is not required to send this user access token in the request.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription">Create EventSub Subscription</see> for more information.
 /// </remarks>
 public record CreateEventSubSubscriptionRequest
     : TwitchHelixRequest<CreateEventSubSubscriptionResponse>
 {
-    /// <remarks>
-    /// <para>
-    /// If you use the <see cref="WebsocketSubscriptionTransport"/>, the <paramref name="accessToken"/> must be a user access token with the required <see cref="Scope"/> for the subscription type.
-    /// </para>
-    /// <para>
-    /// If you use the <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, the <paramref name="accessToken"/> must be an app access token. 
-    /// If the subscription type requires a user access token authorization, the user must have created a user access token with the required <see cref="Scope"/> for this application (i.e., for this application's client id). 
-    /// It is not required to send this user access token in the request.
-    /// </para>
-    /// </remarks>
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">
-    /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, an app access token.
-    /// If using <see cref="WebsocketSubscriptionTransport"/>, a user access token with the subscription type's required <see cref="Scope"/>.
-    /// </param>
-    /// <param name="subscription">The subscription to create.</param>
-    public CreateEventSubSubscriptionRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        NewEventSubSubscription subscription
-        )
-        : base(
-            "/eventsub/subscriptions",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = (CreateEventSubSubscriptionRequestData)subscription;
-    }
+    protected override string Path => "/eventsub/subscriptions";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
+
+    /// <summary>
+    /// The subscription to create.
+    /// </summary>
+    public required NewEventSubSubscription Subscription { get; set; }
 }
 
 internal record CreateEventSubSubscriptionRequestData
