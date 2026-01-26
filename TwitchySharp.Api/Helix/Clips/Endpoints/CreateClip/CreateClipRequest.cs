@@ -37,13 +37,21 @@ public record CreateClipRequest
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.ClipsEdit ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("title", Title)
             .Add("duration", Duration?.TotalSeconds.ToString());
+
+    /// <summary>
+    /// The user to create the clip as.
+    /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.
