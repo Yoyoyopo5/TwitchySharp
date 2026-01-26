@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
-/// Removes a broadcast segment from the broadcaster’s streaming schedule.
+/// Removes a broadcast segment from the broadcaster's streaming schedule.
 /// </summary>
 /// <remarks>
 /// <b>Note:</b> For recurring segments, removing a segment removes all segments in the recurring schedule.
@@ -17,31 +18,15 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record DeleteChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<DeleteChannelStreamScheduleSegmentResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public DeleteChannelStreamScheduleSegmentRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        DeleteChannelStreamScheduleSegmentRequestParameters parameters
-        ) : base(
-            "/schedule/segment",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("id", parameters.SegmentId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/schedule/segment";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageSchedule];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("id", SegmentId);
 
-/// <summary>
-/// Request parameters for a <see cref="DeleteChannelStreamScheduleSegmentRequest"/>.
-/// </summary>
-public record DeleteChannelStreamScheduleSegmentRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster that owns the streaming schedule to delete a segment from.
     /// </summary>
@@ -49,6 +34,7 @@ public record DeleteChannelStreamScheduleSegmentRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The id of the segment to remove.
     /// </summary>
