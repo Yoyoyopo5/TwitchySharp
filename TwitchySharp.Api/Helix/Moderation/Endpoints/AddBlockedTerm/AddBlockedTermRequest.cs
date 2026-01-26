@@ -20,7 +20,7 @@ public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageBlockedTerms];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageBlockedTerms ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

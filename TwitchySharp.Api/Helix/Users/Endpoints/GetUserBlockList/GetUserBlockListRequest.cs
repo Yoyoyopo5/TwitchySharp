@@ -19,7 +19,7 @@ public record GetUserBlockListRequest
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadBlockedUsers];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBlockedUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

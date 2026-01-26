@@ -20,5 +20,5 @@ public record GetUserExtensionsRequest
     protected override string Path => "/users/extensions/list";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadBroadcast, Scope.UserEditBroadcast];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.UserEditBroadcast ];
 }

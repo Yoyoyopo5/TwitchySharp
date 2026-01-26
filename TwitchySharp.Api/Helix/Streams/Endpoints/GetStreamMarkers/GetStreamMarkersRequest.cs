@@ -22,7 +22,7 @@ public record GetStreamMarkersRequest
     public override HttpMethod Method => HttpMethod.Get;
     // Identity is determined by the token holder (broadcaster or editor), not necessarily tied to UserId/VideoId parameters
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadBroadcast, Scope.ChannelManageBroadcast];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.ChannelManageBroadcast ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

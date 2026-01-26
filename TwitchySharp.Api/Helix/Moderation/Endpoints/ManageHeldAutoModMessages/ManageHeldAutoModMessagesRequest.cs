@@ -21,7 +21,7 @@ public record ManageHeldAutoModMessagesRequest
     protected override string Path => "/moderation/automod/message";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(MessageAction.UserId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageAutomod];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomod ];
     public override object? ContentObject => MessageAction;
 
     /// <summary>

@@ -20,7 +20,7 @@ public record GetModeratedChannelsRequest
     protected override string Path => "/moderation/channels";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadModeratedChannels];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadModeratedChannels ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

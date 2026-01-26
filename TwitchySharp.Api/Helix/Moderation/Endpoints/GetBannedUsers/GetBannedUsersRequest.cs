@@ -21,7 +21,7 @@ public record GetBannedUsersRequest
     protected override string Path => "/moderation/banned";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModerationRead, Scope.ModeratorManageBannedUsers];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModerationRead, Scope.ModeratorManageBannedUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

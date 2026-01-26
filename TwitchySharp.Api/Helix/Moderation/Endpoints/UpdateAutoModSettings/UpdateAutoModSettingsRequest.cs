@@ -22,7 +22,7 @@ public record UpdateAutoModSettingsRequest
     protected override string Path => "/moderation/automod/settings";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageAutomodSettings];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomodSettings ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

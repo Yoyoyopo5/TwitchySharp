@@ -6,7 +6,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Gets the broadcaster's list editors.
+/// Gets the broadcaster's list of editors.
 /// </summary>
 /// <remarks>
 /// Requires a user access token with <see cref="Scope.ChannelReadEditors"/>.

@@ -20,7 +20,7 @@ public record EndPollRequest
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Patch;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Poll.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePolls];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePolls ];
     public override object? ContentObject => Poll;
 
     /// <summary>
