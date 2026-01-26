@@ -26,9 +26,9 @@ public record GetClipsRequest
     public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
-            .Add("id", Ids?.Select(x => x.ToString()))
-            .Add("broadcaster_id", BroadcasterId)
-            .Add("game_id", GameId)
+            .Add("id", Query.Ids?.Select(x => x.ToString()))
+            .Add("broadcaster_id", Query.BroadcasterId)
+            .Add("game_id", Query.GameId)
             .Add("started_at", StartedAt?.ToUniversalTwitchQueryString())
             .Add("ended_at", EndedAt?.ToUniversalTwitchQueryString())
             .Add("first", First?.ToString())
@@ -37,35 +37,12 @@ public record GetClipsRequest
             .Add("is_featured", IsFeatured?.ToString());
 
     /// <summary>
-    /// The user id of the broadcaster whose video clips you want to get.
+    /// The query specifying which clips to retrieve.
     /// </summary>
     /// <remarks>
-    /// Use this parameter to get clips that were captured from the broadcaster's streams.
-    /// This parameter is mutually exclusive with <see cref="GameId"/> and <see cref="Ids"/>.
-    /// At least one of <see cref="BroadcasterId"/>, <see cref="GameId"/>, or <see cref="Ids"/> should be specified.
+    /// Use <see cref="BroadcasterClipsQuery"/>, <see cref="GameClipsQuery"/>, or <see cref="ClipsIdQuery"/>.
     /// </remarks>
-    public UserId? BroadcasterId { get; set; }
-
-    /// <summary>
-    /// The id of the game or category whose clips you want to get.
-    /// </summary>
-    /// <remarks>
-    /// Use this parameter to get clips that were captured from streams that were playing this game.
-    /// This parameter is mutually exclusive with <see cref="BroadcasterId"/> and <see cref="Ids"/>.
-    /// At least one of <see cref="BroadcasterId"/>, <see cref="GameId"/>, or <see cref="Ids"/> should be specified.
-    /// </remarks>
-    public GameId? GameId { get; set; }
-
-    /// <summary>
-    /// The clip id(s) of the clip(s) to get.
-    /// </summary>
-    /// <remarks>
-    /// You may specify a maximum of 100 ids.
-    /// The API ignores duplicate ids and ids that aren't found.
-    /// This parameter is mutually exclusive with <see cref="BroadcasterId"/> and <see cref="GameId"/>.
-    /// At least one of <see cref="BroadcasterId"/>, <see cref="GameId"/>, or <see cref="Ids"/> should be specified.
-    /// </remarks>
-    public IEnumerable<ClipId>? Ids { get; set; }
+    public required ClipsQuery Query { get; set; }
 
     /// <summary>
     /// The start date used to filter clips.
@@ -109,4 +86,62 @@ public record GetClipsRequest
     /// All clips are returned if this parameter is <see langword="null"/>.
     /// </remarks>
     public bool? IsFeatured { get; set; }
+}
+
+/// <summary>
+/// Base type for clips query parameters.
+/// </summary>
+/// <remarks>
+/// Use derived types <see cref="BroadcasterClipsQuery"/>, <see cref="GameClipsQuery"/>, or <see cref="ClipsIdQuery"/>.
+/// </remarks>
+public abstract record ClipsQuery
+{
+    internal UserId? BroadcasterId { get; init; }
+    internal GameId? GameId { get; init; }
+    internal IEnumerable<ClipId>? Ids { get; init; }
+}
+
+/// <summary>
+/// Query for clips from a specific broadcaster's streams.
+/// </summary>
+public record BroadcasterClipsQuery : ClipsQuery
+{
+    /// <summary>
+    /// The user id of the broadcaster whose clips you want to get.
+    /// </summary>
+    public new required UserId BroadcasterId
+    {
+        get => base.BroadcasterId!.Value;
+        init => base.BroadcasterId = value;
+    }
+}
+
+/// <summary>
+/// Query for clips from streams playing a specific game or category.
+/// </summary>
+public record GameClipsQuery : ClipsQuery
+{
+    /// <summary>
+    /// The id of the game or category whose clips you want to get.
+    /// </summary>
+    public new required GameId GameId
+    {
+        get => base.GameId!.Value;
+        init => base.GameId = value;
+    }
+}
+
+/// <summary>
+/// Query for specific clips by their ids.
+/// </summary>
+public record ClipsIdQuery : ClipsQuery
+{
+    /// <summary>
+    /// The clip ids to get. Maximum of 100 ids.
+    /// </summary>
+    public new required IEnumerable<ClipId> Ids
+    {
+        get => base.Ids!;
+        init => base.Ids = value;
+    }
 }
