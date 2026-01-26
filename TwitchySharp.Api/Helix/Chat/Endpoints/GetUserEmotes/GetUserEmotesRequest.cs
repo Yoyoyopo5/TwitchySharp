@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -15,47 +16,34 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetUserEmotesRequest
     : TwitchHelixRequest<GetUserEmotesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadEmotes"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetUserEmotesRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetUserEmotesRequestParameters parameters
-        )
-        : base(
-            "/chat/emotes/user",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("user_id", parameters.UserId)
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("after", parameters.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/chat/emotes/user";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadEmotes ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("user_id", UserId)
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("after", After?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="GetUserEmotesRequest"/>.
-/// </summary>
-public record GetUserEmotesRequestParameters
-{
     /// <summary>
     /// The user id of the user you want to get emotes for.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
+    /// Requires <see cref="Scope.UserReadEmotes"/>.
     /// </remarks>
     public required UserId UserId { get; set; }
+
     /// <summary>
-    /// The user id of a broadcaster you wish to get follower emotes of. 
+    /// The user id of a broadcaster you wish to get follower emotes of.
     /// </summary>
     /// <remarks>
-    /// Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body.
+    /// Using this query parameter will guarantee inclusion of the broadcaster's follower emotes in the response body.
     /// <b>Note:</b> If the user specified in <see cref="UserId"/> is subscribed to the broadcaster specified, their follower emotes will appear in the response body regardless if this query parameter is used.
     /// </remarks>
     public UserId? BroadcasterId { get; set; }
-    public PaginationCursor? After { get; set; } // Not sure why first is not in the docs for this one.
+
+    /// <inheritdoc/>
+    public PaginationCursor? After { get; set; }
 }
