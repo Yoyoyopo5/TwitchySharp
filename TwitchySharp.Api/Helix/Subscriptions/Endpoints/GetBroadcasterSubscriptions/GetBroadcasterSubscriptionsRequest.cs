@@ -17,37 +17,20 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions">Get Broadcaster Subscriptions</see> for more information.
 /// </remarks>
 public record GetBroadcasterSubscriptionsRequest
-    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponse>
+    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadSubscriptions"/>, or an app access token if this application is an extension and the broadcaster has granted <see cref="Scope.ChannelReadSubscriptions"/> from within the Twitch Extensions manager.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetBroadcasterSubscriptionsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetBroadcasterSubscriptionsRequestParameters parameters
-        ) : base(
-            "/subscriptions",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("user_id", parameters.UserIds?.Select(x => x.Value))
-                .Add("first", parameters.First?.ToString())
-                .Add("before", parameters.Before?.Value)
-                .Add("after", parameters.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/subscriptions";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelReadSubscriptions];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("user_id", UserIds?.Select(x => x.Value))
+            .Add("first", First?.ToString())
+            .Add("before", Before?.Value)
+            .Add("after", After?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="GetBroadcasterSubscriptionsRequest"/>.
-/// </summary>
-public record GetBroadcasterSubscriptionsRequestParameters
-    : IPageableRequest
-{
     /// <summary>
     /// The user id of the broadcaster to get subscribers for.
     /// </summary>
@@ -66,7 +49,7 @@ public record GetBroadcasterSubscriptionsRequestParameters
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
     /// <remarks>
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
     public PaginationAmount? First { get; set; }
@@ -74,8 +57,8 @@ public record GetBroadcasterSubscriptionsRequestParameters
     /// The cursor of the result to get results before.
     /// </summary>
     /// <remarks>
-    /// Do not specify if you set userIds. 
-    /// The <see cref="Pagination"/> object in the response contains the cursor’s value.
+    /// Do not specify if you set <see cref="UserIds"/>.
+    /// The <see cref="Pagination"/> object in the response contains the cursor's value.
     /// </remarks>
     public PaginationCursor? Before { get; set; }
     /// <summary>
@@ -83,7 +66,7 @@ public record GetBroadcasterSubscriptionsRequestParameters
     /// </summary>
     /// <remarks>
     /// <inheritdoc cref="IPageableRequest.After"/>
-    /// Do not specify if you set userIds. 
+    /// Do not specify if you set <see cref="UserIds"/>.
     /// </remarks>
     public PaginationCursor? After { get; set; }
 }
