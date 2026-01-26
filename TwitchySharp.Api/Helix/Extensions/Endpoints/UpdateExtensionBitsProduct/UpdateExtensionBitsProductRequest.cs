@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
@@ -7,33 +9,27 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Adds or updates a Bits product that the extension created.
 /// </summary>
 /// <remarks>
-/// If the SKU doesn’t exist, the product is added. 
+/// If the SKU doesn't exist, the product is added.
 /// You may update all fields except the <see cref="UpdateExtensionBitsProductRequestData.Sku"/>.
 /// <br/>
-/// Requires an app access token. 
-/// The client id used to create the the app access token must match the extension’s client id.
+/// Requires an app access token.
+/// The client id used to create the the app access token must match the extension's client id.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-extension-bits-product">Update Extension Bits Product</see> for more information.
 /// </remarks>
 public record UpdateExtensionBitsProductRequest
     : TwitchHelixRequest<UpdateExtensionBitsProductResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app access token.</param>
-    /// <param name="bitsProductData">The product data to update.</param>
-    public UpdateExtensionBitsProductRequest(
-        ClientId clientId,
-        AppAccessToken accessToken,
-        UpdateExtensionBitsProductRequestData bitsProductData
-        ) : base(
-            "/bits/extensions",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Put;
-        ContentObject = bitsProductData;
-    }
+    protected override string Path => "/bits/extensions";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    public override object? ContentObject => Product;
+
+    /// <summary>
+    /// The product data to update.
+    /// </summary>
+    public required UpdateExtensionBitsProductRequestData Product { get; set; }
 }
 
 /// <summary>
