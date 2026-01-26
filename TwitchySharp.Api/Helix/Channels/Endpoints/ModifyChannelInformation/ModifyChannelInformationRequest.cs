@@ -22,7 +22,7 @@ public record ModifyChannelInformationRequest
     protected override string Path => "/channels";
     public override HttpMethod Method => HttpMethod.Patch;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageBroadcast];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageBroadcast ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

@@ -24,7 +24,7 @@ public record CreatePredictionRequest
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePredictions];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePredictions ];
     public override object? ContentObject => Prediction;
 
     /// <summary>

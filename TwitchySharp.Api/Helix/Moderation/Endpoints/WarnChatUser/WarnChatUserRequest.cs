@@ -21,7 +21,7 @@ public record WarnChatUserRequest
     protected override string Path => "/moderation/warnings";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageWarnings];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageWarnings ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

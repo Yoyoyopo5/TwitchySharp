@@ -39,7 +39,7 @@ public record CheckAutoModStatusRequest
     protected override string Path => "/moderation/enforcements/status";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModerationRead];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModerationRead ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

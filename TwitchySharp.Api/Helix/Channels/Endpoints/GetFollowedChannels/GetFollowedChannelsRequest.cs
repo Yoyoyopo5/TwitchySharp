@@ -39,9 +39,11 @@ public record GetFollowedChannelsRequest
 
     /// <summary>
     /// Use this parameter to see whether the user follows a specific broadcaster.
+    /// </summary>
+    /// <remarks>
     /// If specified, the response contains this broadcaster if the user follows them.
     /// If not specified, the response contains all broadcasters that the user follows.
-    /// </summary>
+    /// </remarks>
     public UserId? BroadcasterId { get; set; }
 
     /// <summary>

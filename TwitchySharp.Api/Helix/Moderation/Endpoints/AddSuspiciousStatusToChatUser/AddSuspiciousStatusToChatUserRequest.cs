@@ -19,7 +19,7 @@ public record AddSuspiciousStatusToChatUserRequest
     protected override string Path => "/moderation/suspicious_users";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageSuspiciousUsers];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageSuspiciousUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

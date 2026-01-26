@@ -22,7 +22,7 @@ public record CreateChannelStreamScheduleSegmentRequest
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageSchedule];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

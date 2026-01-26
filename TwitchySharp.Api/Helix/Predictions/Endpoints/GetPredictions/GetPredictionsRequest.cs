@@ -21,7 +21,7 @@ public record GetPredictionsRequest
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelReadPredictions, Scope.ChannelManagePredictions];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadPredictions, Scope.ChannelManagePredictions ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

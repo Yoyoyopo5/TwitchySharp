@@ -36,7 +36,7 @@ public record CreateStreamMarkerRequest
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Marker.UserId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageBroadcast];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageBroadcast ];
     public override object? ContentObject => Marker;
 
     /// <summary>
