@@ -19,36 +19,20 @@ namespace TwitchySharp.Api.Helix.Videos;
 public record DeleteVideosRequest
     : TwitchHelixRequest<DeleteVideosResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageVideos"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public DeleteVideosRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        DeleteVideosRequestParameters parameters
-        ) : base(
-            "/videos",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("id", parameters.Ids.Select(x => x.Value))
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/videos";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageVideos];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("id", Ids.Select(x => x.Value));
 
-/// <summary>
-/// Request parameters for a <see cref="DeleteVideosRequest"/>.
-/// </summary>
-public record DeleteVideosRequestParameters
-{
     /// <summary>
     /// The ids of the videos to delete.
     /// </summary>
     /// <remarks>
     /// You can delete a maximum of 5 videos per request. Ignores invalid video IDs.
-    /// If the user doesn’t have permission to delete one of the videos in the list, none of the videos are deleted.
+    /// If the user doesn't have permission to delete one of the videos in the list, none of the videos are deleted.
     /// </remarks>
     public required IEnumerable<VideoId> Ids { get; set; }
 }
