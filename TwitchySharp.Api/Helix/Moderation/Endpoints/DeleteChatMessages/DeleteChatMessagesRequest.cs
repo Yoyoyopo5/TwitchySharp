@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// Removes a single chat message or all chat messages from the broadcaster’s chat room.
+/// Removes a single chat message or all chat messages from the broadcaster's chat room.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.ModeratorManageChatMessages"/>.
@@ -15,32 +16,16 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record DeleteChatMessagesRequest
     : TwitchHelixRequest<DeleteChatMessagesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageChatMessages"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public DeleteChatMessagesRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        DeleteChatMessagesRequestParameters parameters
-        ) : base(
-            "/moderation/chat",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-                .Add("message_id", parameters.MessageId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/moderation/chat";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageChatMessages];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId)
+            .Add("message_id", MessageId);
 
-/// <summary>
-/// Request parameters for a <see cref="DeleteChatMessagesRequest"/>.
-/// </summary>
-public record DeleteChatMessagesRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) whose chat to delete a chat message from.
     /// </summary>
