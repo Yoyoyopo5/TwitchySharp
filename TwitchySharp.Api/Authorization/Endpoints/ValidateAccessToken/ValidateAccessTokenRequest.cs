@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
@@ -26,14 +25,18 @@ public record ValidateAccessTokenRequest
     public required UserAccessToken AccessToken { get; init; }
 
     /// <summary>
-    /// The identity for this request. Validation does not require a specific identity context.
+    /// The identity for this request.
     /// </summary>
+    /// <remarks>
+    /// Validation does not require a specific identity context.
+    /// The <see cref="AccessToken"/> will be used in the Authorization header.
+    /// </remarks>
     public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
 
     /// <summary>
     /// No specific scopes are required for token validation.
     /// </summary>
-    public IEnumerable<Scope> ValidScopes => Enumerable.Empty<Scope>();
+    public IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.
