@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// Warns a user in the specified broadcaster’s chat room, preventing them from chat interaction until the warning is acknowledged.
+/// Warns a user in the specified broadcaster's chat room, preventing them from chat interaction until the warning is acknowledged.
 /// </summary>
 /// <remarks>
 /// New warnings can be issued to a user when they already have a warning in the channel (new warning will replace old warning).
@@ -17,38 +18,21 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record WarnChatUserRequest
     : TwitchHelixRequest<WarnChatUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageWarnings"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="warning">The warning data.</param>
-    public WarnChatUserRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        WarnChatUserRequestParameters parameters,
-        WarnChatUserRequestData warning
-        ) : base(
-            "/moderation/warnings",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = warning;
-    }
-}
+    protected override string Path => "/moderation/warnings";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageWarnings];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId);
+    public override object? ContentObject => Warning;
 
-/// <summary>
-/// Request parameters for a <see cref="WarnChatUserRequest"/>.
-/// </summary>
-public record WarnChatUserRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to issue to warning in.
     /// </summary>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// </summary>
@@ -56,6 +40,11 @@ public record WarnChatUserRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId ModeratorId { get; set; }
+
+    /// <summary>
+    /// The warning data.
+    /// </summary>
+    public required WarnChatUserRequestData Warning { get; set; }
 }
 
 /// <summary>
