@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -14,25 +15,17 @@ namespace TwitchySharp.Api.Helix.Predictions;
 public record EndPredictionRequest
     : TwitchHelixRequest<EndPredictionResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePredictions"/>.</param>
-    /// <param name="prediction">
+    protected override string Path => "/predictions";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePredictions];
+    public override object? ContentObject => Prediction;
+
+    /// <summary>
     /// Data used to update the prediction.
     /// Use derived classes <see cref="ResolvePrediction"/>, <see cref="CancelPrediction"/>, and <see cref="LockPrediction"/>.
-    /// </param>
-    public EndPredictionRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        EndPredictionRequestData prediction
-        ) : base(
-            "/predictions",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = prediction;
-    }
+    /// </summary>
+    public required EndPredictionRequestData Prediction { get; set; }
 }
 
 /// <summary>
