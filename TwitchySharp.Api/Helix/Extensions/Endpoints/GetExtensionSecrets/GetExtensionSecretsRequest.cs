@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -7,10 +9,9 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Gets an extension's list of shared secrets.
 /// </summary>
 /// <remarks>
-/// <br/>
-/// Requires a signed JSON Web Token (JWT) created by an EBS. 
-/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>. 
-/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). 
+/// Requires a signed JSON Web Token (JWT) created by an EBS.
+/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
+/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>).
 /// The role field must be set to external.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-secrets">Get Extension Secrets</see> for more information.
@@ -18,30 +19,14 @@ namespace TwitchySharp.Api.Helix.Extensions;
 public record GetExtensionSecretsRequest
     : TwitchHelixRequest<GetExtensionSecretsResponse>
 {
-    /// <param name="clientId">The client id of the extension.</param>
-    /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="extensionId">The id of the extension whose shared secrets you want to get.</param>
-    public GetExtensionSecretsRequest(
-        ClientId clientId,
-        ExtensionJsonWebToken jwt,
-        GetExtensionSecretsRequestParameters parameters
-        ) : base(
-            "/extensions/jwt/secrets",
-            clientId,
-            jwt,
-            new HttpQueryParameters()
-                .Add("extension_id", parameters.ExtensionId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/extensions/jwt/secrets";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("extension_id", ExtensionId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetExtensionSecretsRequest"/>.
-/// </summary>
-public record GetExtensionSecretsRequestParameters
-{
     /// <summary>
     /// The id of the extension whose shared secrets you want to get.
     /// </summary>
