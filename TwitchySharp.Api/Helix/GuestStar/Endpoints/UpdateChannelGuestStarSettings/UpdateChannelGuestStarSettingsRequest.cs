@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -8,7 +9,6 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <b>BETA</b> Mutates the channel settings for configuration of the Guest Star feature for a particular host.
 /// </summary>
 /// <remarks>
-/// <br/>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageGuestStar"/>.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings">Update Channel Guest Star Settings</see> for more information.
@@ -16,35 +16,15 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 public record UpdateChannelGuestStarSettingsRequest
     : TwitchHelixRequest<UpdateChannelGuestStarSettingsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="settings">The settings to update.</param>
-    public UpdateChannelGuestStarSettingsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UpdateChannelGuestStarSettingsRequestParameters parameters,
-        UpdateChannelGuestStarSettingsRequestData settings
-        ) : base(
-            "/guest_star/channel_settings",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = settings;
-        // Dev Note: Examples for this request show fields in the request data as query parameters.
-        // The docs also show these as body fields.
-    }
-}
+    protected override string Path => "/guest_star/channel_settings";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
+    public override object? ContentObject => Settings;
 
-/// <summary>
-/// Request parameters for a <see cref="UpdateChannelGuestStarSettingsRequest"/>.
-/// </summary>
-public record UpdateChannelGuestStarSettingsRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster you want to update settings for.
     /// </summary>
@@ -52,6 +32,11 @@ public record UpdateChannelGuestStarSettingsRequestParameters
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
+    /// <summary>
+    /// The settings to update.
+    /// </summary>
+    public required UpdateChannelGuestStarSettingsRequestData Settings { get; set; }
 }
 
 /// <summary>
