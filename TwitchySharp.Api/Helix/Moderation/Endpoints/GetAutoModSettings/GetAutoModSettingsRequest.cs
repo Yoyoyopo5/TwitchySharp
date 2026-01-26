@@ -1,14 +1,15 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// Gets the broadcaster’s AutoMod settings. 
+/// Gets the broadcaster's AutoMod settings.
 /// </summary>
 /// <remarks>
-/// The settings are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room.
+/// The settings are used to automatically block inappropriate or harassing messages from appearing in the broadcaster's chat room.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ModeratorReadAutomodSettings"/>.
 /// <br/>
@@ -17,31 +18,15 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record GetAutoModSettingsRequest
     : TwitchHelixRequest<GetAutoModSettingsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorReadAutomodSettings"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetAutoModSettingsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetAutoModSettingsRequestParameters parameters
-        ) : base(
-            "/moderation/automod/settings",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/moderation/automod/settings";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadAutomodSettings];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetAutoModSettingsRequest"/>.
-/// </summary>
-public record GetAutoModSettingsRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to get AutoMod settings for.
     /// </summary>
