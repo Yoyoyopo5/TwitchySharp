@@ -16,10 +16,19 @@ public record TwitchApiIdentity()
     /// </summary>
     public ClientId? ClientId { get; init; }
     /// <summary>
-    /// Represents an explicit "no identity" value that will not have a fallback client applied
-    /// and will not write a Client-Id header.
+    /// Represents an explicit "no identity" value.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="DefaultRequestAuthorizer"/> will not override this with the default <see cref="ClientIdentity"/>.
+    /// </remarks>
     public static TwitchApiIdentity None { get; } = new() { ClientId = new ClientId("") };
+    /// <summary>
+    /// Represents a default identity with a <see langword="null"/> <see cref="ClientId"/>.
+    /// </summary>
+    /// <remarks>
+    /// This is resolved to the configured default <see cref="ClientIdentity"/> by the <see cref="DefaultRequestAuthorizer"/>.
+    /// </remarks>
+    public static TwitchApiIdentity Default { get; } = new();
 }
 
 /// <summary>
