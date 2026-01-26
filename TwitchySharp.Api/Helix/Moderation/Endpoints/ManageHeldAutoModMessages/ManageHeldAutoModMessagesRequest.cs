@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
@@ -17,24 +18,16 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record ManageHeldAutoModMessagesRequest
     : TwitchHelixRequest<ManageHeldAutoModMessagesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageAutomod"/>.</param>
-    /// <param name="messageAction">
+    protected override string Path => "/moderation/automod/message";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(MessageAction.UserId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageAutomod];
+    public override object? ContentObject => MessageAction;
+
+    /// <summary>
     /// Data used to identify the message and select the action.
-    /// </param>
-    public ManageHeldAutoModMessagesRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ManageHeldAutoModMessagesRequestData messageAction
-        ) : base(
-            "/moderation/automod/message",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = messageAction;
-    }
+    /// </summary>
+    public required ManageHeldAutoModMessagesRequestData MessageAction { get; set; }
 }
 
 /// <summary>
