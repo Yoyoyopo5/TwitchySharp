@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -15,35 +16,20 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 public record GetChannelGuestStarSettingsRequest
     : TwitchHelixRequest<GetChannelGuestStarSettingsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes one of <see cref="Scope.ChannelReadGuestStar"/>, <see cref="Scope.ChannelManageGuestStar"/>, <see cref="Scope.ModeratorReadGuestStar"/>, or <see cref="Scope.ModeratorManageGuestStar"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetChannelGuestStarSettingsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetChannelGuestStarSettingsRequestParameters parameters
-        ) : base(
-            "/guest_star/channel_settings",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/guest_star/channel_settings";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetChannelGuestStarSettingsRequest"/>.
-/// </summary>
-public record GetChannelGuestStarSettingsRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster to get Guest Star settings for.
     /// </summary>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator in the broadcaster's chat.
     /// </summary>
