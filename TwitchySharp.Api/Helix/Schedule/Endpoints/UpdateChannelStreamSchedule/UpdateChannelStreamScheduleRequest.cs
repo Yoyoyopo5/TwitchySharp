@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -8,7 +9,7 @@ using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
-/// Updates the broadcaster’s schedule settings, such as scheduling a vacation.
+/// Updates the broadcaster's schedule settings, such as scheduling a vacation.
 /// </summary>
 /// <remarks>
 /// <br/>
@@ -19,27 +20,22 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record UpdateChannelStreamScheduleRequest
     : TwitchHelixRequest<UpdateChannelStreamScheduleResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public UpdateChannelStreamScheduleRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UpdateChannelStreamScheduleRequestParameters parameters
-        ) : base(
-            "/schedule/settings",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("is_vacation_enabled", parameters.IsVacationEnabled?.ToString())
-                .Add("vacation_start_time", parameters.VacationStartTime?.ToUniversalTwitchQueryString())
-                .Add("vacation_end_time", parameters.VacationEndTime?.ToUniversalTwitchQueryString())
-                .Add("timezone", parameters.Timezone?.Id)
-            )
-    {
-        Method = HttpMethod.Patch;
-    }
+    protected override string Path => "/schedule/settings";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Settings.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageSchedule];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", Settings.BroadcasterId)
+            .Add("is_vacation_enabled", Settings.IsVacationEnabled?.ToString())
+            .Add("vacation_start_time", Settings.VacationStartTime?.ToUniversalTwitchQueryString())
+            .Add("vacation_end_time", Settings.VacationEndTime?.ToUniversalTwitchQueryString())
+            .Add("timezone", Settings.Timezone?.Id);
+
+    /// <summary>
+    /// The request parameters.
+    /// </summary>
+    public required UpdateChannelStreamScheduleRequestParameters Settings { get; set; }
 }
 
 /// <summary>
