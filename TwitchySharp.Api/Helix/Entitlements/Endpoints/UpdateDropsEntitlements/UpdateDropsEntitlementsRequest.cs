@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Entitlements;
 /// <summary>
-/// Updates the Drop entitlement’s fulfillment status.
+/// Updates the Drop entitlement's fulfillment status.
 /// </summary>
 /// <remarks>
 /// Requires an app or user access token.
@@ -14,23 +15,16 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 public record UpdateDropsEntitlementsRequest
     : TwitchHelixRequest<UpdateDropsEntitlementsResponse>
 {
-    /// <param name="clientId">The client id of the application. This must be the same application that owns the game to update entitlements for.</param>
-    /// <param name="accessToken">An app or user access token. If a user access token is used, only entitlements owned by the user that created it can be updated.</param>
-    /// <param name="updates">The updates to make.</param>
-    public UpdateDropsEntitlementsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        UpdateDropsEntitlementsRequestData updates
-        )
-        : base(
-            "/entitlements/drops",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = updates;
-    }
+    protected override string Path => "/entitlements/drops";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    public override object? ContentObject => Updates;
+
+    /// <summary>
+    /// The updates to make to the entitlements.
+    /// </summary>
+    public required UpdateDropsEntitlementsRequestData Updates { get; set; }
 }
 
 /// <summary>
