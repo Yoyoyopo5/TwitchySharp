@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -10,9 +10,6 @@ namespace TwitchySharp.Api.Authorization;
 public record OidcJwkRequest
     : TwitchAuthorizationRequest<OidcJwkResponse>
 {
-    public OidcJwkRequest()
-        : base("/keys")
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/keys";
+    public override HttpMethod Method => HttpMethod.Get;
 }
