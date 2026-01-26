@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -10,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// Creates a Channel Points Prediction.
 /// </summary>
 /// <remarks>
-/// The prediction runs as soon as it’s created. 
+/// The prediction runs as soon as it's created.
 /// The broadcaster may run only one prediction at a time.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ChannelManagePredictions"/>.
@@ -20,22 +21,16 @@ namespace TwitchySharp.Api.Helix.Predictions;
 public record CreatePredictionRequest
     : TwitchHelixRequest<CreatePredictionResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePredictions"/>.</param>
-    /// <param name="prediction">The new prediction to create and start.</param>
-    public CreatePredictionRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CreatePredictionRequestData prediction
-        ) : base(
-            "/predictions",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = prediction;
-    }
+    protected override string Path => "/predictions";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePredictions];
+    public override object? ContentObject => Prediction;
+
+    /// <summary>
+    /// The new prediction to create and start.
+    /// </summary>
+    public required CreatePredictionRequestData Prediction { get; set; }
 }
 
 /// <summary>
