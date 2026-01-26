@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -16,32 +17,16 @@ namespace TwitchySharp.Api.Helix.Users;
 public record BlockUserRequest
     : TwitchHelixRequest<BlockUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public BlockUserRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        BlockUserRequestParameters parameters
-        ) : base(
-            "/users/blocks",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("target_user_id", parameters.TargetUserId)
-                .Add("source_context", parameters.SourceContext?.Value)
-                .Add("reason", parameters.Reason?.Value)
-            )
-    {
-        Method = HttpMethod.Put;
-    }
-}
+    protected override string Path => "/users/blocks";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [Scope.UserManageBlockedUsers];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("target_user_id", TargetUserId)
+            .Add("source_context", SourceContext?.Value)
+            .Add("reason", Reason?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="BlockUserRequest"/>.
-/// </summary>
-public record BlockUserRequestParameters
-{
     /// <summary>
     /// The id of the user to block.
     /// </summary>
