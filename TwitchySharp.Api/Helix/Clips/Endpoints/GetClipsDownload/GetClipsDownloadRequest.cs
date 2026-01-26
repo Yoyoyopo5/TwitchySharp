@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using TwitchySharp.Helpers;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.Models;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Clips;
 /// <summary>
@@ -19,44 +19,30 @@ namespace TwitchySharp.Api.Helix.Clips;
 public record GetClipsDownloadRequest
     : TwitchHelixRequest<GetClipsDownloadResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetClipsDownloadRequest(
-        ClientId clientId,
-        AccessToken accessToken, // Seems like app token would not work, but docs says its allowed, so I'll leave this general.
-        GetClipsDownloadRequestParameters parameters
-        )
-        : base(
-            "/clips/downloads",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("editor_id", parameters.EditorId)
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("clip_id", parameters.ClipIds.Select(x => x.ToString()))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/clips/downloads";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(EditorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.EditorManageClips, Scope.ChannelManageClips ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("editor_id", EditorId)
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("clip_id", ClipIds.Select(x => x.ToString()));
 
-/// <summary>
-/// Request parameters for a <see cref="GetClipsDownloadRequest"/>.
-/// </summary>
-public record GetClipsDownloadRequestParameters
-{
     /// <summary>
     /// The user id of broadcaster or an editor of the channel you want to get clip downloads for.
     /// </summary>
     /// <remarks>
     /// This must be the user that created the access token used in the request.
+    /// Requires <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.
     /// </remarks>
     public required UserId EditorId { get; set; }
+
     /// <summary>
-    /// The user id of the broadcaster (channel) to get clip donwloads for.
+    /// The user id of the broadcaster (channel) to get clip downloads for.
     /// </summary>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The id(s) of the clips to get downloads for.
     /// </summary>
