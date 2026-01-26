@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Bits;
 /// <summary>
-/// Gets a list of Cheermotes that users can use to cheer Bits in any Bits-enabled channel’s chat room. 
+/// Gets a list of Cheermotes that users can use to cheer Bits in any Bits-enabled channel's chat room.
 /// </summary>
 /// <remarks>
 /// Cheermotes are animated emotes that viewers can assign Bits to.
@@ -17,36 +18,19 @@ namespace TwitchySharp.Api.Helix.Bits;
 public record GetCheermotesRequest
     : TwitchHelixRequest<GetCheermotesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token. Does not require any specific <see cref="Scope"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetCheermotesRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetCheermotesRequestParameters? parameters = null
-        )
-        : base(
-            "/bits/cheermotes",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters?.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/bits/cheermotes";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetCheermotesRequest"/>.
-/// </summary>
-public record GetCheermotesRequestParameters
-{
     /// <summary>
-    /// The user id of the broadcaster whose custom Cheermotes you want to get. 
+    /// The user id of the broadcaster whose custom Cheermotes you want to get.
     /// </summary>
     /// <remarks>
-    /// Specify this if you want to include the broadcaster’s Cheermotes in the response (not all broadcasters upload Cheermotes). 
+    /// Specify this if you want to include the broadcaster's Cheermotes in the response (not all broadcasters upload Cheermotes).
     /// If <see langword="null"/>, the response contains only global Cheermotes.
     /// If the broadcaster uploaded Cheermotes, the <see cref="Cheermote.Type"/> in the response is set to <see cref="CheermoteType.ChannelCustom"/>.
     /// </remarks>
