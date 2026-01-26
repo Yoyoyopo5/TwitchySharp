@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// </summary>
 /// <remarks>
 /// You may look up users using their user ID, login name, or both, but the sum total of the number of users you may look up is 100.
-/// If you don’t specify ids or login names, the request returns information about the user in the access token (if using a user access token).
+/// If you don't specify ids or login names, the request returns information about the user in the access token (if using a user access token).
 /// <para>
 /// To include the <see cref="TwitchUser.Email"/> property in the response, the user access token must include <see cref="Scope.UserReadEmail"/> and have been created by the user you want to get an email for.
 /// </para>
@@ -23,37 +23,27 @@ namespace TwitchySharp.Api.Helix.Users;
 public record GetUsersRequest
     : TwitchHelixRequest<GetUsersResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetUsersRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetUsersRequestParameters parameters
-        ) : base(
-            "/users",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("id", parameters.UserIds?.Select(x => x.Value))
-                .Add("login", parameters.UserLogins?.Select(x => x.Value))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/users";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    public override IEnumerable<Scope> ValidScopes => [];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("id", UserIds?.Select(x => x.Value))
+            .Add("login", UserLogins?.Select(x => x.Value));
 
-/// <summary>
-/// Request parameters for a <see cref="GetUsersRequest"/>.
-/// </summary>
-public record GetUsersRequestParameters
-{
     /// <summary>
     /// The ids of the users to get.
     /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 100 ids total between <see cref="UserIds"/> and <see cref="UserLogins"/>.
+    /// </remarks>
     public IEnumerable<UserId>? UserIds { get; set; }
     /// <summary>
     /// The logins (usernames) of the users to get.
     /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 100 logins total between <see cref="UserIds"/> and <see cref="UserLogins"/>.
+    /// </remarks>
     public IEnumerable<UserLogin>? UserLogins { get; set; }
 }
