@@ -15,8 +15,8 @@ public interface IRequireAuthorization
     /// The identity to use for the request.
     /// </summary>
     /// <remarks>
-    /// This identity determines the context for token resolution. The <see cref="TwitchApiIdentity.ClientId"/>
-    /// may be null if the request relies on a fallback client ID from <see cref="IResolveClientIdentity"/>.
+    /// Should be used by a <see cref="IAuthorizeTwitchRequest"/> implementation to set the correct
+    /// Twitch authorization headers (Client-Id and Authorization) for the request.
     /// </remarks>
     public TwitchApiIdentity Identity { get; }
     /// <summary>

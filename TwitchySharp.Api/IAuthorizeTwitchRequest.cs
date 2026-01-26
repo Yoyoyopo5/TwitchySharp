@@ -55,11 +55,6 @@ public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResol
         {
             IRequireAuthorization hasIdentity => hasIdentity.Identity.WithFallbackClient(await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)),
             _ => await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)
-            // Potential problem here:
-            // What if the caller explicitly wants to not set an Identity?
-            // There exists a TwitchApiIdentity.None, however it doesn't do anything special
-            // and just keeps the ClientId? property null, which would be overwritten here.
-            // We need a way to explicitly signal to DefaultRequestAuthorizer not to set the fallback client identity.
         };
 
     private async ValueTask<AccessToken?> ResolveAccessToken(ITwitchRequest request, CancellationToken ct)
