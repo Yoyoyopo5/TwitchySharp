@@ -20,14 +20,17 @@ public record StartCommercialRequest
 {
     protected override string Path => "/channels/commercial";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Commercial.BroadcasterId);
     public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelEditCommercial ];
-    public override object? ContentObject => new StartCommercialRequestData
-    {
-        BroadcasterId = BroadcasterId,
-        Length = Length
-    };
+    public override object? ContentObject => Commercial;
+    public required StartCommercialRequestData Commercial { get; set; }
+}
 
+/// <summary>
+/// Request data for a <see cref="StartCommercialRequest"/>.
+/// </summary>
+public record StartCommercialRequestData
+{
     /// <summary>
     /// The user id of the partner or affiliate broadcaster that wants to run the commercial.
     /// </summary>
@@ -36,7 +39,6 @@ public record StartCommercialRequest
     /// Requires <see cref="Scope.ChannelEditCommercial"/>.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
-
     /// <summary>
     /// The length of the commercial to run.
     /// </summary>
@@ -44,18 +46,7 @@ public record StartCommercialRequest
     /// Twitch tries to serve a commercial that's the requested length, but it may be shorter or longer.
     /// The maximum length you should request is 180 seconds.
     /// </remarks>
-    public required TimeSpan Length { get; set; }
-}
-
-/// <summary>
-/// Request data for a <see cref="StartCommercialRequest"/>.
-/// </summary>
-internal record StartCommercialRequestData
-{
-    [JsonPropertyName("broadcaster_id")]
-    public required UserId BroadcasterId { get; set; }
 
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    [JsonPropertyName("length")]
     public required TimeSpan Length { get; set; }
 }
