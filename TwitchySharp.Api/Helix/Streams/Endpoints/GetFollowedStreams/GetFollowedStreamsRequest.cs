@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -14,49 +15,33 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-streams">Get Followed Streams</see> for more information.
 /// </remarks>
 public record GetFollowedStreamsRequest
-    : TwitchHelixRequest<GetFollowedStreamsResponse>
+    : TwitchHelixRequest<GetFollowedStreamsResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.UserReadFollows"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetFollowedStreamsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetFollowedStreamsRequestParameters parameters
-        ) : base(
-            "/streams/followed",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("user_id", parameters.UserId)
-                .Add("first", parameters.First?.ToString())
-                .Add("after", parameters.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/streams/followed";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadFollows];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("user_id", UserId)
+            .Add("first", First?.ToString())
+            .Add("after", After?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="GetFollowedStreamsRequest"/>.
-/// </summary>
-public record GetFollowedStreamsRequestParameters
-    : IPageableRequest
-{
     /// <summary>
     /// The id of the user to get followed streams for.
     /// </summary>
     /// <remarks>
-    /// This must be the same user that created the <paramref name="accessToken"/>.
+    /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId UserId { get; set; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
     /// <remarks>
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 100.
     /// </remarks>
     public PaginationAmount? First { get; set; }
+    /// <inheritdoc/>
     public PaginationCursor? After { get; set; }
 }
