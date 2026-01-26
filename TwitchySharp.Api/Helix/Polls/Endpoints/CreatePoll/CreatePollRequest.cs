@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -7,10 +8,10 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
-/// Creates a poll that viewers in the broadcaster’s channel can vote on.
+/// Creates a poll that viewers in the broadcaster's channel can vote on.
 /// </summary>
 /// <remarks>
-/// The poll begins as soon as it’s created. A broadcaster may run only one poll at a time.
+/// The poll begins as soon as it's created. A broadcaster may run only one poll at a time.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ChannelManagePolls"/>.
 /// <br/>
@@ -19,22 +20,16 @@ namespace TwitchySharp.Api.Helix.Polls;
 public record CreatePollRequest
     : TwitchHelixRequest<CreatePollResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePolls"/>.</param>
-    /// <param name="poll">The poll to create.</param>
-    public CreatePollRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CreatePollRequestData poll
-        ) : base(
-            "/polls",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = poll;
-    }
+    protected override string Path => "/polls";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Poll.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManagePolls];
+    public override object? ContentObject => Poll;
+
+    /// <summary>
+    /// The poll to create.
+    /// </summary>
+    public required CreatePollRequestData Poll { get; set; }
 }
 
 /// <summary>
