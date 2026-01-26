@@ -19,7 +19,7 @@ public record GetBitsLeaderboardRequest
 {
     protected override string Path => "/bits/leaderboard";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => User;
     public override IEnumerable<Scope> ValidScopes => [ Scope.BitsRead ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -27,6 +27,11 @@ public record GetBitsLeaderboardRequest
             .Add("period", Period?.Value)
             .Add("started_at", StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
             .Add("user_id", UserId);
+
+    /// <summary>
+    /// The broadcaster to get the bits leaderboard for.
+    /// </summary>
+    public required UserIdentity User { get; set; }
 
     /// <summary>
     /// The number of results (leaderboard entries) to return.
