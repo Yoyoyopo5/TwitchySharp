@@ -56,8 +56,12 @@ public record UserIdentity(UserId UserId) : TwitchApiIdentity;
 /// <summary>
 /// The extension to make requests on behalf of.
 /// </summary>
-/// <param name="BroadcasterId">The user id of the broadcaster that owns the extension.</param>
-public record ExtensionIdentity(UserId BroadcasterId) : TwitchApiIdentity;
+/// <remarks>
+/// Extension endpoints use JWT authentication signed with the extension's secret.
+/// The <see cref="OwnerId"/> is included in the JWT payload as the <c>user_id</c> field.
+/// </remarks>
+/// <param name="OwnerId">The Twitch user id of the extension owner/developer.</param>
+public record ExtensionIdentity(UserId OwnerId) : TwitchApiIdentity;
 
 internal static class TwitchApiIdentityExtensions
 {
