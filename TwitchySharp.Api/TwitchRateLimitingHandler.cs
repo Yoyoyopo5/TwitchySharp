@@ -76,7 +76,7 @@ public class TwitchRateLimitingHandler(IResolveTwitchRateLimits rateLimitResolve
     private static string GetResourceKey(HttpRequestMessage request)
         => request.Options.TryGetValue(TwitchRequestOptionsKeys.Authorization, out TwitchAuthorizationRequestOptions? authOptions) switch
         {
-            true => string.IsNullOrEmpty(authOptions.ClientId) ? GLOBAL_KEY : authOptions.ClientId,
-            false => GLOBAL_KEY
+            true when authOptions.ClientId.HasValue => authOptions.ClientId.Value,
+            _ => GLOBAL_KEY
         };
 }

@@ -1,36 +1,66 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api;
 
 /// <summary>
-/// Determines mapping between <see cref="IRequireAuthorization"/> instances and <see cref="TwitchAuthorizationRequestOptions"/>.
+/// Determines the authorization headers to use for a Twitch API request.
 /// </summary>
 /// <remarks>
-/// Use the <see cref="DefaultRequestAuthorizer"/>.
+/// Use <see cref="DefaultRequestAuthorizer"/> for standard authorization scenarios.
 /// </remarks>
 public interface IAuthorizeTwitchRequest
 {
-    ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(IRequireAuthorization request, CancellationToken ct = default);
+    /// <summary>
+    /// Gets the authorization options for the given request.
+    /// </summary>
+    /// <param name="request">The full request that needs authorization.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>
+    /// The authorization options containing the ClientId and BearerToken to set as headers,
+    /// or <see langword="null"/> if the request does not require authorization.
+    /// </returns>
+    ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default);
 }
 
-/// <param name="tokenResolver">The token resolver to use.</param>
-public class DefaultRequestAuthorizer(ITokenResolver tokenResolver)
+/// <summary>
+/// The default <see cref="IAuthorizeTwitchRequest"/> implementation.
+/// </summary>
+/// <remarks>
+/// Resolves authorization headers using an <see cref="IResolveClientIdentity"/> for client id resolution 
+/// and an <see cref="ITokenResolver"/> for access token (bearer auth) resolution.
+/// </remarks>
+/// <param name="clientIdentityResolver">
+/// The resolver for determining which client identity to use.
+/// Use <see cref="SingleClientIdentityResolver"/> for simple single-client scenarios.
+/// </param>
+/// <param name="tokenResolver">The resolver for obtaining access tokens based on identity and required scopes.</param>
+public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResolver, ITokenResolver tokenResolver)
     : IAuthorizeTwitchRequest
 {
+    private readonly IResolveClientIdentity _clientIdentityResolver = clientIdentityResolver;
     private readonly ITokenResolver _tokenResolver = tokenResolver;
-    public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(IRequireAuthorization request, CancellationToken ct = default)
-    {
-        if (request is not IRequireAuthorization authorizedRequest)
-            return null;
 
-        return authorizedRequest.Identity.ClientId.HasValue switch
-        {
-            false => null,
-            true => new TwitchAuthorizationRequestOptions(
-                authorizedRequest.Identity.ClientId.Value,
-                request.OverrideAccessToken ?? await _tokenResolver.GetToken(authorizedRequest.Identity, authorizedRequest.ValidScopes, ct).ConfigureAwait(false))
-        };
+    /// <inheritdoc/>
+    public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default)
+    {
+        TwitchApiIdentity? identity = await ResolveIdentity(request, ct);
+        AccessToken? token = await ResolveAccessToken(request, ct);
+
+        return new TwitchAuthorizationRequestOptions(identity?.ClientId, token);
     }
+
+    private async ValueTask<TwitchApiIdentity?> ResolveIdentity(ITwitchRequest request, CancellationToken ct)
+        => request switch
+        {
+            IRequireAuthorization hasIdentity => hasIdentity.Identity.WithFallbackClient(await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)),
+            _ => await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)
+        };
+
+    private async ValueTask<AccessToken?> ResolveAccessToken(ITwitchRequest request, CancellationToken ct)
+        => request switch
+        {
+            IRequireAuthorization hasIdentity => hasIdentity.OverrideAccessToken ?? await _tokenResolver.GetToken(request, ct).ConfigureAwait(false),
+            _ => await _tokenResolver.GetToken(request, ct).ConfigureAwait(false)
+        };
 }
