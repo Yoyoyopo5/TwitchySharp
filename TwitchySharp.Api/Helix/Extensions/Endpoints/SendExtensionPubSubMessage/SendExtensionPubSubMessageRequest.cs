@@ -26,8 +26,13 @@ public record SendExtensionPubSubMessageRequest
 {
     protected override string Path => "/extensions/pubsub";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
     public override IEnumerable<Scope> ValidScopes => [];
+
+    /// <summary>
+    /// The extension identity used for JWT authentication.
+    /// </summary>
+    public required ExtensionIdentity ExtensionIdentity { get; set; }
     public override object? ContentObject => Message;
 
     /// <summary>
