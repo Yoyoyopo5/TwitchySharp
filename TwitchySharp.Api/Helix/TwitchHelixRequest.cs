@@ -25,8 +25,6 @@ public abstract record TwitchHelixRequest<TResponseContent>
     protected abstract TwitchApiIdentity DefaultIdentity { get; }
     public abstract IEnumerable<Scope> ValidScopes { get; }
     public virtual AccessToken? OverrideAccessToken { get; init; }
-    public virtual IRequireAuthorization WithClientFallback(ClientIdentity? client)
-        => this with { Identity = Identity.WithFallbackClient(client) };
     protected virtual HttpQueryParameters? QueryParameters { get; }
     public override Uri RequestUri => new UriBuilder
     {

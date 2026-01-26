@@ -39,8 +39,4 @@ public record ValidateAccessTokenRequest
     /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.
     /// </summary>
     public AccessToken? OverrideAccessToken => AccessToken;
-
-    /// <inheritdoc/>
-    public IRequireAuthorization WithClientFallback(ClientIdentity? client)
-        => this with { Identity = Identity.WithFallbackClient(client) };
 }
