@@ -19,7 +19,7 @@ public record RemoveSuspiciousStatusFromChatUserRequest
     protected override string Path => "/moderation/suspicious_users";
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageSuspiciousUsers];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageSuspiciousUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -34,6 +34,9 @@ public record RemoveSuspiciousStatusFromChatUserRequest
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to remove the suspicious user status on behalf of.
     /// </summary>
+    /// <remarks>
+    /// This must be the same user that created the access token in the request.
+    /// </remarks>
     public required UserId ModeratorId { get; set; }
 
     /// <summary>

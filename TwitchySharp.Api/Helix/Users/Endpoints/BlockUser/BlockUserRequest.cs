@@ -20,7 +20,7 @@ public record BlockUserRequest
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserManageBlockedUsers];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId)

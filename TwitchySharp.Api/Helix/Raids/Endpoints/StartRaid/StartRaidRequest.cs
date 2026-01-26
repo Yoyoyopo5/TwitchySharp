@@ -19,7 +19,7 @@ public record StartRaidRequest
     protected override string Path => "/raids";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(FromBroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageRaids];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageRaids ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_broadcaster_id", FromBroadcasterId)

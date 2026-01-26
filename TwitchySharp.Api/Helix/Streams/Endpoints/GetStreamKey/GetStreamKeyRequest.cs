@@ -19,7 +19,7 @@ public record GetStreamKeyRequest
     protected override string Path => "/streams/key";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelReadStreamKey];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadStreamKey ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

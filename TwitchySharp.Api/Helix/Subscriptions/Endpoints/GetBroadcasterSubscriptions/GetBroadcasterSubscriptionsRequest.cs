@@ -22,7 +22,7 @@ public record GetBroadcasterSubscriptionsRequest
     protected override string Path => "/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelReadSubscriptions];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadSubscriptions ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

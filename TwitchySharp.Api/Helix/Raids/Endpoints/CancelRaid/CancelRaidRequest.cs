@@ -23,7 +23,7 @@ public record CancelRaidRequest
     protected override string Path => "/raids";
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageRaids];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageRaids ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

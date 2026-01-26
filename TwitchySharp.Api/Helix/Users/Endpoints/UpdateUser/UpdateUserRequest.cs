@@ -20,7 +20,7 @@ public record UpdateUserRequest
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserEdit];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserEdit ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("description", Description);

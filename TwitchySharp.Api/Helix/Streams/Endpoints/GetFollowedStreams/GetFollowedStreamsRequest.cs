@@ -20,7 +20,7 @@ public record GetFollowedStreamsRequest
     protected override string Path => "/streams/followed";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.UserReadFollows];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadFollows ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

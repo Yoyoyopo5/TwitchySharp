@@ -19,7 +19,7 @@ public record ResolveUnbanRequestsRequest
     protected override string Path => "/moderation/unban_requests";
     public override HttpMethod Method => HttpMethod.Patch;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorManageUnbanRequests];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageUnbanRequests ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

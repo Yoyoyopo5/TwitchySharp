@@ -21,7 +21,7 @@ public record RemoveChannelModeratorRequest
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageModerators];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageModerators ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

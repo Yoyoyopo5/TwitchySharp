@@ -19,7 +19,7 @@ public record GetShieldModeStatusRequest
     protected override string Path => "/moderation/shield_mode";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadShieldMode, Scope.ModeratorManageShieldMode];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadShieldMode, Scope.ModeratorManageShieldMode ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

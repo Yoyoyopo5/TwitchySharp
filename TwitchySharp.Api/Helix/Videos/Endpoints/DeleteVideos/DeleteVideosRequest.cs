@@ -22,7 +22,7 @@ public record DeleteVideosRequest
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [Scope.ChannelManageVideos];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVideos ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids.Select(x => x.Value));

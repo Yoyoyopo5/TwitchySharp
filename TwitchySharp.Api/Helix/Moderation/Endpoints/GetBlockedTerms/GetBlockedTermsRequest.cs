@@ -21,7 +21,7 @@ public record GetBlockedTermsRequest
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadBlockedTerms, Scope.ModeratorManageBlockedTerms];
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadBlockedTerms, Scope.ModeratorManageBlockedTerms ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
