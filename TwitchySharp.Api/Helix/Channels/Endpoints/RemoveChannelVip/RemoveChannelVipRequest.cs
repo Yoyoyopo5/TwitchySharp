@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Removes the specified user as a VIP in the broadcaster’s channel.
+/// Removes the specified user as a VIP in the broadcaster's channel.
 /// </summary>
 /// <remarks>
 /// Note that this endpoint can be used to remove VIP status from a user on their behalf. In this case, the access token can be created by the user instead of the broadcaster.
@@ -18,39 +19,24 @@ namespace TwitchySharp.Api.Helix.Channels;
 public record RemoveChannelVipRequest
     : TwitchHelixRequest<RemoveChannelVipResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageVips"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public RemoveChannelVipRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        RemoveChannelVipRequestParameters parameters
-        )
-        : base(
-            "/channels/vips",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("user_id", parameters.UserId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/channels/vips";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVips ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("user_id", UserId);
 
-/// <summary>
-/// Request parameters for a <see cref="RemoveChannelVipRequest"/>.
-/// </summary>
-public record RemoveChannelVipRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to remove a VIP for.
     /// </summary>
     /// <remarks>
     /// If removing a user's VIP status on behalf of the broadcaster, the broadcaster must have created the access token used in the request.
+    /// Requires <see cref="Scope.ChannelManageVips"/>.
     /// </remarks>
     public required UserId BroadcasterId { get; set; }
+
     /// <summary>
     /// The id of the user to revoke VIP status for.
     /// </summary>
