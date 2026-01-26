@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
@@ -13,23 +14,29 @@ namespace TwitchySharp.Api.Authorization;
 public record ValidateAccessTokenRequest
     : TwitchAuthorizationRequest<ValidateAccessTokenResponse>, IRequireAuthorization
 {
-    /// <param name="accessToken">The user access token to validate.</param>
-    public ValidateAccessTokenRequest(UserAccessToken accessToken)
-        : base("/validate")
-    {
-        Method = HttpMethod.Get;
-        AccessToken = accessToken;
-    }
-
     public override HttpMethod Method => HttpMethod.Get;
     protected override string Path => "/validate";
 
     /// <summary>
     /// The user access token to validate.
     /// </summary>
+    /// <remarks>
+    /// This token is sent as the Bearer authorization header.
+    /// </remarks>
     public required UserAccessToken AccessToken { get; init; }
 
-    public TwitchApiIdentity Identity => new UserIdentity();
+    /// <summary>
+    /// The identity for this request. Validation does not require a specific identity context.
+    /// </summary>
+    public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
 
-    public IEnumerable<Scope> ValidScopes => throw new System.NotImplementedException();
+    /// <summary>
+    /// No specific scopes are required for token validation.
+    /// </summary>
+    public IEnumerable<Scope> ValidScopes => Enumerable.Empty<Scope>();
+
+    /// <summary>
+    /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.
+    /// </summary>
+    public AccessToken? OverrideAccessToken => AccessToken;
 }
