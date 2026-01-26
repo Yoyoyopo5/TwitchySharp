@@ -8,8 +8,14 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Sends a message to the broadcaster's chat room.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token with <see cref="Scope.UserWriteChat"/> or an app access token where the sending user has <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/> on another user access token granted to this client id.
 /// <br/>
+/// Defaults to using a <see cref="UserIdentity"/> based on the message sender (requires <see cref="Scope.UserWriteChat"/>).
+/// <br/>
+/// If you want to use the <see cref="Scope.ChannelBot"/> and <see cref="Scope.UserBot"/> scopes with a <see cref="ClientIdentity"/> (app access token),
+/// you should use the <see cref="AsBot(TwitchySharp.Api.ClientIdentity?)"/> method to configure the <see cref="ClientIdentity"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-chat-message">Send Chat Message</see> for more information.
 /// </remarks>
 public record SendChatMessageRequest
@@ -17,9 +23,22 @@ public record SendChatMessageRequest
 {
     protected override string Path => "/chat/messages";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Message.SenderId);
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserWriteChat, Scope.UserBot, Scope.ChannelBot ];
     public override object? ContentObject => Message;
+    /// <summary>
+    /// Allows for sending the request using an app access token with a user that has authorized the app with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>.
+    /// </summary>
+    /// <param name="client">
+    /// The client to use.
+    /// Leave this <see cref="null"/> to use <see cref="TwitchApiIdentity.Default"/>, which is set to a fallback by the <see cref="DefaultRequestAuthorizer"/>.
+    /// </param>
+    /// <returns>A new <see cref="SendChatMessageRequest"/> with the identity override configured.</returns>
+    public SendChatMessageRequest AsBot(ClientIdentity? client = null)
+        => this with
+        {
+            Identity = client ?? TwitchApiIdentity.Default
+        };
 
     /// <summary>
     /// The message to send.
