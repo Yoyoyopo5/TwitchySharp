@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -22,21 +22,56 @@ public record GetTeamsRequest
     public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
-            .Add("name", Name)
-            .Add("id", Id);
+            .Add("name", Query.Name)
+            .Add("id", Query.Id);
 
+    /// <summary>
+    /// The query specifying which team to retrieve.
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="TeamsQueryByName"/> or <see cref="TeamsQueryById"/>.
+    /// </remarks>
+    public required TeamsQuery Query { get; set; }
+}
+
+/// <summary>
+/// Base type for teams query parameters.
+/// </summary>
+/// <remarks>
+/// Use derived types <see cref="TeamsQueryByName"/> or <see cref="TeamsQueryById"/>.
+/// </remarks>
+public abstract record TeamsQuery
+{
+    internal string? Name { get; init; }
+    internal TeamId? Id { get; init; }
+}
+
+/// <summary>
+/// Query for a team by team name.
+/// </summary>
+public record TeamsQueryByName : TeamsQuery
+{
     /// <summary>
     /// The name of the team to get.
     /// </summary>
-    /// <remarks>
-    /// Mutually exclusive with <see cref="Id"/>. One of <see cref="Name"/> or <see cref="Id"/> must be set.
-    /// </remarks>
-    public string? Name { get; set; }
+    public new required string Name
+    {
+        get => base.Name!;
+        init => base.Name = value;
+    }
+}
+
+/// <summary>
+/// Query for a team by team id.
+/// </summary>
+public record TeamsQueryById : TeamsQuery
+{
     /// <summary>
     /// The id of the team to get.
     /// </summary>
-    /// <remarks>
-    /// Mutually exclusive with <see cref="Name"/>. One of <see cref="Name"/> or <see cref="Id"/> must be set.
-    /// </remarks>
-    public TeamId? Id { get; set; }
+    public new required TeamId Id
+    {
+        get => base.Id!.Value;
+        init => base.Id = value;
+    }
 }
