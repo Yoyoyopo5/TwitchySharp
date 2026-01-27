@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -24,7 +25,7 @@ public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitI
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("client_id", ClientId)
-            .Set("conduit_id", ConduitId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("client_id"), ClientId)
+            .Set(new ConditionKey("conduit_id"), ConduitId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

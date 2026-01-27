@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -19,7 +20,7 @@ public sealed record AutomodMessageUpdateV2(UserId BroadcasterUserId, UserId Mod
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId)
-            .Set("moderator_user_id", ModeratorUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
+            .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

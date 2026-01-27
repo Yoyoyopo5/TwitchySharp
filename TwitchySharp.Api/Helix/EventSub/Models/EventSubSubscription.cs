@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using TwitchySharp.Shared.EventSub;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
@@ -41,7 +42,7 @@ public record EventSubSubscription
     /// <remarks>
     /// The exact keys depend on what the subscription type expects.
     /// </remarks>
-    public required ImmutableDictionary<string, string> Condition { get; init; }
+    public required ImmutableDictionary<ConditionKey, string> Condition { get; init; }
     /// <summary>
     /// The date and time when the subscription was created.
     /// </summary>

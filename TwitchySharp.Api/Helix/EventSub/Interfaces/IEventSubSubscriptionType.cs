@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.Api.Helix.EventSub;
@@ -18,5 +19,5 @@ public interface IEventSubSubscriptionType
     /// A dictionary that contains the parameter values that are specific to the specified subscription type.
     /// For the object's required and optional fields, see the subscription type's documentation.
     /// </summary>
-    IReadOnlyDictionary<string, object> Condition { get; } // All conditions currently use string values, however it is possible that one may eventually appear with a non-string value, so let's use object here.
+    IReadOnlyDictionary<ConditionKey, object> Condition { get; } // All conditions currently use string values, however it is possible that one may eventually appear with a non-string value, so let's use object here.
 }
