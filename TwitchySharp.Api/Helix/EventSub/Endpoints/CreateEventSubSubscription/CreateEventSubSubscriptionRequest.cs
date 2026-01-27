@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -57,7 +58,7 @@ internal record CreateEventSubSubscriptionRequestData
         {
             Type = subscription.Type.Type.Type,
             Version = subscription.Type.Type.Version,
-            Condition = subscription.Type.Condition,
+            Condition = subscription.Type.Condition.ToDictionary(kvp => (string)kvp.Key, kvp => kvp.Value),
             Transport = subscription.Transport
         };
 }
