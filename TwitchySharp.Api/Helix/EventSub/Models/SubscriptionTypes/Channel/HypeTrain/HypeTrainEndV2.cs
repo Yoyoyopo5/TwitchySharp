@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -18,8 +18,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record HypeTrainEndV2(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_END);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainEndV2;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

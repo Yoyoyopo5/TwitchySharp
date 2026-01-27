@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -17,8 +17,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record ChannelChatMessageDelete(UserId BroadcasterUserId, UserId UserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_CHAT_MESSAGE_DELETE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatMessageDelete;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

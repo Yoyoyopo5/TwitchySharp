@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A notification is sent when a broadcaster’s automod settings are updated.
+/// A notification is sent when a broadcaster's automod settings are updated.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.ModeratorReadAutomodSettings"/>.
@@ -16,8 +16,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record AutomodSettingsUpdate(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.AUTOMOD_SETTINGS_UPDATE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodSettingsUpdate;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

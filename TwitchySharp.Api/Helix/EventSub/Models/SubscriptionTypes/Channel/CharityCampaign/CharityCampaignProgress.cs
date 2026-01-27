@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// Sends an event notification when progress is made towards the campaign’s goal or when the broadcaster changes the fundraising goal.
+/// Sends an event notification when progress is made towards the campaign's goal or when the broadcaster changes the fundraising goal.
 /// </summary>
 /// <param name="BroadcasterUserId">The ID of the broadcaster that you want to receive notifications about when their campaign makes progress or is updated.</param>
 public sealed record CharityCampaignProgress(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHARITY_CAMPAIGN_PROGRESS);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.CharityCampaignProgress;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

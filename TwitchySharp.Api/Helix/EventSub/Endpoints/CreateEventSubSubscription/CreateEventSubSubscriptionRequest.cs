@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
 using TwitchySharp.Shared.Models;
@@ -36,11 +37,16 @@ public record CreateEventSubSubscriptionRequest
 
 internal record CreateEventSubSubscriptionRequestData
 {
-    public required EventSubSubscriptionTypeName Type { get; init; }
-    public required EventSubSubscriptionTypeVersion Version { get; init; }
+    [JsonPropertyName("type")]
+    public required string Type { get; init; }
+    [JsonPropertyName("version")]
+    public required string Version { get; init; }
+    [JsonPropertyName("condition")]
     public required IReadOnlyDictionary<string, object> Condition { get; init; }
+    [JsonPropertyName("transport")]
     public required NewEventSubSubscriptionTransport Transport { get; init; }
-    public bool? IsBatchingEnabled => Type.Value switch // Kind of jank but this is the only type that requires this.
+    [JsonPropertyName("is_batching_enabled")]
+    public bool? IsBatchingEnabled => Type switch // Kind of jank but this is the only type that requires this.
     {
         EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT => true,
         _ => null
@@ -49,8 +55,8 @@ internal record CreateEventSubSubscriptionRequestData
     public static explicit operator CreateEventSubSubscriptionRequestData(NewEventSubSubscription subscription)
         => new()
         {
-            Type = subscription.Type.Name,
-            Version = subscription.Type.Version,
+            Type = subscription.Type.Type.Type,
+            Version = subscription.Type.Type.Version,
             Condition = subscription.Type.Condition,
             Transport = subscription.Transport
         };
