@@ -16,9 +16,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <param name="BroadcasterUserId">User ID of the channel to receive chat clear user messages events for.</param>
 /// <param name="UserId">The user ID to read chat as.</param>
 public sealed record ChannelChatClearUserMessages(UserId BroadcasterUserId, UserId UserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatClearUserMessages;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadChat ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
