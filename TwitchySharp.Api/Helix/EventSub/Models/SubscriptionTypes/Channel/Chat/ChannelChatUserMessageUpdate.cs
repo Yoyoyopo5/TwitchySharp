@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A user is notified if their message’s automod status is updated.
+/// A user is notified if their message's automod status is updated.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.UserReadChat"/>, or
@@ -17,8 +17,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record ChannelChatUserMessageUpdate(UserId BroadcasterUserId, UserId UserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_CHAT_USER_MESSAGE_UPDATE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatUserMessageUpdate;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

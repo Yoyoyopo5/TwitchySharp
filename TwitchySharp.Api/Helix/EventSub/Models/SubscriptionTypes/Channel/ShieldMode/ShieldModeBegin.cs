@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -12,14 +12,13 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) that you want to receive notifications about when they activate Shield Mode.</param>
 /// <param name="ModeratorUserId">
-/// The user id of the broadcaster or one of the broadcaster’s moderators.
+/// The user id of the broadcaster or one of the broadcaster's moderators.
 /// This user must have created a user access token for this application that includes <see cref="Scope.ModeratorReadShieldMode"/> or <see cref="Scope.ModeratorManageShieldMode"/>.
 /// </param>
 public sealed record ShieldModeBegin(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.SHIELD_MODE_BEGIN);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ShieldModeBegin;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

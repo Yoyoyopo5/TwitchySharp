@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -11,17 +11,16 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// If a <paramref name="ConduitId"/> is specified, the client id must be the owner of the conduit.
 /// </remarks>
 /// <param name="ClientId">
-/// The client id of the application to get conduit disabled notifications for. 
+/// The client id of the application to get conduit disabled notifications for.
 /// This application must have created the app access token used to make the request.
 /// </param>
 /// <param name="ConduitId">
-/// The conduit ID to receive events for. 
-/// If <see langword="null"/>, events for all of this client’s conduits are sent.</param>
+/// The conduit ID to receive events for.
+/// If <see langword="null"/>, events for all of this client's conduits are sent.</param>
 public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitId = null)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CONDUIT_SHARD_DISABLED);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ConduitShardDisabled;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
