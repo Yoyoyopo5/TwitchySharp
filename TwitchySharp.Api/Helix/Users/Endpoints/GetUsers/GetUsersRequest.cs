@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -13,7 +13,8 @@ namespace TwitchySharp.Api.Helix.Users;
 /// You may look up users using their user ID, login name, or both, but the sum total of the number of users you may look up is 100.
 /// If you don't specify ids or login names, the request returns information about the user in the access token (if using a user access token).
 /// <para>
-/// To include the <see cref="TwitchUser.Email"/> property in the response, the user access token must include <see cref="Scope.UserReadEmail"/> and have been created by the user you want to get an email for.
+/// To include the <see cref="TwitchUser.Email"/> property in the response, use <see cref="IncludingEmail"/>
+/// which requires a user access token with <see cref="Scope.UserReadEmail"/> created by the user being queried.
 /// </para>
 /// <br/>
 /// Requires an app or user access token.
@@ -26,7 +27,8 @@ public record GetUsersRequest
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
+    private IEnumerable<Scope> ConfiguredScopes { get; init; } = [];
+    public override IEnumerable<Scope> ValidScopes => ConfiguredScopes;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", UserIds?.Select(x => x.Value))
@@ -46,4 +48,18 @@ public record GetUsersRequest
     /// You may specify a maximum of 100 logins total between <see cref="UserIds"/> and <see cref="UserLogins"/>.
     /// </remarks>
     public IEnumerable<UserLogin>? UserLogins { get; set; }
+
+    /// <summary>
+    /// Returns a new request configured to include the user's email in the response.
+    /// </summary>
+    /// <remarks>
+    /// The email is only included if the token was created by the user being queried
+    /// and includes <see cref="Scope.UserReadEmail"/>.
+    /// If <see cref="UserIds"/> and <see cref="UserLogins"/> are empty, the request will
+    /// return information about the token owner including their email.
+    /// </remarks>
+    /// <param name="user">The user identity to fetch email for.</param>
+    /// <returns>A new <see cref="GetUsersRequest"/> configured for email access.</returns>
+    public GetUsersRequest IncludingEmail(UserIdentity user)
+        => this with { Identity = user, ConfiguredScopes = [ Scope.UserReadEmail ] };
 }
