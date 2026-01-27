@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -11,7 +11,8 @@ namespace TwitchySharp.Api.Helix.Users;
 /// <remarks>
 /// <para>
 /// Requires an app or user access token.
-/// To include extensions that are under development, you must use a user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>.
+/// To include extensions that are under development, use <see cref="IncludingUnderDevelopment"/>
+/// which requires a user access token with <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>.
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions">Get User Active Extensions</see> for more information.
 /// </remarks>
@@ -29,8 +30,16 @@ public record GetUserActiveExtensionsRequest
     /// <summary>
     /// The user id of the broadcaster to get active extensions for.
     /// </summary>
+    public required UserId UserId { get; set; }
+
+    /// <summary>
+    /// Returns a new request configured to include extensions that are under development.
+    /// </summary>
     /// <remarks>
-    /// Optional only if using a user access token. In that case, the user that created the token is the one to get extensions for.
+    /// This sets the identity to require a user access token for the specified <see cref="UserId"/>.
+    /// The token must include <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.UserEditBroadcast"/>.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    /// <returns>A new <see cref="GetUserActiveExtensionsRequest"/> with user identity set.</returns>
+    public GetUserActiveExtensionsRequest IncludingUnderDevelopment()
+        => this with { Identity = new UserIdentity(UserId) };
 }
