@@ -17,9 +17,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token that includes <see cref="Scope.ModeratorReadWarnings"/> or <see cref="Scope.ModeratorManageWarnings"/> for this application.
 /// </param>
 public sealed record ChannelWarningAcknowledgement(UserId BroadcasterUserId, UserId ModeratorUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelWarningAcknowledgement;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadWarnings, Scope.ModeratorManageWarnings ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

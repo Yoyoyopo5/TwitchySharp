@@ -16,9 +16,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token that includes <see cref="Scope.ModerationRead"/> for your application.
 /// </param>
 public sealed record ChannelModeratorAdd(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelModeratorAdd;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ModerationRead ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

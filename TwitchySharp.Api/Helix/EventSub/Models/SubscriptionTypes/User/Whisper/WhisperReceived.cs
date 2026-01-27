@@ -13,9 +13,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="UserId">The user id of the user receiving the whisper.</param>
 public sealed record WhisperReceived(UserId UserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadWhispers, Scope.UserManageWhispers ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

@@ -16,9 +16,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token including <see cref="Scope.BitsRead"/> for this application.
 /// </param>
 public sealed record ChannelCheer(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelCheer;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.BitsRead ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

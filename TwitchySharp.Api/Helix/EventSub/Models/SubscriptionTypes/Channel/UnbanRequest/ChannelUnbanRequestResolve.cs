@@ -17,9 +17,11 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token including <see cref="Scope.ModeratorReadUnbanRequests"/> or <see cref="Scope.ModeratorManageUnbanRequests"/> for this application.
 /// </param>
 public sealed record ChannelUnbanRequestResolve(UserId ModeratorUserId, UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUnbanRequestResolve;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
