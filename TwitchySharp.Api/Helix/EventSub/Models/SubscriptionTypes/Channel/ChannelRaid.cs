@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -45,9 +46,9 @@ public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadc
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("from_broadcaster_user_id", FromBroadcasterUserId)
-            .Set("to_broadcaster_user_id", ToBroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("from_broadcaster_user_id"), FromBroadcasterUserId)
+            .Set(new ConditionKey("to_broadcaster_user_id"), ToBroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }
 
 public static class ChannelRaidFluentExtensions

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -18,6 +19,6 @@ public sealed record ExtensionBitsTransactionCreate(ClientId ExtensionClientId)
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("extension_client_id", ExtensionClientId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("extension_client_id"), ExtensionClientId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }
