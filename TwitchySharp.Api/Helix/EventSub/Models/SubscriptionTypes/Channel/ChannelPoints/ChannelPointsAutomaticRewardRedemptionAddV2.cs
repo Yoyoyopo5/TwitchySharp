@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Api.Authorization;
 
@@ -15,8 +15,7 @@ namespace TwitchySharp.Api.Helix.EventSub.Models.SubscriptionTypes.Channel.Chann
 public sealed record ChannelPointsAutomaticRewardRedemptionAddV2(UserId BroadcasterUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION_ADD);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A user is notified if a message is caught by automod for review. 
+/// A user is notified if a message is caught by automod for review.
 /// Only public blocked terms trigger notifications, not private ones.
 /// </summary>
 /// <remarks>
@@ -16,8 +16,7 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record AutomodMessageHoldV2(UserId BroadcasterUserId, UserId ModeratorUserId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.AUTOMOD_MESSAGE_HOLD);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodMessageHoldV2;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
