@@ -54,7 +54,7 @@ public record CreateEventSubSubscriptionRequest
     /// <summary>
     /// The subscription to create.
     /// </summary>
-    public required NewEventSubSubscription Subscription { get; set; }
+    public required EventSubSubscriptionSpecification Subscription { get; set; }
 }
 
 internal record CreateEventSubSubscriptionRequestData
@@ -66,7 +66,7 @@ internal record CreateEventSubSubscriptionRequestData
     [JsonPropertyName("condition")]
     public required IReadOnlyDictionary<string, object> Condition { get; init; }
     [JsonPropertyName("transport")]
-    public required NewEventSubSubscriptionTransport Transport { get; init; }
+    public required EventSubSubscriptionTransportSpecification Transport { get; init; }
     [JsonPropertyName("is_batching_enabled")]
     public bool? IsBatchingEnabled => Type switch // Kind of jank but this is the only type that requires this.
     {
@@ -74,7 +74,7 @@ internal record CreateEventSubSubscriptionRequestData
         _ => null
     };
 
-    public static explicit operator CreateEventSubSubscriptionRequestData(NewEventSubSubscription subscription)
+    public static explicit operator CreateEventSubSubscriptionRequestData(EventSubSubscriptionSpecification subscription)
         => new()
         {
             Type = subscription.Type.Type.Type,
