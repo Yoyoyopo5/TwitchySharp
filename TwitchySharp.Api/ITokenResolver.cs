@@ -16,8 +16,8 @@ public interface ITokenResolver
 public class DefaultTokenResolver
     : ITokenResolver
 {
-    public ValueTask<AccessToken> GetToken(TwitchApiIdentity identity, IEnumerable<Scope> validScopes, CancellationToken ct = default)
+    public ValueTask<AccessToken> GetToken(ITwitchRequest request, CancellationToken ct = default)
     {
-        
+        throw new NotImplementedException();
     }
 }

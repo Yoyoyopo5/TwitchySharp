@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -16,14 +17,15 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token that includes <see cref="Scope.ModeratorReadSuspiciousUsers"/> for this application.
 /// </param>
 public sealed record ChannelSuspiciousUserUpdate(UserId BroadcasterUserId, UserId ModeratorUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_SUSPICIOUS_USER_UPDATE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSuspiciousUserUpdate;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadSuspiciousUsers ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("moderator_user_id", ModeratorUserId)
-            .Set("broadcaster_user_id", BroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("moderator_user_id"), ModeratorUserId)
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }
