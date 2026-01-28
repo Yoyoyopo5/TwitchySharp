@@ -1,27 +1,27 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A user’s authorization has been granted to your client id.
+/// A user's authorization has been granted to your client id.
 /// </summary>
 /// <remarks>
 /// <b>Note:</b> This subscription type is only supported with the webhook transport. It cannot be used with WebSockets.
 /// Requires an app access token created by the same client id as the <paramref name="ClientId"/> parameter.
 /// </remarks>
 /// <param name="ClientId">
-/// The client id of the application to get authorization grant notifications for. 
-/// This must match the client id in the application access token used to make the request.
+/// The client id of the application to get authorization grant notifications for.
+/// This must match the client id in the application access token used to make the request.
 /// </param>
 public sealed record UserAuthorizationGrant(ClientId ClientId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.USER_AUTHORIZATION_GRANT);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationGrant;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("client_id", ClientId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("client_id"), ClientId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

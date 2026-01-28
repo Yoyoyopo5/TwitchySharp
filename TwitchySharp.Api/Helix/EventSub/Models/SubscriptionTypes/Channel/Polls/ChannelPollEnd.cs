@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -15,13 +16,14 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have created a user access token including <see cref="Scope.ChannelReadPolls"/> or <see cref="Scope.ChannelManagePolls"/> for this application.
 /// </param>
 public sealed record ChannelPollEnd(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_POLL_END);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPollEnd;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadPolls, Scope.ChannelManagePolls ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

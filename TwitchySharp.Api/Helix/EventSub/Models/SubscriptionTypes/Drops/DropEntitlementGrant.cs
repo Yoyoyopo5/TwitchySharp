@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -16,13 +17,12 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 public sealed record DropEntitlementGrant(OrganizationId OrganizationId, GameId? CategoryId = null, DropsCampaignId? CampaignId = null)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.DropEntitlementGrant;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("organization_id", OrganizationId)
-            .Set("category_id", CategoryId)
-            .Set("campaign_id", CampaignId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("organization_id"), OrganizationId)
+            .Set(new ConditionKey("category_id"), CategoryId)
+            .Set(new ConditionKey("campaign_id"), CampaignId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

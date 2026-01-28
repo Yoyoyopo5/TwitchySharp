@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -20,13 +21,14 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) to get Bits Use notifications for.</param>
 public sealed record ChannelBitsUse(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_BITS_USE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelBitsUse;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.BitsRead ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

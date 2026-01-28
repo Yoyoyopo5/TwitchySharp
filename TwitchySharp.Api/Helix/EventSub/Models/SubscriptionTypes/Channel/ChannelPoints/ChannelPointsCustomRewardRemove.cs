@@ -1,22 +1,28 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
 /// A custom channel points reward has been removed from the specified channel.
 /// </summary>
+/// <remarks>
+/// Requires a user access token that includes <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
+/// </remarks>
 /// <param name="BroadcasterUserId">The broadcaster user ID for the channel you want to receive channel points custom reward remove notifications for.</param>
 /// <param name="RewardId">Optional. Specify a reward id to only receive notifications for a specific reward.</param>
 public sealed record ChannelPointsCustomRewardRemove(UserId BroadcasterUserId, string? RewardId = null)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REMOVE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsCustomRewardRemove;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId)
-            .Set("reward_id", RewardId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
+            .Set(new ConditionKey("reward_id"), RewardId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

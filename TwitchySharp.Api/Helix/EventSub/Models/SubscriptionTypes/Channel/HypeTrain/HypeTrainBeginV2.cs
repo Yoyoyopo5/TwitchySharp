@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 
@@ -16,13 +17,14 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// This user must have also created a user access token including <see cref="Scope.ChannelReadHypeTrain"/> for your application.
 /// </param>
 public sealed record HypeTrainBeginV2(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V2);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainBeginV2;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadHypeTrain ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

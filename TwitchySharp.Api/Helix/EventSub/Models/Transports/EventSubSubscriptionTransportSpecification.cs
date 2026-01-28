@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// <remarks>
 /// See built-in derived types <see cref="WebhookSubscriptionTransport"/>, <see cref="WebsocketSubscriptionTransport"/>, and <see cref="ConduitSubscriptionTransport"/>.
 /// </remarks>
-public abstract record NewEventSubSubscriptionTransport
+public abstract record EventSubSubscriptionTransportSpecification
 {
     /// <summary>
     /// The transport method identifier.

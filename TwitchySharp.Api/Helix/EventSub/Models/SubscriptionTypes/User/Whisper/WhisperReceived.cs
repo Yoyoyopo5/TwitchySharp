@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -12,13 +13,14 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// </remarks>
 /// <param name="UserId">The user id of the user receiving the whisper.</param>
 public sealed record WhisperReceived(UserId UserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.WHISPER_RECEIVED);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadWhispers, Scope.UserManageWhispers ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("user_id", UserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("user_id"), UserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }
