@@ -34,8 +34,8 @@ public record DeleteEventSubSubscriptionRequest()
         not null => Subscription.RequiresUserAccessToken() switch
         {
             true => Subscription.GetAuthorizingUser() ?? throw new InvalidOperationException(
-                $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription." + 
-                $"Set the {nameof(Identity)} property manually to suppress this error." +
+                $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription. " + 
+                $"Set the {nameof(Identity)} property manually to suppress this error. " +
                 $"The {nameof(EventSubSubscription)} instance passed to this {nameof(DeleteEventSubSubscriptionRequest)} may be malformed, " +
                 $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete."
                 ),
