@@ -38,8 +38,10 @@ internal static class UserAuthorizedSubscriptionTypeExtensions
     internal static UserIdentity? GetAuthorizingUser(this IUserAuthorizedSubscriptionType subscriptionType)
     {
         var conditionKey = subscriptionType.AuthorizingUserConditionKey;
-        if (!subscriptionType.Condition.TryGetValue(conditionKey, out var userId))
+        if (!subscriptionType.Condition.TryGetValue(conditionKey, out object? value))
             return null;
-        return new UserIdentity(new UserId(userId?.ToString() ?? string.Empty));
+        if (value is not UserId userId)
+            return null;
+        return new UserIdentity(userId);
     }
 }
