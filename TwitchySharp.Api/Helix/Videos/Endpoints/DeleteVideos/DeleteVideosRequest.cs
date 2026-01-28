@@ -22,6 +22,13 @@ public record DeleteVideosRequest
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Delete;
     public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVideos ];
+    protected override TwitchApiIdentity DefaultIdentity => User;
+
+    /// <summary>
+    /// The user identity of the broadcaster who owns the videos to delete.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids.Select(x => x.Value));

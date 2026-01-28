@@ -24,6 +24,13 @@ public record UpdateUserExtensionsRequest
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Put;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserEditBroadcast ];
+    protected override TwitchApiIdentity DefaultIdentity => User;
+
+    /// <summary>
+    /// The user identity of the broadcaster whose extensions will be updated.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
     // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
     // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
     public override object? ContentObject => new UpdateUserExtensionsRequestData(Extensions);
