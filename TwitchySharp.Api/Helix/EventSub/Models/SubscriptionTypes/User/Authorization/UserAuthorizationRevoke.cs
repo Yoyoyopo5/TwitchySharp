@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A user’s authorization has been revoked for your client id.
+/// A user's authorization has been revoked for your client id.
 /// Use this webhook to meet government requirements for handling user data, such as GDPR, LGPD, or CCPA.
 /// </summary>
 /// <remarks>
@@ -12,17 +13,16 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// Requires an app access token created by the same client id as the <paramref name="ClientId"/> parameter.
 /// </remarks>
 /// <param name="ClientId">
-/// The client id of the application to get authorization revocation notifications for. 
-/// This must match the client id in the application access token used to make the request.
+/// The client id of the application to get authorization revocation notifications for.
+/// This must match the client id in the application access token used to make the request.
 /// </param>
 public sealed record UserAuthorizationRevoke(ClientId ClientId)
     : IEventSubSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.USER_AUTHORIZATION_REVOKE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationRevoke;
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("client_id", ClientId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("client_id"), ClientId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

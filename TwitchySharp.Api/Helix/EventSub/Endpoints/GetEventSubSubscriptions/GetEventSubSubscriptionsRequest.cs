@@ -10,6 +10,10 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// Gets a list of EventSub subscriptions that an app created.
 /// </summary>
 /// <remarks>
+/// <para>
+/// By default, this uses the <see cref="TwitchApiIdentity.Default"/> and will only get subscriptions using <see cref="WebhookSubscriptionTransport"/> and <see cref="ConduitSubscriptionTransport"/>.
+/// To get subscriptions using <see cref="WebsocketSubscriptionTransport"/>, call the <see cref="ForWebsocketSubscriptions(UserIdentity)"/> method with an explicit <see cref="UserIdentity"/>.
+/// </para>
 /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, requires an app access token.
 /// If using <see cref="WebsocketSubscriptionTransport"/>, requires a user access token.
 /// <br/>
@@ -29,6 +33,17 @@ public record GetEventSubSubscriptionsRequest
             .Add("user_id", UserId)
             .Add("subscription_id", SubscriptionId)
             .Add("after", After?.ToString());
+
+    /// <summary>
+    /// Configures the request to query for subscriptions using the <see cref="EventSubTransportMethod.Websocket"/>.
+    /// </summary>
+    /// <remarks>
+    /// This requires a user access token, so you must pass a <see cref="UserIdentity"/> to use for the request.
+    /// </remarks>
+    /// <param name="user">The <see cref="UserIdentity"/> to make the request as.</param>
+    /// <returns>A new <see cref="GetEventSubSubscriptionsRequest"/> configured to get subscriptions using <see cref="EventSubTransportMethod.Websocket"/>.</returns>
+    public GetEventSubSubscriptionsRequest ForWebsocketSubscriptions(UserIdentity user)
+        => this with { Identity = user };
 
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription status.
