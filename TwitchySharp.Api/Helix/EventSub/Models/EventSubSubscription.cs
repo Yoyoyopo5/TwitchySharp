@@ -59,3 +59,17 @@ public record EventSubSubscription
     /// </remarks>
     public required int Cost { get; init; }
 }
+
+public static class EventSubSubscriptionExtensions
+{
+    /// <summary>
+    /// Get a <see cref="EventSubSubscriptionType"/> based on the type name and version of the subscription.
+    /// </summary>
+    /// <param name="subscription">The subscription to get the subscription type of.</param>
+    /// <returns>The <see cref="EventSubSubscriptionType"/> of the subscription.</returns>
+    public static EventSubSubscriptionType GetSubscriptionType(this EventSubSubscription subscription)
+        => new(subscription.Type, subscription.Version);
+
+    internal static bool RequiresUserAccessToken(this EventSubSubscription subscription)
+        => subscription.Transport.Method == EventSubTransportMethod.Websocket;
+}
