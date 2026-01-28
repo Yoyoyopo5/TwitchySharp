@@ -21,8 +21,6 @@ public record GetExtensionTransactionsRequest
 {
     protected override string Path => "/extensions/transactions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
@@ -33,7 +31,7 @@ public record GetExtensionTransactionsRequest
     /// <summary>
     /// The id of the extension whose list of transactions you want to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The transaction ids used to filter the list of transactions.
@@ -41,7 +39,7 @@ public record GetExtensionTransactionsRequest
     /// <remarks>
     /// You may specify a maximum of 100 ids.
     /// </remarks>
-    public IEnumerable<ExtensionTransactionId>? TransactionIds { get; set; }
+    public IEnumerable<ExtensionTransactionId>? TransactionIds { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -50,8 +48,8 @@ public record GetExtensionTransactionsRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

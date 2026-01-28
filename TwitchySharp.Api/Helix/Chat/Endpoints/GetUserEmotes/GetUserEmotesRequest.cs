@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-emotes">Get User Emotes</see> for more information.
 /// </remarks>
 public record GetUserEmotesRequest
-    : TwitchHelixRequest<GetUserEmotesResponse>
+    : TwitchHelixRequest<GetUserEmotesResponse>, IPageableRequest
 {
     protected override string Path => "/chat/emotes/user";
     public override HttpMethod Method => HttpMethod.Get;
@@ -33,7 +33,7 @@ public record GetUserEmotesRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.UserReadEmotes"/>.
     /// </remarks>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The user id of a broadcaster you wish to get follower emotes of.
@@ -42,8 +42,13 @@ public record GetUserEmotesRequest
     /// Using this query parameter will guarantee inclusion of the broadcaster's follower emotes in the response body.
     /// <b>Note:</b> If the user specified in <see cref="UserId"/> is subscribed to the broadcaster specified, their follower emotes will appear in the response body regardless if this query parameter is used.
     /// </remarks>
-    public UserId? BroadcasterId { get; set; }
+    public UserId? BroadcasterId { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
+
+    /// <summary>
+    /// Not supported by this endpoint. Present only to satisfy <see cref="IPageableRequest"/>.
+    /// </summary>
+    public PaginationAmount? First { get; init; }
 }

@@ -22,8 +22,6 @@ public record GetStreamsRequest
 {
     protected override string Path => "/streams";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserIds?.Select(x => x.Value))
@@ -40,31 +38,31 @@ public record GetStreamsRequest
     /// Returns only the streams of those users that are broadcasting.
     /// You may specify a maximum of 100 ids.
     /// </summary>
-    public IEnumerable<UserId>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; init; }
     /// <summary>
     /// A list of user logins (usernames) used to filter the list of streams.
     /// Returns only the streams of those users that are broadcasting.
     /// You may specify a maximum of 100 login names.
     /// </summary>
-    public IEnumerable<UserLogin>? UserLogins { get; set; }
+    public IEnumerable<UserLogin>? UserLogins { get; init; }
     /// <summary>
     /// A game (category) id used to filter the list of streams.
     /// Returns only the streams that are broadcasting the game (category).
     /// You may specify a maximum of 100 ids.
     /// </summary>
-    public IEnumerable<GameId>? GameIds { get; set; }
+    public IEnumerable<GameId>? GameIds { get; init; }
     /// <summary>
     /// The type of stream to filter the list of streams by.
     /// The default is <see cref="StreamType.All"/>.
     /// </summary>
-    public StreamType? Type { get; set; }
+    public StreamType? Type { get; init; }
     /// <summary>
     /// A language code used to filter the list of streams.
     /// Returns only streams that broadcast in the specified language.
     /// Specify the language using an ISO 639-1 two-letter language code or other if the broadcast uses a language not in the list of <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">supported stream languages</see>.
     /// You may specify a maximum of 100 language codes.
     /// </summary>
-    public IEnumerable<LanguageCode>? Languages { get; set; }
+    public IEnumerable<LanguageCode>? Languages { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -72,11 +70,11 @@ public record GetStreamsRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
 }

@@ -35,7 +35,7 @@ public record RemoveChannelVipRequest
     /// If removing a user's VIP status on behalf of the broadcaster, the broadcaster must have created the access token used in the request.
     /// Requires <see cref="Scope.ChannelManageVips"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id of the user to revoke VIP status for.
@@ -43,5 +43,5 @@ public record RemoveChannelVipRequest
     /// <remarks>
     /// If removing this user's VIP status on behalf of the user themselves, this user can have created the access token used in the request.
     /// </remarks>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

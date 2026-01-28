@@ -26,12 +26,11 @@ public record SendExtensionChatMessageRequest
     protected override string Path => "/extensions/chat";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -40,12 +39,12 @@ public record SendExtensionChatMessageRequest
     /// <summary>
     /// The user id of the broadcaster with the extension to send a message to.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The message data to send.
     /// </summary>
-    public required SendExtensionChatMessageRequestData Message { get; set; }
+    public required SendExtensionChatMessageRequestData Message { get; init; }
 }
 
 /// <summary>
@@ -57,13 +56,13 @@ public record SendExtensionChatMessageRequestData
     /// The message to send in chat.
     /// The message may contain a maximum of 280 characters.
     /// </summary>
-    public required string Text { get; set; }
+    public required string Text { get; init; }
     /// <summary>
     /// The id of the extension that's sending the chat message.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
     /// <summary>
     /// The extension's version number.
     /// </summary>
-    public required ExtensionVersion ExtensionVersion { get; set; }
+    public required ExtensionVersion ExtensionVersion { get; init; }
 }

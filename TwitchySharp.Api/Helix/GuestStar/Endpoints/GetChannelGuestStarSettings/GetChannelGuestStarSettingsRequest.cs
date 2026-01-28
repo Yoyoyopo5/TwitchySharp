@@ -28,7 +28,7 @@ public record GetChannelGuestStarSettingsRequest
     /// <summary>
     /// The user id of the broadcaster to get Guest Star settings for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator in the broadcaster's chat.
@@ -36,5 +36,5 @@ public record GetChannelGuestStarSettingsRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 }

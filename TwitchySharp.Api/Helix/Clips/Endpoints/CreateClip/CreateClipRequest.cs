@@ -51,17 +51,17 @@ public record CreateClipRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The title of the clip to create.
     /// </summary>
-    public string? Title { get; set; }
+    public string? Title { get; init; }
 
     /// <summary>
     /// The length of the clip to create.
@@ -70,5 +70,5 @@ public record CreateClipRequest
     /// Can range from 5 to 60 seconds, with a resolution of 100ms.
     /// Defaults to 30 seconds if left <see langword="null"/>.
     /// </remarks>
-    public TimeSpan? Duration { get; set; }
+    public TimeSpan? Duration { get; init; }
 }

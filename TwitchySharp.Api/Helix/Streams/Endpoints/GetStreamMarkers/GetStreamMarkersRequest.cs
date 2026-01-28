@@ -33,7 +33,7 @@ public record GetStreamMarkersRequest
     /// <summary>
     /// The user to get stream markers as (broadcaster or editor).
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster to get markers for.
@@ -43,7 +43,7 @@ public record GetStreamMarkersRequest
     /// <remarks>
     /// Mutually exclusive with <see cref="VideoId"/>. One of <see cref="UserId"/> or <see cref="VideoId"/> must be set.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
     /// <summary>
     /// The video id of the video to get markers for.
     /// If set, the request will return marks from this specific video.
@@ -52,7 +52,7 @@ public record GetStreamMarkersRequest
     /// <remarks>
     /// Mutually exclusive with <see cref="UserId"/>. One of <see cref="UserId"/> or <see cref="VideoId"/> must be set.
     /// </remarks>
-    public VideoId? VideoId { get; set; }
+    public VideoId? VideoId { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -60,11 +60,11 @@ public record GetStreamMarkersRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
 }

@@ -31,7 +31,7 @@ public record WarnChatUserRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to issue to warning in.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -39,12 +39,12 @@ public record WarnChatUserRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The warning data.
     /// </summary>
-    public required WarnChatUserRequestData Warning { get; set; }
+    public required WarnChatUserRequestData Warning { get; init; }
 }
 
 /// <summary>
@@ -55,7 +55,7 @@ public record WarnChatUserRequestData
     /// <summary>
     /// The warning data.
     /// </summary>
-    public required ChatUserWarning Data { get; set; }
+    public required ChatUserWarning Data { get; init; }
 }
 
 /// <summary>
@@ -66,12 +66,12 @@ public record ChatUserWarning
     /// <summary>
     /// The id of the user to warn.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The custom reason for the warning.
     /// </summary>
     /// <remarks>
     /// Can be a maximum of 500 characters.
     /// </remarks>
-    public required string Reason { get; set; }
+    public required string Reason { get; init; }
 }

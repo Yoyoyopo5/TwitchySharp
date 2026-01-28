@@ -20,8 +20,6 @@ public record GetCheermotesRequest
 {
     protected override string Path => "/bits/cheermotes";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -34,5 +32,5 @@ public record GetCheermotesRequest
     /// If <see langword="null"/>, the response contains only global Cheermotes.
     /// If the broadcaster uploaded Cheermotes, the <see cref="Cheermote.Type"/> in the response is set to <see cref="CheermoteType.ChannelCustom"/>.
     /// </remarks>
-    public UserId? BroadcasterId { get; set; }
+    public UserId? BroadcasterId { get; init; }
 }

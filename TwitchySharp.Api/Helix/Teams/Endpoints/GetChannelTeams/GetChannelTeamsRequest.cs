@@ -18,8 +18,6 @@ public record GetChannelTeamsRequest
 {
     protected override string Path => "/teams/channel";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -27,5 +25,5 @@ public record GetChannelTeamsRequest
     /// <summary>
     /// The user id of the broadcaster to get teams for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

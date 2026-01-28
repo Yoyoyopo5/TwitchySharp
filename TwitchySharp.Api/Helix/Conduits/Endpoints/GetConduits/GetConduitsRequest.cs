@@ -16,6 +16,4 @@ public record GetConduitsRequest
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
 }

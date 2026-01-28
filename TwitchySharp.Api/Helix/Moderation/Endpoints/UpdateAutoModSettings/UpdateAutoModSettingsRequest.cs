@@ -32,7 +32,7 @@ public record UpdateAutoModSettingsRequest
     /// <summary>
     /// The user id of the broadcaster (channel) that you want to update AutoMod settings for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -40,13 +40,13 @@ public record UpdateAutoModSettingsRequest
     /// <remarks>
     /// This must be the same user that created the access token.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The settings to update.
     /// Use derived classes <see cref="UpdateAutoModOverallLevelData"/> and <see cref="UpdateAutoModCustomLevelsData"/>.
     /// </summary>
-    public required UpdateAutoModSettingsRequestData Settings { get; set; }
+    public required UpdateAutoModSettingsRequestData Settings { get; init; }
 }
 
 /// <summary>
@@ -60,15 +60,15 @@ public record UpdateAutoModSettingsRequest
 /// </remarks>
 public record UpdateAutoModSettingsRequestData
 {
-    public AutomodFilteringLevel? OverallLevel { get; protected set; }
-    public AutomodFilteringLevel? Aggression { get; protected set; }
-    public AutomodFilteringLevel? Bullying { get; protected set; }
-    public AutomodFilteringLevel? Disability { get; protected set; }
-    public AutomodFilteringLevel? Misogyny { get; protected set; }
-    public AutomodFilteringLevel? RaceEthnicityOrReligion { get; protected set; }
-    public AutomodFilteringLevel? SexBasedTerms { get; protected set; }
-    public AutomodFilteringLevel? SexualitySexOrGender { get; protected set; }
-    public AutomodFilteringLevel? Swearing { get; protected set; }
+    public AutomodFilteringLevel? OverallLevel { get; protected init; }
+    public AutomodFilteringLevel? Aggression { get; protected init; }
+    public AutomodFilteringLevel? Bullying { get; protected init; }
+    public AutomodFilteringLevel? Disability { get; protected init; }
+    public AutomodFilteringLevel? Misogyny { get; protected init; }
+    public AutomodFilteringLevel? RaceEthnicityOrReligion { get; protected init; }
+    public AutomodFilteringLevel? SexBasedTerms { get; protected init; }
+    public AutomodFilteringLevel? SexualitySexOrGender { get; protected init; }
+    public AutomodFilteringLevel? Swearing { get; protected init; }
     protected UpdateAutoModSettingsRequestData() { }
     /// <summary>
     /// Update settings using an instance of <see cref="AutoModSettings"/>.
@@ -117,21 +117,21 @@ public record UpdateAutoModCustomLevelsData
     : UpdateAutoModSettingsRequestData
 {
     /// <inheritdoc cref="AutoModSettings.Aggression"/>
-    public new AutomodFilteringLevel Aggression { get; set; }
+    public new AutomodFilteringLevel Aggression { get; init; }
     /// <inheritdoc cref="AutoModSettings.Bullying"/>
-    public new AutomodFilteringLevel Bullying { get; set; }
+    public new AutomodFilteringLevel Bullying { get; init; }
     /// <inheritdoc cref="AutoModSettings.Disability"/>
-    public new AutomodFilteringLevel Disability { get; set; }
+    public new AutomodFilteringLevel Disability { get; init; }
     /// <inheritdoc cref="AutoModSettings.Misogyny"/>
-    public new AutomodFilteringLevel Misogyny { get; set; }
+    public new AutomodFilteringLevel Misogyny { get; init; }
     /// <inheritdoc cref="AutoModSettings.RaceEthnicityOrReligion"/>
-    public new AutomodFilteringLevel RaceEthnicityOrReligion { get; set; }
+    public new AutomodFilteringLevel RaceEthnicityOrReligion { get; init; }
     /// <inheritdoc cref="AutoModSettings.SexBasedTerms"/>
-    public new AutomodFilteringLevel SexBasedTerms { get; set; }
+    public new AutomodFilteringLevel SexBasedTerms { get; init; }
     /// <inheritdoc cref="AutoModSettings.SexualitySexOrGender"/>
-    public new AutomodFilteringLevel SexualitySexOrGender { get; set; }
+    public new AutomodFilteringLevel SexualitySexOrGender { get; init; }
     /// <inheritdoc cref="AutoModSettings.Swearing"/>
-    public new AutomodFilteringLevel Swearing { get; set; }
+    public new AutomodFilteringLevel Swearing { get; init; }
 
     /// <inheritdoc cref="UpdateAutoModCustomLevelsData"/>
     public UpdateAutoModCustomLevelsData()

@@ -23,7 +23,6 @@ public record UpdateUserExtensionsRequest
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserEditBroadcast ];
     // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
     // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
@@ -32,7 +31,7 @@ public record UpdateUserExtensionsRequest
     /// <summary>
     /// The extensions to update.
     /// </summary>
-    public required ExtensionsConfiguration Extensions { get; set; }
+    public required ExtensionsConfiguration Extensions { get; init; }
 }
 
 /// <summary>
@@ -40,7 +39,7 @@ public record UpdateUserExtensionsRequest
 /// </summary>
 internal record UpdateUserExtensionsRequestData
 {
-    public UpdateUserExtensionsMaps Data { get; set; }
+    public UpdateUserExtensionsMaps Data { get; init; }
     public UpdateUserExtensionsRequestData(ExtensionsConfiguration extensions)
         => Data = new UpdateUserExtensionsMaps()
         {
@@ -155,15 +154,15 @@ public record ExtensionsConfiguration
     /// <summary>
     /// The panel extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? PanelExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateExtensionParameters>? PanelExtensions { get; init; }
     /// <summary>
     /// The overlay extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? OverlayExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateExtensionParameters>? OverlayExtensions { get; init; }
     /// <summary>
     /// The component extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateComponentExtensionParameters>? ComponentExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateComponentExtensionParameters>? ComponentExtensions { get; init; }
 }
 
 /// <summary>
@@ -221,7 +220,7 @@ public record UpdateExtensionParameters
     /// <summary>
     /// Determines the extension’s activation state
     /// </summary>
-    public required bool Active { get; set; }
+    public required bool Active { get; init; }
 }
 
 /// <summary>
@@ -233,9 +232,9 @@ public record UpdateComponentExtensionParameters
     /// <summary>
     /// The x-coordinate of the extension.
     /// </summary>
-    public int? X { get; set; }
+    public int? X { get; init; }
     /// <summary>
     /// The y- coordinate of the extension.
     /// </summary>
-    public int? Y { get; set; }
+    public int? Y { get; init; }
 }

@@ -54,7 +54,7 @@ public record CreateEventSubSubscriptionRequest
     /// <summary>
     /// The subscription to create.
     /// </summary>
-    public required EventSubSubscriptionSpecification Subscription { get; set; }
+    public required EventSubSubscriptionSpecification Subscription { get; init; }
 }
 
 internal record CreateEventSubSubscriptionRequestData

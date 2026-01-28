@@ -30,7 +30,7 @@ public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
     /// <summary>
     /// The user id of the broadcaster (channel) to add a blocked term to.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -38,12 +38,12 @@ public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The blocked term to create.
     /// </summary>
-    public required AddBlockedTermRequestData Term { get; set; }
+    public required AddBlockedTermRequestData Term { get; init; }
 }
 
 /// <summary>

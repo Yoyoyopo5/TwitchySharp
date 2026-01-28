@@ -18,8 +18,6 @@ public record GetTopGamesRequest
 {
     protected override string Path => "/games/top";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("first", First?.ToString())
@@ -33,13 +31,13 @@ public record GetTopGamesRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
 }

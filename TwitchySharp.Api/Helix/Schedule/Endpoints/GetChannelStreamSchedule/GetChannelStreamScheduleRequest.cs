@@ -22,8 +22,6 @@ public record GetChannelStreamScheduleRequest
 {
     protected override string Path => "/schedule";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -35,7 +33,7 @@ public record GetChannelStreamScheduleRequest
     /// <summary>
     /// The user id of the broadcaster to get the streaming schedule for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The ids of the segments to get.
@@ -43,7 +41,7 @@ public record GetChannelStreamScheduleRequest
     /// <remarks>
     /// You may specify a maximum of 100 ids.
     /// </remarks>
-    public IEnumerable<StreamScheduleSegmentId>? Ids { get; set; }
+    public IEnumerable<StreamScheduleSegmentId>? Ids { get; init; }
 
     /// <summary>
     /// The date and time that identifies when in the broadcaster's schedule to start returning segments.
@@ -51,7 +49,7 @@ public record GetChannelStreamScheduleRequest
     /// <remarks>
     /// If not specified, the request returns segments starting after the current UTC date and time.
     /// </remarks>
-    public DateTimeOffset? StartTime { get; set; }
+    public DateTimeOffset? StartTime { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -60,8 +58,8 @@ public record GetChannelStreamScheduleRequest
     /// The minimum page size is 1 item per page and the maximum is 25 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

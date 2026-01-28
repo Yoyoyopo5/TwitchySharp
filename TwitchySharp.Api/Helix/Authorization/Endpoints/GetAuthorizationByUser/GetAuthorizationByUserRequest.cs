@@ -19,8 +19,6 @@ public record GetAuthorizationByUserRequest
 {
     protected override string Path => "/authorization/users";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserIds.Select(x => x.Value));
@@ -31,5 +29,5 @@ public record GetAuthorizationByUserRequest
     /// <remarks>
     /// A maximum of 10 user ids can be specified.
     /// </remarks>
-    public required IEnumerable<UserId> UserIds { get; set; }
+    public required IEnumerable<UserId> UserIds { get; init; }
 }

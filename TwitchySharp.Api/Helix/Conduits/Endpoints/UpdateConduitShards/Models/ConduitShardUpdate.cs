@@ -15,5 +15,5 @@ public record ConduitShardUpdate
     /// The transport details that you want to update the shard to.
     /// Use derived classes <see cref="ConduitWebsocketTransportUpdate"/> and <see cref="ConduitWebhookTransportUpdate"/>.
     /// </summary>
-    public required ConduitTransportUpdate Transport { get; set; }
+    public required ConduitTransportUpdate Transport { get; init; }
 }

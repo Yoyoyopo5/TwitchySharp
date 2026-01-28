@@ -19,8 +19,6 @@ public record GetChannelInformationRequest
 {
     protected override string Path => "/channels";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterIds.Select(x => x.ToString()));
@@ -31,5 +29,5 @@ public record GetChannelInformationRequest
     /// <remarks>
     /// You may specify a maximum of 100 ids. The API ignores duplicate IDs and IDs that are not found.
     /// </remarks>
-    public required IEnumerable<UserId> BroadcasterIds { get; set; }
+    public required IEnumerable<UserId> BroadcasterIds { get; init; }
 }

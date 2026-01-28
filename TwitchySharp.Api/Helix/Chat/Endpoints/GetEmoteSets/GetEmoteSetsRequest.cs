@@ -22,8 +22,6 @@ public record GetEmoteSetsRequest
 {
     protected override string Path => "/chat/emotes/set";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("emote_set_id", EmoteSetIds.Select(x => x.ToString()));
@@ -35,5 +33,5 @@ public record GetEmoteSetsRequest
     /// You may specify a maximum of 25 IDs.
     /// The response contains only the IDs that were found and ignores duplicate IDs.
     /// </remarks>
-    public required IEnumerable<EmoteSetId> EmoteSetIds { get; set; }
+    public required IEnumerable<EmoteSetId> EmoteSetIds { get; init; }
 }

@@ -18,8 +18,6 @@ public record SearchChannelsRequest
 {
     protected override string Path => "/search/channels";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("query", Query)
@@ -36,7 +34,7 @@ public record SearchChannelsRequest
     /// If query is <c>"angel_of_death"</c>, it matches all names that begin with angel_of_death.
     /// However, if query is a phrase like <c>"angel of death"</c>, it matches to names starting with angelofdeath or names starting with angel_of_death.
     /// </remarks>
-    public required string Query { get; set; }
+    public required string Query { get; init; }
 
     /// <summary>
     /// Determines whether the response includes only channels that are currently streaming live.
@@ -47,7 +45,7 @@ public record SearchChannelsRequest
     /// If it is <see langword="false"/>, the API matches on the broadcaster's login (username).
     /// However, if it is <see langword="true"/>, the API matches on the broadcaster's name and category name.
     /// </remarks>
-    public bool? LiveOnly { get; set; }
+    public bool? LiveOnly { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -56,8 +54,8 @@ public record SearchChannelsRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

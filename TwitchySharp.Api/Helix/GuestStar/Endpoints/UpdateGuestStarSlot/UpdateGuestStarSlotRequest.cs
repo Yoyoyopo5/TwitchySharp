@@ -31,7 +31,7 @@ public record UpdateGuestStarSlotRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -39,17 +39,17 @@ public record UpdateGuestStarSlotRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the Guest Star session in which to update a slot.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 
     /// <summary>
     /// The id of the slot containing the user you want to move.
     /// </summary>
-    public required GuestStarSlotId SourceSlotId { get; set; }
+    public required GuestStarSlotId SourceSlotId { get; init; }
 
     /// <summary>
     /// The id of the slot to move the source user to.
@@ -57,5 +57,5 @@ public record UpdateGuestStarSlotRequest
     /// <remarks>
     /// If the destination slot is occupied, the user assigned will be swapped into the source slot.
     /// </remarks>
-    public GuestStarSlotId? DestinationSlotId { get; set; }
+    public GuestStarSlotId? DestinationSlotId { get; init; }
 }

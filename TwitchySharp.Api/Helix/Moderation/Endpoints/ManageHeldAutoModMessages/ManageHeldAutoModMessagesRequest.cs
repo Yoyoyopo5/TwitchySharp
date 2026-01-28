@@ -27,7 +27,7 @@ public record ManageHeldAutoModMessagesRequest
     /// <summary>
     /// Data used to identify the message and select the action.
     /// </summary>
-    public required ManageHeldAutoModMessagesRequestData MessageAction { get; set; }
+    public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
 }
 
 /// <summary>
@@ -39,15 +39,15 @@ public record ManageHeldAutoModMessagesRequestData
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// This must be the same user that created the access token used in the <see cref="ManageHeldAutoModMessagesRequest"/>.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The id of the message to allow or deny.
     /// </summary>
     [JsonPropertyName("msg_id")]
-    public required MessageId MessageId { get; set; }
+    public required MessageId MessageId { get; init; }
     /// <summary>
     /// The action to take for the message.
     /// Use the static definitions on the <see cref="AutoModAction"/> class to set this.
     /// </summary>
-    public required AutoModAction Action { get; set; }
+    public required AutoModAction Action { get; init; }
 }

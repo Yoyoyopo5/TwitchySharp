@@ -27,12 +27,11 @@ public record CreateExtensionSecretRequest
     protected override string Path => "/extensions/jwt/secrets";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
@@ -41,7 +40,7 @@ public record CreateExtensionSecretRequest
     /// <summary>
     /// The id of the extension to apply the shared secret to.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The amount of time to delay activating the secret.
@@ -51,5 +50,5 @@ public record CreateExtensionSecretRequest
     /// The minimum delay is 300 seconds (5 minutes).
     /// The default is 300 seconds.
     /// </remarks>
-    public TimeSpan? Delay { get; set; }
+    public TimeSpan? Delay { get; init; }
 }

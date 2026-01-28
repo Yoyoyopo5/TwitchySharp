@@ -33,7 +33,7 @@ public record GetUnbanRequestsRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to get unban requests for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -41,21 +41,21 @@ public record GetUnbanRequestsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// Filter unban requests by status.
     /// </summary>
-    public required UnbanRequestStatus Status { get; set; }
+    public required UnbanRequestStatus Status { get; init; }
 
     /// <summary>
     /// Filter unban requests by banned user.
     /// </summary>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <inheritdoc cref="PaginationAmount"/>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 }

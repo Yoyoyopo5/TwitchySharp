@@ -39,7 +39,7 @@ public record GetChannelFollowersRequest
     /// <remarks>
     /// Requires <see cref="Scope.ModeratorReadFollowers"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// Use this parameter to see whether a specific user follows this broadcaster.
@@ -48,7 +48,7 @@ public record GetChannelFollowersRequest
     /// If specified, the response contains this user if they follow the broadcaster.
     /// If not specified, the response contains all users that follow the broadcaster.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -56,8 +56,8 @@ public record GetChannelFollowersRequest
     /// <remarks>
     /// The minimum page size is 1 item per page and the maximum is 100.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

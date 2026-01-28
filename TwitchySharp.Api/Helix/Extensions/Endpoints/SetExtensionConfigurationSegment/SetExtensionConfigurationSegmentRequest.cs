@@ -26,12 +26,11 @@ public record SetExtensionConfigurationSegmentRequest
     protected override string Path => "/extensions/configurations";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     public override object? ContentObject => Configuration;
 
     /// <summary>
@@ -40,7 +39,7 @@ public record SetExtensionConfigurationSegmentRequest
     /// <see cref="SetExtensionConfigurationDeveloperSegmentData"/>,
     /// <see cref="SetExtensionConfigurationBroadcasterSegmentData"/> for easier usage.
     /// </summary>
-    public required SetExtensionConfigurationSegmentRequestData Configuration { get; set; }
+    public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
 }
 
 /// <summary>
@@ -57,26 +56,26 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
     /// <summary>
     /// The id of the extension to update.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
     /// <summary>
     /// The configuration segment to update.
     /// </summary>
-    public ExtensionConfigurationSegmentType Segment { get; set; } = Segment;
+    public ExtensionConfigurationSegmentType Segment { get; init; } = Segment;
     /// <summary>.
     /// The user id of the broadcaster that installed the extension.
     /// Include this property only if the <see cref="Segment"/> is set to <see cref="ExtensionConfigurationSegmentType.Developer"/> or <see cref="ExtensionConfigurationSegmentType.Broadcaster"/>.
     /// </summary>
-    public UserId? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected init; }
     /// <summary>
     /// The contents of the segment.
     /// This may be in plain-text or string-encoded JSON.
     /// </summary>
-    public string? Content { get; set; }
+    public string? Content { get; init; }
     /// <summary>
     /// The version number that identifies this definition of the segment’s data. 
     /// If not specified, the latest definition is updated.
     /// </summary>
-    public ExtensionVersion? Version { get; set; }
+    public ExtensionVersion? Version { get; init; }
 }
 
 /// <summary>
@@ -94,7 +93,7 @@ public record SetExtensionConfigurationDeveloperSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
 }
 
 /// <summary>
@@ -106,5 +105,5 @@ public record SetExtensionConfigurationBroadcasterSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
 }

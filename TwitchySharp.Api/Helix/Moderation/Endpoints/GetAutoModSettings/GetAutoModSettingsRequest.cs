@@ -30,7 +30,7 @@ public record GetAutoModSettingsRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to get AutoMod settings for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -38,5 +38,5 @@ public record GetAutoModSettingsRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 }

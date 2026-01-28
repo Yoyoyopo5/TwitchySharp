@@ -30,7 +30,7 @@ public record DeleteGuestStarInviteRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -38,15 +38,15 @@ public record DeleteGuestStarInviteRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the Guest Star session that the invite was created for.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 
     /// <summary>
     /// The user id of the user to revoke the invite for.
     /// </summary>
-    public required UserId GuestId { get; set; }
+    public required UserId GuestId { get; init; }
 }
