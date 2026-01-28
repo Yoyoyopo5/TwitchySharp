@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub;
 using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
@@ -19,6 +22,10 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// If the subscription type requires a user access token authorization, the user must have created a user access token with the required <see cref="Scope"/> for this application (i.e., for this application's client id).
 /// It is not required to send this user access token in the request.
 /// </para>
+/// <para>
+/// The identity and scopes for the request are automatically determined based on the <see cref="Subscription"/> transport and type.
+/// You do not need to manually configure them unless you need to override the default behavior.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription">Create EventSub Subscription</see> for more information.
 /// </remarks>
 public record CreateEventSubSubscriptionRequest
@@ -26,14 +33,34 @@ public record CreateEventSubSubscriptionRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
+    protected override TwitchApiIdentity DefaultIdentity => (Subscription.Transport.Method == EventSubTransportMethod.Websocket, Subscription.Type) switch
+    {
+        (true, IUserAuthorizedSubscriptionType userAuthorized) => GetAuthorizingUser(userAuthorized)
+            ?? throw new InvalidOperationException(
+                $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
+                $"Set the {nameof(Identity)} property manually to suppress this error. " +
+                $"The condition for this subscription may be missing the expected key '{userAuthorized.AuthorizingUserConditionKey}'."),
+        _ => TwitchApiIdentity.Default
+    };
+    public override IEnumerable<Scope> ValidScopes => Subscription.Type switch
+    {
+        IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.ValidScopes,
+        _ => []
+    };
     public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
 
     /// <summary>
     /// The subscription to create.
     /// </summary>
     public required NewEventSubSubscription Subscription { get; set; }
+
+    private UserIdentity? GetAuthorizingUser(IUserAuthorizedSubscriptionType subscriptionType)
+    {
+        var conditionKey = subscriptionType.AuthorizingUserConditionKey;
+        if (!subscriptionType.Condition.TryGetValue(conditionKey, out var userId))
+            return null;
+        return new UserIdentity(new UserId(userId?.ToString() ?? string.Empty));
+    }
 }
 
 internal record CreateEventSubSubscriptionRequestData
