@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// An EventSub transport that uses <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events/">WebSockets</see>.
 /// </summary>
 public sealed record WebsocketSubscriptionTransport
-    : NewEventSubSubscriptionTransport
+    : EventSubSubscriptionTransportSpecification
 {
     /// <param name="sessionId">
     /// The session id of the WebSocket connection to send notifications to.
