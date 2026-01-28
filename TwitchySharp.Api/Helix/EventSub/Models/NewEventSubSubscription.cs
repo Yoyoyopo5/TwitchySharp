@@ -1,9 +1,11 @@
-﻿namespace TwitchySharp.Api.Helix.EventSub;
+﻿using TwitchySharp.Shared.EventSub.Enums;
+
+namespace TwitchySharp.Api.Helix.EventSub;
 
 public record NewEventSubSubscription
 {
     /// <summary>
-    /// The type of subscription to create. 
+    /// The type of subscription to create.
     /// See the <see cref="EventSub.Types"/> namespace for built-in subscription types.
     /// </summary>
     public required IEventSubSubscriptionType Type { get; set; }
@@ -12,4 +14,15 @@ public record NewEventSubSubscription
     /// Possible transport types are <see cref="WebhookSubscriptionTransport"/>, <see cref="WebsocketSubscriptionTransport"/>, and <see cref="ConduitSubscriptionTransport"/>.
     /// </summary>
     public required NewEventSubSubscriptionTransport Transport { get; set; }
+}
+
+internal static class NewEventSubSubscriptionExtensions
+{
+    /// <summary>
+    /// Determines whether the subscription requires a user access token.
+    /// </summary>
+    /// <param name="subscription">The subscription to check.</param>
+    /// <returns><see langword="true"/> if the subscription uses WebSocket transport; otherwise, <see langword="false"/>.</returns>
+    internal static bool RequiresUserAccessToken(this NewEventSubSubscription subscription)
+        => subscription.Transport.Method == EventSubTransportMethod.Websocket;
 }
