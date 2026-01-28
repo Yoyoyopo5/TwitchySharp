@@ -18,7 +18,7 @@ public static class EventSubIdentityResolver
     private static ImmutableDictionary<EventSubSubscriptionType, ConditionKey> AuthorizingUserConditionKeys { get; }
         = UserAuthorizedSubscriptionTypes
             .Select(RuntimeHelpers.GetUninitializedObject)
-            .OfType<IUserAuthorizedSubscriptionType>() // Cast here?
+            .OfType<IUserAuthorizedSubscriptionType>()
             .ToImmutableDictionary(st => st.Type, st => st.AuthorizingUserConditionKey);
 
     private static IEnumerable<Type> UserAuthorizedSubscriptionTypes =>
