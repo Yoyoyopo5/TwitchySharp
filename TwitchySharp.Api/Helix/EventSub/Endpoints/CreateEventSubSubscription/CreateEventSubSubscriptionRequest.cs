@@ -4,9 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub;
 using TwitchySharp.Shared.EventSub.Constants;
-using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
@@ -33,13 +31,17 @@ public record CreateEventSubSubscriptionRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => (Subscription.Transport.Method == EventSubTransportMethod.Websocket, Subscription.Type) switch
+    protected override TwitchApiIdentity DefaultIdentity => Subscription.RequiresUserAccessToken() switch
     {
-        (true, IUserAuthorizedSubscriptionType userAuthorized) => GetAuthorizingUser(userAuthorized)
-            ?? throw new InvalidOperationException(
-                $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
-                $"Set the {nameof(Identity)} property manually to suppress this error. " +
-                $"The condition for this subscription may be missing the expected key '{userAuthorized.AuthorizingUserConditionKey}'."),
+        true => Subscription.Type switch
+        {
+            IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.GetAuthorizingUser()
+                ?? throw new InvalidOperationException(
+                    $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
+                    $"Set the {nameof(Identity)} property manually to suppress this error. " +
+                    $"The condition for this subscription may be missing the expected key '{userAuthorized.AuthorizingUserConditionKey}'."),
+            _ => TwitchApiIdentity.Default
+        },
         _ => TwitchApiIdentity.Default
     };
     public override IEnumerable<Scope> ValidScopes => Subscription.Type switch
@@ -53,14 +55,6 @@ public record CreateEventSubSubscriptionRequest
     /// The subscription to create.
     /// </summary>
     public required NewEventSubSubscription Subscription { get; set; }
-
-    private UserIdentity? GetAuthorizingUser(IUserAuthorizedSubscriptionType subscriptionType)
-    {
-        var conditionKey = subscriptionType.AuthorizingUserConditionKey;
-        if (!subscriptionType.Condition.TryGetValue(conditionKey, out var userId))
-            return null;
-        return new UserIdentity(new UserId(userId?.ToString() ?? string.Empty));
-    }
 }
 
 internal record CreateEventSubSubscriptionRequestData
