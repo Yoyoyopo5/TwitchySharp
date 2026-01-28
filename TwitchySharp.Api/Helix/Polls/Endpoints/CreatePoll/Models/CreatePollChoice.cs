@@ -9,5 +9,5 @@ public record CreatePollChoice
     /// The title of the choice that is visible to viewers.
     /// This may contain up to 25 characters.
     /// </summary>
-    public required string Title { get; set; }
+    public required string Title { get; init; }
 }

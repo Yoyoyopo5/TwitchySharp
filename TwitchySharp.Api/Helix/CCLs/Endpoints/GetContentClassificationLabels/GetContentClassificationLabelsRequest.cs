@@ -19,8 +19,6 @@ public record GetContentClassificationLabelsRequest
 {
     protected override string Path => "/content_classification_labels";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("locale", Locale?.Value);
@@ -31,5 +29,5 @@ public record GetContentClassificationLabelsRequest
     /// <remarks>
     /// Defaults to <see cref="ContentClassificationLocale.EnglishUnitedStates"/> if left <see langword="null"/>.
     /// </remarks>
-    public ContentClassificationLocale? Locale { get; set; }
+    public ContentClassificationLocale? Locale { get; init; }
 }

@@ -43,7 +43,6 @@ public record DeleteEventSubSubscriptionRequest()
         },
         _ => null
     } ?? TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", SubscriptionId);
@@ -81,5 +80,5 @@ public record DeleteEventSubSubscriptionRequest()
     /// <summary>
     /// The id of the subscription to delete.
     /// </summary>
-    public required EventSubSubscriptionId SubscriptionId { get; set; }
+    public required EventSubSubscriptionId SubscriptionId { get; init; }
 }

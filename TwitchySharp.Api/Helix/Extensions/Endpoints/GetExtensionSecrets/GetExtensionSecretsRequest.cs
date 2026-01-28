@@ -22,12 +22,11 @@ public record GetExtensionSecretsRequest
     protected override string Path => "/extensions/jwt/secrets";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId);
@@ -35,5 +34,5 @@ public record GetExtensionSecretsRequest
     /// <summary>
     /// The id of the extension whose shared secrets you want to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 }

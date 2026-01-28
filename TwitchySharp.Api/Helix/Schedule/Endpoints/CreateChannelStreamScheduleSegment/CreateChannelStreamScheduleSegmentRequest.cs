@@ -32,12 +32,12 @@ public record CreateChannelStreamScheduleSegmentRequest
     /// The user id of the broadcaster (channel) that owns the schedule to add the broadcast segment to.
     /// This must be the same user that created the access token.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The segment to add.
     /// </summary>
-    public required CreateChannelStreamScheduleSegmentRequestData ScheduleSegment { get; set; }
+    public required CreateChannelStreamScheduleSegmentRequestData ScheduleSegment { get; init; }
 }
 
 /// <summary>
@@ -48,12 +48,12 @@ public record CreateChannelStreamScheduleSegmentRequestData
     /// <summary>
     /// The date and time that the broadcast segment starts.
     /// </summary>
-    public required DateTimeOffset StartTime { get; set; }
+    public required DateTimeOffset StartTime { get; init; }
     /// <summary>
     /// The time zone where the broadcast takes place.
     /// </summary>
     [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
-    public required TimeZoneInfo Timezone { get; set; }
+    public required TimeZoneInfo Timezone { get; init; }
     /// <summary>
     /// The length of time that the broadcast is scheduled to run. 
     /// </summary>
@@ -61,20 +61,20 @@ public record CreateChannelStreamScheduleSegmentRequestData
     /// The duration can range from 30 minutes to 23 hours.
     /// </remarks>
     [JsonConverter(typeof(MinutesTimeSpanJsonConverter))]
-    public required TimeSpan Duration { get; set; }
+    public required TimeSpan Duration { get; init; }
     /// <summary>
     /// Determines whether the broadcast recurs weekly. 
     /// Set to <see langword="true"/> if the broadcast will recur weekly. 
     /// Only partners and affiliates may add non-recurring broadcasts.
     /// </summary>
-    public bool? IsRecurring { get; set; }
+    public bool? IsRecurring { get; init; }
     /// <summary>
     /// The id of the category for the scheduled stream segment.
     /// </summary>
-    public GameId? CategoryId { get; set; }
+    public GameId? CategoryId { get; init; }
     /// <summary>
     /// The title for the scheduled broadcast.
     /// This may contain up to a maximum of 140 characters.
     /// </summary>
-    public string? Title { get; set; }
+    public string? Title { get; init; }
 }

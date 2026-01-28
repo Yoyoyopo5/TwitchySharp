@@ -37,7 +37,7 @@ public record UpdateGuestStarSlotSettingsRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -45,22 +45,22 @@ public record UpdateGuestStarSlotSettingsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the Guest Star session.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 
     /// <summary>
     /// The id of the slot you want to update settings for.
     /// </summary>
-    public required GuestStarSlotId SlotId { get; set; }
+    public required GuestStarSlotId SlotId { get; init; }
 
     /// <summary>
     /// The settings to update.
     /// </summary>
-    public required GuestStarSlotSettings Settings { get; set; }
+    public required GuestStarSlotSettings Settings { get; init; }
 }
 
 /// <summary>
@@ -72,19 +72,19 @@ public record GuestStarSlotSettings
     /// Determines whether the slot is allowed to share their audio with the rest of the session. 
     /// If <see langword="false"/>, the slot will be muted in any views containing the slot.
     /// </summary>
-    public bool? IsAudioEnabled { get; set; }
+    public bool? IsAudioEnabled { get; init; }
     /// <summary>
     /// Determines whether the slot is allowed to share their video with the rest of the session. 
     /// If <see langword="false"/>, the slot will have no video shared in any views containing the slot.
     /// </summary>
-    public bool? IsVideoEnabled { get; set; }
+    public bool? IsVideoEnabled { get; init; }
     /// <summary>
     /// Determines whether the user assigned to this slot is visible/can be heard from any public subscriptions. 
     /// Generally, this determines whether or not the slot is enabled in any broadcasting software integrations.
     /// </summary>
-    public bool? IsLive { get; set; }
+    public bool? IsLive { get; init; }
     /// <summary>
     /// Value from 0-100 that controls the audio volume for shared views containing the slot.
     /// </summary>
-    public int? Volume { get; set; }
+    public int? Volume { get; init; }
 }

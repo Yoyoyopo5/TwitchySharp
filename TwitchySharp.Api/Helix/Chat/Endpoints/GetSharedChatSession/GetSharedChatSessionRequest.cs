@@ -18,8 +18,6 @@ public record GetSharedChatSessionRequest
 {
     protected override string Path => "/shared_chat/session";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -27,5 +25,5 @@ public record GetSharedChatSessionRequest
     /// <summary>
     /// The user id of the broadcaster whose shared chat you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

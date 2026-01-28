@@ -30,7 +30,7 @@ public record UpdateShieldModeStatusRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to update Shield Mode status for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -38,12 +38,12 @@ public record UpdateShieldModeStatusRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The Shield Mode status to update to.
     /// </summary>
-    public required UpdateShieldModeStatusRequestData ShieldModeStatus { get; set; }
+    public required UpdateShieldModeStatusRequestData ShieldModeStatus { get; init; }
 }
 
 /// <summary>
@@ -57,5 +57,5 @@ public record UpdateShieldModeStatusRequestData
     /// <remarks>
     /// Set to <see langword="true"/> to activate Shield Mode; otherwise, <see langword="false"/> to deactivate Shield Mode.
     /// </remarks>
-    public required bool IsActive { get; set; }
+    public required bool IsActive { get; init; }
 }

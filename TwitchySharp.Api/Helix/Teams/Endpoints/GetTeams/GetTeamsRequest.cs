@@ -18,8 +18,6 @@ public record GetTeamsRequest
 {
     protected override string Path => "/teams";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("name", Query.Name)
@@ -31,7 +29,7 @@ public record GetTeamsRequest
     /// <remarks>
     /// Use <see cref="TeamsQueryByName"/> or <see cref="TeamsQueryById"/>.
     /// </remarks>
-    public required TeamsQuery Query { get; set; }
+    public required TeamsQuery Query { get; init; }
 }
 
 /// <summary>

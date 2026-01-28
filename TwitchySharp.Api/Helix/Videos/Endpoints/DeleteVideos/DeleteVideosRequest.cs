@@ -21,8 +21,14 @@ public record DeleteVideosRequest
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
     public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVideos ];
+    protected override TwitchApiIdentity DefaultIdentity => User;
+
+    /// <summary>
+    /// The user identity of the broadcaster who owns the videos to delete.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids.Select(x => x.Value));
@@ -34,5 +40,5 @@ public record DeleteVideosRequest
     /// You can delete a maximum of 5 videos per request. Ignores invalid video IDs.
     /// If the user doesn't have permission to delete one of the videos in the list, none of the videos are deleted.
     /// </remarks>
-    public required IEnumerable<VideoId> Ids { get; set; }
+    public required IEnumerable<VideoId> Ids { get; init; }
 }

@@ -31,12 +31,12 @@ public record UpdateChannelGuestStarSettingsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The settings to update.
     /// </summary>
-    public required UpdateChannelGuestStarSettingsRequestData Settings { get; set; }
+    public required UpdateChannelGuestStarSettingsRequestData Settings { get; init; }
 }
 
 /// <summary>
@@ -47,23 +47,23 @@ public record UpdateChannelGuestStarSettingsRequestData
     /// <summary>
     /// Determines if Guest Star moderators have access to control whether a guest is live once assigned to a slot.
     /// </summary>
-    public bool? IsModeratorSendLiveEnabled { get; set; }
+    public bool? IsModeratorSendLiveEnabled { get; init; }
     /// <summary>
     /// Number of slots the Guest Star call interface will allow the host to add to a call. 
     /// Required to be between 1 and 6.
     /// </summary>
-    public int? SlotCount { get; set; }
+    public int? SlotCount { get; init; }
     /// <summary>
     /// Determines if Browser Sources subscribed to sessions on this channel should output audio.
     /// </summary>
-    public bool? IsBrowserSourceAudioEnabled { get; set; }
+    public bool? IsBrowserSourceAudioEnabled { get; init; }
     /// <summary>
     /// Determines how the guests within a session should be laid out within the browser source.
     /// </summary>
-    public GuestStarGroupLayout? GroupLayout { get; set; }
+    public GuestStarGroupLayout? GroupLayout { get; init; }
     /// <summary>
     /// Determines if Guest Star should regenerate the auth token associated with the channel’s browser sources. 
     /// Providing a <see langword="true"/> value for this will immediately invalidate all browser sources previously configured in your streaming software.
     /// </summary>
-    public bool? RegenerateBrowserSources { get; set; }
+    public bool? RegenerateBrowserSources { get; init; }
 }

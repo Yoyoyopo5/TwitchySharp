@@ -26,8 +26,6 @@ public record GetDropsEntitlementsRequest
 {
     protected override string Path => "/entitlements/drops";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids?.Select(x => x.ToString()))
@@ -40,7 +38,7 @@ public record GetDropsEntitlementsRequest
     /// <summary>
     /// The ids of the specific entitlements to get.
     /// </summary>
-    public IEnumerable<DropsEntitlementId>? Ids { get; set; }
+    public IEnumerable<DropsEntitlementId>? Ids { get; init; }
 
     /// <summary>
     /// The user id to get entitlements for.
@@ -50,7 +48,7 @@ public record GetDropsEntitlementsRequest
     /// You can combine this parameter with <see cref="GameId"/>.
     /// Requires the use of an app access token for the request.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
 
     /// <summary>
     /// The game id to get entitlements for.
@@ -59,12 +57,12 @@ public record GetDropsEntitlementsRequest
     /// Use this parameter to get all entitlements for a specific game.
     /// You can combine this parameter with <see cref="UserId"/> if using an app access token.
     /// </remarks>
-    public GameId? GameId { get; set; }
+    public GameId? GameId { get; init; }
 
     /// <summary>
     /// Filters the returned entitlements by a specified fulfillment status.
     /// </summary>
-    public DropsEntitlementStatus? FulfillmentStatus { get; set; }
+    public DropsEntitlementStatus? FulfillmentStatus { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -73,8 +71,8 @@ public record GetDropsEntitlementsRequest
     /// The minimum page size is 1 entitlement per page and the maximum is 1000.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

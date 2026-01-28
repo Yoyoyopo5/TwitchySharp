@@ -29,7 +29,7 @@ public record AddSuspiciousStatusToChatUserRequest
     /// <summary>
     /// The user id of the broadcaster (channel) in whose chat the suspicious user status is being applied.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to update the suspicious user status on behalf of.
@@ -37,12 +37,12 @@ public record AddSuspiciousStatusToChatUserRequest
     /// <remarks>
     /// This should be the same user that created the user access token for the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The request data.
     /// </summary>
-    public required AddSuspiciousStatusToChatUserRequestData Data { get; set; }
+    public required AddSuspiciousStatusToChatUserRequestData Data { get; init; }
 }
 
 /// <summary>
@@ -53,9 +53,9 @@ public record AddSuspiciousStatusToChatUserRequestData
     /// <summary>
     /// The id of the user to add suspicious user status to.
     /// </summary>
-    public required string UserId { get; set; }
+    public required string UserId { get; init; }
     /// <summary>
     /// The type of suspicious user status to add.
     /// </summary>
-    public required SuspiciousUserStatus Status { get; set; }
+    public required SuspiciousUserStatus Status { get; init; }
 }

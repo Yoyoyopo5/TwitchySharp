@@ -21,7 +21,6 @@ public record GetUserActiveExtensionsRequest
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.UserEditBroadcast ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -30,7 +29,7 @@ public record GetUserActiveExtensionsRequest
     /// <summary>
     /// The user id of the broadcaster to get active extensions for.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// Returns a new request configured to include extensions that are under development.

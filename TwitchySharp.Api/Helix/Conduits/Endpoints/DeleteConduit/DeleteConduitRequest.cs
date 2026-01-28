@@ -20,8 +20,6 @@ public record DeleteConduitRequest
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", ConduitId);
@@ -29,5 +27,5 @@ public record DeleteConduitRequest
     /// <summary>
     /// The id of the conduit you want to delete.
     /// </summary>
-    public required ConduitId ConduitId { get; set; }
+    public required ConduitId ConduitId { get; init; }
 }

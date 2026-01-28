@@ -42,7 +42,7 @@ public record CreateStreamMarkerRequest
     /// <summary>
     /// The marker to create.
     /// </summary>
-    public required CreateStreamMarkerRequestData Marker { get; set; }
+    public required CreateStreamMarkerRequestData Marker { get; init; }
 }
 
 /// <summary>
@@ -54,10 +54,10 @@ public record CreateStreamMarkerRequestData
     /// The user id of the broadcaster to create a marker for.
     /// This user or one of this broadcaster's editors must have created the user access token used in the <see cref="CreateStreamMarkerRequest"/>.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// A short description of the marker to help the user remember why they marked the location. 
     /// The maximum length of the description is 140 characters.
     /// </summary>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 }

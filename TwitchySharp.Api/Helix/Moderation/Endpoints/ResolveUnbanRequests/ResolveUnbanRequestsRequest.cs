@@ -31,7 +31,7 @@ public record ResolveUnbanRequestsRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to resolve the unban request for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -39,17 +39,17 @@ public record ResolveUnbanRequestsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the unban request to resolve.
     /// </summary>
-    public required UnbanRequestId UnbanRequestId { get; set; }
+    public required UnbanRequestId UnbanRequestId { get; init; }
 
     /// <summary>
     /// The resolution status to set the unban request to.
     /// </summary>
-    public required UnbanRequestResolutionStatus Status { get; set; }
+    public required UnbanRequestResolutionStatus Status { get; init; }
 
     /// <summary>
     /// Caller-defined text that is added to the unban request.
@@ -57,5 +57,5 @@ public record ResolveUnbanRequestsRequest
     /// <remarks>
     /// This can be a maximum of 500 characters.
     /// </remarks>
-    public string? ResolutionText { get; set; }
+    public string? ResolutionText { get; init; }
 }

@@ -31,7 +31,7 @@ public record GetBitsLeaderboardRequest
     /// <summary>
     /// The broadcaster to get the bits leaderboard for.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The number of results (leaderboard entries) to return.
@@ -39,12 +39,12 @@ public record GetBitsLeaderboardRequest
     /// <remarks>
     /// The minimum count is 1 and the maximum is 100. The default is 10.
     /// </remarks>
-    public int? Count { get; set; }
+    public int? Count { get; init; }
 
     /// <summary>
     /// The time period over which data is aggregated.
     /// </summary>
-    public LeaderboardPeriod? Period { get; set; }
+    public LeaderboardPeriod? Period { get; init; }
 
     /// <summary>
     /// The start date used for determining the aggregation period.
@@ -52,7 +52,7 @@ public record GetBitsLeaderboardRequest
     /// <remarks>
     /// The start date is ignored if <see cref="Period"/> is <see cref="LeaderboardPeriod.All"/> or <see langword="null"/>.
     /// </remarks>
-    public DateTimeOffset? StartedAt { get; set; }
+    public DateTimeOffset? StartedAt { get; init; }
 
     /// <summary>
     /// The id of a user that has cheered bits in the channel.
@@ -61,5 +61,5 @@ public record GetBitsLeaderboardRequest
     /// If <see cref="Count"/> is greater than <c>1</c>, the response may include users ranked above and below the specified user.
     /// To get the leaderboard's top leaders, set this to <see langword="null"/>.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
 }

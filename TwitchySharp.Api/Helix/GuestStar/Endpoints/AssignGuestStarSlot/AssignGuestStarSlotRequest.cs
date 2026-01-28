@@ -31,7 +31,7 @@ public record AssignGuestStarSlotRequest
     /// <summary>
     /// The user id of the broadcaster who is hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -39,12 +39,12 @@ public record AssignGuestStarSlotRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the Guest Star session in which to assign the slot.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 
     /// <summary>
     /// The user id of the guest to assign to the slot.
@@ -52,7 +52,7 @@ public record AssignGuestStarSlotRequest
     /// <remarks>
     /// This user must have an invite to the session and have indicated that they are ready to join.
     /// </remarks>
-    public required UserId GuestId { get; set; }
+    public required UserId GuestId { get; init; }
 
     /// <summary>
     /// The slot assignment to give to the user.
@@ -61,5 +61,5 @@ public record AssignGuestStarSlotRequest
     /// Must be a numeric identifier between <c>"1"</c> and <c>"N"</c> where <c>N</c> is the max number of slots for the session.
     /// The max number of slots allowed for the session is reported by a <see cref="GetChannelGuestStarSettingsResponse"/>.
     /// </remarks>
-    public required GuestStarSlotId SlotId { get; set; }
+    public required GuestStarSlotId SlotId { get; init; }
 }

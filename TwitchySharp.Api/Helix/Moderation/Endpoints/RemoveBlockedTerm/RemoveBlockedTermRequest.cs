@@ -29,7 +29,7 @@ public record RemoveBlockedTermRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to remove a blocked term from.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -37,10 +37,10 @@ public record RemoveBlockedTermRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the blocked term to remove.
     /// </summary>
-    public required AutomodBlockedTermId BlockedTermId { get; set; }
+    public required AutomodBlockedTermId BlockedTermId { get; init; }
 }

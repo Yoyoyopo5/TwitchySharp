@@ -23,8 +23,6 @@ public record SearchCategoriesRequest
 {
     protected override string Path => "/search/categories";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("query", Query)
@@ -34,7 +32,7 @@ public record SearchCategoriesRequest
     /// <summary>
     /// The search string.
     /// </summary>
-    public required string Query { get; set; }
+    public required string Query { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -43,8 +41,8 @@ public record SearchCategoriesRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

@@ -22,8 +22,6 @@ public record GetVideosRequest
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids?.Select(x => x.Value))
@@ -45,21 +43,21 @@ public record GetVideosRequest
     /// You may specify a maximum of 100 ids.
     /// The API ignores duplicate ids and ids that weren't found (if there's at least one valid id).
     /// </remarks>
-    public IEnumerable<VideoId>? Ids { get; set; }
+    public IEnumerable<VideoId>? Ids { get; init; }
     /// <summary>
     /// The user id of the broadcaster whose list of videos you want to get.
     /// </summary>
     /// <remarks>
     /// Mutually exclusive with <see cref="Ids"/> and <see cref="GameId"/>.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
     /// <summary>
     /// The id of the game or category you want to get videos for.
     /// </summary>
     /// <remarks>
     /// Mutually exclusive with <see cref="Ids"/> and <see cref="UserId"/>.
     /// </remarks>
-    public GameId? GameId { get; set; }
+    public GameId? GameId { get; init; }
     /// <summary>
     /// An ISO 639-1 two-letter code to filter returned videos by.
     /// </summary>
@@ -68,7 +66,7 @@ public record GetVideosRequest
     /// For a list of supported languages, see <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">Supported Stream Language</see>.
     /// If the language is not supported, use <see cref="LanguageCode.Other"/>.
     /// </remarks>
-    public LanguageCode? Language { get; set; }
+    public LanguageCode? Language { get; init; }
     /// <summary>
     /// Filters the returned list of videos by when they were published.
     /// </summary>
@@ -76,7 +74,7 @@ public record GetVideosRequest
     /// Only applicable when querying by <see cref="UserId"/> or <see cref="GameId"/>.
     /// Defaults to <see cref="VideoQueryPeriod.All"/>.
     /// </remarks>
-    public VideoQueryPeriod? Period { get; set; }
+    public VideoQueryPeriod? Period { get; init; }
     /// <summary>
     /// The sort order to return the videos in.
     /// </summary>
@@ -84,7 +82,7 @@ public record GetVideosRequest
     /// Only applicable when querying by <see cref="UserId"/> or <see cref="GameId"/>.
     /// Defaults to <see cref="VideoQuerySort.Time"/>.
     /// </remarks>
-    public VideoQuerySort? Sort { get; set; }
+    public VideoQuerySort? Sort { get; init; }
     /// <summary>
     /// Filters the returned list of videos by type.
     /// </summary>
@@ -92,7 +90,7 @@ public record GetVideosRequest
     /// Only applicable when querying by <see cref="UserId"/> or <see cref="GameId"/>.
     /// Defaults to <see cref="VideoQueryType.All"/>.
     /// </remarks>
-    public VideoQueryType? Type { get; set; }
+    public VideoQueryType? Type { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -101,11 +99,11 @@ public record GetVideosRequest
     /// The minimum page size is 1 item per page and the maximum is 100.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
 }

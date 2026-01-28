@@ -31,5 +31,5 @@ public record GetChannelEditorsRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ChannelReadEditors"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }
