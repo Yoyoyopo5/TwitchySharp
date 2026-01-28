@@ -20,8 +20,6 @@ public record GetExtensionBitsProductsRequest
 {
     protected override string Path => "/bits/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("should_include_all", ShouldIncludeAll?.ToString());
@@ -32,5 +30,5 @@ public record GetExtensionBitsProductsRequest
     /// <remarks>
     /// The default is <see langword="false"/>.
     /// </remarks>
-    public bool? ShouldIncludeAll { get; set; }
+    public bool? ShouldIncludeAll { get; init; }
 }

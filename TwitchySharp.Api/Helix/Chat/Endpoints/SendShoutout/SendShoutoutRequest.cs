@@ -31,12 +31,12 @@ public record SendShoutoutRequest
     /// <summary>
     /// The user id of the broadcaster that's sending the shoutout.
     /// </summary>
-    public required UserId FromBroadcasterId { get; set; }
+    public required UserId FromBroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster that's receiving the shoutout.
     /// </summary>
-    public required UserId ToBroadcasterId { get; set; }
+    public required UserId ToBroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to send the shoutout on behalf of.
@@ -45,5 +45,5 @@ public record SendShoutoutRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ModeratorManageShoutouts"/>.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 }

@@ -37,12 +37,12 @@ public record CreateCustomRewardsRequest
     /// This must be the same user that created the access token for the request.
     /// Requires <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The reward to create.
     /// </summary>
-    public required CreateCustomRewardsRequestData Reward { get; set; }
+    public required CreateCustomRewardsRequestData Reward { get; init; }
 }
 
 /// <summary>

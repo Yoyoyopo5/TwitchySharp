@@ -36,10 +36,10 @@ public record DeleteCustomRewardRequest
     /// This must be the same user that created the access token for the request.
     /// Requires <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id of the custom reward to delete.
     /// </summary>
-    public required RewardId RewardId { get; set; }
+    public required RewardId RewardId { get; init; }
 }

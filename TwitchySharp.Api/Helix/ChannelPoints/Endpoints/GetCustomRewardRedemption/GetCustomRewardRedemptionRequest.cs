@@ -40,7 +40,7 @@ public record GetCustomRewardRedemptionRequest
     /// This must also be the user that created the user access token for the request.
     /// Requires <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id that identifies the custom reward whose redemptions you want to get.
@@ -48,7 +48,7 @@ public record GetCustomRewardRedemptionRequest
     /// <remarks>
     /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
     /// </remarks>
-    public RewardId? RewardId { get; set; }
+    public RewardId? RewardId { get; init; }
 
     /// <summary>
     /// The status of the redemptions to return.
@@ -57,7 +57,7 @@ public record GetCustomRewardRedemptionRequest
     /// Canceled and fulfilled redemptions are returned for only a few days after they're canceled or fulfilled.
     /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
     /// </remarks>
-    public RewardRedemptionStatus? Status { get; set; }
+    public RewardRedemptionStatus? Status { get; init; }
 
     /// <summary>
     /// A list of redemption ids to filter the redemptions by.
@@ -68,7 +68,7 @@ public record GetCustomRewardRedemptionRequest
     /// The response contains only the ids that were found.
     /// If none of the ids were found, the response is 404 Not Found.
     /// </remarks>
-    public IEnumerable<RewardRedemptionId>? Ids { get; set; }
+    public IEnumerable<RewardRedemptionId>? Ids { get; init; }
 
     /// <summary>
     /// The order to sort redemptions by.
@@ -76,10 +76,10 @@ public record GetCustomRewardRedemptionRequest
     /// <remarks>
     /// The default is <see cref="CustomRewardRedemptionSortingMethod.Oldest"/>.
     /// </remarks>
-    public CustomRewardRedemptionSortingMethod? Sort { get; set; }
+    public CustomRewardRedemptionSortingMethod? Sort { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -87,5 +87,5 @@ public record GetCustomRewardRedemptionRequest
     /// <remarks>
     /// The minimum page size is 1 redemption per page and the maximum is 50.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 }

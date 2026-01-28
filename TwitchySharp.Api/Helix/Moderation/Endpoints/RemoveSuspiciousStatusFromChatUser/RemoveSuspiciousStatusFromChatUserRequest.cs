@@ -29,7 +29,7 @@ public record RemoveSuspiciousStatusFromChatUserRequest
     /// <summary>
     /// The user id of the broadcaster (channel) in whose chat to remove the suspicious user status.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the moderator (or the broadcaster) to remove the suspicious user status on behalf of.
@@ -37,10 +37,10 @@ public record RemoveSuspiciousStatusFromChatUserRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the user to remove the suspicious user status on.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

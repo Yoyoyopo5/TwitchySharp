@@ -23,7 +23,7 @@ public record StartCommercialRequest
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Commercial.BroadcasterId);
     public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelEditCommercial ];
     public override object? ContentObject => Commercial;
-    public required StartCommercialRequestData Commercial { get; set; }
+    public required StartCommercialRequestData Commercial { get; init; }
 }
 
 /// <summary>
@@ -38,7 +38,7 @@ public record StartCommercialRequestData
     /// This ID must match the user ID of the access token.
     /// Requires <see cref="Scope.ChannelEditCommercial"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The length of the commercial to run.
     /// </summary>
@@ -48,5 +48,5 @@ public record StartCommercialRequestData
     /// </remarks>
 
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public required TimeSpan Length { get; set; }
+    public required TimeSpan Length { get; init; }
 }

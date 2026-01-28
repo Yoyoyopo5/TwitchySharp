@@ -30,12 +30,12 @@ public record CheckUserSubscriptionRequest
     /// <summary>
     /// The user id of the broadcaster that the subscription is to.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The id of the user to get the subscription for.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token.
     /// </remarks>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

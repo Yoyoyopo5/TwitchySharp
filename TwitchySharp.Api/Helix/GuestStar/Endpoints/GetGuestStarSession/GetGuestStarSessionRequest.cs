@@ -28,7 +28,7 @@ public record GetGuestStarSessionRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator in the broadcaster's chat.
@@ -36,5 +36,5 @@ public record GetGuestStarSessionRequest
     /// <remarks>
     /// This user must be the one that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 }

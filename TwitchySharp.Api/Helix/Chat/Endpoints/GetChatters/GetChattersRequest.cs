@@ -39,7 +39,7 @@ public record GetChattersRequest
     /// <summary>
     /// The user id of the broadcaster whose chatters you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster OR one of the broadcaster's moderators.
@@ -48,7 +48,7 @@ public record GetChattersRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ModeratorReadChatters"/>.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -57,8 +57,8 @@ public record GetChattersRequest
     /// The minimum page size is 1 item per page and the maximum is 1,000.
     /// The default is 100.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

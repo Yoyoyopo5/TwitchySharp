@@ -20,8 +20,6 @@ public record GetReleasedExtensionsRequest
 {
     protected override string Path => "/extensions/released";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
@@ -30,7 +28,7 @@ public record GetReleasedExtensionsRequest
     /// <summary>
     /// The id of the extension to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The version of the extension to get.
@@ -38,5 +36,5 @@ public record GetReleasedExtensionsRequest
     /// <remarks>
     /// If <see langword="null"/>, it returns the latest version.
     /// </remarks>
-    public ExtensionVersion? ExtensionVersion { get; set; }
+    public ExtensionVersion? ExtensionVersion { get; init; }
 }

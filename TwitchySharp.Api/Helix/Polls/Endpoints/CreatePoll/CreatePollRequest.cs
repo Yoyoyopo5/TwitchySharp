@@ -29,7 +29,7 @@ public record CreatePollRequest
     /// <summary>
     /// The poll to create.
     /// </summary>
-    public required CreatePollRequestData Poll { get; set; }
+    public required CreatePollRequestData Poll { get; init; }
 }
 
 /// <summary>
@@ -41,32 +41,32 @@ public record CreatePollRequestData
     /// The user id of the broadcaster (channel) to create the poll for.
     /// This must be the same user that created the user access token in the request.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The question that viewers will vote on.
     /// The question may contain a maximum of 60 characters.
     /// </summary>
-    public required string Title { get; set; }
+    public required string Title { get; init; }
     /// <summary>
     /// A list of choices that viewers may choose from. 
     /// The list must contain a minimum of 2 choices and up to a maximum of 5 choices.
     /// </summary>
-    public required CreatePollChoice[] Choices { get; set; }
+    public required CreatePollChoice[] Choices { get; init; }
     /// <summary>
     /// The length of time that the poll will run for. 
     /// The minimum is 15 seconds and the maximum is 1800 seconds (30 minutes).
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public required TimeSpan Duration { get; set; }
+    public required TimeSpan Duration { get; init; }
     /// <summary>
     /// Determines whether viewers may cast additional votes using Channel Points.
     /// If set to <see langword="true"/>, the amount of Channel Points required per additional vote is set by <see cref="ChannelPointsPerVote"/>.
     /// The default value is <see langword="false"/>.
     /// </summary>
-    public bool? ChannelPointsVotingEnabled { get; set; }
+    public bool? ChannelPointsVotingEnabled { get; init; }
     /// <summary>
     /// If <see cref="ChannelPointsVotingEnabled"/> is set to <see langword="true"/>, the amount of points required to cast one additional vote.
     /// The minimum value is 1 and the maximum is 1,000,000.
     /// </summary>
-    public int? ChannelPointsPerVote { get; set; }
+    public int? ChannelPointsPerVote { get; init; }
 }

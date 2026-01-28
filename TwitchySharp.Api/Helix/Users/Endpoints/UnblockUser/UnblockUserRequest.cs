@@ -29,7 +29,7 @@ public record UnblockUserRequest
     /// <summary>
     /// The user to unblock the target user as.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The id of the user to remove from the broadcaster's list of blocked users.
@@ -37,5 +37,5 @@ public record UnblockUserRequest
     /// <remarks>
     /// The API ignores the request if the broadcaster hasn't blocked the user.
     /// </remarks>
-    public required UserId TargetUserId { get; set; }
+    public required UserId TargetUserId { get; init; }
 }

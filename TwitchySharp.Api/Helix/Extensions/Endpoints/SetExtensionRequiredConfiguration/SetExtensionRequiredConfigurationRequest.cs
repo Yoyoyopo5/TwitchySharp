@@ -25,12 +25,11 @@ public record SetExtensionRequiredConfigurationRequest
     protected override string Path => "/extensions/required_configuration";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -39,12 +38,12 @@ public record SetExtensionRequiredConfigurationRequest
     /// <summary>
     /// The user id of the broadcaster with the extension to set required configuration for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The data used to set the required configuration setting.
     /// </summary>
-    public required SetExtensionRequiredConfigurationRequestData Configuration { get; set; }
+    public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
 }
 
 /// <summary>
@@ -55,13 +54,13 @@ public record SetExtensionRequiredConfigurationRequestData
     /// <summary>
     /// The id of the extension to update.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
     /// <summary>
     /// The version of the extension to update.
     /// </summary>
-    public required ExtensionVersion ExtensionVersion { get; set; }
+    public required ExtensionVersion ExtensionVersion { get; init; }
     /// <summary>
     /// The required_configuration string to use with the extension.
     /// </summary>
-    public required string RequiredConfiguration { get; set; }
+    public required string RequiredConfiguration { get; init; }
 }

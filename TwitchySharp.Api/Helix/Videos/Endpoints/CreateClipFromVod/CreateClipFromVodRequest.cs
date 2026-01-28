@@ -39,15 +39,15 @@ public record CreateClipFromVodRequest
     /// This should be the same user that created the user access token in the request,
     /// and it can be the broadcaster.
     /// </summary>
-    public required UserId EditorId { get; set; }
+    public required UserId EditorId { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The id of the VOD to create a clip for.
     /// </summary>
-    public required VideoId VodId { get; set; }
+    public required VideoId VodId { get; init; }
     /// <summary>
     /// The end time of clip to create, measured from the start of the VOD.
     /// </summary>
@@ -55,7 +55,7 @@ public record CreateClipFromVodRequest
     /// The clip will start at <c><see cref="VodOffset"/> - <see cref="Duration"/></c>.
     /// If <see cref="Duration"/> is specified, this must be greater than its value.
     /// </remarks>
-    public required TimeSpan VodOffset { get; set; }
+    public required TimeSpan VodOffset { get; init; }
     /// <summary>
     /// The duration of the clip to create.
     /// </summary>
@@ -63,9 +63,9 @@ public record CreateClipFromVodRequest
     /// Can range from 5 to 60 seconds, with a resolution of 100ms.
     /// If left <see langword="null"/>, defaults to 30 seconds.
     /// </remarks>
-    public TimeSpan? Duration { get; set; }
+    public TimeSpan? Duration { get; init; }
     /// <summary>
     /// The title of the clip to create.
     /// </summary>
-    public required string Title { get; set; }
+    public required string Title { get; init; }
 }

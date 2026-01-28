@@ -29,7 +29,7 @@ public record GetGuestStarInvitesRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session to get invites for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator in the broadcaster's channel.
@@ -37,10 +37,10 @@ public record GetGuestStarInvitesRequest
     /// <remarks>
     /// This must be the same user who created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The session id to query for invites.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 }

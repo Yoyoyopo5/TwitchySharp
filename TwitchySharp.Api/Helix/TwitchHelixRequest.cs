@@ -22,7 +22,7 @@ public abstract record TwitchHelixRequest<TResponseContent>
         init => _configuredIdentity = value;
     }
     private TwitchApiIdentity? _configuredIdentity;
-    protected abstract TwitchApiIdentity DefaultIdentity { get; }
+    protected virtual TwitchApiIdentity DefaultIdentity { get; } = TwitchApiIdentity.Default;
     public virtual IEnumerable<Scope> ValidScopes { get; } = [];
     public virtual AccessToken? OverrideAccessToken { get; init; }
     protected virtual HttpQueryParameters? QueryParameters { get; }

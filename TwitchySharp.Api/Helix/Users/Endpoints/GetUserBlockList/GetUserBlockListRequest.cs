@@ -32,7 +32,7 @@ public record GetUserBlockListRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -40,7 +40,7 @@ public record GetUserBlockListRequest
     /// The minimum page size is 1 item per page and the maximum is 100.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

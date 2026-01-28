@@ -35,7 +35,7 @@ public record GetModeratorsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// A list of user ids used to filter the results.
@@ -45,14 +45,14 @@ public record GetModeratorsRequest
     /// The returned list includes only the users from the list who are moderators in the broadcaster's channel.
     /// The list is returned in the same order as you specified the ids.
     /// </remarks>
-    public IEnumerable<UserId>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; init; }
 
     /// <remarks>
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

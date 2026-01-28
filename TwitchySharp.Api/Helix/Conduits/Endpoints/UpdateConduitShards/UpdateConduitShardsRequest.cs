@@ -17,14 +17,12 @@ public record UpdateConduitShardsRequest
 {
     protected override string Path => "/eventsub/conduits/shards";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     public override object? ContentObject => ShardUpdates;
 
     /// <summary>
     /// Data used to update the shards.
     /// </summary>
-    public required UpdateConduitShardsRequestData ShardUpdates { get; set; }
+    public required UpdateConduitShardsRequestData ShardUpdates { get; init; }
 }
 
 /// <summary>
@@ -35,9 +33,9 @@ public record UpdateConduitShardsRequestData
     /// <summary>
     /// The id of the conduit to update shards on.
     /// </summary>
-    public required ConduitId ConduitId { get; set; }
+    public required ConduitId ConduitId { get; init; }
     /// <summary>
     /// The shards to update.
     /// </summary>
-    public required ConduitShardUpdate[] Shards { get; set; }
+    public required ConduitShardUpdate[] Shards { get; init; }
 }

@@ -32,7 +32,7 @@ public record BanUserRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to ban or time out a user from.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -40,12 +40,12 @@ public record BanUserRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// Information used to set the user to ban or time out.
     /// </summary>
-    public required BanUserRequestData Ban { get; set; }
+    public required BanUserRequestData Ban { get; init; }
 }
 
 /// <summary>
@@ -56,7 +56,7 @@ public record BanUserRequestData
     /// <summary>
     /// Information about the specific user to ban or time out.
     /// </summary>
-    public required UserToBan Data { get; set; } // Really Twitch?
+    public required UserToBan Data { get; init; } // Really Twitch?
 }
 
 /// <summary>
@@ -67,7 +67,7 @@ public record UserToBan
     /// <summary>
     /// The user id of the user to ban or time out.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// Set this property to issue a time-out, leave <see langword="null"/> to issue a ban.
     /// Time-out durations are measured in <b>seconds</b>, with the minimum duration being 1 second, and the maximum being 1,209,600 seconds (2 weeks).
@@ -75,9 +75,9 @@ public record UserToBan
     /// Also note that adding a time-out duration to a user does not overwrite a ban if they have one.
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public TimeSpan? Duration { get; set; }
+    public TimeSpan? Duration { get; init; }
     /// <summary>
     /// Caller-defined text that is displayed to the banned user as the reason for their ban or time-out.
     /// </summary>
-    public string? Reason { get; set; }
+    public string? Reason { get; init; }
 }

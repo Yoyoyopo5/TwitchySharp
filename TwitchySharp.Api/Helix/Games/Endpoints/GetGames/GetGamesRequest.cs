@@ -19,8 +19,6 @@ public record GetGamesRequest
 {
     protected override string Path => "/games";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Games.OfType<GameIdQuery>().Select(x => x.GameId.Value))
@@ -34,7 +32,7 @@ public record GetGamesRequest
     /// You may specify up to 100 games.
     /// Use derived classes <see cref="GameIdQuery"/>, <see cref="GameNameQuery"/>, and <see cref="GameIgdbQuery"/>.
     /// </remarks>
-    public required IEnumerable<GameQuery> Games { get; set; }
+    public required IEnumerable<GameQuery> Games { get; init; }
 }
 
 

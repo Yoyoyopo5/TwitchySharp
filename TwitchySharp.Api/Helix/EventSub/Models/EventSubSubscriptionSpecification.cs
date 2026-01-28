@@ -8,12 +8,12 @@ public record EventSubSubscriptionSpecification
     /// The type of subscription to create.
     /// See the <see cref="EventSub.Types"/> namespace for built-in subscription types.
     /// </summary>
-    public required IEventSubSubscriptionType Type { get; set; }
+    public required IEventSubSubscriptionType Type { get; init; }
     /// <summary>
     /// The transport type that you want Twitch to use when sending you notifications.
     /// Possible transport types are <see cref="WebhookSubscriptionTransport"/>, <see cref="WebsocketSubscriptionTransport"/>, and <see cref="ConduitSubscriptionTransport"/>.
     /// </summary>
-    public required EventSubSubscriptionTransportSpecification Transport { get; set; }
+    public required EventSubSubscriptionTransportSpecification Transport { get; init; }
 }
 
 internal static class EventSubSubscriptionSpecificationExtensions

@@ -38,17 +38,17 @@ public record UpdateCustomRewardRequest
     /// This must be the same user that created the access token for the request.
     /// Requires <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id of the reward to update.
     /// </summary>
-    public required RewardId RewardId { get; set; }
+    public required RewardId RewardId { get; init; }
 
     /// <summary>
     /// The data that the reward should be updated to.
     /// </summary>
-    public required UpdateCustomRewardRequestData UpdatedReward { get; set; }
+    public required UpdateCustomRewardRequestData UpdatedReward { get; init; }
 }
 
 /// <summary>
@@ -60,73 +60,73 @@ public record UpdateCustomRewardRequestData
     /// The reward's title.
     /// The title may contain a maximum of 45 characters and it must be unique amongst all of the broadcaster's custom rewards.
     /// </summary>
-    public string? Title { get; set; }
+    public string? Title { get; init; }
     /// <summary>
     /// The prompt shown to the viewer when they redeem the reward.
     /// Specify a prompt if <see cref="IsUserInputRequired"/> is <see langword="true"/>.
     /// The prompt is limited to a maximum of 200 characters.
     /// </summary>
-    public string? Prompt { get; set; }
+    public string? Prompt { get; init; }
     /// <summary>
     /// The cost of the reward, in channel points. The minimum is 1 point.
     /// </summary>
-    public long? Cost { get; set; }
+    public long? Cost { get; init; }
     /// <summary>
     /// The background color to use for the reward.
     /// </summary>
-    public RgbColor? BackgroundColor { get; set; }
+    public RgbColor? BackgroundColor { get; init; }
     /// <summary>
     /// Determines whether the reward is enabled.
     /// Set to <see langword="true"/> to enable the reward. Viewers see only enabled rewards.
     /// </summary>
-    public bool? IsEnabled { get; set; }
+    public bool? IsEnabled { get; init; }
     /// <summary>
     /// Determines whether users must enter information to redeem the reward.
     /// Set to true if user input is required.
     /// The <see cref="Prompt"/> is shown to the user if set to <see langword="true"/>.
     /// </summary>
-    public bool? IsUserInputRequired { get; set; }
+    public bool? IsUserInputRequired { get; init; }
     /// <summary>
     /// Determines whether to limit the maximum number of redemptions allowed per live stream (amount specified with <see cref="MaxPerStream"/>).
     /// Set to <see langword="true"/> to limit redemptions.
     /// </summary>
-    public bool? IsMaxPerStreamEnabled { get; set; }
+    public bool? IsMaxPerStreamEnabled { get; init; }
     /// <summary>
     /// The maximum number of redemptions allowed per live stream.
     /// Applied only if <see cref="IsMaxPerStreamEnabled"/> is <see langword="true"/>. The minimum value is 1.
     /// </summary>
-    public long? MaxPerStream { get; set; }
+    public long? MaxPerStream { get; init; }
     /// <summary>
     /// Determines whether to limit the maximum number of redemptions allowed per user per stream (specified with <see cref="MaxPerUserPerStream"/>).
     /// The minimum value is 1. Set to <see langword="true"/> to limit redemptions.
     /// </summary>
-    public bool? IsMaxPerUserPerStreamEnabled { get; set; }
+    public bool? IsMaxPerUserPerStreamEnabled { get; init; }
     /// <summary>
     /// The maximum number of redemptions allowed per user per stream.
     /// Applied only if <see cref="IsMaxPerUserPerStreamEnabled"/> is <see langword="true"/>.
     /// </summary>
-    public long? MaxPerUserPerStream { get; set; }
+    public long? MaxPerUserPerStream { get; init; }
     /// <summary>
     /// Determines whether to apply a cooldown period between redemptions.
     /// Set to <see langword="true"/> to apply a cooldown period.
     /// The duration is specified by <see cref="GlobalCooldownSeconds"/>.
     /// </summary>
-    public bool? IsGlobalCooldownEnabled { get; set; }
+    public bool? IsGlobalCooldownEnabled { get; init; }
     /// <summary>
     /// The cooldown period.
     /// Applied only if <see cref="IsGlobalCooldownEnabled"/> is <see langword="true"/>.
     /// The minimum value is 1 second; however, for it to be shown in the Twitch UI, the minimum value is 60 seconds.
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public TimeSpan? GlobalCooldownSeconds { get; set; }
+    public TimeSpan? GlobalCooldownSeconds { get; init; }
     /// <summary>
     /// Determines whether to pause the reward.
     /// Set to <see langword="true"/> to pause the reward. Viewers can't redeem paused rewards.
     /// </summary>
-    public bool? IsPaused { get; set; }
+    public bool? IsPaused { get; init; }
     /// <summary>
     /// Determines whether redemptions should be set to FULFILLED status immediately when a reward is redeemed.
     /// If <see langword="false"/>, status is set to UNFULFILLED and follows the normal request queue process.
     /// </summary>
-    public bool? ShouldRedemptionsSkipRequestQueue { get; set; }
+    public bool? ShouldRedemptionsSkipRequestQueue { get; init; }
 }

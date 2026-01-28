@@ -26,7 +26,6 @@ public record GetUsersRequest
 {
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
     private IEnumerable<Scope> ConfiguredScopes { get; init; } = [];
     public override IEnumerable<Scope> ValidScopes => ConfiguredScopes;
     protected override HttpQueryParameters QueryParameters
@@ -40,14 +39,14 @@ public record GetUsersRequest
     /// <remarks>
     /// You may specify a maximum of 100 ids total between <see cref="UserIds"/> and <see cref="UserLogins"/>.
     /// </remarks>
-    public IEnumerable<UserId>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; init; }
     /// <summary>
     /// The logins (usernames) of the users to get.
     /// </summary>
     /// <remarks>
     /// You may specify a maximum of 100 logins total between <see cref="UserIds"/> and <see cref="UserLogins"/>.
     /// </remarks>
-    public IEnumerable<UserLogin>? UserLogins { get; set; }
+    public IEnumerable<UserLogin>? UserLogins { get; init; }
 
     /// <summary>
     /// Returns a new request configured to include the user's email in the response.

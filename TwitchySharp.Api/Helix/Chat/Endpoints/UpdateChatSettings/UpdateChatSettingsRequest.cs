@@ -32,7 +32,7 @@ public record UpdateChatSettingsRequest
     /// <summary>
     /// The user id of the broadcaster whose chat settings you want to update.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -41,12 +41,12 @@ public record UpdateChatSettingsRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ModeratorManageChatSettings"/>.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The settings that you want to change.
     /// </summary>
-    public required UpdateChatSettingsRequestData NewSettings { get; set; }
+    public required UpdateChatSettingsRequestData NewSettings { get; init; }
 }
 
 /// <summary>

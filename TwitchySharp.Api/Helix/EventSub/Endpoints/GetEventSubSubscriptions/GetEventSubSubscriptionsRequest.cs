@@ -24,8 +24,6 @@ public record GetEventSubSubscriptionsRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("status", Status?.Value)
@@ -48,7 +46,7 @@ public record GetEventSubSubscriptionsRequest
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription status.
     /// </summary>
-    public EventSubSubscriptionStatus? Status { get; set; }
+    public EventSubSubscriptionStatus? Status { get; init; }
 
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription type.
@@ -56,7 +54,7 @@ public record GetEventSubSubscriptionsRequest
     /// <remarks>
     /// Note that this only filters by subscription type <b>name</b>, not version.
     /// </remarks>
-    public EventSubSubscriptionTypeName? Type { get; set; }
+    public EventSubSubscriptionTypeName? Type { get; init; }
 
     /// <summary>
     /// Specify this parameter to filter the returned list by a specific user.
@@ -64,7 +62,7 @@ public record GetEventSubSubscriptionsRequest
     /// <remarks>
     /// Only subscriptions that were created for this user are returned.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
 
     /// <summary>
     /// Specify this parameter to get a specific subscription by its id, as long as the subscription is owned by the client making the request.
@@ -72,13 +70,13 @@ public record GetEventSubSubscriptionsRequest
     /// <remarks>
     /// If a matching subscription does not exist, an empty array is returned.
     /// </remarks>
-    public EventSubSubscriptionId? SubscriptionId { get; set; }
+    public EventSubSubscriptionId? SubscriptionId { get; init; }
 
     /// <summary>
     /// Unused for this request type.
     /// </summary>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

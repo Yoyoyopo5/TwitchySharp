@@ -28,7 +28,7 @@ public record UpdateUserRequest
     /// <summary>
     /// The user to update.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The string to update the channel's description to.
@@ -37,5 +37,5 @@ public record UpdateUserRequest
     /// The description is limited to a maximum of 300 characters.
     /// To remove the description, set this to <see cref="string.Empty"/>.
     /// </remarks>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 }

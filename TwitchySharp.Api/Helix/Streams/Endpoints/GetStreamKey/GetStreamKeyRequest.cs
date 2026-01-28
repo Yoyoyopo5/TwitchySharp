@@ -30,5 +30,5 @@ public record GetStreamKeyRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

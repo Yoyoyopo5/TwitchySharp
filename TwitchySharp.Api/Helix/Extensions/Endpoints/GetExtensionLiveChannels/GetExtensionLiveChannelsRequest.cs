@@ -20,8 +20,6 @@ public record GetExtensionLiveChannelsRequest
 {
     protected override string Path => "/extensions/live";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
@@ -34,7 +32,7 @@ public record GetExtensionLiveChannelsRequest
     /// <remarks>
     /// The response will contain the list of broadcasters that are live and that have installed or activated this extension.
     /// </remarks>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -43,8 +41,8 @@ public record GetExtensionLiveChannelsRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

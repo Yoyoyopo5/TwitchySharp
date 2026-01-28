@@ -32,5 +32,5 @@ public record CreateGuestStarSessionRequest
     /// <remarks>
     /// This must be the same user who created the access token used in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

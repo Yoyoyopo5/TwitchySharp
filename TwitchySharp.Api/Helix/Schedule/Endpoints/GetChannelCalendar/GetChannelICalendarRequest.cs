@@ -20,7 +20,6 @@ public record GetChannelICalendarRequest
     public override HttpMethod Method => HttpMethod.Get;
     // This endpoint does not require any authentication
     protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.None;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -28,5 +27,5 @@ public record GetChannelICalendarRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to get the streaming schedule for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

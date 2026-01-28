@@ -35,7 +35,7 @@ public record UpdateChannelStreamScheduleRequest
     /// <summary>
     /// The request parameters.
     /// </summary>
-    public required UpdateChannelStreamScheduleRequestParameters Settings { get; set; }
+    public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
 }
 
 /// <summary>
@@ -77,23 +77,23 @@ public record UpdateChannelStreamScheduleRequestParameters
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// Determines whether the broadcaster has scheduled a vacation. 
     /// Set to <see langword="true"/> to enable Vacation Mode and add vacation dates, or <see langword="false"/> to cancel a previously scheduled vacation.
     /// </summary>
-    public bool? IsVacationEnabled { get; private set; }
+    public bool? IsVacationEnabled { get; private init; }
     /// <summary>
     /// The date and time of when the broadcaster’s vacation starts. 
     /// </summary>
-    public DateTimeOffset? VacationStartTime { get; private set; }
+    public DateTimeOffset? VacationStartTime { get; private init; }
     /// <summary>
     /// The date and time of when the broadcaster’s vacation ends.
     /// </summary>
-    public DateTimeOffset? VacationEndTime { get; private set; }
+    public DateTimeOffset? VacationEndTime { get; private init; }
     /// <summary>
     /// The time zone that the broadcaster broadcasts from.
     /// </summary>
     [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
-    public TimeZoneInfo? Timezone { get; private set; }
+    public TimeZoneInfo? Timezone { get; private init; }
 }

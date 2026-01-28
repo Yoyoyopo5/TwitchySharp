@@ -36,12 +36,12 @@ public record GetClipsDownloadRequest
     /// This must be the user that created the access token used in the request.
     /// Requires <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.
     /// </remarks>
-    public required UserId EditorId { get; set; }
+    public required UserId EditorId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to get clip downloads for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id(s) of the clips to get downloads for.
@@ -49,5 +49,5 @@ public record GetClipsDownloadRequest
     /// <remarks>
     /// A maximum of 10 clips can be requested at once.
     /// </remarks>
-    public required IEnumerable<ClipId> ClipIds { get; set; }
+    public required IEnumerable<ClipId> ClipIds { get; init; }
 }

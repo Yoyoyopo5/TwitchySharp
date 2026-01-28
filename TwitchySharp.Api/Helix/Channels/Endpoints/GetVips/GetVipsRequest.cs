@@ -35,7 +35,7 @@ public record GetVipsRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ChannelReadVips"/> or <see cref="Scope.ChannelManageVips"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// Filter the list by specific users.
@@ -44,7 +44,7 @@ public record GetVipsRequest
     /// The maximum number of ids that you may specify is 100.
     /// Ignores the ids of users that aren't VIPs on the broadcaster's channel.
     /// </remarks>
-    public IEnumerable<UserId>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -53,8 +53,8 @@ public record GetVipsRequest
     /// The minimum page size is 1 item per page and the maximum is 100.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

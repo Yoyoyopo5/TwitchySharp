@@ -19,8 +19,6 @@ public record GetConduitShardsRequest
 {
     protected override string Path => "/eventsub/conduits/shards";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("conduit_id", ConduitId)
@@ -30,18 +28,18 @@ public record GetConduitShardsRequest
     /// <summary>
     /// The conduit id of the conduit you want to get shards for.
     /// </summary>
-    public required ConduitId ConduitId { get; set; }
+    public required ConduitId ConduitId { get; init; }
 
     /// <summary>
     /// Status to filter returned shards by.
     /// </summary>
-    public ConduitShardStatus? Status { get; set; }
+    public ConduitShardStatus? Status { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <summary>
     /// Unused for this request type.
     /// </summary>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 }

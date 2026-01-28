@@ -44,15 +44,15 @@ public record SendWhisperRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId FromUserId { get; set; }
+    public required UserId FromUserId { get; init; }
     /// <summary>
     /// The id of the user receiving the whisper.
     /// </summary>
-    public required UserId ToUserId { get; set; }
+    public required UserId ToUserId { get; init; }
     /// <summary>
     /// The whisper content to send.
     /// </summary>
-    public required SendWhisperRequestData Whisper { get; set; }
+    public required SendWhisperRequestData Whisper { get; init; }
 }
 
 /// <summary>
@@ -68,5 +68,5 @@ public record SendWhisperRequestData
     /// The message can be up to 10,000 characters if the to user has whispered the from user before, otherwise, the message can only be 500 characters long.
     /// Messages that exceed the maximum length are truncated.
     /// </remarks>
-    public required string Message { get; set; }
+    public required string Message { get; init; }
 }
