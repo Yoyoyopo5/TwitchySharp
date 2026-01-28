@@ -51,12 +51,12 @@ public record CheckAutoModStatusRequest
     /// <remarks>
     /// This must be the same user who created the access token used in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The messages to check against the channel's AutoMod.
     /// </summary>
-    public required CheckAutoModStatusRequestData Messages { get; set; }
+    public required CheckAutoModStatusRequestData Messages { get; init; }
 }
 
 /// <summary>
@@ -69,7 +69,7 @@ public record CheckAutoModStatusRequestData
     /// The list must contain at least one message and may contain up to a maximum of 100 messages.
     /// </summary>
     [JsonPropertyName("data")]
-    public required AutoModStatusMessage[] Messages { get; set; }
+    public required AutoModStatusMessage[] Messages { get; init; }
 }
 
 /// <summary>
@@ -82,10 +82,10 @@ public record AutoModStatusMessage
     /// The value of this property will be the same as <see cref="AutoModStatus.MessageId"/> in the response.
     /// </summary>
     [JsonPropertyName("msg_id")]
-    public required string MessageId { get; set; }
+    public required string MessageId { get; init; }
     /// <summary>
     /// The message to check against the AutoMod.
     /// </summary>
     [JsonPropertyName("msg_text")]
-    public required string MessageText { get; set; }
+    public required string MessageText { get; init; }
 }

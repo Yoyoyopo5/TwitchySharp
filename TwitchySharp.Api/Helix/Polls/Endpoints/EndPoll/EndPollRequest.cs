@@ -26,7 +26,7 @@ public record EndPollRequest
     /// <summary>
     /// Data used to end the poll.
     /// </summary>
-    public required EndPollRequestData Poll { get; set; }
+    public required EndPollRequestData Poll { get; init; }
 }
 
 /// <summary>

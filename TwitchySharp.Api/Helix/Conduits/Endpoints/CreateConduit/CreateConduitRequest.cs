@@ -17,14 +17,12 @@ public record CreateConduitRequest
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     public override object? ContentObject => ConduitData;
 
     /// <summary>
     /// Data used to construct the conduit.
     /// </summary>
-    public required CreateConduitRequestData ConduitData { get; set; }
+    public required CreateConduitRequestData ConduitData { get; init; }
 }
 
 /// <summary>

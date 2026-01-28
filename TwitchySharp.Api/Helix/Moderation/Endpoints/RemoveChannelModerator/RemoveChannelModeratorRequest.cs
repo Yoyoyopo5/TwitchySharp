@@ -33,10 +33,10 @@ public record RemoveChannelModeratorRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the moderator to remove from the broadcaster's channel.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

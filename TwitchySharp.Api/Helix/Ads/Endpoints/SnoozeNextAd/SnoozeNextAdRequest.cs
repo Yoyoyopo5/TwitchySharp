@@ -34,5 +34,5 @@ public record SnoozeNextAdRequest
     /// This must be the same user that provided the access token for the request.
     /// Requires <see cref="Scope.ChannelManageAds"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

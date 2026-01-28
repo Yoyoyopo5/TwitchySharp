@@ -22,14 +22,12 @@ public record UpdateExtensionBitsProductRequest
 {
     protected override string Path => "/bits/extensions";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     public override object? ContentObject => Product;
 
     /// <summary>
     /// The product data to update.
     /// </summary>
-    public required UpdateExtensionBitsProductRequestData Product { get; set; }
+    public required UpdateExtensionBitsProductRequestData Product { get; init; }
 }
 
 /// <summary>
@@ -46,25 +44,25 @@ public record UpdateExtensionBitsProductRequestData
     /// The SKU may contain only alphanumeric characters, dashes (-), underscores (_), and periods (.) and is limited to a maximum of 255 characters. 
     /// No spaces.
     /// </remarks>
-    public required ExtensionProductSku Sku { get; set; }
+    public required ExtensionProductSku Sku { get; init; }
     /// <summary>
     /// The product's cost information.
     /// </summary>
-    public required ExtensionProductCost Cost { get; set; }
+    public required ExtensionProductCost Cost { get; init; }
     /// <summary>
     /// The product's name as displayed in the extension. 
     /// </summary>
     /// <remarks>
     /// The maximum length is 255 characters.
     /// </remarks>
-    public required string DisplayName { get; set; }
+    public required string DisplayName { get; init; }
     /// <summary>
     /// Determines whether the product is in development. 
     /// </summary>
     /// <remarks>
     /// Set to <see langword="true"/> if the product is in development and not available for public use. The default is <see langword="false"/>.
     /// </remarks>
-    public bool? InDevelopment { get; set; }
+    public bool? InDevelopment { get; init; }
     /// <summary>
     /// The date and time when the product expires. 
     /// </summary>
@@ -72,7 +70,7 @@ public record UpdateExtensionBitsProductRequestData
     /// If <see langword="null"/>, the product does not expire. 
     /// To disable the product now, set the expiration date to a date in the past.
     /// </remarks>
-    public DateTimeOffset? Expiration { get; set; }
+    public DateTimeOffset? Expiration { get; init; }
     /// <summary>
     /// Determines whether Bits product purchase events are broadcast to all instances of the extension on a channel. 
     /// </summary>
@@ -80,5 +78,5 @@ public record UpdateExtensionBitsProductRequestData
     /// The events are broadcast via the onTransactionComplete helper callback. 
     /// The default is <see langword="false"/>.
     /// </remarks>
-    public bool? IsBroadcast { get; set; }
+    public bool? IsBroadcast { get; init; }
 }

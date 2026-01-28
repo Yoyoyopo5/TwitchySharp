@@ -22,12 +22,11 @@ public record GetExtensionsRequest
     protected override string Path => "/extensions";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
@@ -36,7 +35,7 @@ public record GetExtensionsRequest
     /// <summary>
     /// The id of the extension to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The version of the extension to get.
@@ -45,5 +44,5 @@ public record GetExtensionsRequest
     /// If <see langword="null"/>, it returns the latest, released version.
     /// If the extension doesn't have a released version, you must specify a version; otherwise, <see cref="GetExtensionsResponse.Data"/> is empty.
     /// </remarks>
-    public ExtensionVersion? ExtensionVersion { get; set; }
+    public ExtensionVersion? ExtensionVersion { get; init; }
 }

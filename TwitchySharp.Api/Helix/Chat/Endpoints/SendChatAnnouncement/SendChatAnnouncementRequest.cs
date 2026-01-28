@@ -29,7 +29,7 @@ public record SendChatAnnouncementRequest
     /// <summary>
     /// The user id of the broadcaster (channel) whose chat room you want to send the announcement to.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -38,12 +38,12 @@ public record SendChatAnnouncementRequest
     /// This must be the same user who created the access token used in the request.
     /// Requires <see cref="Scope.ModeratorManageAnnouncements"/>.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The announcement to send.
     /// </summary>
-    public required SendChatAnnouncementRequestData Announcement { get; set; }
+    public required SendChatAnnouncementRequestData Announcement { get; init; }
 }
 
 /// <summary>

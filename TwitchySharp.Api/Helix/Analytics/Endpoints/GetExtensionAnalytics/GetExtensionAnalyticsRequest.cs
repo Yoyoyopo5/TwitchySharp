@@ -35,7 +35,7 @@ public record GetExtensionAnalyticsRequest
     /// <summary>
     /// The user to get extension analytics as.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The extension's client id.
@@ -44,12 +44,12 @@ public record GetExtensionAnalyticsRequest
     /// If specified, the response contains a report for the specified extension.
     /// If left <see langword="null"/>, the response includes a report for each extension that the authenticated user owns.
     /// </remarks>
-    public ExtensionId? ExtensionId { get; set; }
+    public ExtensionId? ExtensionId { get; init; }
 
     /// <summary>
     /// The type of analytics report to get.
     /// </summary>
-    public ExtensionAnalyticsReportType? Type { get; set; }
+    public ExtensionAnalyticsReportType? Type { get; init; }
 
     /// <summary>
     /// The reporting window's start date.
@@ -57,7 +57,7 @@ public record GetExtensionAnalyticsRequest
     /// <remarks>
     /// Use <see cref="WithinDateRange(DateTimeOffset, DateTimeOffset)"/> to set.
     /// </remarks>
-    public DateTimeOffset? StartedAt { get; private set; }
+    public DateTimeOffset? StartedAt { get; private init; }
 
     /// <summary>
     /// The reporting window's end date.
@@ -65,7 +65,7 @@ public record GetExtensionAnalyticsRequest
     /// <remarks>
     /// Use <see cref="WithinDateRange(DateTimeOffset, DateTimeOffset)"/> to set.
     /// </remarks>
-    public DateTimeOffset? EndedAt { get; private set; }
+    public DateTimeOffset? EndedAt { get; private init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -73,7 +73,7 @@ public record GetExtensionAnalyticsRequest
     /// <remarks>
     /// While you may specify a maximum value of 100, the response will contain at most 20 URLs per page.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationCursor"/>
@@ -81,7 +81,7 @@ public record GetExtensionAnalyticsRequest
     /// <remarks>
     /// This parameter is ignored if <see cref="ExtensionId"/> is not <see langword="null"/>.
     /// </remarks>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <summary>
     /// Sets the reporting window for the request (the <see cref="StartedAt"/> and <see cref="EndedAt"/> parameters).
@@ -97,11 +97,7 @@ public record GetExtensionAnalyticsRequest
     /// Because it can take up to two days for the data to be available, you must specify an end date that's earlier than today minus one to two days.
     /// If not, the API ignores your end date and uses an end date that is today minus one to two days.
     /// </param>
-    /// <returns>This request with the date range set.</returns>
+    /// <returns>A new request with the date range set.</returns>
     public GetExtensionAnalyticsRequest WithinDateRange(DateTimeOffset startedAt, DateTimeOffset endedAt)
-    {
-        StartedAt = startedAt;
-        EndedAt = endedAt;
-        return this;
-    }
+        => this with { StartedAt = startedAt, EndedAt = endedAt };
 }

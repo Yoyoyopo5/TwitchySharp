@@ -17,14 +17,12 @@ public record UpdateDropsEntitlementsRequest
 {
     protected override string Path => "/entitlements/drops";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     public override object? ContentObject => Updates;
 
     /// <summary>
     /// The updates to make to the entitlements.
     /// </summary>
-    public required UpdateDropsEntitlementsRequestData Updates { get; set; }
+    public required UpdateDropsEntitlementsRequestData Updates { get; init; }
 }
 
 /// <summary>
@@ -35,9 +33,9 @@ public record UpdateDropsEntitlementsRequestData
     /// <summary>
     /// The ids of the entitlements to update.
     /// </summary>
-    public IEnumerable<DropsEntitlementId>? EntitlementIds { get; set; }
+    public IEnumerable<DropsEntitlementId>? EntitlementIds { get; init; }
     /// <summary>
     /// The fulfillment status to update the entitlements to.
     /// </summary>
-    public DropsEntitlementStatus? FulfillmentStatus { get; set; }
+    public DropsEntitlementStatus? FulfillmentStatus { get; init; }
 }

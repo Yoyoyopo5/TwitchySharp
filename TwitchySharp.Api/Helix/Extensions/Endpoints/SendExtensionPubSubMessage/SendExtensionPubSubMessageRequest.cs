@@ -27,19 +27,18 @@ public record SendExtensionPubSubMessageRequest
     protected override string Path => "/extensions/pubsub";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     public override object? ContentObject => Message;
 
     /// <summary>
     /// Data used to create and send the message.
     /// Use derived classes <see cref="BroadcastPubSubMessageData"/> and <see cref="GlobalPubSubMessageData"/>.
     /// </summary>
-    public required SendExtensionPubSubMessageRequestData Message { get; set; }
+    public required SendExtensionPubSubMessageRequestData Message { get; init; }
 }
 
 /// <summary>
@@ -48,7 +47,7 @@ public record SendExtensionPubSubMessageRequest
 /// </summary>
 public record SendExtensionPubSubMessageRequestData
 {
-    protected ImmutableHashSet<ExtensionPubSubMessageTarget> _target { get; set; } = [];
+    protected ImmutableHashSet<ExtensionPubSubMessageTarget> _target { get; init; } = [];
     /// <summary>
     /// The target of the message. 
     /// The <see cref="ExtensionPubSubMessageTarget.Broadcast"/> and <see cref="ExtensionPubSubMessageTarget.Global"/> values are mutually exclusive.
@@ -58,17 +57,17 @@ public record SendExtensionPubSubMessageRequestData
     /// The user id of the broadcaster to send the message to. 
     /// Don’t include this field if <see cref="IsGlobalBroadcast"/> is set to <see langword="true"/>.
     /// </summary>
-    public UserId? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected init; }
     /// <summary>
     /// Determines whether the message should be sent to all channels where your extension is active. 
     /// Set to <see langword="true"/> if the message should be sent to all channels. The default is <see langword="false"/>.
     /// </summary>
-    public bool? IsGlobalBroadcast { get; protected set; }
+    public bool? IsGlobalBroadcast { get; protected init; }
     /// <summary>
     /// The message to send. The message can be a plain-text string or a string-encoded JSON object. 
     /// The message is limited to a maximum of 5 KB.
     /// </summary>
-    public required string Message { get; set; }
+    public required string Message { get; init; }
 }
 
 /// <summary>

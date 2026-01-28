@@ -35,7 +35,7 @@ public record GetPredictionsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// Filter the returned list by prediction id.
@@ -44,7 +44,7 @@ public record GetPredictionsRequest
     /// You may specify a maximum of 25 ids.
     /// The endpoint ignores duplicate ids and those not owned by the broadcaster.
     /// </remarks>
-    public IEnumerable<PredictionId>? PredictionIds { get; set; }
+    public IEnumerable<PredictionId>? PredictionIds { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>.
@@ -53,8 +53,8 @@ public record GetPredictionsRequest
     /// The minimum page size is 1 item per page and the maximum is 25 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

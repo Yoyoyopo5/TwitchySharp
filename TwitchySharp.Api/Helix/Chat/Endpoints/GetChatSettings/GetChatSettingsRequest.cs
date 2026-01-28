@@ -20,8 +20,6 @@ public record GetChatSettingsRequest
 {
     protected override string Path => "/chat/settings";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -30,7 +28,7 @@ public record GetChatSettingsRequest
     /// <summary>
     /// The user id of the broadcaster whose chat settings you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or one of the broadcaster's moderators.
@@ -39,5 +37,5 @@ public record GetChatSettingsRequest
     /// This parameter is only required if you want to include the <see cref="ChatSettings.NonModeratorChatDelay"/> and <see cref="ChatSettings.NonModeratorChatDelayDuration"/> in the response.
     /// If specified, this must be the same user that created the access token used in the request.
     /// </remarks>
-    public UserId? ModeratorId { get; set; }
+    public UserId? ModeratorId { get; init; }
 }

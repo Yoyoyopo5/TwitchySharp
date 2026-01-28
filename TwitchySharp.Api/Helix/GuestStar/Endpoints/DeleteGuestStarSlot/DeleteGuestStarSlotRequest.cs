@@ -34,7 +34,7 @@ public record DeleteGuestStarSlotRequest
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -42,25 +42,25 @@ public record DeleteGuestStarSlotRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the Guest Star session from which to remove a user.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
 
     /// <summary>
     /// The user id of the user to remove from the Guest Star session.
     /// </summary>
-    public required UserId GuestId { get; set; }
+    public required UserId GuestId { get; init; }
 
     /// <summary>
     /// The id of the slot from which to remove the user from.
     /// </summary>
-    public required GuestStarSlotId SlotId { get; set; }
+    public required GuestStarSlotId SlotId { get; init; }
 
     /// <summary>
     /// Determines whether the user should be reinvited to the session, sending them back to the invite queue.
     /// </summary>
-    public bool? ShouldReinviteGuest { get; set; }
+    public bool? ShouldReinviteGuest { get; init; }
 }

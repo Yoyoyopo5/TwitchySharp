@@ -29,7 +29,7 @@ public record DeleteChatMessagesRequest
     /// <summary>
     /// The user id of the broadcaster (channel) whose chat to delete a chat message from.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -37,7 +37,7 @@ public record DeleteChatMessagesRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The id of the message to remove.
@@ -51,5 +51,5 @@ public record DeleteChatMessagesRequest
     /// </list>
     /// If this parameter is <see langword="null"/>, the request removes all messages in the chatroom.
     /// </remarks>
-    public MessageId? MessageId { get; set; }
+    public MessageId? MessageId { get; init; }
 }

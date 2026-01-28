@@ -36,7 +36,7 @@ public record GetPollsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// Filter the list of polls by poll id.
@@ -46,7 +46,7 @@ public record GetPollsRequest
     /// Specify this parameter only if you want to filter the list that the request returns.
     /// The endpoint ignores duplicate ids and those not owned by this broadcaster.
     /// </remarks>
-    public IEnumerable<PollId>? PollIds { get; set; }
+    public IEnumerable<PollId>? PollIds { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -55,8 +55,8 @@ public record GetPollsRequest
     /// The minimum page size is 1 item per page and the maximum is 20 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

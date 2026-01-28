@@ -43,7 +43,7 @@ public record SendChatMessageRequest
     /// <summary>
     /// The message to send.
     /// </summary>
-    public required SendChatMessageRequestData Message { get; set; }
+    public required SendChatMessageRequestData Message { get; init; }
 }
 
 /// <summary>

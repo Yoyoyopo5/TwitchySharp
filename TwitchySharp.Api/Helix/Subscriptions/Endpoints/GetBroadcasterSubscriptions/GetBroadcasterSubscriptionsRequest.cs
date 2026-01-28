@@ -37,14 +37,14 @@ public record GetBroadcasterSubscriptionsRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// Filter the list of subscribers by user id.
     /// </summary>
     /// <remarks>
     /// You may specify a maximum of 100 subscribers.
     /// </remarks>
-    public IEnumerable<UserId>? UserIds { get; set; }
+    public IEnumerable<UserId>? UserIds { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -52,7 +52,7 @@ public record GetBroadcasterSubscriptionsRequest
     /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
@@ -60,7 +60,7 @@ public record GetBroadcasterSubscriptionsRequest
     /// Do not specify if you set <see cref="UserIds"/>.
     /// The <see cref="Pagination"/> object in the response contains the cursor's value.
     /// </remarks>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
     /// <summary>
     /// <inheritdoc cref="IPageableRequest.After"/>
     /// </summary>
@@ -68,5 +68,5 @@ public record GetBroadcasterSubscriptionsRequest
     /// <inheritdoc cref="IPageableRequest.After"/>
     /// Do not specify if you set <see cref="UserIds"/>.
     /// </remarks>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

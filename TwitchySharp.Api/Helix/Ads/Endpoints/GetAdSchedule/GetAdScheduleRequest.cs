@@ -32,5 +32,5 @@ public record GetAdScheduleRequest
     /// <remarks>
     /// The request will be made on behalf of this user and requires <see cref="Scope.ChannelReadAds"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

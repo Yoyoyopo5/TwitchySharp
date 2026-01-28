@@ -28,7 +28,7 @@ public record GetShieldModeStatusRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to get Shield Mode status for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -36,5 +36,5 @@ public record GetShieldModeStatusRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 }

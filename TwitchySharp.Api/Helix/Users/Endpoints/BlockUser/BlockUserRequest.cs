@@ -30,7 +30,7 @@ public record BlockUserRequest
     /// <summary>
     /// The user to block the target user as.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 
     /// <summary>
     /// The id of the user to block.
@@ -38,13 +38,13 @@ public record BlockUserRequest
     /// <remarks>
     /// If the user is already blocked, the request is ignored.
     /// </remarks>
-    public required UserId TargetUserId { get; set; }
+    public required UserId TargetUserId { get; init; }
     /// <summary>
     /// The location where the harassment took place that is causing the brodcaster to block the user.
     /// </summary>
-    public BlockUserContext? SourceContext { get; set; }
+    public BlockUserContext? SourceContext { get; init; }
     /// <summary>
     /// The reason that the broadcaster is blocking the user.
     /// </summary>
-    public BlockUserReason? Reason { get; set; }
+    public BlockUserReason? Reason { get; init; }
 }

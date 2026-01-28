@@ -36,7 +36,7 @@ public record GetCustomRewardRequest
     /// This should be the same user that created the access token for the request.
     /// Requires <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// A list of reward ids to filter the rewards by.
@@ -47,7 +47,7 @@ public record GetCustomRewardRequest
     /// The response contains only the ids that were found.
     /// If none of the ids were found, the response is 404 Not Found.
     /// </remarks>
-    public IEnumerable<RewardId>? RewardIds { get; set; }
+    public IEnumerable<RewardId>? RewardIds { get; init; }
 
     /// <summary>
     /// Determines whether the response contains only the custom rewards that the app may manage.
@@ -56,5 +56,5 @@ public record GetCustomRewardRequest
     /// Set to <see langword="true"/> to get only the custom rewards that the app may manage.
     /// The default is <see langword="false"/>.
     /// </remarks>
-    public bool? OnlyManageableRewards { get; set; }
+    public bool? OnlyManageableRewards { get; init; }
 }

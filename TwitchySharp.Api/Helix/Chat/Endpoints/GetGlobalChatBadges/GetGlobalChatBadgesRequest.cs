@@ -19,6 +19,4 @@ public record GetGlobalChatBadgesRequest
 {
     protected override string Path => "/chat/badges/global";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
 }

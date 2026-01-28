@@ -33,7 +33,7 @@ public record GetCharityCampaignDonationsRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.ChannelReadCharity"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -42,8 +42,8 @@ public record GetCharityCampaignDonationsRequest
     /// The minimum page size is 1 item per page and the maximum is 100.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 }

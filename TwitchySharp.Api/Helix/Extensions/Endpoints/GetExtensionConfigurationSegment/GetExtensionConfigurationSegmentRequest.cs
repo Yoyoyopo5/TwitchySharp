@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -22,17 +23,14 @@ namespace TwitchySharp.Api.Helix.Extensions;
 public record GetExtensionConfigurationSegmentRequest
     : TwitchHelixRequest<GetExtensionConfigurationSegmentResponse>
 {
-    private readonly HashSet<ExtensionConfigurationSegmentType> _segments = [];
-
     protected override string Path => "/extensions/configurations";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
-    public override IEnumerable<Scope> ValidScopes => [];
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; set; }
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -43,48 +41,45 @@ public record GetExtensionConfigurationSegmentRequest
     /// <inheritdoc cref="ExtensionConfigurationSegmentType.Broadcaster"/>
     /// </summary>
     /// <param name="broadcasterId"><inheritdoc cref="BroadcasterId" path="/summary"/></param>
-    /// <returns>This instance.</returns>
-    public GetExtensionConfigurationSegmentRequest AddBroadcaster(UserId broadcasterId)
-    {
-        _segments.Add(ExtensionConfigurationSegmentType.Broadcaster);
-        BroadcasterId = broadcasterId;
-        return this;
-    }
+    /// <returns>A new request with the broadcaster segment added.</returns>
+    public GetExtensionConfigurationSegmentRequest WithBroadcaster(UserId broadcasterId)
+        => this with
+        {
+            Segments = Segments.Add(ExtensionConfigurationSegmentType.Broadcaster),
+            BroadcasterId = broadcasterId
+        };
 
     /// <summary>
     /// <inheritdoc cref="ExtensionConfigurationSegmentType.Developer"/>
     /// </summary>
     /// <param name="broadcasterId"><inheritdoc cref="BroadcasterId" path="/summary"/></param>
-    /// <returns>This instance.</returns>
-    public GetExtensionConfigurationSegmentRequest AddDeveloper(UserId broadcasterId)
-    {
-        _segments.Add(ExtensionConfigurationSegmentType.Developer);
-        BroadcasterId = broadcasterId;
-        return this;
-    }
+    /// <returns>A new request with the developer segment added.</returns>
+    public GetExtensionConfigurationSegmentRequest WithDeveloper(UserId broadcasterId)
+        => this with
+        {
+            Segments = Segments.Add(ExtensionConfigurationSegmentType.Developer),
+            BroadcasterId = broadcasterId
+        };
 
     /// <summary>
     /// <inheritdoc cref="ExtensionConfigurationSegmentType.Global"/>
     /// </summary>
-    /// <returns>This instance.</returns>
-    public GetExtensionConfigurationSegmentRequest AddGlobal()
-    {
-        _segments.Add(ExtensionConfigurationSegmentType.Global);
-        return this;
-    }
+    /// <returns>A new request with the global segment added.</returns>
+    public GetExtensionConfigurationSegmentRequest WithGlobal()
+        => this with { Segments = Segments.Add(ExtensionConfigurationSegmentType.Global) };
 
     /// <summary>
     /// The extension id of the extension that contains the configuration segment you want to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The type of configuration segment(s) to get.
     /// </summary>
     /// <remarks>
-    /// Use <see cref="AddGlobal"/>, <see cref="AddBroadcaster(UserId)"/>, and <see cref="AddDeveloper(UserId)"/> to configure.
+    /// Use <see cref="WithGlobal"/>, <see cref="WithBroadcaster(UserId)"/>, and <see cref="WithDeveloper(UserId)"/> to configure.
     /// </remarks>
-    public IEnumerable<ExtensionConfigurationSegmentType> Segments => _segments;
+    public ImmutableHashSet<ExtensionConfigurationSegmentType> Segments { get; private init; } = [];
 
     /// <summary>
     /// The user id of the broadcaster (channel) whose extension configuration you want to get.
@@ -92,5 +87,5 @@ public record GetExtensionConfigurationSegmentRequest
     /// <remarks>
     /// This parameter should be set if <see cref="Segments"/> includes <see cref="ExtensionConfigurationSegmentType.Broadcaster"/> or <see cref="ExtensionConfigurationSegmentType.Developer"/>.
     /// </remarks>
-    public UserId? BroadcasterId { get; private set; }
+    public UserId? BroadcasterId { get; private init; }
 }

@@ -21,8 +21,6 @@ public record GetChannelChatBadgesRequest
 {
     protected override string Path => "/chat/badges";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -30,5 +28,5 @@ public record GetChannelChatBadgesRequest
     /// <summary>
     /// The user id of the broadcaster (channel) whose chat badges you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

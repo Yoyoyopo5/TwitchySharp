@@ -33,10 +33,10 @@ public record AddChannelModeratorRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id of the user to add as a moderator.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

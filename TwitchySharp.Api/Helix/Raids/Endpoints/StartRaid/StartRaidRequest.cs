@@ -31,10 +31,10 @@ public record StartRaidRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId FromBroadcasterId { get; set; }
+    public required UserId FromBroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to send the raid to.
     /// </summary>
-    public required UserId ToBroadcasterId { get; set; }
+    public required UserId ToBroadcasterId { get; init; }
 }

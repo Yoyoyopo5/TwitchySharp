@@ -32,10 +32,10 @@ public record UpdateUserChatColorRequest
     /// This must be the same user that created the access token used in the request.
     /// Requires <see cref="Scope.UserManageChatColor"/>.
     /// </remarks>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The color to use for the user's name in chat.
     /// </summary>
-    public required ChatColor Color { get; set; }
+    public required ChatColor Color { get; init; }
 }

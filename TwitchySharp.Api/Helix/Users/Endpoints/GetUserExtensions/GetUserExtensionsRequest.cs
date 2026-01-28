@@ -25,5 +25,5 @@ public record GetUserExtensionsRequest
     /// <summary>
     /// The user to get extensions for.
     /// </summary>
-    public required UserIdentity User { get; set; }
+    public required UserIdentity User { get; init; }
 }

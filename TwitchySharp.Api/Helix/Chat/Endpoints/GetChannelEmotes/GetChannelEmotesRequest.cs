@@ -22,8 +22,6 @@ public record GetChannelEmotesRequest
 {
     protected override string Path => "/chat/emotes";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -31,5 +29,5 @@ public record GetChannelEmotesRequest
     /// <summary>
     /// The user id of the broadcaster (channel) whose emotes you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

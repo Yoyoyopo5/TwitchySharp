@@ -22,8 +22,6 @@ public record GetClipsRequest
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.Default;
-    public override IEnumerable<Scope> ValidScopes => [];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Query.Ids?.Select(x => x.ToString()))
@@ -42,7 +40,7 @@ public record GetClipsRequest
     /// <remarks>
     /// Use <see cref="BroadcasterClipsQuery"/>, <see cref="GameClipsQuery"/>, or <see cref="ClipsIdQuery"/>.
     /// </remarks>
-    public required ClipsQuery Query { get; set; }
+    public required ClipsQuery Query { get; init; }
 
     /// <summary>
     /// The start date used to filter clips.
@@ -50,7 +48,7 @@ public record GetClipsRequest
     /// <remarks>
     /// The API returns only clips within the start and end date window.
     /// </remarks>
-    public DateTimeOffset? StartedAt { get; set; }
+    public DateTimeOffset? StartedAt { get; init; }
 
     /// <summary>
     /// The end date used to filter clips.
@@ -58,7 +56,7 @@ public record GetClipsRequest
     /// <remarks>
     /// If <see langword="null"/>, the time window is <see cref="StartedAt"/> plus one week.
     /// </remarks>
-    public DateTimeOffset? EndedAt { get; set; }
+    public DateTimeOffset? EndedAt { get; init; }
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
@@ -67,15 +65,15 @@ public record GetClipsRequest
     /// The minimum page size is 1 clip per page and the maximum is 100.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 
     /// <inheritdoc/>
-    public PaginationCursor? After { get; set; }
+    public PaginationCursor? After { get; init; }
 
     /// <summary>
     /// The cursor of the result to get results before.
     /// </summary>
-    public PaginationCursor? Before { get; set; }
+    public PaginationCursor? Before { get; init; }
 
     /// <summary>
     /// Determines whether the response includes featured clips.
@@ -85,7 +83,7 @@ public record GetClipsRequest
     /// If <see langword="false"/>, returns only clips that aren't featured.
     /// All clips are returned if this parameter is <see langword="null"/>.
     /// </remarks>
-    public bool? IsFeatured { get; set; }
+    public bool? IsFeatured { get; init; }
 }
 
 /// <summary>

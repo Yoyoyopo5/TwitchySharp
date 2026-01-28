@@ -29,7 +29,7 @@ public record UnbanUserRequest
     /// <summary>
     /// The user id of the broadcaster (channel) that the user will be unbanned on.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -37,10 +37,10 @@ public record UnbanUserRequest
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
 
     /// <summary>
     /// The user id of the user to unban or remove a time-out on.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
 }

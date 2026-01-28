@@ -39,12 +39,12 @@ public record UpdateRedemptionStatusRequest
     /// This must be the same user that created the access token for the request.
     /// Requires <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The id of the custom reward to update redemptions on.
     /// </summary>
-    public required RewardId RewardId { get; set; }
+    public required RewardId RewardId { get; init; }
 
     /// <summary>
     /// A list of ids for the redemptions you want to update.
@@ -52,12 +52,12 @@ public record UpdateRedemptionStatusRequest
     /// <remarks>
     /// You may specify a maximum of 50 ids.
     /// </remarks>
-    public required IEnumerable<RewardRedemptionId> Ids { get; set; }
+    public required IEnumerable<RewardRedemptionId> Ids { get; init; }
 
     /// <summary>
     /// The status to set the redemptions to.
     /// </summary>
-    public required RewardRedemptionStatus Status { get; set; }
+    public required RewardRedemptionStatus Status { get; init; }
 }
 
 /// <summary>

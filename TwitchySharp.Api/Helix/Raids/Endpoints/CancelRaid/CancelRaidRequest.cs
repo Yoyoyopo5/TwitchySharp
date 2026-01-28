@@ -31,5 +31,5 @@ public record CancelRaidRequest
     /// <summary>
     /// The user id of the broadcaster (channel) to cancel a pending raid for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }
