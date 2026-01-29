@@ -62,18 +62,3 @@ public record UserIdentity(UserId UserId) : TwitchApiIdentity;
 /// </remarks>
 /// <param name="OwnerId">The Twitch user id of the extension owner/developer.</param>
 public record ExtensionIdentity(UserId OwnerId) : TwitchApiIdentity;
-
-internal static class TwitchApiIdentityExtensions
-{
-    public static TwitchApiIdentity WithFallbackClient(this TwitchApiIdentity identity, ClientIdentity? fallbackClientId)
-        => fallbackClientId switch
-        {
-            null => identity,
-            { } fallback => identity switch
-            {
-                null => fallback,
-                { ClientId: null } noClient => noClient with { ClientId = fallback.ClientId },
-                _ => identity
-            }
-        };
-}

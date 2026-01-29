@@ -31,6 +31,9 @@ public interface IAuthorizeTwitchRequest
 /// Resolves authorization headers using an <see cref="IResolveClientIdentity"/> for client id resolution 
 /// and an <see cref="ITokenResolver"/> for access token (bearer auth) resolution.
 /// </para>
+/// <para>
+/// Resolves <see langword="null"/> if the passed <see cref="ITwitchRequest"/> does not implement <see cref="IRequireAuthorization"/>.
+/// </para>
 /// </remarks>
 /// <param name="clientIdentityResolver">
 /// The resolver for determining which client identity to use.
@@ -43,37 +46,20 @@ public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResol
     private readonly IResolveClientIdentity _clientIdentityResolver = clientIdentityResolver;
     private readonly ITokenResolver _tokenResolver = tokenResolver;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="request"/> implements <see cref="IRequireAuthorization"/>, its <see cref="IRequireAuthorization.Identity"/>
-    /// and <see cref="IRequireAuthorization.OverrideAccessToken"/> will be preferentially used to set the authorization headers.
-    /// </para>
-    /// </remarks>
-    /// <returns>
-    /// <inheritdoc/>
-    /// </returns>
     public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default)
     {
-        TwitchApiIdentity? identity = await ResolveIdentity(request, ct).ConfigureAwait(false);
+        if (request is not IRequireAuthorization) // Does not require authorization.
+            return null;
+
+        ClientIdentity? identity = await ResolveClientIdentity(request, ct).ConfigureAwait(false);
         AccessToken? token = await ResolveAccessToken(request, ct).ConfigureAwait(false);
 
         return new TwitchAuthorizationRequestOptions(identity?.ClientId, token);
     }
 
-    private async ValueTask<TwitchApiIdentity?> ResolveIdentity(ITwitchRequest request, CancellationToken ct)
-        => request switch
-        {
-            IRequireAuthorization hasIdentity => hasIdentity.Identity.WithFallbackClient(await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)),
-            _ => await _clientIdentityResolver.GetClientId(request, ct).ConfigureAwait(false)
-        };
+    private ValueTask<ClientIdentity?> ResolveClientIdentity(ITwitchRequest request, CancellationToken ct)
+        => _clientIdentityResolver.GetClientId(request, ct);
 
-    private async ValueTask<AccessToken?> ResolveAccessToken(ITwitchRequest request, CancellationToken ct)
-        => request switch
-        {
-            IRequireAuthorization hasIdentity => hasIdentity.OverrideAccessToken ?? await _tokenResolver.GetToken(request, ct).ConfigureAwait(false),
-            _ => await _tokenResolver.GetToken(request, ct).ConfigureAwait(false)
-        };
+    private ValueTask<AccessToken?> ResolveAccessToken(ITwitchRequest request, CancellationToken ct)
+        => _tokenResolver.GetToken(request, ct);
 }
