@@ -5,19 +5,17 @@ namespace TwitchySharp.Api.Tests.Unit.Helix.ChannelPoints;
 
 public class Test_GetCustomRewardRedemptionRequest
 {
-    private static readonly ClientId TestClientId = new("test_client_id");
-    private static readonly UserAccessToken TestAccessToken = new("test_access_token");
     private static readonly UserId TestBroadcasterId = new("broadcaster123");
 
     [Fact]
     public void QueryByRewardId_QueryString_ContainsRewardIdAndBroadcasterId()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -30,11 +28,11 @@ public class Test_GetCustomRewardRedemptionRequest
     public void QueryByStatus_QueryString_ContainsStatus()
     {
         var status = RewardRedemptionStatus.Unfulfilled;
-        var query = new GetCustomRewardRedemptionRequestParameters(status)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            Status = status
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -48,11 +46,12 @@ public class Test_GetCustomRewardRedemptionRequest
     {
         var rewardId = new RewardId("reward123");
         var status = RewardRedemptionStatus.Fulfilled;
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId, status)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId,
+            Status = status
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -71,12 +70,12 @@ public class Test_GetCustomRewardRedemptionRequest
             new RewardRedemptionId("redemption1"),
             new RewardRedemptionId("redemption2")
         };
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
             BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId,
             Ids = redemptionIds
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -89,12 +88,12 @@ public class Test_GetCustomRewardRedemptionRequest
     public void QueryWithSort_QueryString_ContainsSort()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
             BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId,
             Sort = CustomRewardRedemptionSortingMethod.Newest
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -106,12 +105,12 @@ public class Test_GetCustomRewardRedemptionRequest
     public void QueryWithFirst_QueryString_ContainsFirstParam()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
             BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId,
             First = new PaginationAmount(25)
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -119,19 +118,15 @@ public class Test_GetCustomRewardRedemptionRequest
         Assert.Contains("first=25", queryString);
     }
 
-    // NOTE: PaginationCursor doesn't override ToString(), so After parameter
-    // doesn't serialize correctly. This is a known issue in the implementation.
-    // See GetCustomRewardRedemptionRequest line 40: .Add("after", parameters.After?.ToString())
-
     [Fact]
     public void GetCustomRewardRedemptionRequest_RequestUri_HasCorrectPath()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
 
@@ -142,11 +137,11 @@ public class Test_GetCustomRewardRedemptionRequest
     public void GetCustomRewardRedemptionRequest_Method_IsGet()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         Assert.Equal(System.Net.Http.HttpMethod.Get, request.Method);
     }
@@ -155,11 +150,11 @@ public class Test_GetCustomRewardRedemptionRequest
     public void StatusCancelled_QueryString_ContainsCancelledStatus()
     {
         var status = RewardRedemptionStatus.Cancelled;
-        var query = new GetCustomRewardRedemptionRequestParameters(status)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            Status = status
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -171,11 +166,11 @@ public class Test_GetCustomRewardRedemptionRequest
     public void GetCustomRewardRedemptionRequest_RequestUri_HasCorrectHost()
     {
         var rewardId = new RewardId("reward123");
-        var query = new GetCustomRewardRedemptionRequestParameters(rewardId)
+        var request = new GetCustomRewardRedemptionRequest
         {
-            BroadcasterId = TestBroadcasterId
+            BroadcasterId = TestBroadcasterId,
+            RewardId = rewardId
         };
-        var request = new GetCustomRewardRedemptionRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
 

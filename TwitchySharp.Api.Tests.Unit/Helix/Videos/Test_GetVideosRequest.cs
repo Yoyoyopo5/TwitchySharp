@@ -6,15 +6,11 @@ namespace TwitchySharp.Api.Tests.Unit.Helix.Videos;
 
 public class Test_GetVideosRequest
 {
-    private static readonly ClientId TestClientId = new("test_client_id");
-    private static readonly AppAccessToken TestAccessToken = new("test_access_token");
-
     [Fact]
     public void VideoIdQuery_QueryString_ContainsIds()
     {
         var videoIds = new[] { new VideoId("123"), new VideoId("456") };
-        var query = new VideoIdQuery(videoIds);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { Ids = videoIds };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -27,8 +23,7 @@ public class Test_GetVideosRequest
     public void VideoUserQuery_QueryString_ContainsUserId()
     {
         var userId = new UserId("user123");
-        var query = new VideoUserQuery(userId);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { UserId = userId };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -40,12 +35,12 @@ public class Test_GetVideosRequest
     public void VideoUserQuery_WithPagination_IncludesPaginationParams()
     {
         var userId = new UserId("user123");
-        var query = new VideoUserQuery(userId)
+        var request = new GetVideosRequest
         {
+            UserId = userId,
             First = new PaginationAmount(50),
             After = new PaginationCursor("cursor123")
         };
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -59,8 +54,7 @@ public class Test_GetVideosRequest
     public void VideoGameQuery_QueryString_ContainsGameId()
     {
         var gameId = new GameId("game123");
-        var query = new VideoGameQuery(gameId);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { GameId = gameId };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -73,11 +67,11 @@ public class Test_GetVideosRequest
     {
         var gameId = new GameId("game123");
         LanguageCode.TryParse("en", out var languageCode);
-        var query = new VideoGameQuery(gameId)
+        var request = new GetVideosRequest
         {
+            GameId = gameId,
             Language = languageCode
         };
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -90,13 +84,13 @@ public class Test_GetVideosRequest
     public void VideoUserQuery_WithFilterParams_IncludesAllParams()
     {
         var userId = new UserId("user123");
-        var query = new VideoUserQuery(userId)
+        var request = new GetVideosRequest
         {
+            UserId = userId,
             Period = VideoQueryPeriod.Week,
             Sort = VideoQuerySort.Views,
             Type = VideoQueryType.Highlight
         };
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -116,8 +110,7 @@ public class Test_GetVideosRequest
             new VideoId("222"),
             new VideoId("333")
         };
-        var query = new VideoIdQuery(videoIds);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { Ids = videoIds };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -130,8 +123,7 @@ public class Test_GetVideosRequest
     [Fact]
     public void GetVideosRequest_RequestUri_HasCorrectPath()
     {
-        var query = new VideoIdQuery([new VideoId("123")]);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { Ids = [new VideoId("123")] };
 
         var uri = request.RequestUri;
 
@@ -141,8 +133,7 @@ public class Test_GetVideosRequest
     [Fact]
     public void GetVideosRequest_RequestUri_HasCorrectHost()
     {
-        var query = new VideoIdQuery([new VideoId("123")]);
-        var request = new GetVideosRequest(TestClientId, TestAccessToken, query);
+        var request = new GetVideosRequest { Ids = [new VideoId("123")] };
 
         var uri = request.RequestUri;
 

@@ -5,15 +5,17 @@ namespace TwitchySharp.Api.Tests.Unit.Helix.Streams;
 
 public class Test_GetStreamMarkersRequest
 {
-    private static readonly ClientId TestClientId = new("test_client_id");
-    private static readonly UserAccessToken TestAccessToken = new("test_access_token");
+    private static readonly UserId TestUserId = new("test_user_id");
 
     [Fact]
     public void BroadcasterStreamMarkersQuery_QueryString_ContainsUserId()
     {
         var userId = new UserId("user123");
-        var query = new BroadcasterStreamMarkersQuery(userId);
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
+        var request = new GetStreamMarkersRequest
+        {
+            User = new UserIdentity(TestUserId),
+            UserId = userId
+        };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -25,8 +27,11 @@ public class Test_GetStreamMarkersRequest
     public void VideoStreamMarkersQuery_QueryString_ContainsVideoId()
     {
         var videoId = new VideoId("video456");
-        var query = new VideoStreamMarkersQuery(videoId);
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
+        var request = new GetStreamMarkersRequest
+        {
+            User = new UserIdentity(TestUserId),
+            VideoId = videoId
+        };
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -38,12 +43,13 @@ public class Test_GetStreamMarkersRequest
     public void BroadcasterStreamMarkersQuery_WithPagination_IncludesPaginationParams()
     {
         var userId = new UserId("user123");
-        var query = new BroadcasterStreamMarkersQuery(userId)
+        var request = new GetStreamMarkersRequest
         {
+            User = new UserIdentity(TestUserId),
+            UserId = userId,
             First = new PaginationAmount(25),
             After = new PaginationCursor("cursor_after")
         };
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -57,12 +63,13 @@ public class Test_GetStreamMarkersRequest
     public void VideoStreamMarkersQuery_WithPagination_IncludesPaginationParams()
     {
         var videoId = new VideoId("video456");
-        var query = new VideoStreamMarkersQuery(videoId)
+        var request = new GetStreamMarkersRequest
         {
+            User = new UserIdentity(TestUserId),
+            VideoId = videoId,
             First = new PaginationAmount(50),
             Before = new PaginationCursor("cursor_before")
         };
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
 
         var uri = request.RequestUri;
         var queryString = uri.Query;
@@ -75,8 +82,11 @@ public class Test_GetStreamMarkersRequest
     [Fact]
     public void GetStreamMarkersRequest_RequestUri_HasCorrectPath()
     {
-        var query = new BroadcasterStreamMarkersQuery(new UserId("user123"));
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
+        var request = new GetStreamMarkersRequest
+        {
+            User = new UserIdentity(TestUserId),
+            UserId = new UserId("user123")
+        };
 
         var uri = request.RequestUri;
 
@@ -86,8 +96,11 @@ public class Test_GetStreamMarkersRequest
     [Fact]
     public void GetStreamMarkersRequest_Method_IsGet()
     {
-        var query = new BroadcasterStreamMarkersQuery(new UserId("user123"));
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
+        var request = new GetStreamMarkersRequest
+        {
+            User = new UserIdentity(TestUserId),
+            UserId = new UserId("user123")
+        };
 
         Assert.Equal(System.Net.Http.HttpMethod.Get, request.Method);
     }
@@ -95,8 +108,11 @@ public class Test_GetStreamMarkersRequest
     [Fact]
     public void GetStreamMarkersRequest_RequestUri_HasCorrectHost()
     {
-        var query = new BroadcasterStreamMarkersQuery(new UserId("user123"));
-        var request = new GetStreamMarkersRequest(TestClientId, TestAccessToken, query);
+        var request = new GetStreamMarkersRequest
+        {
+            User = new UserIdentity(TestUserId),
+            UserId = new UserId("user123")
+        };
 
         var uri = request.RequestUri;
 
