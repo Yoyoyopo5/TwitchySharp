@@ -27,8 +27,10 @@ public interface IAuthorizeTwitchRequest
 /// The default <see cref="IAuthorizeTwitchRequest"/> implementation.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Resolves authorization headers using an <see cref="IResolveClientIdentity"/> for client id resolution 
 /// and an <see cref="ITokenResolver"/> for access token (bearer auth) resolution.
+/// </para>
 /// </remarks>
 /// <param name="clientIdentityResolver">
 /// The resolver for determining which client identity to use.
@@ -41,7 +43,18 @@ public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResol
     private readonly IResolveClientIdentity _clientIdentityResolver = clientIdentityResolver;
     private readonly ITokenResolver _tokenResolver = tokenResolver;
 
+    /// <summary>
     /// <inheritdoc/>
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="request"/> implements <see cref="IRequireAuthorization"/>, its <see cref="IRequireAuthorization.Identity"/>
+    /// and <see cref="IRequireAuthorization.OverrideAccessToken"/> will be preferentially used to set the authorization headers.
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// <inheritdoc/>
+    /// </returns>
     public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default)
     {
         TwitchApiIdentity? identity = await ResolveIdentity(request, ct).ConfigureAwait(false);
