@@ -44,8 +44,8 @@ public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResol
     /// <inheritdoc/>
     public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default)
     {
-        TwitchApiIdentity? identity = await ResolveIdentity(request, ct);
-        AccessToken? token = await ResolveAccessToken(request, ct);
+        TwitchApiIdentity? identity = await ResolveIdentity(request, ct).ConfigureAwait(false);
+        AccessToken? token = await ResolveAccessToken(request, ct).ConfigureAwait(false);
 
         return new TwitchAuthorizationRequestOptions(identity?.ClientId, token);
     }
