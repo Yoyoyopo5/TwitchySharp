@@ -94,7 +94,7 @@ public class Test_TwitchHelixRequest
         {
             StubPath = "/test",
             StubQueryParameters = new HttpQueryParameters()
-                .Add("id", new[] { "123", "456", "789" })
+                .Add("id", [ "123", "456", "789" ])
         };
 
         var uri = request.RequestUri;
