@@ -27,10 +27,10 @@ public record GetCustomRewardRedemptionRequest
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("reward_id", RewardId)
-            .Add("status", Status?.ToString().ToUpperInvariant())
+            .Add("status", Status?.Value)
             .Add("id", Ids?.Select(x => x.ToString()))
             .Add("sort", Sort?.Value)
-            .Add("after", After?.ToString())
+            .Add("after", After?.Value)
             .Add("first", First?.ToString());
 
     /// <summary>
