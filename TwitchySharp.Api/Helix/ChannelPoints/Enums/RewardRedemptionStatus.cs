@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 [JsonConverter(typeof(ValueBackedEnumJsonConverter<RewardRedemptionStatus, string>))]
 public record RewardRedemptionStatus(string Value) : ValueBackedEnum<string>(Value)
 {
-    public static RewardRedemptionStatus Cancelled { get; } = new("cancelled");
-    public static RewardRedemptionStatus Fulfilled { get; } = new("fulfilled");
-    public static RewardRedemptionStatus Unfulfilled { get; } = new("unfulfilled");
+    public static RewardRedemptionStatus Canceled { get; } = new("CANCELED");
+    public static RewardRedemptionStatus Fulfilled { get; } = new("FULFILLED");
+    public static RewardRedemptionStatus Unfulfilled { get; } = new("UNFULFILLED");
 }
