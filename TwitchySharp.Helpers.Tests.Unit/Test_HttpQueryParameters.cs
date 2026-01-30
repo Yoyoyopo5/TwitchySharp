@@ -56,7 +56,7 @@ public class Test_HttpQueryParameters
         const string STUB_NON_NULL_PARAMETER_VALUE = "non_null_value";
         const string STUB_NULL_PARAMETER_KEY = "null_key";
 
-        string mockParametersString = $"?non_null_key=non_null_value&null_key=";
+        string mockParametersString = $"?non_null_key=non_null_value";
 
         string actual = new HttpQueryParameters()
             .Add(STUB_NON_NULL_PARAMETER_KEY, STUB_NON_NULL_PARAMETER_VALUE)
