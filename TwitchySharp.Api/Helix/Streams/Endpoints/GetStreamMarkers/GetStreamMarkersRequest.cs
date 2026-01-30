@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -24,8 +24,8 @@ public record GetStreamMarkersRequest
     public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.ChannelManageBroadcast ];
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
-            .Add("user_id", UserId)
-            .Add("video_id", VideoId)
+            .Add("user_id", Query.UserId)
+            .Add("video_id", Query.VideoId)
             .Add("first", First?.ToString())
             .Add("before", Before?.Value)
             .Add("after", After?.Value);
@@ -36,23 +36,13 @@ public record GetStreamMarkersRequest
     public required UserIdentity User { get; init; }
 
     /// <summary>
-    /// The user id of the broadcaster to get markers for.
-    /// If set, the request will return markers from this user's most recent video.
-    /// This user or one of this broadcaster's editors must have created the user access token used in the request.
+    /// The query specifying which stream markers to retrieve.
     /// </summary>
     /// <remarks>
-    /// Mutually exclusive with <see cref="VideoId"/>. One of <see cref="UserId"/> or <see cref="VideoId"/> must be set.
+    /// Use <see cref="BroadcasterStreamMarkersQuery"/> or <see cref="VideoStreamMarkersQuery"/>.
     /// </remarks>
-    public UserId? UserId { get; init; }
-    /// <summary>
-    /// The video id of the video to get markers for.
-    /// If set, the request will return marks from this specific video.
-    /// The broadcaster who created the video or one of the broadcaster's editors must have created the user access token used in the request.
-    /// </summary>
-    /// <remarks>
-    /// Mutually exclusive with <see cref="UserId"/>. One of <see cref="UserId"/> or <see cref="VideoId"/> must be set.
-    /// </remarks>
-    public VideoId? VideoId { get; init; }
+    public required StreamMarkersQuery Query { get; init; }
+
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
@@ -67,4 +57,54 @@ public record GetStreamMarkersRequest
     /// The cursor of the result to get results before.
     /// </summary>
     public PaginationCursor? Before { get; init; }
+}
+
+/// <summary>
+/// Base type for stream markers query parameters.
+/// </summary>
+/// <remarks>
+/// Use derived types <see cref="BroadcasterStreamMarkersQuery"/> or <see cref="VideoStreamMarkersQuery"/>.
+/// </remarks>
+public abstract record StreamMarkersQuery
+{
+    internal UserId? UserId { get; init; }
+    internal VideoId? VideoId { get; init; }
+}
+
+/// <summary>
+/// Query for stream markers from a broadcaster's most recent stream.
+/// </summary>
+public record BroadcasterStreamMarkersQuery : StreamMarkersQuery
+{
+    /// <summary>
+    /// The user id of the broadcaster to get markers for.
+    /// </summary>
+    /// <remarks>
+    /// The request will return markers from this user's most recent video.
+    /// This user or one of this broadcaster's editors must have created the user access token used in the request.
+    /// </remarks>
+    public new required UserId UserId
+    {
+        get => base.UserId!.Value;
+        init => base.UserId = value;
+    }
+}
+
+/// <summary>
+/// Query for stream markers from a specific video.
+/// </summary>
+public record VideoStreamMarkersQuery : StreamMarkersQuery
+{
+    /// <summary>
+    /// The video id of the video to get markers for.
+    /// </summary>
+    /// <remarks>
+    /// The request will return markers from this specific video.
+    /// The broadcaster who created the video or one of the broadcaster's editors must have created the user access token used in the request.
+    /// </remarks>
+    public new required VideoId VideoId
+    {
+        get => base.VideoId!.Value;
+        init => base.VideoId = value;
+    }
 }
