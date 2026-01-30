@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Tests\TwitchySharp.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

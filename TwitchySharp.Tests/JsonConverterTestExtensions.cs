@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace TwitchySharp.Helpers.Tests.Unit.JsonConverters;
+namespace TwitchySharp.Tests;
+
 /// <summary>
-/// <see href="https://khalidabuhakmeh.com/systemtextjson-jsonconverter-test-helpers">Source</see>
+/// Extension methods for testing <see cref="JsonConverter{T}"/> implementations.
 /// </summary>
+/// <remarks>
+/// <see href="https://khalidabuhakmeh.com/systemtextjson-jsonconverter-test-helpers">Source</see>
+/// </remarks>
 public static class JsonConverterTestExtensions
 {
     public static TResult? Read<TResult>(

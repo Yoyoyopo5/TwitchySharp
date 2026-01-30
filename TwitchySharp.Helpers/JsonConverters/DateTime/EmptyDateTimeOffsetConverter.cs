@@ -20,6 +20,10 @@ public class EmptyDateTimeOffsetConverter : JsonConverter<DateTimeOffset?>
 
     public override void Write(Utf8JsonWriter writer, DateTimeOffset? value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(value.HasValue switch
+        {
+            false => string.Empty,
+            true => value.Value.ToString("o") // Fix locale-dependence by using round-trip format.
+        });
     }
 }
