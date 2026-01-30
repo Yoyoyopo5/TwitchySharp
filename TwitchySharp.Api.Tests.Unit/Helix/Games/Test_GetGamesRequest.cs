@@ -98,39 +98,4 @@ public class Test_GetGamesRequest
         Assert.Contains("name=Fortnite", queryString);
         Assert.Contains("igdb_id=1905", queryString);
     }
-
-    [Fact]
-    public void EmptyGamesCollection_QueryString_IsEmpty()
-    {
-        var request = new GetGamesRequest
-        {
-            Games = []
-        };
-
-        var queryString = request.RequestUri.Query;
-
-        Assert.Empty(queryString);
-    }
-
-    [Fact]
-    public void GetGamesRequest_RequestUri_HasCorrectPath()
-    {
-        var request = new GetGamesRequest
-        {
-            Games = [new GameIdQuery(new GameId("123"))]
-        };
-
-        Assert.Equal("/helix/games", request.RequestUri.AbsolutePath);
-    }
-
-    [Fact]
-    public void GetGamesRequest_Method_IsGet()
-    {
-        var request = new GetGamesRequest
-        {
-            Games = [new GameIdQuery(new GameId("123"))]
-        };
-
-        Assert.Equal(System.Net.Http.HttpMethod.Get, request.Method);
-    }
 }

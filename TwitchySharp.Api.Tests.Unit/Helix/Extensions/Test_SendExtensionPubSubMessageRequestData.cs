@@ -1,16 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Shared;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Extensions;
 
 public class Test_SendExtensionPubSubMessageRequestData
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
-    };
+    private static readonly JsonSerializerOptions JsonOptions = JsonConfig.ApiOptions;
 
     [Fact]
     public void GlobalPubSubMessageData_IsGlobalBroadcast_IsTrue()
