@@ -2,15 +2,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Users;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Users;
 
 public class Test_UpdateUserExtensionsRequest
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
-    };
+    private static readonly JsonSerializerOptions JsonOptions = JsonConfig.ApiOptions;
 
     [Fact]
     public void Serialize_PanelExtensions_ProducesCorrectJsonStructure()
@@ -146,7 +144,7 @@ public class Test_UpdateUserExtensionsRequest
     }
 
     [Fact]
-    public void Serialize_EmptyConfiguration_ProducesNullExtensionTypes()
+    public void Serialize_EmptyConfiguration_OmitsExtensionTypes()
     {
         var config = new ExtensionsConfiguration();
         var requestData = new UpdateUserExtensionsRequestData(config);
@@ -155,9 +153,11 @@ public class Test_UpdateUserExtensionsRequest
         var jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        Assert.Null(jsonNode["data"]?["panel"]);
-        Assert.Null(jsonNode["data"]?["overlay"]);
-        Assert.Null(jsonNode["data"]?["component"]);
+        var dataNode = jsonNode["data"]?.AsObject();
+        Assert.NotNull(dataNode);
+        Assert.False(dataNode.ContainsKey("panel"));
+        Assert.False(dataNode.ContainsKey("overlay"));
+        Assert.False(dataNode.ContainsKey("component"));
     }
 
     [Fact]
