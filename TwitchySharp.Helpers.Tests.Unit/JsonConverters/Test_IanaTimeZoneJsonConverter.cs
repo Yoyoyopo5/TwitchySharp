@@ -15,10 +15,8 @@ public class Test_IanaTimeZoneJsonConverter
         var result = _converter.Read(json);
 
         Assert.NotNull(result);
-        // On Windows, FindSystemTimeZoneById converts IANA to Windows timezone IDs
-        // On Linux/macOS, IANA IDs are used directly
-        // We need a way to test this that is cross-platform.
-        Assert.Contains("America/New_York", result.DisplayName, StringComparison.OrdinalIgnoreCase);
+        // Verify it's the correct timezone by checking UTC offset (Eastern = UTC-5 or UTC-4 DST)
+        Assert.True(result.BaseUtcOffset == TimeSpan.FromHours(-5) || result.BaseUtcOffset == TimeSpan.FromHours(-4));
     }
 
     [Fact]
