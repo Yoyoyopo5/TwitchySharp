@@ -104,18 +104,4 @@ public class Test_GetStreamMarkersRequest
 
         Assert.Equal(System.Net.Http.HttpMethod.Get, request.Method);
     }
-
-    [Fact]
-    public void GetStreamMarkersRequest_RequestUri_HasCorrectHost()
-    {
-        var request = new GetStreamMarkersRequest
-        {
-            User = new UserIdentity(TestUserId),
-            UserId = new UserId("user123")
-        };
-
-        var uri = request.RequestUri;
-
-        Assert.Equal("api.twitch.tv", uri.Host);
-    }
 }

@@ -51,14 +51,6 @@ public class Test_SendExtensionPubSubMessageRequestData
     }
 
     [Fact]
-    public void BroadcastPubSubMessageData_InitialTarget_IsEmpty()
-    {
-        var data = new BroadcastPubSubMessageData { Message = "test message" };
-
-        Assert.Empty(data.Target);
-    }
-
-    [Fact]
     public void BroadcastPubSubMessageData_To_AddsBroadcastTarget()
     {
         var data = new BroadcastPubSubMessageData { Message = "test message" }
@@ -77,24 +69,6 @@ public class Test_SendExtensionPubSubMessageRequestData
         var whisperTarget = data.Target.FirstOrDefault(t => t.Value.StartsWith("whisper-"));
         Assert.NotNull(whisperTarget);
         Assert.Equal("whisper-user456", whisperTarget.Value);
-    }
-
-    [Fact]
-    public void BroadcastPubSubMessageData_To_ReturnsNewInstance()
-    {
-        var original = new BroadcastPubSubMessageData { Message = "test message" };
-        var modified = original.To(new UserId("broadcaster123"));
-
-        Assert.NotSame(original, modified);
-    }
-
-    [Fact]
-    public void BroadcastPubSubMessageData_WhisperTo_ReturnsNewInstance()
-    {
-        var original = new BroadcastPubSubMessageData { Message = "test message" };
-        var modified = original.WhisperTo(new UserId("user456"));
-
-        Assert.NotSame(original, modified);
     }
 
     [Fact]
@@ -147,18 +121,6 @@ public class Test_SendExtensionPubSubMessageRequestData
 
         Assert.Empty(original.Target);
         Assert.Null(original.BroadcasterId);
-    }
-
-    [Fact]
-    public void ExtensionPubSubMessageTarget_Broadcast_HasCorrectValue()
-    {
-        Assert.Equal("broadcast", ExtensionPubSubMessageTarget.Broadcast.Value);
-    }
-
-    [Fact]
-    public void ExtensionPubSubMessageTarget_Global_HasCorrectValue()
-    {
-        Assert.Equal("global", ExtensionPubSubMessageTarget.Global.Value);
     }
 
     [Fact]

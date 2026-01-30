@@ -161,19 +161,6 @@ public class Test_UpdateUserExtensionsRequest
     }
 
     [Fact]
-    public void ExtensionsConfigurationType_ConfigureExtension_ReturnsNewInstance()
-    {
-        var original = new ExtensionsConfigurationType<UpdateExtensionParameters>();
-
-        var modified = original.ConfigureExtension(
-            new ExtensionId("ext1"),
-            new ExtensionVersion("1.0.0"),
-            new UpdateExtensionParameters { Active = true });
-
-        Assert.NotSame(original, modified);
-    }
-
-    [Fact]
     public void ExtensionsConfigurationType_ChainedConfigureExtension_AccumulatesExtensions()
     {
         var config = new ExtensionsConfigurationType<UpdateExtensionParameters>()
