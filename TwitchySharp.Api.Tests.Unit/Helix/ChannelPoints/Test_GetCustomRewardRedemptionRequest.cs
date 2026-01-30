@@ -149,7 +149,7 @@ public class Test_GetCustomRewardRedemptionRequest
     [Fact]
     public void StatusCancelled_QueryString_ContainsCancelledStatus()
     {
-        var status = RewardRedemptionStatus.Cancelled;
+        var status = RewardRedemptionStatus.Canceled;
         var request = new GetCustomRewardRedemptionRequest
         {
             BroadcasterId = TestBroadcasterId,
