@@ -48,11 +48,11 @@ public class HttpQueryParameters
         if (_parameters is null || _parameters.Count == 0)
             return string.Empty;
 
-        StringBuilder sb = new('?');
+        StringBuilder sb = new("?");
         bool first = true;
         foreach ((string key, string? value) in _parameters)
         {
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key) || value is null) // Don't write null.
                 continue;
             if (!first)
                 sb.Append('&');

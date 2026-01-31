@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -14,25 +15,17 @@ namespace TwitchySharp.Api.Helix.Predictions;
 public record EndPredictionRequest
     : TwitchHelixRequest<EndPredictionResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManagePredictions"/>.</param>
-    /// <param name="prediction">
+    protected override string Path => "/predictions";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePredictions ];
+    public override object? ContentObject => Prediction;
+
+    /// <summary>
     /// Data used to update the prediction.
     /// Use derived classes <see cref="ResolvePrediction"/>, <see cref="CancelPrediction"/>, and <see cref="LockPrediction"/>.
-    /// </param>
-    public EndPredictionRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        EndPredictionRequestData prediction
-        ) : base(
-            "/predictions",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = prediction;
-    }
+    /// </summary>
+    public required EndPredictionRequestData Prediction { get; init; }
 }
 
 /// <summary>
@@ -68,22 +61,22 @@ public record EndPredictionRequestData
     /// The user id of the broadcaster (channel) that owns the prediction.
     /// This must be the same user that created the user access token in the <see cref="EndPredictionRequest"/>.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The id of the prediction to update.
     /// </summary>
-    public required PredictionId Id { get; set; }
+    public required PredictionId Id { get; init; }
     /// <summary>
     /// The status to set the prediction to.
     /// Only currently running predictions can be updated, and <see cref="ChatPredictionStatus.Locked"/> predictions can only be set to <see cref="UpdateChatPredictionStatus.Resolved"/> or <see cref="UpdateChatPredictionStatus.Cancelled"/> (a locked prediction cannot be unlocked).
     /// If setting a prediction to <see cref="UpdateChatPredictionStatus.Locked"/>, the broadcaster has 24 hours to cancel or resolve the prediction before it will be automatically cancelled.
     /// </summary>
-    public UpdateChatPredictionStatus Status { get; protected set; }
+    public UpdateChatPredictionStatus Status { get; protected init; }
     /// <summary>
     /// The id of the winning outcome.
     /// This must be set if <see cref="Status"/> is set to <see cref="UpdateChatPredictionStatus.Resolved"/>.
     /// </summary>
-    public PredictionOutcomeId? WinningOutcomeId { get; protected set; }
+    public PredictionOutcomeId? WinningOutcomeId { get; protected init; }
     /// <summary>
     /// <inheritdoc cref="EndPredictionRequestData"/>
     /// Use this constructor to use a custom update status (e.g., if a new status is added to Twitch API and isn't available on the <see cref="UpdateChatPredictionStatus"/> class).

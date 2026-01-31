@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
@@ -6,14 +8,14 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Updates a configuration segment.
 /// </summary>
 /// <remarks>
-/// The segment is limited to 5 KB. 
+/// The segment is limited to 5 KB.
 /// Extensions that are active on a channel do not receive the updated configuration.
 /// <br/>
 /// <b>Rate Limits:</b> You may update the configuration a maximum of 20 times per minute.
 /// <br/>
-/// Requires a signed JSON Web Token (JWT) created by an EBS. 
-/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>. 
-/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). 
+/// Requires a signed JSON Web Token (JWT) created by an EBS.
+/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
+/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>).
 /// Set the role field to external and the user_id field to the user id of the user that owns the extension.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#set-extension-configuration-segment">Set Extension Configuration Segment</see> for more information.
@@ -21,28 +23,23 @@ namespace TwitchySharp.Api.Helix.Extensions;
 public record SetExtensionConfigurationSegmentRequest
     : TwitchHelixRequest<SetExtensionConfigurationSegmentResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="jwt">
-    /// A signed JWT created by an Extension Backend Service.
-    /// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
-    /// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>). The role field must be set to external.
-    /// </param>
-    /// <param name="data">
+    protected override string Path => "/extensions/configurations";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+
+    /// <summary>
+    /// The extension identity used for JWT authentication.
+    /// </summary>
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public override object? ContentObject => Configuration;
+
+    /// <summary>
     /// Data used to set the configuration.
-    /// </param>
-    public SetExtensionConfigurationSegmentRequest(
-        ClientId clientId,
-        ExtensionJsonWebToken jwt,
-        SetExtensionConfigurationSegmentRequestData data
-        ) : base(
-            "/extensions/configurations",
-            clientId,
-            jwt
-            )
-    {
-        Method = HttpMethod.Put;
-        ContentObject = data;
-    }
+    /// Use derived classes <see cref="SetExtensionConfigurationGlobalSegmentData"/>,
+    /// <see cref="SetExtensionConfigurationDeveloperSegmentData"/>,
+    /// <see cref="SetExtensionConfigurationBroadcasterSegmentData"/> for easier usage.
+    /// </summary>
+    public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
 }
 
 /// <summary>
@@ -59,26 +56,26 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
     /// <summary>
     /// The id of the extension to update.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
     /// <summary>
     /// The configuration segment to update.
     /// </summary>
-    public ExtensionConfigurationSegmentType Segment { get; set; } = Segment;
+    public ExtensionConfigurationSegmentType Segment { get; init; } = Segment;
     /// <summary>.
     /// The user id of the broadcaster that installed the extension.
     /// Include this property only if the <see cref="Segment"/> is set to <see cref="ExtensionConfigurationSegmentType.Developer"/> or <see cref="ExtensionConfigurationSegmentType.Broadcaster"/>.
     /// </summary>
-    public UserId? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected init; }
     /// <summary>
     /// The contents of the segment.
     /// This may be in plain-text or string-encoded JSON.
     /// </summary>
-    public string? Content { get; set; }
+    public string? Content { get; init; }
     /// <summary>
     /// The version number that identifies this definition of the segment’s data. 
     /// If not specified, the latest definition is updated.
     /// </summary>
-    public ExtensionVersion? Version { get; set; }
+    public ExtensionVersion? Version { get; init; }
 }
 
 /// <summary>
@@ -96,7 +93,7 @@ public record SetExtensionConfigurationDeveloperSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
 }
 
 /// <summary>
@@ -108,5 +105,5 @@ public record SetExtensionConfigurationBroadcasterSegmentData()
     /// <summary>
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
-    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; set => base.BroadcasterId = value; }
+    public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
 }

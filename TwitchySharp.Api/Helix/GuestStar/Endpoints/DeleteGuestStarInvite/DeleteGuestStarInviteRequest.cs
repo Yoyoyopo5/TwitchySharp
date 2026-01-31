@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -15,50 +16,37 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 public record DeleteGuestStarInviteRequest
     : TwitchHelixRequest<DeleteGuestStarInviteResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageGuestStar"/> or <see cref="Scope.ModeratorManageGuestStar"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public DeleteGuestStarInviteRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        DeleteGuestStarInviteRequestParameters parameters
-        ) : base(
-            "/guest_star/invites",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-                .Add("session_id", parameters.SessionId)
-                .Add("guest_id", parameters.GuestId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/guest_star/invites";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId)
+            .Add("session_id", SessionId)
+            .Add("guest_id", GuestId);
 
-/// <summary>
-/// Request parameters for a <see cref="DeleteGuestStarInviteRequest"/>.
-/// </summary>
-public record DeleteGuestStarInviteRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
+
     /// <summary>
     /// The id of the Guest Star session that the invite was created for.
     /// </summary>
-    public required GuestStarSessionId SessionId { get; set; }
+    public required GuestStarSessionId SessionId { get; init; }
+
     /// <summary>
     /// The user id of the user to revoke the invite for.
     /// </summary>
-    public required UserId GuestId { get; set; }
+    public required UserId GuestId { get; init; }
 }

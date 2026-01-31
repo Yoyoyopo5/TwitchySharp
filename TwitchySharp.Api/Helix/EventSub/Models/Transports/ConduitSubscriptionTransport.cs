@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// An EventSub transport that uses <see href="https://dev.twitch.tv/docs/eventsub/handling-conduit-events/">conduits</see>.
 /// </summary>
 public sealed record ConduitSubscriptionTransport
-    : NewEventSubSubscriptionTransport
+    : EventSubSubscriptionTransportSpecification
 {
     /// <param name="conduitId">The id of the conduit to use for the subscription notifications.</param>
     public ConduitSubscriptionTransport(ConduitId conduitId)

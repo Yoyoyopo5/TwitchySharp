@@ -1,9 +1,11 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
-/// Gets the list of <see href="https://www.twitch.tv/creatorcamp/en/learn-the-basics/emotes/">Global Emotes</see>. 
+/// Gets the list of <see href="https://www.twitch.tv/creatorcamp/en/learn-the-basics/emotes/">Global Emotes</see>.
 /// </summary>
 /// <remarks>
 /// Global emotes are Twitch-created emotes that users can use in any Twitch chat.
@@ -15,15 +17,6 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetGlobalEmotesRequest
     : TwitchHelixRequest<GetGlobalEmotesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    public GetGlobalEmotesRequest(ClientId clientId, AccessToken accessToken)
-        : base(
-            "/chat/emotes/global",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/chat/emotes/global";
+    public override HttpMethod Method => HttpMethod.Get;
 }

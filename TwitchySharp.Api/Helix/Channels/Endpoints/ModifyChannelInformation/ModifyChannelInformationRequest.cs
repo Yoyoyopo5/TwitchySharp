@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -8,7 +9,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Updates a channel’s properties.
+/// Updates a channel's properties.
 /// </summary>
 /// <remarks>
 /// Requires a user access token with <see cref="Scope.ChannelManageBroadcast"/>.
@@ -18,43 +19,27 @@ namespace TwitchySharp.Api.Helix.Channels;
 public record ModifyChannelInformationRequest
     : TwitchHelixRequest<ModifyChannelInformationResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageBroadcast"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="channelInformation">
-    /// The channel information to be set on the broadcaster's channel.
-    /// </param>
-    public ModifyChannelInformationRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ModifyChannelInformationRequestParameters parameters,
-        ModifyChannelInformationRequestData channelInformation
-        )
-        : base(
-            "/channels",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = channelInformation;
-    }
-}
+    protected override string Path => "/channels";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageBroadcast ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
+    public override object? ContentObject => ChannelInformation;
 
-/// <summary>
-/// Request parameters for a <see cref="ModifyChannelInformationRequest"/>.
-/// </summary>
-public record ModifyChannelInformationRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster whose channel you want to update.
     /// </summary>
     /// <remarks>
-    /// This must be the same used that created the access token used in the request.
+    /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
+    /// <summary>
+    /// The channel information to be set on the broadcaster's channel.
+    /// </summary>
+    public required ModifyChannelInformationRequestData ChannelInformation { get; init; }
 }
 
 /// <summary>
@@ -67,19 +52,19 @@ public record ModifyChannelInformationRequestData
     /// The game is not updated if the ID isn’t a game ID that Twitch recognizes. 
     /// To unset this field, use <c>"0"</c> or <see cref="string.Empty"/>.
     /// </summary>
-    public GameId? GameId { get; set; }
+    public GameId? GameId { get; init; }
     /// <summary>
     /// The user’s preferred language. 
     /// Set the value to an ISO 639-1 two-letter language code (for example, en for English). 
     /// Set to "other" if the user’s preferred language is not a Twitch supported language. 
     /// The language isn’t updated if the language code isn’t a Twitch supported language.
     /// </summary>
-    public LanguageCode? BroadcasterLanguage { get; set; }
+    public LanguageCode? BroadcasterLanguage { get; init; }
     /// <summary>
     /// The title of the user’s stream. 
     /// You may not set this field to an empty string.
     /// </summary>
-    public string? Title { get; set; }
+    public string? Title { get; init; }
     /// <summary>
     /// The amount of time you want your broadcast buffered before streaming it live.
     /// The delay helps ensure fairness during competitive play. 
@@ -87,7 +72,7 @@ public record ModifyChannelInformationRequestData
     /// The maximum delay is 900 seconds (15 minutes).
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public TimeSpan? Delay { get; set; }
+    public TimeSpan? Delay { get; init; }
     /// <summary>
     /// A list of channel-defined tags to apply to the channel. 
     /// To remove all tags from the channel, set to an empty array.
@@ -98,13 +83,13 @@ public record ModifyChannelInformationRequestData
     /// Tags are case insensitive.
     /// For readability, consider using camelCasing or PascalCasing.
     /// </summary>
-    public string[]? Tags { get; set; }
+    public string[]? Tags { get; init; }
     /// <summary>
     /// List of labels that should be set as the Channel’s CCLs.
     /// </summary>
-    public ContentClassificationLabel[]? ContentClassificationLabels { get; set; }
+    public ContentClassificationLabel[]? ContentClassificationLabels { get; init; }
     /// <summary>
     /// Boolean flag indicating whether the branded content label should be enabled or disabled for the channel.
     /// </summary>
-    public bool? IsBrandedContent { get; set; }
+    public bool? IsBrandedContent { get; init; }
 }

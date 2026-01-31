@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -16,45 +17,34 @@ namespace TwitchySharp.Api.Helix.Users;
 public record BlockUserRequest
     : TwitchHelixRequest<BlockUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public BlockUserRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        BlockUserRequestParameters parameters
-        ) : base(
-            "/users/blocks",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("target_user_id", parameters.TargetUserId)
-                .Add("source_context", parameters.SourceContext?.Value)
-                .Add("reason", parameters.Reason?.Value)
-            )
-    {
-        Method = HttpMethod.Put;
-    }
-}
+    protected override string Path => "/users/blocks";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => User;
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("target_user_id", TargetUserId)
+            .Add("source_context", SourceContext?.Value)
+            .Add("reason", Reason?.Value);
 
-/// <summary>
-/// Request parameters for a <see cref="BlockUserRequest"/>.
-/// </summary>
-public record BlockUserRequestParameters
-{
+    /// <summary>
+    /// The user to block the target user as.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
     /// <summary>
     /// The id of the user to block.
     /// </summary>
     /// <remarks>
     /// If the user is already blocked, the request is ignored.
     /// </remarks>
-    public required UserId TargetUserId { get; set; }
+    public required UserId TargetUserId { get; init; }
     /// <summary>
     /// The location where the harassment took place that is causing the brodcaster to block the user.
     /// </summary>
-    public BlockUserContext? SourceContext { get; set; }
+    public BlockUserContext? SourceContext { get; init; }
     /// <summary>
     /// The reason that the broadcaster is blocking the user.
     /// </summary>
-    public BlockUserReason? Reason { get; set; }
+    public BlockUserReason? Reason { get; init; }
 }

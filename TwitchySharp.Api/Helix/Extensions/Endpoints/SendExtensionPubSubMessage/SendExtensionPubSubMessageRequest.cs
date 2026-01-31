@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
@@ -8,14 +9,14 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Sends a message to one or more viewers.
 /// </summary>
 /// <remarks>
-/// You can send messages to a specific channel or to all channels where your extension is active. 
+/// You can send messages to a specific channel or to all channels where your extension is active.
 /// This endpoint uses the same mechanism as the <see href="https://dev.twitch.tv/docs/extensions/reference#send">Send</see> JavaScript helper function used to send messages.
 /// <br/>
 /// Rate Limits: You may send a maximum of 100 messages per minute per combination of extension client ID and broadcaster ID.
 /// <br/>
-/// Requires a signed JSON Web Token (JWT) created by an EBS. 
-/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>. 
-/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>) along with the channel_id and pubsub_perms fields. 
+/// Requires a signed JSON Web Token (JWT) created by an EBS.
+/// For signing requirements, see <see href="https://dev.twitch.tv/docs/extensions/building/#signing-the-jwt">Signing the JWT</see>.
+/// The signed JWT must include the role, user_id, and exp fields (see <see href="https://dev.twitch.tv/docs/extensions/reference/#jwt-schema">JWT Schema</see>) along with the channel_id and pubsub_perms fields.
 /// The role field must be set to external.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-extension-pubsub-message">Send Extension PubSub Message</see> for more information.
@@ -23,25 +24,21 @@ namespace TwitchySharp.Api.Helix.Extensions;
 public record SendExtensionPubSubMessageRequest
     : TwitchHelixRequest<SendExtensionPubSubMessageResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="jwt">A signed JWT created by an EBS.</param>
-    /// <param name="messageData">
+    protected override string Path => "/extensions/pubsub";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+
+    /// <summary>
+    /// The extension identity used for JWT authentication.
+    /// </summary>
+    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public override object? ContentObject => Message;
+
+    /// <summary>
     /// Data used to create and send the message.
     /// Use derived classes <see cref="BroadcastPubSubMessageData"/> and <see cref="GlobalPubSubMessageData"/>.
-    /// </param>
-    public SendExtensionPubSubMessageRequest(
-        ClientId clientId,
-        ExtensionJsonWebToken jwt,
-        SendExtensionPubSubMessageRequestData messageData
-        ) : base(
-            "/extensions/pubsub",
-            clientId,
-            jwt
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = messageData;
-    }
+    /// </summary>
+    public required SendExtensionPubSubMessageRequestData Message { get; init; }
 }
 
 /// <summary>
@@ -50,7 +47,7 @@ public record SendExtensionPubSubMessageRequest
 /// </summary>
 public record SendExtensionPubSubMessageRequestData
 {
-    protected ImmutableHashSet<ExtensionPubSubMessageTarget> _target { get; set; } = [];
+    protected ImmutableHashSet<ExtensionPubSubMessageTarget> _target { get; init; } = [];
     /// <summary>
     /// The target of the message. 
     /// The <see cref="ExtensionPubSubMessageTarget.Broadcast"/> and <see cref="ExtensionPubSubMessageTarget.Global"/> values are mutually exclusive.
@@ -60,17 +57,17 @@ public record SendExtensionPubSubMessageRequestData
     /// The user id of the broadcaster to send the message to. 
     /// Don’t include this field if <see cref="IsGlobalBroadcast"/> is set to <see langword="true"/>.
     /// </summary>
-    public UserId? BroadcasterId { get; protected set; }
+    public UserId? BroadcasterId { get; protected init; }
     /// <summary>
     /// Determines whether the message should be sent to all channels where your extension is active. 
     /// Set to <see langword="true"/> if the message should be sent to all channels. The default is <see langword="false"/>.
     /// </summary>
-    public bool? IsGlobalBroadcast { get; protected set; }
+    public bool? IsGlobalBroadcast { get; protected init; }
     /// <summary>
     /// The message to send. The message can be a plain-text string or a string-encoded JSON object. 
     /// The message is limited to a maximum of 5 KB.
     /// </summary>
-    public required string Message { get; set; }
+    public required string Message { get; init; }
 }
 
 /// <summary>

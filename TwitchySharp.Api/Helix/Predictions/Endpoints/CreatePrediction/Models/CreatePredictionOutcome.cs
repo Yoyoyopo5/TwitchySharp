@@ -9,5 +9,5 @@ public record CreatePredictionOutcome
     /// The text of one of the outcomes that the viewer may select. 
     /// The title is limited to a maximum of 25 characters.
     /// </summary>
-    public required string Title { get; set; }
+    public required string Title { get; init; }
 }

@@ -22,5 +22,5 @@ public class MinutesTimeSpanJsonConverter : JsonConverter<TimeSpan>
         };
 
     public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
-        => writer.WriteNumberValue(value.TotalSeconds);
+        => writer.WriteNumberValue(value.TotalMinutes);
 }

@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
 /// A custom channel points reward has been created for the specified channel.
 /// </summary>
+/// <remarks>
+/// Requires a user access token that includes <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
+/// </remarks>
 /// <param name="BroadcasterUserId">The broadcaster user ID for the channel you want to receive channel points custom reward add notifications for.</param>
 public sealed record ChannelPointsCustomRewardAdd(UserId BroadcasterUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_ADD);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsCustomRewardAdd;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

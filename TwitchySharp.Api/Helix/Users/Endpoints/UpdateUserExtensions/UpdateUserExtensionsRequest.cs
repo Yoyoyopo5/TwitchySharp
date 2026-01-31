@@ -7,10 +7,10 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
-/// Updates an installed extension’s information.
+/// Updates an installed extension's information.
 /// </summary>
 /// <remarks>
-/// You can update the extension’s activation state, ID, and version number.
+/// You can update the extension's activation state, ID, and version number.
 /// If you try to activate an extension under multiple extension types, the last write wins (and there is no guarantee of write order).
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.UserEditBroadcast"/>.
@@ -21,28 +21,24 @@ namespace TwitchySharp.Api.Helix.Users;
 public record UpdateUserExtensionsRequest
     : TwitchHelixRequest<UpdateUserExtensionsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">
-    /// A user access token that includes <see cref="Scope.UserEditBroadcast"/>.
-    /// The broadcaster who created the token is the one whose extensions will be updated.
-    /// </param>
-    /// <param name="extensions">The extensions to update.</param>
-    public UpdateUserExtensionsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ExtensionsConfiguration extensions
-        ) : base(
-            "/users/extensions",
-            clientId,
-            accessToken
-            )
-    {
-        // Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
-        // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
-        // I tried to reconfigure things as best as possible to make using this endpoint a little easier, but I may have made some assumptions that prove false.
-        Method = HttpMethod.Put;
-        ContentObject = new UpdateUserExtensionsRequestData(extensions);
-    }
+    protected override string Path => "/users/extensions";
+    public override HttpMethod Method => HttpMethod.Put;
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserEditBroadcast ];
+    protected override TwitchApiIdentity DefaultIdentity => User;
+
+    /// <summary>
+    /// The user identity of the broadcaster whose extensions will be updated.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
+    // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
+    // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
+    public override object? ContentObject => new UpdateUserExtensionsRequestData(Extensions);
+
+    /// <summary>
+    /// The extensions to update.
+    /// </summary>
+    public required ExtensionsConfiguration Extensions { get; init; }
 }
 
 /// <summary>
@@ -50,7 +46,7 @@ public record UpdateUserExtensionsRequest
 /// </summary>
 internal record UpdateUserExtensionsRequestData
 {
-    public UpdateUserExtensionsMaps Data { get; set; }
+    public UpdateUserExtensionsMaps Data { get; init; }
     public UpdateUserExtensionsRequestData(ExtensionsConfiguration extensions)
         => Data = new UpdateUserExtensionsMaps()
         {
@@ -165,15 +161,15 @@ public record ExtensionsConfiguration
     /// <summary>
     /// The panel extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? PanelExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateExtensionParameters>? PanelExtensions { get; init; }
     /// <summary>
     /// The overlay extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? OverlayExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateExtensionParameters>? OverlayExtensions { get; init; }
     /// <summary>
     /// The component extensions to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateComponentExtensionParameters>? ComponentExtensions { get; set; }
+    public ExtensionsConfigurationType<UpdateComponentExtensionParameters>? ComponentExtensions { get; init; }
 }
 
 /// <summary>
@@ -231,7 +227,7 @@ public record UpdateExtensionParameters
     /// <summary>
     /// Determines the extension’s activation state
     /// </summary>
-    public required bool Active { get; set; }
+    public required bool Active { get; init; }
 }
 
 /// <summary>
@@ -243,9 +239,9 @@ public record UpdateComponentExtensionParameters
     /// <summary>
     /// The x-coordinate of the extension.
     /// </summary>
-    public int? X { get; set; }
+    public int? X { get; init; }
     /// <summary>
     /// The y- coordinate of the extension.
     /// </summary>
-    public int? Y { get; set; }
+    public int? Y { get; init; }
 }

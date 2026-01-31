@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -15,58 +16,46 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record ResolveUnbanRequestsRequest
     : TwitchHelixRequest<ResolveUnbanRequestsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageUnbanRequests"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public ResolveUnbanRequestsRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ResolveUnbanRequestsRequestParameters parameters
-        ) : base(
-            "/moderation/unban_requests",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-                .Add("unban_request_id", parameters.UnbanRequestId)
-                .Add("status", parameters.Status.Value)
-                .Add("resolution_text", parameters.ResolutionText)
-            )
-    {
-        Method = HttpMethod.Patch;
-    }
-}
+    protected override string Path => "/moderation/unban_requests";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageUnbanRequests ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId)
+            .Add("unban_request_id", UnbanRequestId)
+            .Add("status", Status.Value)
+            .Add("resolution_text", ResolutionText);
 
-/// <summary>
-/// Request parameters for a <see cref="ResolveUnbanRequestsRequest"/>.
-/// </summary>
-public record ResolveUnbanRequestsRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to resolve the unban request for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
+
     /// <summary>
     /// The id of the unban request to resolve.
     /// </summary>
-    public required UnbanRequestId UnbanRequestId { get; set; }
+    public required UnbanRequestId UnbanRequestId { get; init; }
+
     /// <summary>
     /// The resolution status to set the unban request to.
     /// </summary>
-    public required UnbanRequestResolutionStatus Status { get; set; }
+    public required UnbanRequestResolutionStatus Status { get; init; }
+
     /// <summary>
     /// Caller-defined text that is added to the unban request.
     /// </summary>
     /// <remarks>
     /// This can be a maximum of 500 characters.
     /// </remarks>
-    public string? ResolutionText { get; set; }
+    public string? ResolutionText { get; init; }
 }
