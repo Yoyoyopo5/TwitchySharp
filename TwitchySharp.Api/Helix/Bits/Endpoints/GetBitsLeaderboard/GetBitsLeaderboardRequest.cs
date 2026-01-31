@@ -25,7 +25,7 @@ public record GetBitsLeaderboardRequest
         => new HttpQueryParameters()
             .Add("count", Count?.ToString())
             .Add("period", Period?.Value)
-            .Add("started_at", StartedAt?.UtcDateTime.AddHours(8).ToString("yyyy-MM-dd'T'HH:mm:ssZ"))
+            .Add("started_at", StartedAt?.UtcDateTime.AddHours(8).ToRfc3339())
             .Add("user_id", UserId);
 
     /// <summary>
