@@ -26,7 +26,7 @@ public record GetChannelStreamScheduleRequest
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("id", Ids?.Select(x => x.Value))
-            .Add("start_time", StartTime?.ToUniversalTwitchQueryString())
+            .Add("start_time", StartTime?.UtcDateTime.ToRfc3339())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
 

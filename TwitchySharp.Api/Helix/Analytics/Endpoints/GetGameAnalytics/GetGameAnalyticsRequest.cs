@@ -27,8 +27,8 @@ public record GetGameAnalyticsRequest
         => new HttpQueryParameters()
             .Add("game_id", GameId?.Value)
             .Add("type", Type?.Value)
-            .Add("started_at", StartedAt?.ToUniversalTwitchQueryString())
-            .Add("ended_at", EndedAt?.ToUniversalTwitchQueryString())
+            .Add("started_at", StartedAt?.UtcDateTime.Date.ToRfc3339())
+            .Add("ended_at", EndedAt?.UtcDateTime.Date.ToRfc3339())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
 
