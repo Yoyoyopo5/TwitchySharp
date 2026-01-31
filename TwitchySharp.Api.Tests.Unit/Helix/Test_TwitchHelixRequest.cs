@@ -8,6 +8,50 @@ namespace TwitchySharp.Api.Tests.Unit.Helix;
 public class Test_TwitchHelixRequest
 {
     [Fact]
+    public void RequestUri_WithDefaultHostAndBasePath_BuildsCorrectUri()
+    {
+        var request = new StubHelixRequest
+        {
+            StubPath = "/test"
+        };
+
+        var uri = request.RequestUri;
+
+        Assert.Equal("https", uri.Scheme);
+        Assert.Equal("api.twitch.tv", uri.Host);
+        Assert.Equal("/helix/test", uri.AbsolutePath);
+    }
+
+    [Fact]
+    public void RequestUri_WithCustomHost_UsesCustomHost()
+    {
+        var request = new StubHelixRequest
+        {
+            Host = "custom.twitch.tv",
+            StubPath = "/test"
+        };
+
+        var uri = request.RequestUri;
+
+        Assert.Equal("custom.twitch.tv", uri.Host);
+        Assert.Equal("/helix/test", uri.AbsolutePath);
+    }
+
+    [Fact]
+    public void RequestUri_WithCustomBasePath_UsesCustomBasePath()
+    {
+        var request = new StubHelixRequest
+        {
+            BasePath = "/custom",
+            StubPath = "/test"
+        };
+
+        var uri = request.RequestUri;
+
+        Assert.Equal("/custom/test", uri.AbsolutePath);
+    }
+
+    [Fact]
     public void Identity_WhenNotSet_FallsBackToDefaultIdentity()
     {
         var defaultIdentity = new UserIdentity(new UserId("default_user"));
