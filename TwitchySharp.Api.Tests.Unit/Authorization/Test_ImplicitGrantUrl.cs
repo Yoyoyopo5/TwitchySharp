@@ -19,8 +19,8 @@ public class Test_ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
             RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.ChannelManagePolls],
-            IncludeResponseTypes = [TwitchAuthorizationResponseType.Token]
+            Scopes = [ Scope.ChannelManagePolls ],
+            IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token ]
         };
 
         var query = HttpUtility.ParseQueryString(url.Uri.Query);
@@ -35,8 +35,8 @@ public class Test_ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
             RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.OpenId],
-            IncludeResponseTypes = [TwitchAuthorizationResponseType.IdToken]
+            Scopes = [ Scope.OpenId ],
+            IncludeResponseTypes = [ TwitchAuthorizationResponseType.IdToken ]
         };
 
         var query = HttpUtility.ParseQueryString(url.Uri.Query);
@@ -51,8 +51,8 @@ public class Test_ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
             RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.OpenId],
-            IncludeResponseTypes = [TwitchAuthorizationResponseType.Token, TwitchAuthorizationResponseType.IdToken]
+            Scopes = [ Scope.OpenId ],
+            IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token, TwitchAuthorizationResponseType.IdToken ]
         };
 
         var query = HttpUtility.ParseQueryString(url.Uri.Query);
@@ -79,9 +79,9 @@ public class Test_ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
             RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.ChannelManagePolls, Scope.ChannelReadPolls],
+            Scopes = [ Scope.ChannelManagePolls, Scope.ChannelReadPolls ],
             State = TestState,
-            IncludeResponseTypes = [TwitchAuthorizationResponseType.Token]
+            IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token ]
         };
 
         var uri = url.Uri;
@@ -92,7 +92,7 @@ public class Test_ImplicitGrantUrl
         Assert.Equal("/oauth2/authorize", uri.AbsolutePath);
         Assert.Equal("token", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
-        Assert.StartsWith(TestRedirectUri, query["redirect_uri"]);
+        Assert.Equal(TestRedirectUri, query["redirect_uri"]);
         Assert.Equal("channel:manage:polls+channel:read:polls", query["scope"]);
         Assert.Equal(TestState, query["state"]);
     }
@@ -113,10 +113,10 @@ public class Test_ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
             RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.ChannelManagePolls, Scope.ChannelReadPolls, Scope.OpenId],
+            Scopes = [ Scope.ChannelManagePolls, Scope.ChannelReadPolls, Scope.OpenId ],
             State = TestState,
             Nonce = TestNonce,
-            IncludeResponseTypes = [TwitchAuthorizationResponseType.Token, TwitchAuthorizationResponseType.IdToken]
+            IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token, TwitchAuthorizationResponseType.IdToken ]
         };
 
         var uri = url.Uri;
@@ -125,7 +125,7 @@ public class Test_ImplicitGrantUrl
         Assert.Equal("https", uri.Scheme);
         Assert.Equal("id.twitch.tv", uri.Host);
         Assert.Equal(TestClientId, query["client_id"]);
-        Assert.StartsWith(TestRedirectUri, query["redirect_uri"]);
+        Assert.Equal(TestRedirectUri, query["redirect_uri"]);
         Assert.Equal("channel:manage:polls+channel:read:polls+openid", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Equal(TestNonce, query["nonce"]);
