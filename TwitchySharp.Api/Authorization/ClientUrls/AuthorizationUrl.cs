@@ -96,12 +96,12 @@ public abstract record AuthorizationUrl
     /// Set to <see langword="true"/> to always prompt the authorizing user to re-authorize your application on the Twitch website, even if they have already done so in the past.
     /// </summary>
     /// <remarks>
-    /// If <see langword="false"/> and the user has already authorized your application with the requested scopes, they will not be prompted to do so again,
+    /// If <see langword="false"/> or <see langword="null"/> and the user has already authorized your application with the requested scopes, they will not be prompted to do so again,
     /// and they will be automatically redirected to the <see cref="RedirectUri"/>.
     /// <br/>
-    /// Defaults to <see langword="false"/>.
+    /// Defaults to <see langword="null"/>.
     /// </remarks>
-    public bool ForceVerify { get; init; } = false;
+    public bool? ForceVerify { get; init; }
 
     /// <summary>
     /// The URI to send the authorizing user to.
@@ -119,7 +119,7 @@ public abstract record AuthorizationUrl
             .Add("client_id", ClientId)
             .Add("redirect_uri", RedirectUri.ToString())
             .Add("scope", Scopes.FormatScopes())
-            .Add("force_verify", ForceVerify.ToString())
+            .Add("force_verify", ForceVerify?.ToString())
             .Add("state", State)
             .Add("nonce", Nonce)
             .Add("claims", Claims?.JsonEncode())
