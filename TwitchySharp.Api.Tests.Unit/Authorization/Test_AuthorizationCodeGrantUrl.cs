@@ -39,7 +39,7 @@ public class Test_AuthorizationCodeGrantUrl
         Assert.Equal("/oauth2/authorize", uri.AbsolutePath);
         Assert.Equal("code", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
-        Assert.StartsWith(TestRedirectUri, query["redirect_uri"]);
+        Assert.Equal(TestRedirectUri, query["redirect_uri"]);
         Assert.Equal("channel:manage:polls+channel:read:polls", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Null(query["force_verify"]);
@@ -72,7 +72,7 @@ public class Test_AuthorizationCodeGrantUrl
 
         Assert.Equal("code", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
-        Assert.StartsWith(TestRedirectUri, query["redirect_uri"]);
+        Assert.Equal(TestRedirectUri, query["redirect_uri"]);
         Assert.Equal("channel:manage:polls+channel:read:polls+openid", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Equal(TestNonce, query["nonce"]);
@@ -106,20 +106,5 @@ public class Test_AuthorizationCodeGrantUrl
         };
 
         Assert.Equal("test.example.com", url.Uri.Host);
-    }
-
-    [Fact]
-    public void ToString_ReturnsUriString()
-    {
-        var url = new AuthorizationCodeGrantUrl
-        {
-            ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
-            Scopes = [Scope.OpenId]
-        };
-
-        // Records have special ToString() behavior, so verify the Uri property works correctly
-        Assert.StartsWith("https://id.twitch.tv/oauth2/authorize?", url.Uri.ToString());
-        Assert.Contains("response_type=code", url.Uri.ToString());
     }
 }

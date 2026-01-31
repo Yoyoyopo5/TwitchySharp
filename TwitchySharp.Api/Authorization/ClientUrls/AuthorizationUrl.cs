@@ -117,7 +117,7 @@ public abstract record AuthorizationUrl
         Query = new HttpQueryParameters()
             .Add("response_type", string.Join("+", ResponseTypes.Select(x => x.Value)))
             .Add("client_id", ClientId)
-            .Add("redirect_uri", RedirectUri.ToString())
+            .Add("redirect_uri", RedirectUri.ToString().TrimEnd('/')) // Trims final slash to match Twitch behavior
             .Add("scope", Scopes.FormatScopes())
             .Add("force_verify", ForceVerify?.ToString())
             .Add("state", State)
