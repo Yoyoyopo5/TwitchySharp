@@ -28,8 +28,8 @@ public record UpdateChannelStreamScheduleRequest
         => new HttpQueryParameters()
             .Add("broadcaster_id", Settings.BroadcasterId)
             .Add("is_vacation_enabled", Settings.IsVacationEnabled?.ToString())
-            .Add("vacation_start_time", Settings.VacationStartTime?.ToUniversalTwitchQueryString())
-            .Add("vacation_end_time", Settings.VacationEndTime?.ToUniversalTwitchQueryString())
+            .Add("vacation_start_time", Settings.VacationStartTime?.UtcDateTime.ToRfc3339())
+            .Add("vacation_end_time", Settings.VacationEndTime?.UtcDateTime.ToRfc3339())
             .Add("timezone", Settings.Timezone?.Id);
 
     /// <summary>
