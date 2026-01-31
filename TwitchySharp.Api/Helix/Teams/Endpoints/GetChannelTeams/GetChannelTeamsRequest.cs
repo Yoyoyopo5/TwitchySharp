@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -14,30 +16,12 @@ namespace TwitchySharp.Api.Helix.Teams;
 public record GetChannelTeamsRequest
     : TwitchHelixRequest<GetChannelTeamsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetChannelTeamsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetChannelTeamsRequestParameters parameters
-        ) : base(
-            "/teams/channel",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-        )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/teams/channel";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetChannelTeamsRequest"/>.
-/// </summary>
-public record GetChannelTeamsRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster to get teams for.
     /// </summary>

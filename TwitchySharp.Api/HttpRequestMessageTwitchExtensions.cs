@@ -5,15 +5,14 @@ namespace TwitchySharp.Api;
 
 internal static class HttpRequestMessageTwitchExtensions
 {
-    public static HttpRequestMessage AddTwitchAuthorizationHeaders(this HttpRequestMessage request)
+    public static HttpRequestMessage AddTwitchAuthorizationHeaders(this HttpRequestMessage request, TwitchAuthorizationRequestOptions? auth)
     {
-        if (request.Options.TryGetValue(TwitchRequestOptionsKeys.Authorization, out TwitchAuthorizationRequestOptions? authOptions))
-        {
-            if (!string.IsNullOrEmpty(authOptions.AccessToken))
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authOptions.AccessToken);
-            if (!string.IsNullOrEmpty(authOptions.ClientId))
-                request.Headers.Add("Client-Id", authOptions.ClientId);
-        }
+        if (auth is null)
+            return request;
+        if (auth.ClientId is { Value.Length: > 0 } clientId)
+            request.Headers.Add("Client-Id", clientId);
+        if (auth.BearerToken is not null)
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.BearerToken);
         return request;
     }
 }

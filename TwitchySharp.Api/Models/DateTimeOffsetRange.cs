@@ -7,7 +7,7 @@ namespace TwitchySharp.Api;
 public record struct DateTimeOffsetRange
 {
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
-    public DateTimeOffset? StartedAt { get; private set; }
+    public DateTimeOffset? StartedAt { get; private init; }
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
-    public DateTimeOffset? EndedAt { get; private set; }
+    public DateTimeOffset? EndedAt { get; private init; }
 }

@@ -1,9 +1,11 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
-/// Gets Twitch’s list of chat badges, which users may use in any channel’s chat room. 
+/// Gets Twitch's list of chat badges, which users may use in any channel's chat room.
 /// </summary>
 /// <remarks>
 /// For information about chat badges, see <see href="https://help.twitch.tv/s/article/twitch-chat-badges-guide">Twitch Chat Badges Guide</see>.
@@ -15,15 +17,6 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetGlobalChatBadgesRequest
     : TwitchHelixRequest<GetGlobalChatBadgesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    public GetGlobalChatBadgesRequest(ClientId clientId, AccessToken accessToken)
-        : base(
-            "/chat/badges/global",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/chat/badges/global";
+    public override HttpMethod Method => HttpMethod.Get;
 }

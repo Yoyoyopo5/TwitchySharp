@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -8,75 +10,73 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// Gets a list of EventSub subscriptions that an app created.
 /// </summary>
 /// <remarks>
+/// <para>
+/// By default, this uses the <see cref="TwitchApiIdentity.Default"/> and will only get subscriptions using <see cref="WebhookSubscriptionTransport"/> and <see cref="ConduitSubscriptionTransport"/>.
+/// To get subscriptions using <see cref="WebsocketSubscriptionTransport"/>, call the <see cref="ForWebsocketSubscriptions(UserIdentity)"/> method with an explicit <see cref="UserIdentity"/>.
+/// </para>
 /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, requires an app access token.
 /// If using <see cref="WebsocketSubscriptionTransport"/>, requires a user access token.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</see> for more information.
 /// </remarks>
 public record GetEventSubSubscriptionsRequest
-    : TwitchHelixRequest<GetEventSubSubscriptionsResponse>
+    : TwitchHelixRequest<GetEventSubSubscriptionsResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application to get EventSub subscriptions for.</param>
-    /// <param name="accessToken">
-    /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, an app access token.
-    /// If using <see cref="WebsocketSubscriptionTransport"/>, a user access token.
-    /// </param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetEventSubSubscriptionsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetEventSubSubscriptionsRequestParameters? parameters = null
-        )
-        : base(
-            "/eventsub/subscriptions",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("status", parameters?.Status?.Value)
-                .Add("type", parameters?.Type)
-                .Add("user_id", parameters?.UserId)
-                .Add("subscription_id", parameters?.SubscriptionId)
-                .Add("after", parameters?.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/eventsub/subscriptions";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("status", Status?.Value)
+            .Add("type", Type?.ToString())
+            .Add("user_id", UserId)
+            .Add("subscription_id", SubscriptionId)
+            .Add("after", After?.ToString());
 
-/// <summary>
-/// Request parameters for a <see cref="GetEventSubSubscriptionsRequest"/>.
-/// </summary>
-public record GetEventSubSubscriptionsRequestParameters
-    : IPageableRequest
-{
+    /// <summary>
+    /// Configures the request to query for subscriptions using the <see cref="EventSubTransportMethod.Websocket"/>.
+    /// </summary>
+    /// <remarks>
+    /// This requires a user access token, so you must pass a <see cref="UserIdentity"/> to use for the request.
+    /// </remarks>
+    /// <param name="user">The <see cref="UserIdentity"/> to make the request as.</param>
+    /// <returns>A new <see cref="GetEventSubSubscriptionsRequest"/> configured to get subscriptions using <see cref="EventSubTransportMethod.Websocket"/>.</returns>
+    public GetEventSubSubscriptionsRequest ForWebsocketSubscriptions(UserIdentity user)
+        => this with { Identity = user };
+
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription status.
     /// </summary>
-    public EventSubSubscriptionStatus? Status { get; set; }
+    public EventSubSubscriptionStatus? Status { get; init; }
+
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription type.
     /// </summary>
     /// <remarks>
     /// Note that this only filters by subscription type <b>name</b>, not version.
     /// </remarks>
-    public EventSubSubscriptionTypeName? Type { get; set; }
+    public EventSubSubscriptionTypeName? Type { get; init; }
+
     /// <summary>
-    /// Specify this parameter to filter the returned list by a specific user. 
+    /// Specify this parameter to filter the returned list by a specific user.
     /// </summary>
     /// <remarks>
     /// Only subscriptions that were created for this user are returned.
     /// </remarks>
-    public UserId? UserId { get; set; }
+    public UserId? UserId { get; init; }
+
     /// <summary>
     /// Specify this parameter to get a specific subscription by its id, as long as the subscription is owned by the client making the request.
     /// </summary>
     /// <remarks>
     /// If a matching subscription does not exist, an empty array is returned.
     /// </remarks>
-    public EventSubSubscriptionId? SubscriptionId { get; set; }
+    public EventSubSubscriptionId? SubscriptionId { get; init; }
+
     /// <summary>
     /// Unused for this request type.
     /// </summary>
-    public PaginationAmount? First { get; set; }
-    public PaginationCursor? After { get; set; }
+    public PaginationAmount? First { get; init; }
+
+    /// <inheritdoc/>
+    public PaginationCursor? After { get; init; }
 }

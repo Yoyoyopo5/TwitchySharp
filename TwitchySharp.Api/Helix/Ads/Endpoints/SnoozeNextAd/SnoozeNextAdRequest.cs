@@ -1,14 +1,15 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Ads;
 /// <summary>
-/// If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes. 
+/// If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes.
 /// </summary>
 /// <remarks>
-/// This endpoint duplicates the snooze functionality in the creator dashboard’s Ads Manager.
+/// This endpoint duplicates the snooze functionality in the creator dashboard's Ads Manager.
 /// The channel must be live and have an upcoming scheduled ad break.
 /// <br/>
 /// Requires a user access token with <see cref="Scope.ChannelManageAds"/>.
@@ -18,34 +19,20 @@ namespace TwitchySharp.Api.Helix.Ads;
 public record SnoozeNextAdRequest
     : TwitchHelixRequest<SnoozeNextAdResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token with <see cref="Scope.ChannelManageAds"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public SnoozeNextAdRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        SnoozeNextAdRequestParameters parameters
-        )
-        : base(
-            "/channels/ads/schedule/snooze",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Post;
-    }
-}
+    protected override string Path => "/channels/ads/schedule/snooze";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageAds ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="SnoozeNextAdRequest"/>.
-/// </summary>
-public record SnoozeNextAdRequestParameters
-{
     /// <summary>
-    /// The user id of the channel to snooze an ad on. 
-    /// This must be the same user that provided the access token for the request.
+    /// The user id of the channel to snooze an ad on.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    /// <remarks>
+    /// This must be the same user that provided the access token for the request.
+    /// Requires <see cref="Scope.ChannelManageAds"/>.
+    /// </remarks>
+    public required UserId BroadcasterId { get; init; }
 }

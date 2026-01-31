@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// An EventSub transport that uses <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events/">webhooks</see>.
 /// </summary>
 public sealed record WebhookSubscriptionTransport
-    : NewEventSubSubscriptionTransport
+    : EventSubSubscriptionTransportSpecification
 {
     /// <param name="callback">
     /// The url that subscription notifications will be sent to.

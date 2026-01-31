@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -29,24 +30,19 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-stream-marker">Create Stream Marker</see> for more information.
 /// </remarks>
-public record CreateStreamMarkerRequest : TwitchHelixRequest<CreateStreamMarkerResponse>
+public record CreateStreamMarkerRequest
+    : TwitchHelixRequest<CreateStreamMarkerResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageBroadcast"/>.</param>
-    /// <param name="marker">The marker to create.</param>
-    public CreateStreamMarkerRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        CreateStreamMarkerRequestData marker
-        ) : base(
-            "/streams/markers",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = marker;
-    }
+    protected override string Path => "/streams/markers";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Marker.UserId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageBroadcast ];
+    public override object? ContentObject => Marker;
+
+    /// <summary>
+    /// The marker to create.
+    /// </summary>
+    public required CreateStreamMarkerRequestData Marker { get; init; }
 }
 
 /// <summary>
@@ -58,10 +54,10 @@ public record CreateStreamMarkerRequestData
     /// The user id of the broadcaster to create a marker for.
     /// This user or one of this broadcaster's editors must have created the user access token used in the <see cref="CreateStreamMarkerRequest"/>.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// A short description of the marker to help the user remember why they marked the location. 
     /// The maximum length of the description is 140 characters.
     /// </summary>
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization.ClientUrls;
@@ -17,25 +17,33 @@ namespace TwitchySharp.Api.Authorization;
 public record AuthorizationCodeRequest
     : TwitchAuthorizationRequest<AuthorizationCodeResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="clientSecret">The client secret of the application.</param>
-    /// <param name="code">The code query parameter obtained from the redirect of an <see cref="AuthorizationCodeGrantUrl"/>.</param>
-    /// <param name="redirectUri">
+    protected override string Path => "/token";
+    public override HttpMethod Method => HttpMethod.Post;
+    public override HttpContent? Content
+        => new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            { "client_id", ClientId },
+            { "client_secret", ClientSecret },
+            { "code", Code },
+            { "grant_type", "authorization_code" },
+            { "redirect_uri", RedirectUri.ToString() }
+        });
+
+    /// <summary>
+    /// The client id of the application.
+    /// </summary>
+    public required ClientId ClientId { get; init; }
+    /// <summary>
+    /// The client secret of the application.
+    /// </summary>
+    public required ClientSecret ClientSecret { get; init; }
+    /// <summary>
+    /// The code query parameter obtained from the redirect of an <see cref="AuthorizationCodeGrantUrl"/>.
+    /// </summary>
+    public required string Code { get; init; }
+    /// <summary>
     /// The redirect URI of the application (this is registered via the Twitch developer console).
     /// This should be the URI that the <see cref="AuthorizationCodeGrantUrl"/> redirected to.
-    /// </param>
-    public AuthorizationCodeRequest(ClientId clientId, ClientSecret clientSecret, string code, Uri redirectUri)
-        : base("/token")
-    {
-        Method = HttpMethod.Post;
-        ClientId = clientId;
-        Content = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            { "client_id", clientId },
-            { "client_secret", clientSecret },
-            { "code", code },
-            { "grant_type", "authorization_code" },
-            { "redirect_uri", redirectUri.ToString() }
-        });
-    }
+    /// </summary>
+    public required Uri RedirectUri { get; init; }
 }
