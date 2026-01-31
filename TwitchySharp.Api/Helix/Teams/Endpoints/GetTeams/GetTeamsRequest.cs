@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -14,76 +16,60 @@ namespace TwitchySharp.Api.Helix.Teams;
 public record GetTeamsRequest
     : TwitchHelixRequest<GetTeamsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">
-    /// The request parameters.
-    /// Use an instance of <see cref="TeamsQueryById"/> or <see cref="TeamsQueryByName"/> depending on how you want to find the team.
-    /// </param>
-    public GetTeamsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetTeamsRequestParameters parameters
-        ) : base(
-            "/teams",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("name", parameters.Name)
-                .Add("id", parameters.Id)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
+    protected override string Path => "/teams";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("name", Query.Name)
+            .Add("id", Query.Id);
+
+    /// <summary>
+    /// The query specifying which team to retrieve.
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="TeamsQueryByName"/> or <see cref="TeamsQueryById"/>.
+    /// </remarks>
+    public required TeamsQuery Query { get; init; }
 }
 
 /// <summary>
-/// Request parameters for a <see cref="GetTeamsRequest"/>.
+/// Base type for teams query parameters.
 /// </summary>
 /// <remarks>
-/// Use derived classes <see cref="TeamsQueryById"/> and <see cref="TeamsQueryByName"/> to create a teams query.
+/// Use derived types <see cref="TeamsQueryByName"/> or <see cref="TeamsQueryById"/>.
 /// </remarks>
-public record GetTeamsRequestParameters
+public abstract record TeamsQuery
 {
-    /// <summary>
-    /// The name of the team to get. 
-    /// </summary>
-    public string? Name { get; protected set; }
-    /// <summary>
-    /// The id of the team to get.
-    /// </summary>
-    public TeamId? Id { get; protected set; }
-    protected GetTeamsRequestParameters() { }
+    internal string? Name { get; init; }
+    internal TeamId? Id { get; init; }
 }
 
 /// <summary>
 /// Query for a team by team name.
 /// </summary>
-public record TeamsQueryByName
-    : GetTeamsRequestParameters
+public record TeamsQueryByName : TeamsQuery
 {
     /// <summary>
-    /// <inheritdoc cref="TeamsQueryByName"/>
+    /// The name of the team to get.
     /// </summary>
-    /// <param name="name">
-    /// <inheritdoc cref="GetTeamsRequestParameters" path="/summary"/>
-    /// </param>
-    public TeamsQueryByName(string name)
-        => Name = name;
+    public new required string Name
+    {
+        get => base.Name!;
+        init => base.Name = value;
+    }
 }
 
 /// <summary>
 /// Query for a team by team id.
 /// </summary>
-public record TeamsQueryById
-    : GetTeamsRequestParameters
+public record TeamsQueryById : TeamsQuery
 {
     /// <summary>
-    /// <inheritdoc cref="TeamsQueryById"/>
+    /// The id of the team to get.
     /// </summary>
-    /// <param name="teamId">
-    /// <inheritdoc cref="GetTeamsRequestParameters.Id" path="/summary"/>
-    /// </param>
-    public TeamsQueryById(TeamId teamId)
-        => Id = teamId;
+    public new required TeamId Id
+    {
+        get => base.Id!.Value;
+        init => base.Id = value;
+    }
 }

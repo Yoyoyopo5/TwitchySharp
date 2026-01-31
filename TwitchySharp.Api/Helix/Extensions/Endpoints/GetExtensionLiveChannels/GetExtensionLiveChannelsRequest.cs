@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -14,49 +16,33 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-live-channels">Get Extension Live Channels</see> for more information.
 /// </remarks>
 public record GetExtensionLiveChannelsRequest
-    : TwitchHelixRequest<GetExtensionLiveChannelsResponse>
+    : TwitchHelixRequest<GetExtensionLiveChannelsResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetExtensionLiveChannelsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetExtensionLiveChannelsRequestParameters parameters
-        ) : base(
-            "/extensions/live",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("extension_id", parameters.ExtensionId)
-                .Add("first", parameters.First?.ToString())
-                .Add("after", parameters.After?.Value)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/extensions/live";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("extension_id", ExtensionId)
+            .Add("first", First?.ToString())
+            .Add("after", After?.ToString());
 
-/// <summary>
-/// Request parameters for a <see cref="GetExtensionLiveChannelsRequest"/>.
-/// </summary>
-public record GetExtensionLiveChannelsRequestParameters
-    : IPageableRequest
-{
     /// <summary>
     /// The id of the extension to get.
     /// </summary>
     /// <remarks>
     /// The response will contain the list of broadcasters that are live and that have installed or activated this extension.
     /// </remarks>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
+
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
     /// <remarks>
-    /// The minimum page size is 1 item per page and the maximum is 100 items per page. 
+    /// The minimum page size is 1 item per page and the maximum is 100 items per page.
     /// The default is 20.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
-    public PaginationCursor? After { get; set; }
+    public PaginationAmount? First { get; init; }
+
+    /// <inheritdoc/>
+    public PaginationCursor? After { get; init; }
 }

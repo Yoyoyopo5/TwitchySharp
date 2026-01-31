@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
-/// Revokes a valid user access token so that it is no longer valid.
+/// Revokes a valid app or user access token so that it is no longer valid.
 /// </summary>
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/authentication/revoke-tokens/">Revoke Tokens</see> for more information.
@@ -12,18 +12,21 @@ namespace TwitchySharp.Api.Authorization;
 public record RevokeAccessTokenRequest
     : TwitchAuthorizationRequest<RevokeAccessTokenResponse>
 {
-    /// <param name="clientId">The client id of the application that the <paramref name="accessToken"/> was created under.</param>
-    /// <param name="accessToken">The access token to revoke.</param>
-    public RevokeAccessTokenRequest(ClientId clientId, AccessToken accessToken)
-        : base("/revoke")
-    {
-        Method = HttpMethod.Post;
-        ClientId = clientId;
-        AccessToken = accessToken;
-        Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+    protected override string Path => "/revoke";
+    public override HttpMethod Method => HttpMethod.Post;
+    public override HttpContent? Content
+        => new FormUrlEncodedContent(new Dictionary<string, string>()
         {
-            { "client_id", clientId },
-            { "token", accessToken }
+            { "client_id", ClientId },
+            { "token", AccessToken }
         });
-    }
+
+    /// <summary>
+    /// The client id of the application that the <see cref="AccessToken"/> was created under.
+    /// </summary>
+    public required ClientId ClientId { get; init; }
+    /// <summary>
+    /// The access token to revoke.
+    /// </summary>
+    public required AccessToken AccessToken { get; init; }
 }

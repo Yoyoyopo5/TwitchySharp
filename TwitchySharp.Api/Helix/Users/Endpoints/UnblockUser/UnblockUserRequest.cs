@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
-/// Removes the user from the broadcaster’s list of blocked users.
+/// Removes the user from the broadcaster's list of blocked users.
 /// </summary>
 /// <remarks>
 /// <br/>
@@ -17,35 +18,24 @@ namespace TwitchySharp.Api.Helix.Users;
 public record UnblockUserRequest
     : TwitchHelixRequest<UnblockUserResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public UnblockUserRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UnblockUserRequestParameters parameters
-        ) : base(
-            "/users/blocks",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("target_user_id", parameters.TargetUserId)
-            )
-    {
-        Method = HttpMethod.Delete;
-    }
-}
+    protected override string Path => "/users/blocks";
+    public override HttpMethod Method => HttpMethod.Delete;
+    protected override TwitchApiIdentity DefaultIdentity => User;
+    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("target_user_id", TargetUserId);
 
-/// <summary>
-/// Request parameters for a <see cref="UnblockUserRequest"/>.
-/// </summary>
-public record UnblockUserRequestParameters
-{
+    /// <summary>
+    /// The user to unblock the target user as.
+    /// </summary>
+    public required UserIdentity User { get; init; }
+
     /// <summary>
     /// The id of the user to remove from the broadcaster's list of blocked users.
     /// </summary>
     /// <remarks>
-    /// The API ignores the request if the broadcaster hasn’t blocked the user.
+    /// The API ignores the request if the broadcaster hasn't blocked the user.
     /// </remarks>
-    public required UserId TargetUserId { get; set; }
+    public required UserId TargetUserId { get; init; }
 }

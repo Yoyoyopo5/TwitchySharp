@@ -1,9 +1,11 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
-/// Updates a conduit’s shard count. 
+/// Updates a conduit's shard count.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,23 +19,14 @@ namespace TwitchySharp.Api.Helix.Conduits;
 public record UpdateConduitRequest
     : TwitchHelixRequest<UpdateConduitResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app access token.</param>
-    /// <param name="conduitToUpdate">The data to update the conduit with.</param>
-    public UpdateConduitRequest(
-        ClientId clientId,
-        AppAccessToken accessToken,
-        UpdateConduitRequestData conduitToUpdate
-        )
-        : base(
-            "/eventsub/conduits",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = conduitToUpdate;
-    }
+    protected override string Path => "/eventsub/conduits";
+    public override HttpMethod Method => HttpMethod.Patch;
+    public override object? ContentObject => ConduitData;
+
+    /// <summary>
+    /// Data used to update the conduit.
+    /// </summary>
+    public required UpdateConduitRequestData ConduitData { get; init; }
 }
 
 /// <summary>

@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// Activates or deactivates the broadcaster’s Shield Mode.
+/// Activates or deactivates the broadcaster's Shield Mode.
 /// </summary>
 /// <remarks>
 /// <br/>
@@ -16,45 +17,33 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record UpdateShieldModeStatusRequest
     : TwitchHelixRequest<UpdateShieldModeStatusResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageShieldMode"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="shieldModeStatus">The Shield Mode status to update to.</param>
-    public UpdateShieldModeStatusRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UpdateShieldModeStatusRequestParameters parameters,
-        UpdateShieldModeStatusRequestData shieldModeStatus
-        ) : base(
-            "/moderation/shield_mode",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-            )
-    {
-        Method = HttpMethod.Put;
-        ContentObject = shieldModeStatus;
-    }
-}
+    protected override string Path => "/moderation/shield_mode";
+    public override HttpMethod Method => HttpMethod.Put;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageShieldMode ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId);
+    public override object? ContentObject => ShieldModeStatus;
 
-/// <summary>
-/// Request parameters for a <see cref="UpdateShieldModeStatusRequest"/>.
-/// </summary>
-public record UpdateShieldModeStatusRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to update Shield Mode status for.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
+
+    /// <summary>
+    /// The Shield Mode status to update to.
+    /// </summary>
+    public required UpdateShieldModeStatusRequestData ShieldModeStatus { get; init; }
 }
 
 /// <summary>
@@ -68,5 +57,5 @@ public record UpdateShieldModeStatusRequestData
     /// <remarks>
     /// Set to <see langword="true"/> to activate Shield Mode; otherwise, <see langword="false"/> to deactivate Shield Mode.
     /// </remarks>
-    public required bool IsActive { get; set; }
+    public required bool IsActive { get; init; }
 }

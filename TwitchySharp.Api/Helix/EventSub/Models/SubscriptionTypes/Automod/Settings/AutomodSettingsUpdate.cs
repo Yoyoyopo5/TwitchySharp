@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.EventSub.Constants;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
-/// A notification is sent when a broadcaster’s automod settings are updated.
+/// A notification is sent when a broadcaster's automod settings are updated.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.ModeratorReadAutomodSettings"/>.
@@ -14,14 +15,15 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <param name="BroadcasterUserId">User id of the broadcaster (channel).</param>
 /// <param name="ModeratorUserId">User id of a moderator in the broadcaster's chat. This can also be the broadcaster.</param>
 public sealed record AutomodSettingsUpdate(UserId BroadcasterUserId, UserId ModeratorUserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.AUTOMOD_SETTINGS_UPDATE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodSettingsUpdate;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadAutomodSettings ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId)
-            .Set("moderator_user_id", ModeratorUserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
+            .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

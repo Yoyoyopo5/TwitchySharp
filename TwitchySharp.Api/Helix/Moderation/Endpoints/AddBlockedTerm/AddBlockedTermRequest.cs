@@ -1,14 +1,15 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// Adds a word or phrase to the broadcaster’s list of blocked terms.
+/// Adds a word or phrase to the broadcaster's list of blocked terms.
 /// </summary>
 /// <remarks>
-/// These are the terms that the broadcaster doesn’t want used in their chat room.
+/// These are the terms that the broadcaster doesn't want used in their chat room.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ModeratorManageBlockedTerms"/>.
 /// <br/>
@@ -16,38 +17,20 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </remarks>
 public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageBlockedTerms"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="term">The blocked term to create.</param>
-    public AddBlockedTermRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        AddBlockedTermRequestParameters parameters,
-        AddBlockedTermRequestData term
-        ) : base(
-            "/moderation/blocked_terms",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("moderator_id", parameters.ModeratorId)
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = term;
-    }
-}
+    protected override string Path => "/moderation/blocked_terms";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageBlockedTerms ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("moderator_id", ModeratorId);
+    public override object? ContentObject => Term;
 
-/// <summary>
-/// Request parameters for a <see cref="AddBlockedTermRequest"/>.
-/// </summary>
-public record AddBlockedTermRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to add a blocked term to.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
@@ -55,7 +38,12 @@ public record AddBlockedTermRequestParameters
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId ModeratorId { get; set; }
+    public required UserId ModeratorId { get; init; }
+
+    /// <summary>
+    /// The blocked term to create.
+    /// </summary>
+    public required AddBlockedTermRequestData Term { get; init; }
 }
 
 /// <summary>

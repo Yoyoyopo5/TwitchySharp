@@ -1,11 +1,12 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>
-/// Gets the channel’s stream key.
+/// Gets the channel's stream key.
 /// </summary>
 /// <remarks>
 /// Requires a user access token that includes <see cref="Scope.ChannelReadStreamKey"/>.
@@ -15,35 +16,19 @@ namespace TwitchySharp.Api.Helix.Streams;
 public record GetStreamKeyRequest
     : TwitchHelixRequest<GetStreamKeyResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelReadStreamKey"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetStreamKeyRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetStreamKeyRequestParameters parameters
-        ) : base(
-            "/streams/key",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/streams/key";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadStreamKey ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetStreamKeyRequest"/>.
-/// </summary>
-public record GetStreamKeyRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to get the stream key for.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

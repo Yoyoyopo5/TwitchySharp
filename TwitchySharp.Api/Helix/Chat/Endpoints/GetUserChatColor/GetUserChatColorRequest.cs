@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
-/// Gets the color used for the user’s name in chat.
+/// Gets the color used for the user's name in chat.
 /// </summary>
 /// <remarks>
 /// Requires an app or user access token.
@@ -16,37 +17,18 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetUserChatColorRequest
     : TwitchHelixRequest<GetUserChatColorResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetUserChatColorRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetUserChatColorRequestParameters parameters
-        )
-        : base(
-            "/chat/color",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("user_id", parameters.UserIds.Select(x => x.ToString()))
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/chat/color";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("user_id", UserIds.Select(x => x.ToString()));
 
-/// <summary>
-/// Request parameters for a <see cref="GetUserChatColorRequest"/>.
-/// </summary>
-public record GetUserChatColorRequestParameters
-{
     /// <summary>
     /// The user ids of the users whose username colors you want to get.
     /// </summary>
     /// <remarks>
     /// The maximum number of ids that you may specify is 100.
-    /// The API ignores duplicate ids and ids that weren’t found.
+    /// The API ignores duplicate ids and ids that weren't found.
     /// </remarks>
-    public required IEnumerable<UserId> UserIds { get; set; }
+    public required IEnumerable<UserId> UserIds { get; init; }
 }

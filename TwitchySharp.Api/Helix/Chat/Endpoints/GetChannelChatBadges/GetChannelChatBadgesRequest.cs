@@ -1,13 +1,15 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
-/// Gets the broadcaster’s list of custom chat badges. 
+/// Gets the broadcaster's list of custom chat badges.
 /// </summary>
 /// <remarks>
-/// The list is empty if the broadcaster hasn’t created custom chat badges. 
+/// The list is empty if the broadcaster hasn't created custom chat badges.
 /// For information about custom badges, see <see href="https://help.twitch.tv/s/article/subscriber-badge-guide">Subscriber Badges</see> and <see href="https://help.twitch.tv/s/article/custom-bit-badges-guide">Bits Badges</see>.
 /// <br/>
 /// Requires an app or user access token.
@@ -17,33 +19,14 @@ namespace TwitchySharp.Api.Helix.Chat;
 public record GetChannelChatBadgesRequest
     : TwitchHelixRequest<GetChannelChatBadgesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetChannelChatBadgesRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetChannelChatBadgesRequestParameters parameters
-        )
-        : base(
-            "/chat/badges",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/chat/badges";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId);
 
-/// <summary>
-/// Request parameters for a <see cref="GetChannelChatBadgesRequest"/>.
-/// </summary>
-public record GetChannelChatBadgesRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) whose chat badges you want to get.
     /// </summary>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
 }

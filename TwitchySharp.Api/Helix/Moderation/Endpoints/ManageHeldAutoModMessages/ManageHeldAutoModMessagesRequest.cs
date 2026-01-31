@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
@@ -17,24 +18,16 @@ namespace TwitchySharp.Api.Helix.Moderation;
 public record ManageHeldAutoModMessagesRequest
     : TwitchHelixRequest<ManageHeldAutoModMessagesResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ModeratorManageAutomod"/>.</param>
-    /// <param name="messageAction">
+    protected override string Path => "/moderation/automod/message";
+    public override HttpMethod Method => HttpMethod.Post;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(MessageAction.UserId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomod ];
+    public override object? ContentObject => MessageAction;
+
+    /// <summary>
     /// Data used to identify the message and select the action.
-    /// </param>
-    public ManageHeldAutoModMessagesRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        ManageHeldAutoModMessagesRequestData messageAction
-        ) : base(
-            "/moderation/automod/message",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = messageAction;
-    }
+    /// </summary>
+    public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
 }
 
 /// <summary>
@@ -46,15 +39,15 @@ public record ManageHeldAutoModMessagesRequestData
     /// The user id of the broadcaster or a moderator of the broadcaster's channel.
     /// This must be the same user that created the access token used in the <see cref="ManageHeldAutoModMessagesRequest"/>.
     /// </summary>
-    public required UserId UserId { get; set; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The id of the message to allow or deny.
     /// </summary>
     [JsonPropertyName("msg_id")]
-    public required MessageId MessageId { get; set; }
+    public required MessageId MessageId { get; init; }
     /// <summary>
     /// The action to take for the message.
     /// Use the static definitions on the <see cref="AutoModAction"/> class to set this.
     /// </summary>
-    public required AutoModAction Action { get; set; }
+    public required AutoModAction Action { get; init; }
 }

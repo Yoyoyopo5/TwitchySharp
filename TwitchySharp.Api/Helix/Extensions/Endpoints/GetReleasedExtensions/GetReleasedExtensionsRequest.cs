@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -16,40 +18,23 @@ namespace TwitchySharp.Api.Helix.Extensions;
 public record GetReleasedExtensionsRequest
     : TwitchHelixRequest<GetReleasedExtensionsResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">An app or user access token.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetReleasedExtensionsRequest(
-        ClientId clientId,
-        AccessToken accessToken,
-        GetReleasedExtensionsRequestParameters parameters
-        ) : base(
-            "/extensions/released",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("extension_id", parameters.ExtensionId)
-                .Add("extension_version", parameters.ExtensionVersion)
-            )
-    {
-        Method = HttpMethod.Get;
-    }
-}
+    protected override string Path => "/extensions/released";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("extension_id", ExtensionId)
+            .Add("extension_version", ExtensionVersion?.ToString());
 
-/// <summary>
-/// Request parameters for a <see cref="GetReleasedExtensionsRequest"/>.
-/// </summary>
-public record GetReleasedExtensionsRequestParameters
-{
     /// <summary>
     /// The id of the extension to get.
     /// </summary>
-    public required ExtensionId ExtensionId { get; set; }
+    public required ExtensionId ExtensionId { get; init; }
+
     /// <summary>
-    /// The version of the extension to get. 
+    /// The version of the extension to get.
     /// </summary>
     /// <remarks>
     /// If <see langword="null"/>, it returns the latest version.
     /// </remarks>
-    public ExtensionVersion? ExtensionVersion { get; set; }
+    public ExtensionVersion? ExtensionVersion { get; init; }
 }

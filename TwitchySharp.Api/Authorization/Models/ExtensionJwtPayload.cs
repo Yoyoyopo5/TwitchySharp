@@ -22,16 +22,16 @@ public record ExtensionJwtPayload(UserId UserId)
     /// </summary>
     [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
     [JsonPropertyName("exp")]
-    public DateTimeOffset ExpiresAt { get; set; } = DateTimeOffset.UtcNow.AddMinutes(120);
+    public DateTimeOffset ExpiresAt { get; init; } = DateTimeOffset.UtcNow.AddMinutes(120);
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    public UserId UserId { get; set; } = new(UserId);
+    public UserId UserId { get; init; } = new(UserId);
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
     public string Role { get; } = "external";
-    public string? ChannelId { get; set; }
+    public string? ChannelId { get; init; }
     [JsonPropertyName("pubsub_perms")]
     public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
     {
@@ -61,6 +61,6 @@ public record ExtensionJwtPayload(UserId UserId)
 
 public record ExtensionPubSubPermissions
 {
-    public string[]? Listen { get; set; }
-    public string[]? Send { get; set; }
+    public string[]? Listen { get; init; }
+    public string[]? Send { get; init; }
 }

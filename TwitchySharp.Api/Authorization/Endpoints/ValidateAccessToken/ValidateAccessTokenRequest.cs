@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -10,13 +11,35 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/validate-tokens/">Validate Tokens</see> for more information.
 /// </remarks>
 public record ValidateAccessTokenRequest
-    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>
+    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>, IRequireAuthorization
 {
-    /// <param name="accessToken">The user access token to validate.</param>
-    public ValidateAccessTokenRequest(UserAccessToken accessToken)
-        : base("/validate")
-    {
-        Method = HttpMethod.Get;
-        AccessToken = accessToken;
-    }
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override string Path => "/validate";
+
+    /// <summary>
+    /// The user access token to validate.
+    /// </summary>
+    /// <remarks>
+    /// This token is sent as the Bearer authorization header.
+    /// </remarks>
+    public required UserAccessToken AccessToken { get; init; }
+
+    /// <summary>
+    /// The identity for this request.
+    /// </summary>
+    /// <remarks>
+    /// Validation does not require a specific identity context.
+    /// The <see cref="AccessToken"/> will be used in the Authorization header.
+    /// </remarks>
+    public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
+
+    /// <summary>
+    /// No specific scopes are required for token validation.
+    /// </summary>
+    public IEnumerable<Scope> ValidScopes => [];
+
+    /// <summary>
+    /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.
+    /// </summary>
+    public AccessToken? OverrideAccessToken => AccessToken;
 }

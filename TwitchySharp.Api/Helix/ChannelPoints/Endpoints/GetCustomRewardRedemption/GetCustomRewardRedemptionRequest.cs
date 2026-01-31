@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -17,102 +17,75 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption">Get Custom Reward Redemption</see> for more information.
 /// </remarks>
 public record GetCustomRewardRedemptionRequest
-    : TwitchHelixRequest<GetCustomRewardRedemptionResponse>
+    : TwitchHelixRequest<GetCustomRewardRedemptionResponse>, IPageableRequest
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token with <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    public GetCustomRewardRedemptionRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        GetCustomRewardRedemptionRequestParameters parameters
-        )
-        : base(
-            "/channel_points/custom_rewards/redemptions",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("reward_id", parameters.RewardId)
-                .Add("status", parameters.Status?.ToString().ToUpperInvariant())
-                .Add("id", parameters.Ids?.Select(x => x.ToString()))
-                .Add("sort", parameters.Sort?.Value)
-                .Add("after", parameters.After?.ToString())
-                .Add("first", parameters.First?.ToString())
-        )
-    {
-        Method = HttpMethod.Get;
-    }
-}
-
-/// <summary>
-/// Request parameters for a <see cref="GetCustomRewardRedemptionRequest"/>.
-/// </summary>
-public record GetCustomRewardRedemptionRequestParameters
-    : IPageableRequest
-{
-    // Enforce constraint that one of these properties must be set.
-    /// <summary>
-    /// Get custom reward redemptions by reward id.
-    /// </summary>
-    /// <param name="rewardId"><inheritdoc cref="RewardId" path="/summary"/></param>
-    public GetCustomRewardRedemptionRequestParameters(RewardId rewardId)
-        => RewardId = rewardId;
-    /// <summary>
-    /// Get custom reward redemptions by status.
-    /// </summary>
-    /// <param name="status"><inheritdoc cref="Status" path="/summary"/></param>
-    public GetCustomRewardRedemptionRequestParameters(RewardRedemptionStatus status)
-        => Status = status;
-    /// <summary>
-    /// Get custom reward redemptions by reward id and status.
-    /// </summary>
-    /// <param name="rewardId"><inheritdoc cref="RewardId" path="/summary"/></param>
-    /// <param name="status"><inheritdoc cref="Status" path="/summary"/></param>
-    public GetCustomRewardRedemptionRequestParameters(RewardId rewardId, RewardRedemptionStatus status)
-        => (RewardId, Status) = (rewardId, status);
+    protected override string Path => "/channel_points/custom_rewards/redemptions";
+    public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("reward_id", RewardId)
+            .Add("status", Status?.Value)
+            .Add("id", Ids?.Select(x => x.ToString()))
+            .Add("sort", Sort?.Value)
+            .Add("after", After?.Value)
+            .Add("first", First?.ToString());
 
     /// <summary>
     /// The user id of the broadcaster that owns the reward to get redemptions for.
     /// </summary>
     /// <remarks>
     /// This must also be the user that created the user access token for the request.
+    /// Requires <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
     /// <summary>
     /// The id that identifies the custom reward whose redemptions you want to get.
     /// </summary>
-    public RewardId? RewardId { get; }
+    /// <remarks>
+    /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
+    /// </remarks>
+    public RewardId? RewardId { get; init; }
+
     /// <summary>
     /// The status of the redemptions to return.
     /// </summary>
     /// <remarks>
-    /// Canceled and fulfilled redemptions are returned for only a few days after they’re canceled or fulfilled.
+    /// Canceled and fulfilled redemptions are returned for only a few days after they're canceled or fulfilled.
+    /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
     /// </remarks>
-    public RewardRedemptionStatus? Status { get; }
+    public RewardRedemptionStatus? Status { get; init; }
+
     /// <summary>
     /// A list of redemption ids to filter the redemptions by.
     /// </summary>
     /// <remarks>
     /// You may specify a maximum of 50 ids.
-    /// Duplicate ids are ignored. 
-    /// The response contains only the ids that were found. 
+    /// Duplicate ids are ignored.
+    /// The response contains only the ids that were found.
     /// If none of the ids were found, the response is 404 Not Found.
     /// </remarks>
-    public IEnumerable<RewardRedemptionId>? Ids { get; set; }
+    public IEnumerable<RewardRedemptionId>? Ids { get; init; }
+
     /// <summary>
     /// The order to sort redemptions by.
     /// </summary>
     /// <remarks>
     /// The default is <see cref="CustomRewardRedemptionSortingMethod.Oldest"/>.
     /// </remarks>
-    public CustomRewardRedemptionSortingMethod? Sort { get; set; }
-    public PaginationCursor? After { get; set; }
+    public CustomRewardRedemptionSortingMethod? Sort { get; init; }
+
+    /// <inheritdoc/>
+    public PaginationCursor? After { get; init; }
+
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
     /// <remarks>
-    /// The minimum page size is 1 redemption per page and the maximum is 50. 
+    /// The minimum page size is 1 redemption per page and the maximum is 50.
     /// </remarks>
-    public PaginationAmount? First { get; set; }
+    public PaginationAmount? First { get; init; }
 }

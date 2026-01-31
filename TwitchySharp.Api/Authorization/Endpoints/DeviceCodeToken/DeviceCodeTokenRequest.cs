@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Shared.Models;
 
@@ -9,20 +9,27 @@ namespace TwitchySharp.Api.Authorization;
 public record DeviceCodeTokenRequest
     : TwitchAuthorizationRequest<DeviceCodeTokenResponse>
 {
-    /// <param name="clientId">The client id of the application making the request.</param>
-    /// <param name="scopes">The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> to request.</param>
-    /// <param name="deviceCode">The device code obtained from a <see cref="DeviceCodeRequest"/></param>
-    public DeviceCodeTokenRequest(ClientId clientId, IEnumerable<Scope> scopes, DeviceCode deviceCode)
-        : base("/token")
-    {
-        Method = HttpMethod.Post;
-        ClientId = clientId;
-        Content = new FormUrlEncodedContent(new Dictionary<string, string>
+    protected override string Path => "/token";
+    public override HttpMethod Method => HttpMethod.Post;
+    public override HttpContent? Content
+        => new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            { "client_id", clientId },
-            { "scope", scopes.FormatScopes() },
-            { "device_code", deviceCode },
+            { "client_id", ClientId },
+            { "scope", Scopes.FormatScopes() },
+            { "device_code", DeviceCode },
             { "grant_type", "urn:ietf:params:oauth:grant-type:device_code" }
         });
-    }
+
+    /// <summary>
+    /// The client id of the application making the request.
+    /// </summary>
+    public required ClientId ClientId { get; init; }
+    /// <summary>
+    /// The <see href="https://dev.twitch.tv/docs/authentication/scopes/">authorization scopes</see> to request.
+    /// </summary>
+    public required IEnumerable<Scope> Scopes { get; init; }
+    /// <summary>
+    /// The device code obtained from a <see cref="DeviceCodeRequest"/>.
+    /// </summary>
+    public required DeviceCode DeviceCode { get; init; }
 }

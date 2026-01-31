@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub.Constants;
+using System.Collections.Generic;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
+using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <summary>
@@ -14,14 +16,15 @@ namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) to receive chat settings update events for.</param>
 /// <param name="UserId">The user id of the user to read chat as.</param>
 public sealed record ChannelChatSettingsUpdate(UserId BroadcasterUserId, UserId UserId)
-    : IEventSubSubscriptionType
+    : IUserAuthorizedSubscriptionType
 {
-    public EventSubSubscriptionTypeName Name { get; } = new(EventSubSubscriptionTypeNames.CHANNEL_CHAT_SETTINGS_UPDATE);
-    public EventSubSubscriptionTypeVersion Version { get; } = new(EventSubSubscriptionTypeVersions.V1);
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatSettingsUpdate;
+    public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
+    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadChat ];
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set("broadcaster_user_id", BroadcasterUserId)
-            .Set("user_id", UserId);
-    public IReadOnlyDictionary<string, object> Condition => _condition;
+            .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
+            .Set(new ConditionKey("user_id"), UserId);
+    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }

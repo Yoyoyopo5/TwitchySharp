@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -11,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// Updates a scheduled broadcast segment.
 /// </summary>
 /// <remarks>
-/// For recurring segments, updating a segment’s title, category, duration, and timezone, changes all segments in the recurring schedule, not just the specified segment.
+/// For recurring segments, updating a segment's title, category, duration, and timezone, changes all segments in the recurring schedule, not just the specified segment.
 /// <br/>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
 /// <br/>
@@ -20,45 +21,33 @@ namespace TwitchySharp.Api.Helix.Schedule;
 public record UpdateChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<UpdateChannelStreamScheduleSegmentResponse>
 {
-    /// <param name="clientId">The client id of the application.</param>
-    /// <param name="accessToken">A user access token that includes <see cref="Scope.ChannelManageSchedule"/>.</param>
-    /// <param name="parameters">The request parameters.</param>
-    /// <param name="segmentSettings">The new settings to update the segment to.</param>
-    public UpdateChannelStreamScheduleSegmentRequest(
-        ClientId clientId,
-        UserAccessToken accessToken,
-        UpdateChannelStreamScheduleSegmentRequestParameters parameters,
-        UpdateChannelStreamScheduleSegmentRequestData segmentSettings
-        ) : base(
-            "/schedule/segment",
-            clientId,
-            accessToken,
-            new HttpQueryParameters()
-                .Add("broadcaster_id", parameters.BroadcasterId)
-                .Add("id", parameters.SegmentId)
-            )
-    {
-        Method = HttpMethod.Patch;
-        ContentObject = segmentSettings;
-    }
-}
+    protected override string Path => "/schedule/segment";
+    public override HttpMethod Method => HttpMethod.Patch;
+    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
+    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
+    protected override HttpQueryParameters QueryParameters
+        => new HttpQueryParameters()
+            .Add("broadcaster_id", BroadcasterId)
+            .Add("id", SegmentId);
+    public override object? ContentObject => SegmentSettings;
 
-/// <summary>
-/// Request parameters for a <see cref="UpdateChannelStreamScheduleSegmentRequest"/>.
-/// </summary>
-public record UpdateChannelStreamScheduleSegmentRequestParameters
-{
     /// <summary>
     /// The user id of the broadcaster (channel) to update a schedule segment for.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token in the request.
     /// </remarks>
-    public required UserId BroadcasterId { get; set; }
+    public required UserId BroadcasterId { get; init; }
+
     /// <summary>
     /// The id of the segment to update.
     /// </summary>
-    public required StreamScheduleSegmentId SegmentId { get; set; }
+    public required StreamScheduleSegmentId SegmentId { get; init; }
+
+    /// <summary>
+    /// The new settings to update the segment to.
+    /// </summary>
+    public required UpdateChannelStreamScheduleSegmentRequestData SegmentSettings { get; init; }
 }
 
 /// <summary>
@@ -71,22 +60,22 @@ public record UpdateChannelStreamScheduleSegmentRequestData
     /// The date and time that the broadcast segment starts.
     /// <b>Note:</b> Only partners and affiliates may update a broadcast’s start time and only for non-recurring segments.
     /// </summary>
-    public DateTimeOffset? StartTime { get; set; }
+    public DateTimeOffset? StartTime { get; init; }
     /// <summary>
     /// The length of time, in <b>minutes</b>, that the broadcast is scheduled to run. 
     /// The duration must be in the range 30 through 1380 (23 hours).
     /// </summary>
     [JsonConverter(typeof(MinutesTimeSpanJsonConverter))]
-    public TimeSpan? Duration { get; set; }
+    public TimeSpan? Duration { get; init; }
     /// <summary>
     /// The id of the category for the scheduled stream segment.
     /// </summary>
-    public GameId? CategoryId { get; set; }
+    public GameId? CategoryId { get; init; }
     /// <summary>
     /// The title for the scheduled broadcast.
     /// This may contain up to a maximum of 140 characters.
     /// </summary>
-    public string? Title { get; set; }
+    public string? Title { get; init; }
     /// <summary>
     /// Determines whether the broadcast is canceled. 
     /// Set to <see langword="true"/> to cancel the segment.
@@ -94,11 +83,11 @@ public record UpdateChannelStreamScheduleSegmentRequestData
     /// <b>Note:</b> For recurring segments, the API cancels the first segment after the current UTC date and time and not the specified segment (unless the specified segment is the next segment after the current UTC date and time).
     /// </para>
     /// </summary>
-    public bool? IsCancelled { get; set; }
+    public bool? IsCancelled { get; init; }
     /// <summary>
     /// The time zone where the broadcast takes place. 
     /// Specify the time zone using <see href="https://www.iana.org/time-zones">IANA time zone database</see> format (for example, <c>"America/New_York"</c>).
     /// </summary>
     [JsonConverter(typeof(IanaTimeZoneJsonConverter))]
-    public TimeZoneInfo? Timezone { get; set; }
+    public TimeZoneInfo? Timezone { get; init; }
 }

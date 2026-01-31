@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
@@ -13,23 +15,14 @@ namespace TwitchySharp.Api.Helix.Conduits;
 public record CreateConduitRequest
     : TwitchHelixRequest<CreateConduitsResponse>
 {
-    /// <param name="clientId">The client id of the application. This is the application to create the conduit for.</param>
-    /// <param name="accessToken">An app access token.</param>
-    /// <param name="conduitData">Data used to construct the conduit.</param>
-    public CreateConduitRequest(
-        ClientId clientId,
-        AppAccessToken accessToken,
-        CreateConduitRequestData conduitData
-        )
-        : base(
-            "/eventsub/conduits",
-            clientId,
-            accessToken
-            )
-    {
-        Method = HttpMethod.Post;
-        ContentObject = conduitData;
-    }
+    protected override string Path => "/eventsub/conduits";
+    public override HttpMethod Method => HttpMethod.Post;
+    public override object? ContentObject => ConduitData;
+
+    /// <summary>
+    /// Data used to construct the conduit.
+    /// </summary>
+    public required CreateConduitRequestData ConduitData { get; init; }
 }
 
 /// <summary>
