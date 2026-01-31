@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TwitchySharp.Helpers;
 
@@ -13,13 +14,5 @@ public partial record Scope(string Value) : ValueBackedEnum<string>(Value);
 internal static class ScopeExtensions
 {
     public static string FormatScopes(this IEnumerable<Scope> scopes)
-    {
-        StringBuilder sb = new();
-        foreach (Scope scope in scopes)
-        {
-            sb.Append(scope);
-            sb.Append('+');
-        }
-        return sb.ToString().TrimEnd('+');
-    }
+        => string.Join("+", scopes.Select(s => s.Value));
 }
