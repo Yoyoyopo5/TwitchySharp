@@ -125,13 +125,4 @@ public abstract record AuthorizationUrl
             .Add("claims", Claims?.JsonEncode())
             .ToString()
     }.Uri;
-
-    /// <summary>
-    /// The string representation <see cref="Uri"/>.
-    /// </summary>
-    /// <remarks>
-    /// This is generated once per call.
-    /// </remarks>
-    public override string ToString()
-        => Uri.ToString();
 }
