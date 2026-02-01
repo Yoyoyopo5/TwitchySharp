@@ -21,29 +21,23 @@ public class MockHelixController(MockResponseConfigurator config) : ControllerBa
     /// <returns>An error result if validation fails, null if validation passes.</returns>
     private UnauthorizedObjectResult? ValidateAuthHeaders()
     {
-        if (!Request.Headers.TryGetValue("Client-Id", out var clientId) ||
-            string.IsNullOrEmpty(clientId))
-        {
+        if (!Request.Headers.TryGetValue("Client-Id", out var clientId) || string.IsNullOrEmpty(clientId))
             return Unauthorized(new TwitchErrorResponse
             {
                 Error = "Unauthorized",
                 Status = 401,
                 Message = "Missing Client-Id header"
             });
-        }
 
-        if (!Request.Headers.TryGetValue("Authorization", out var auth) ||
-            !auth.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        {
+        if (!Request.Headers.TryGetValue("Authorization", out var auth) || !auth.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             return Unauthorized(new TwitchErrorResponse
             {
                 Error = "Unauthorized",
                 Status = 401,
                 Message = "Missing or invalid Authorization header"
             });
-        }
 
-        return null; // Validation passed
+        return null;
     }
 
     /// <summary>
@@ -84,45 +78,37 @@ public class MockHelixController(MockResponseConfigurator config) : ControllerBa
 
         // Validate query parameters
         if (string.IsNullOrEmpty(broadcasterId))
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required parameter: broadcaster_id"
             });
-        }
 
         if (string.IsNullOrEmpty(moderatorId))
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required parameter: moderator_id"
             });
-        }
 
         // Validate body
         if (body?.Data?.UserId == null)
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required body parameter: data.user_id"
             });
-        }
 
         if (body?.Data?.Reason == null)
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required body parameter: data.reason"
             });
-        }
 
         // Success response
         return Ok(new
@@ -167,24 +153,20 @@ public class MockHelixController(MockResponseConfigurator config) : ControllerBa
 
         // Validate query parameters
         if (string.IsNullOrEmpty(broadcasterId))
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required parameter: broadcaster_id"
             });
-        }
 
         if (string.IsNullOrEmpty(userId))
-        {
             return BadRequest(new TwitchErrorResponse
             {
                 Error = "Bad Request",
                 Status = 400,
                 Message = "Missing required parameter: user_id"
             });
-        }
 
         // 204 No Content (empty response for EmptyResponseConverter)
         return NoContent();

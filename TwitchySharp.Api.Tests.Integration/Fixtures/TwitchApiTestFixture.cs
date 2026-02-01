@@ -51,15 +51,12 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
         });
     }
 
-    protected override IHostBuilder? CreateHostBuilder()
-        => Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseTestServer();
-            });
+    protected override IHostBuilder? CreateHostBuilder() =>
+        Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseTestServer());
 
-    public DefaultRequestAuthorizer CreateDefaultAuthorizer()
-        => new(
+    public DefaultRequestAuthorizer CreateDefaultAuthorizer() =>
+        new(
             new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TestClientId))),
             new SingleAccessTokenResolver(new UserAccessToken(TestAccessToken))
         );
@@ -69,18 +66,15 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     /// </summary>
     /// <param name="authorizer">Optional request authorizer. Pass null for authorization endpoints that don't need auth.</param>
     /// <returns>A TwitchClient configured to use the mock server.</returns>
-    public TwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null)
-    {
-        HttpClient httpClient = CreateClient();
-        return new TwitchClient(httpClient, authorizer);
-    }
+    public TwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null) =>
+        new(CreateClient(), authorizer);
 
     /// <summary>
     /// Creates an HttpClient configured to use the test server directly.
     /// </summary>
     /// <returns>An HttpClient that sends requests to the mock server.</returns>
-    public new HttpClient CreateClient()
-        => CreateClient(new WebApplicationFactoryClientOptions
+    public new HttpClient CreateClient() =>
+        CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false
         });

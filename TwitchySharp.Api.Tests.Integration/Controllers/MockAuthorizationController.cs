@@ -43,50 +43,40 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
     {
         // Validate required fields
         if (string.IsNullOrEmpty(request.ClientId))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter: client_id"
             });
-        }
 
         if (string.IsNullOrEmpty(request.ClientSecret))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter: client_secret"
             });
-        }
 
         if (string.IsNullOrEmpty(request.Code))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter: code"
             });
-        }
 
         if (string.IsNullOrEmpty(request.RedirectUri))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter: redirect_uri"
             });
-        }
 
         // Simulate invalid code
         if (request.Code == "invalid_code")
-        {
             return BadRequest(new
             {
                 error = "invalid_grant",
                 message = "Invalid authorization code"
             });
-        }
 
         // Success response matching Twitch format
         return Ok(new
@@ -102,13 +92,11 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
     private IActionResult HandleClientCredentialsGrant(TokenRequest request)
     {
         if (string.IsNullOrEmpty(request.ClientId) || string.IsNullOrEmpty(request.ClientSecret))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter"
             });
-        }
 
         return Ok(new
         {
@@ -123,22 +111,18 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
         if (string.IsNullOrEmpty(request.ClientId) ||
             string.IsNullOrEmpty(request.ClientSecret) ||
             string.IsNullOrEmpty(request.RefreshToken))
-        {
             return BadRequest(new
             {
                 error = "invalid_request",
                 message = "Missing required parameter"
             });
-        }
 
         if (request.RefreshToken == "invalid_refresh_token")
-        {
             return BadRequest(new
             {
                 error = "invalid_grant",
                 message = "Invalid refresh token"
             });
-        }
 
         return Ok(new
         {
