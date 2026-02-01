@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;
@@ -38,7 +39,8 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
         builder.ConfigureServices(services =>
         {
             services.AddSingleton(ResponseConfig);
-            services.AddControllers();
+            services.AddControllers()
+                .AddApplicationPart(typeof(MockAuthorizationController).Assembly);
         });
 
         builder.Configure(app =>
