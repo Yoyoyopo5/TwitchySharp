@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution.AccessTokenResolvers;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -22,21 +21,13 @@ public class Test_RateLimitHeaders : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.Reset();
     }
 
-    private IAuthorizeTwitchRequest CreateAuthorizer()
-    {
-        return new DefaultRequestAuthorizer(
-            new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TwitchApiTestFixture.TestClientId))),
-            new SingleAccessTokenResolver(new UserAccessToken(TwitchApiTestFixture.TestAccessToken))
-        );
-    }
-
     [Fact]
     public async Task RateLimitHeaders_ParsedCorrectly_Limit()
     {
         // Arrange
         _fixture.ResponseConfig.RateLimitLimit = 800;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -58,7 +49,7 @@ public class Test_RateLimitHeaders : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.RateLimitRemaining = 123;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -81,7 +72,7 @@ public class Test_RateLimitHeaders : IClassFixture<TwitchApiTestFixture>
         var expectedReset = DateTimeOffset.UtcNow.AddMinutes(5);
         _fixture.ResponseConfig.RateLimitReset = expectedReset;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -111,7 +102,7 @@ public class Test_RateLimitHeaders : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.RateLimitRemaining = 250;
         _fixture.ResponseConfig.RateLimitReset = resetTime;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -137,7 +128,7 @@ public class Test_RateLimitHeaders : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.RateLimitLimit = 800;
         _fixture.ResponseConfig.RateLimitRemaining = 0;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",

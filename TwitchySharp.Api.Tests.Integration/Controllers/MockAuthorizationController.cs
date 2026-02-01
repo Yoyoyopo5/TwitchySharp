@@ -9,14 +9,9 @@ namespace TwitchySharp.Api.Tests.Integration.Controllers;
 /// </summary>
 [ApiController]
 [Route("oauth2")]
-public class MockAuthorizationController : ControllerBase
+public class MockAuthorizationController(MockResponseConfigurator config) : ControllerBase
 {
-    private readonly MockResponseConfigurator _config;
-
-    public MockAuthorizationController(MockResponseConfigurator config)
-    {
-        _config = config;
-    }
+    private readonly MockResponseConfigurator _config = config;
 
     /// <summary>
     /// Mock token endpoint supporting multiple grant types.

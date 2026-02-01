@@ -1,13 +1,14 @@
-using System;
-using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http;
 using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;
 
@@ -57,6 +58,12 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
                 webBuilder.UseTestServer();
             });
 
+    public DefaultRequestAuthorizer CreateDefaultAuthorizer()
+        => new(
+            new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TestClientId))),
+            new SingleAccessTokenResolver(new UserAccessToken(TestAccessToken))
+        );
+
     /// <summary>
     /// Creates a TwitchClient configured to use the test server.
     /// </summary>
@@ -64,7 +71,7 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     /// <returns>A TwitchClient configured to use the mock server.</returns>
     public TwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null)
     {
-        var httpClient = CreateClient();
+        HttpClient httpClient = CreateClient();
         return new TwitchClient(httpClient, authorizer);
     }
 
@@ -73,10 +80,8 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     /// </summary>
     /// <returns>An HttpClient that sends requests to the mock server.</returns>
     public new HttpClient CreateClient()
-    {
-        return base.CreateClient(new WebApplicationFactoryClientOptions
+        => CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false
         });
-    }
 }

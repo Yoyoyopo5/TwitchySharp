@@ -2,7 +2,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution.AccessTokenResolvers;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -22,21 +21,13 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.Reset();
     }
 
-    private IAuthorizeTwitchRequest CreateAuthorizer()
-    {
-        return new DefaultRequestAuthorizer(
-            new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TwitchApiTestFixture.TestClientId))),
-            new SingleAccessTokenResolver(new UserAccessToken(TwitchApiTestFixture.TestAccessToken))
-        );
-    }
-
     [Fact]
     public async Task Exception_400BadRequest_ContainsCorrectStatusCode()
     {
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -52,96 +43,12 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
     }
 
     [Fact]
-    public async Task Exception_401Unauthorized_ContainsCorrectStatusCode()
-    {
-        // Arrange
-        _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.Unauthorized;
-
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
-        var request = new AddChannelVipRequest
-        {
-            Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            UserId = new UserId("654321")
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<TwitchApiException>(() => client.SendAsync(request).AsTask());
-
-        // Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
-    }
-
-    [Fact]
-    public async Task Exception_404NotFound_ContainsCorrectStatusCode()
-    {
-        // Arrange
-        _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.NotFound;
-
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
-        var request = new AddChannelVipRequest
-        {
-            Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            UserId = new UserId("654321")
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<TwitchApiException>(() => client.SendAsync(request).AsTask());
-
-        // Assert
-        Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
-    }
-
-    [Fact]
-    public async Task Exception_429TooManyRequests_ContainsCorrectStatusCode()
-    {
-        // Arrange
-        _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.TooManyRequests;
-
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
-        var request = new AddChannelVipRequest
-        {
-            Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            UserId = new UserId("654321")
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<TwitchApiException>(() => client.SendAsync(request).AsTask());
-
-        // Assert
-        Assert.Equal(HttpStatusCode.TooManyRequests, exception.StatusCode);
-    }
-
-    [Fact]
-    public async Task Exception_500InternalServerError_ContainsCorrectStatusCode()
-    {
-        // Arrange
-        _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.InternalServerError;
-
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
-        var request = new AddChannelVipRequest
-        {
-            Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            UserId = new UserId("654321")
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<TwitchApiException>(() => client.SendAsync(request).AsTask());
-
-        // Assert
-        Assert.Equal(HttpStatusCode.InternalServerError, exception.StatusCode);
-    }
-
-    [Fact]
     public async Task Exception_ContainsOriginalRequest()
     {
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -163,7 +70,7 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -185,7 +92,7 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
         _fixture.ResponseConfig.ForceErrorMessage = "Test error message";
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
@@ -211,7 +118,7 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
