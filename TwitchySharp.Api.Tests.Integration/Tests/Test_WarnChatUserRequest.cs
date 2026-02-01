@@ -1,7 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution.AccessTokenResolvers;
 using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -18,19 +17,11 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.Reset();
     }
 
-    private IAuthorizeTwitchRequest CreateAuthorizer()
-    {
-        return new DefaultRequestAuthorizer(
-            new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TwitchApiTestFixture.TestClientId))),
-            new SingleAccessTokenResolver(new UserAccessToken(TwitchApiTestFixture.TestAccessToken))
-        );
-    }
-
     [Fact]
     public async Task SendAsync_ValidRequest_ReturnsWarningData()
     {
         // Arrange
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new WarnChatUserRequest
         {
             Host = "localhost",
@@ -67,7 +58,7 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.RateLimitLimit = 100;
         _fixture.ResponseConfig.RateLimitRemaining = 50;
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new WarnChatUserRequest
         {
             Host = "localhost",
@@ -125,7 +116,7 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.InternalServerError;
         _fixture.ResponseConfig.ForceErrorMessage = "Internal server error";
 
-        var client = _fixture.CreateTwitchClient(CreateAuthorizer());
+        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
         var request = new WarnChatUserRequest
         {
             Host = "localhost",

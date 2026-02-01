@@ -11,20 +11,15 @@ namespace TwitchySharp.Api.Tests.Integration.Controllers;
 /// </summary>
 [ApiController]
 [Route("helix")]
-public class MockHelixController : ControllerBase
+public class MockHelixController(MockResponseConfigurator config) : ControllerBase
 {
-    private readonly MockResponseConfigurator _config;
-
-    public MockHelixController(MockResponseConfigurator config)
-    {
-        _config = config;
-    }
+    private readonly MockResponseConfigurator _config = config;
 
     /// <summary>
     /// Validates that required Twitch authorization headers are present.
     /// </summary>
     /// <returns>An error result if validation fails, null if validation passes.</returns>
-    private IActionResult? ValidateAuthHeaders()
+    private UnauthorizedObjectResult? ValidateAuthHeaders()
     {
         if (!Request.Headers.TryGetValue("Client-Id", out var clientId) ||
             string.IsNullOrEmpty(clientId))

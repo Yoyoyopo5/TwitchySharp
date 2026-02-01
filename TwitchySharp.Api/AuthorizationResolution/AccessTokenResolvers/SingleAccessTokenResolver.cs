@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace TwitchySharp.Api.AuthorizationResolution.AccessTokenResolvers;
+namespace TwitchySharp.Api;
 
 /// <summary>
 /// Resolves a pre-configured default <see cref="AccessToken"/> for every <see cref="ITwitchRequest"/>.
