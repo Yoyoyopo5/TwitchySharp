@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -21,7 +22,7 @@ public record ManageHeldAutoModMessagesRequest
     protected override string Path => "/moderation/automod/message";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(MessageAction.UserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomod ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorManageAutomod);
     public override object? ContentObject => MessageAction;
 
     /// <summary>

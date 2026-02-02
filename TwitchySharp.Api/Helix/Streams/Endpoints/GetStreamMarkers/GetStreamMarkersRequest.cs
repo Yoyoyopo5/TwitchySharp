@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -21,7 +22,7 @@ public record GetStreamMarkersRequest
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.ChannelManageBroadcast ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.ChannelManageBroadcast);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", Query.UserId)

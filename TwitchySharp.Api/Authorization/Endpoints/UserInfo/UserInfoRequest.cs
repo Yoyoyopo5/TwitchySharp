@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
@@ -36,7 +37,7 @@ public record UserInfoRequest
     /// <summary>
     /// Requires <see cref="Scope.OpenId"/>.
     /// </summary>
-    public IEnumerable<Scope> ValidScopes => [ Scope.OpenId ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.OpenId);
 
     /// <summary>
     /// The access token used for authorization. Returns the <see cref="AccessToken"/> property.

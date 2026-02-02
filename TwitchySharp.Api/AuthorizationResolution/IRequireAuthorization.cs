@@ -22,7 +22,7 @@ public interface IRequireAuthorization
     /// <summary>
     /// One of these user scopes is required.
     /// </summary>
-    public IEnumerable<Scope> ValidScopes { get; }
+    public IReadOnlySet<Scope> ValidScopes { get; }
     /// <summary>
     /// Allows for manually setting an access token.
     /// </summary>

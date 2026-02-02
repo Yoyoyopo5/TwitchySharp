@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -22,7 +23,7 @@ public record GetExtensionAnalyticsRequest
     protected override string Path => "/analytics/extensions";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.AnalyticsReadExtensions ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.AnalyticsReadExtensions);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -24,7 +25,7 @@ public record UpdateChannelStreamScheduleSegmentRequest
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Patch;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManageSchedule);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -58,7 +59,7 @@ public record UpdateChannelStreamScheduleSegmentRequestData
 {
     /// <summary>
     /// The date and time that the broadcast segment starts.
-    /// <b>Note:</b> Only partners and affiliates may update a broadcast’s start time and only for non-recurring segments.
+    /// <b>Note:</b> Only partners and affiliates may update a broadcast�fs start time and only for non-recurring segments.
     /// </summary>
     public DateTimeOffset? StartTime { get; init; }
     /// <summary>

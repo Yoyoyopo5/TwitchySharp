@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json;
 using TwitchySharp.Api.Authorization;
@@ -57,7 +58,7 @@ public class Test_DefaultClientIdentityResolver
     /// </summary>
     private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
     {
-        public IEnumerable<Scope> ValidScopes => [];
+        public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;
 
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();

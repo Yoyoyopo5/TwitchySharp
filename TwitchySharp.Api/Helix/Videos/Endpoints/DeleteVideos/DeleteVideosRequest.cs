@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -21,7 +22,7 @@ public record DeleteVideosRequest
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Delete;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVideos ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManageVideos);
     protected override TwitchApiIdentity DefaultIdentity => User;
 
     /// <summary>

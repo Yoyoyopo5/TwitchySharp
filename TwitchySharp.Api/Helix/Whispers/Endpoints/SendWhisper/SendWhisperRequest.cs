@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -31,7 +32,7 @@ public record SendWhisperRequest
     protected override string Path => "/whispers";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(FromUserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageWhispers ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserManageWhispers);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_user_id", FromUserId)

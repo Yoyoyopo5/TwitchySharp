@@ -1,5 +1,6 @@
-Ôªøusing System;
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -23,7 +24,7 @@ public record UpdateChannelStreamScheduleRequest
     protected override string Path => "/schedule/settings";
     public override HttpMethod Method => HttpMethod.Patch;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Settings.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManageSchedule);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", Settings.BroadcasterId)
@@ -84,11 +85,11 @@ public record UpdateChannelStreamScheduleRequestParameters
     /// </summary>
     public bool? IsVacationEnabled { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcaster‚Äôs vacation starts. 
+    /// The date and time of when the broadcasterÅfs vacation starts. 
     /// </summary>
     public DateTimeOffset? VacationStartTime { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcaster‚Äôs vacation ends.
+    /// The date and time of when the broadcasterÅfs vacation ends.
     /// </summary>
     public DateTimeOffset? VacationEndTime { get; private init; }
     /// <summary>

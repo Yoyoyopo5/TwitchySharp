@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -24,7 +25,7 @@ public record CreatePredictionRequest
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePredictions ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManagePredictions);
     public override object? ContentObject => Prediction;
 
     /// <summary>

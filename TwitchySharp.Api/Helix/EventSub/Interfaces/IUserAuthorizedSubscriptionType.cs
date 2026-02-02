@@ -22,7 +22,7 @@ public interface IUserAuthorizedSubscriptionType : IEventSubSubscriptionType
     /// <summary>
     /// The scopes required for user authorization.
     /// </summary>
-    IEnumerable<Scope> ValidScopes { get; }
+    IReadOnlySet<Scope> ValidScopes { get; }
 }
 
 internal static class UserAuthorizedSubscriptionTypeExtensions
