@@ -57,7 +57,7 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
 
     public DefaultRequestAuthorizer CreateDefaultAuthorizer() =>
         new(
-            new SingleClientIdentityResolver(new ClientIdentity(new ClientId(TestClientId))),
+            new DefaultClientIdentityResolver(new ClientIdentity(new ClientId(TestClientId))),
             new SingleAccessTokenResolver(new UserAccessToken(TestAccessToken))
         );
 
