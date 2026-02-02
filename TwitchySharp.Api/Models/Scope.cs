@@ -15,4 +15,18 @@ internal static class ScopeExtensions
 {
     public static string FormatScopes(this IEnumerable<Scope> scopes)
         => string.Join("+", scopes.Select(s => s.Value));
+
+    /// <summary>
+    /// Determines if the provided set of scopes contains at least one of the required scopes.
+    /// </summary>
+    /// <param name="scopes">
+    /// The scopes to check.
+    /// </param>
+    /// <param name="needsOneOf">
+    /// <paramref name="scopes"/> requires at least one of these scopes.
+    /// If the set is empty, this method will always return true.
+    /// </param>
+    /// <returns>A <see langword="bool"/> that indicates whether <paramref name="scopes"/> has at least one <see cref="Scope"/> from <paramref name="needsOneOf"/>.</returns>
+    public static bool HasRequiredScope(this IReadOnlySet<Scope> scopes, IReadOnlySet<Scope> needsOneOf)
+        => needsOneOf.Count == 0 || scopes.Overlaps(needsOneOf);
 }
