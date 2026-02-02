@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Helpers;
+using System.Text.Json.Serialization;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -8,6 +9,7 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/refresh-tokens">Refresh Tokens</see> for more information.
 /// </remarks>
 /// <param name="Value">The string value of the refresh token.</param>
+[JsonConverter(typeof(WrapperJsonConverter<RefreshToken, string>))]
 public readonly record struct RefreshToken(string Value) : IWrapValue<string>
 {
     public static implicit operator string(RefreshToken secret)
