@@ -27,7 +27,7 @@ public record IdentityTokenResolver(
         return authRequest.Identity switch
         {
             UserIdentity user when UserAccessTokenResolver is not null
-                => await UserAccessTokenResolver.GetToken(user, ct),
+                => await UserAccessTokenResolver.GetToken(new UserAccessTokenKey { User = user, ValidScopes = authRequest.ValidScopes }, ct),
             ClientIdentity client when AppAccessTokenResolver is not null
                 => await AppAccessTokenResolver.GetToken(client, ct),
             ExtensionIdentity extension when ExtensionJwtResolver is not null

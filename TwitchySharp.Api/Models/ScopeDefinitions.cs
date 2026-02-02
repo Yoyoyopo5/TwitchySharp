@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api;
 
 public partial record Scope
 {

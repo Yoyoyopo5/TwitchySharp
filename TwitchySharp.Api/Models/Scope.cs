@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using TwitchySharp.Helpers;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api;
 /// <summary>
 /// If possible, please use static <see cref="Scope"/> definitions provided by this class.
 /// You can use this constructor to create a <see cref="Scope"/> when a static definition is not provided.

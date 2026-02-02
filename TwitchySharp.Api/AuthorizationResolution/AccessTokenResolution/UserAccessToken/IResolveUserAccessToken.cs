@@ -8,5 +8,5 @@ namespace TwitchySharp.Api;
 /// </summary>
 public interface IResolveUserAccessToken
 {
-    ValueTask<UserAccessToken?> GetToken(UserIdentity identity, CancellationToken ct = default);
+    ValueTask<UserAccessToken?> GetToken(UserAccessTokenKey key, CancellationToken ct = default);
 }
