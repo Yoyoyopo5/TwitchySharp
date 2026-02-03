@@ -20,11 +20,17 @@ public record UserAccessTokenKey
     /// </summary>
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 
+    /// <summary>
+    /// Compares equality based on user identity and valid scopes.
+    /// </summary>
     public virtual bool Equals(UserAccessTokenKey? other) =>
           other is not null &&
           User == other.User &&
           ValidScopes.SetEquals(other.ValidScopes);
 
+    /// <summary>
+    /// Gets a hash code for the user identity and scope combination.
+    /// </summary>
     public override int GetHashCode()
     {
         var hash = new HashCode();
