@@ -31,7 +31,7 @@ public class InMemoryUserAccessTokenStore : IUserAccessTokenStore
     }
 
     /// <inheritdoc/>
-    public ValueTask<UserAccessTokenDetails?> TryRemoveToken(UserAccessToken token, CancellationToken ct = default)
+    public ValueTask<UserAccessTokenDetails?> RemoveToken(UserAccessToken token, CancellationToken ct = default)
     {
         lock (_lock)
         {

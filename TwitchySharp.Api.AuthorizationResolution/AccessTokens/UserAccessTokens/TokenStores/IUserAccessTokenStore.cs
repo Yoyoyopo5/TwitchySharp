@@ -25,7 +25,7 @@ public interface IUserAccessTokenStore
     /// </summary>
     /// <param name="token">The user access token to remove.</param>
     /// <returns>A <see cref="ValueTask"/> continaing the removed <see cref="UserAccessTokenDetails"/>, if any.</returns>
-    ValueTask<UserAccessTokenDetails?> TryRemoveToken(UserAccessToken token, CancellationToken ct = default);
+    ValueTask<UserAccessTokenDetails?> RemoveToken(UserAccessToken token, CancellationToken ct = default);
     /// <summary>
     /// Add or update the <see cref="UserAccessTokenDetails"/> for a given <see cref="UserAccessTokenKey"/>.
     /// </summary>
