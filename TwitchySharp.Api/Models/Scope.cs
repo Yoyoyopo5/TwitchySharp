@@ -11,9 +11,9 @@ namespace TwitchySharp.Api;
 /// <param name="Value">The Twitch scope string (e.g. "bits:read")</param>
 public partial record Scope(string Value) : ValueBackedEnum<string>(Value);
 
-internal static class ScopeExtensions
+public static class ScopeExtensions
 {
-    public static string FormatScopes(this IEnumerable<Scope> scopes)
+    internal static string FormatScopes(this IEnumerable<Scope> scopes)
         => string.Join("+", scopes.Select(s => s.Value));
 
     /// <summary>
