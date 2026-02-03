@@ -6,6 +6,9 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// <summary>
 /// Resolves a <see cref="UserAccessToken"/> for a given <see cref="UserAccessTokenKey"/>.
 /// </summary>
+/// <remarks>
+/// Use the <see cref="ConcurrentUserAccessTokenResolver"/> for most common scenarios.
+/// </remarks>
 public interface IResolveUserAccessToken
 {
     /// <summary>
