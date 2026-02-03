@@ -19,4 +19,21 @@ public record UserAccessTokenKey
     /// The access token must have one of these scopes.
     /// </summary>
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
+
+    public virtual bool Equals(UserAccessTokenKey? other) =>
+          other is not null &&
+          User == other.User &&
+          ValidScopes.SetEquals(other.ValidScopes);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(User);
+        // Order-independent hash for set
+        int scopeHash = 0;
+        foreach (Scope scope in ValidScopes)
+            scopeHash ^= scope.GetHashCode();
+        hash.Add(scopeHash);
+        return hash.ToHashCode();
+    }
 }
