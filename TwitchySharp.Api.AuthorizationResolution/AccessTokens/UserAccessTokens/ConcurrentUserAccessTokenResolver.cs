@@ -10,6 +10,10 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// A thread-safe implementation of <see cref="IResolveUserAccessToken"/> that retrieves user access tokens from a supplied store using <see cref="UserAccessTokenKey"/>,
 /// with support for refreshing expired tokens via a supplied <see cref="IRefreshUserAccessToken"/>, and requesting new tokens via a supplied <see cref="IRequestUserAccessToken"/>.
 /// </summary>
+/// <remarks>
+/// Contains internal state to ensure that concurrent requests for the same user's access token are properly synchronized,
+/// register or use as a singleton to avoid race conditions causing multiple token refreshes.
+/// </remarks>
 /// <param name="tokenStore">The token store to retrieve and store user access tokens with.</param>
 /// <param name="refresher">The service to use to refresh expired tokens.</param>
 /// <param name="newTokenRequester">An optional service that is notified when a new user access token is needed.</param>
