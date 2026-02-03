@@ -27,13 +27,23 @@ public record IdentityTokenResolver(
         return authRequest.Identity switch
         {
             UserIdentity user when UserAccessTokenResolver is not null
-                => await UserAccessTokenResolver.GetToken(new UserAccessTokenKey { User = user, ValidScopes = authRequest.ValidScopes }, ct),
+                => ExtractToken(await UserAccessTokenResolver.GetToken(new UserAccessTokenKey { User = user, ValidScopes = authRequest.ValidScopes }, ct)),
             ClientIdentity client when AppAccessTokenResolver is not null
                 => await AppAccessTokenResolver.GetToken(client, ct),
             ExtensionIdentity extension when ExtensionJwtResolver is not null
                 => await ExtensionJwtResolver.GetToken(extension, ct),
             TwitchApiIdentity { ClientId: not null } identity when AppAccessTokenResolver is not null
                 => await AppAccessTokenResolver.GetToken(new ClientIdentity(identity.ClientId.Value), ct),
+            _ => null
+        };
+    }
+
+    private static AccessToken? ExtractToken(UserAccessTokenResolutionResult? result)
+    {
+        return result switch
+        {
+            UserAccessTokenResolutionResult.Success success => success.Token,
+            UserAccessTokenResolutionResult.Expired expired => expired.Token,
             _ => null
         };
     }

@@ -12,6 +12,6 @@ public interface IResolveUserAccessToken
     /// Get the user access token for the given key.
     /// </summary>
     /// <param name="key">Contains information used to retrieve a specific <see cref="UserAccessToken"/>.</param>
-    /// <returns>A <see cref="ValueTask"/> containing the <see cref="UserAccessToken"/> associated with the <paramref name="key"/>, if any.</returns>
-    ValueTask<UserAccessToken?> GetToken(UserAccessTokenKey key, CancellationToken ct = default);
+    /// <returns>A <see cref="UserAccessTokenResolutionResult"/> indicating the status of the token query.</returns>
+    ValueTask<UserAccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default);
 }
