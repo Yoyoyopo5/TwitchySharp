@@ -9,42 +9,36 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// Resolves an <see cref="AccessToken"/> by pattern matching on the <see cref="IRequireAuthorization.Identity"/>
 /// and dispatching to the appropriate identity-specific resolver.
 /// </summary>
+/// <remarks>
+/// If the passed <see cref="ITwitchRequest"/> does not implement <see cref="IRequireAuthorization"/>,
+/// <see cref="GetToken(ITwitchRequest, CancellationToken)"/> returns <see cref="AccessTokenResolutionResult.Unavailable"/>
+/// </remarks>
 /// <param name="UserAccessTokenResolver">Resolver for <see cref="UserIdentity"/> requests.</param>
 /// <param name="AppAccessTokenResolver">Resolver for requests using <see cref="ClientIdentity"/> or <see cref="TwitchApiIdentity"/> where <see cref="TwitchApiIdentity.ClientId"/> is not <see langword="null"/>.</param>
 /// <param name="ExtensionJwtResolver">Resolver for <see cref="ExtensionIdentity"/> requests.</param>
 public record IdentityTokenResolver(
-    IResolveUserAccessToken? UserAccessTokenResolver = null,
-    IResolveAppAccessToken? AppAccessTokenResolver = null,
-    IResolveExtensionJsonWebToken? ExtensionJwtResolver = null
-) : IResolveAccessToken
+    IResolveAccessToken<UserAccessTokenKey>? UserAccessTokenResolver = null,
+    IResolveAccessToken<ClientIdentity>? AppAccessTokenResolver = null,
+    IResolveAccessToken<ExtensionIdentity>? ExtensionJwtResolver = null
+    ) : IResolveAccessToken<IRequireAuthorization>
 {
     /// <inheritdoc/>
-    public async ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
+    /// <exception cref="NotSupportedException">
+    /// Unsupported derived <see cref="TwitchApiIdentity"/> type.
+    /// </exception>
+    public async ValueTask<AccessTokenResolutionResult> GetToken(IRequireAuthorization hasIdentity, CancellationToken ct = default)
     {
-        if (request is not IRequireAuthorization authRequest)
-            return null;
-
-        return authRequest.Identity switch
+        return hasIdentity.Identity switch
         {
             UserIdentity user when UserAccessTokenResolver is not null
-                => ExtractToken(await UserAccessTokenResolver.GetToken(new UserAccessTokenKey { User = user, ValidScopes = authRequest.ValidScopes }, ct)),
+                => await UserAccessTokenResolver.GetToken(new UserAccessTokenKey { User = user, ValidScopes = hasIdentity.ValidScopes }, ct),
             ClientIdentity client when AppAccessTokenResolver is not null
                 => await AppAccessTokenResolver.GetToken(client, ct),
             ExtensionIdentity extension when ExtensionJwtResolver is not null
                 => await ExtensionJwtResolver.GetToken(extension, ct),
             TwitchApiIdentity { ClientId: not null } identity when AppAccessTokenResolver is not null
                 => await AppAccessTokenResolver.GetToken(new ClientIdentity(identity.ClientId.Value), ct),
-            _ => null
-        };
-    }
-
-    private static AccessToken? ExtractToken(UserAccessTokenResolutionResult? result)
-    {
-        return result switch
-        {
-            UserAccessTokenResolutionResult.Success success => success.Token,
-            UserAccessTokenResolutionResult.Expired expired => expired.Token,
-            _ => null
+            _ => throw new NotSupportedException($"Unsupported identity type {hasIdentity.Identity.GetType().Name} when resolving access token by identity.")
         };
     }
 }

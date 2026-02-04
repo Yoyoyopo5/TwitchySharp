@@ -7,8 +7,12 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// Returns the <see cref="IRequireAuthorization.OverrideAccessToken"/> if the <see cref="ITwitchRequest"/>
 /// implements <see cref="IRequireAuthorization"/> and it is not <see langword="null"/>.
 /// </summary>
-public record ConfiguredAccessTokenResolver() : IResolveAccessToken
+public record ConfiguredAccessTokenResolver() : IResolveAccessToken<IRequireAuthorization>
 {
-    public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
-        => ValueTask.FromResult((request as IRequireAuthorization)?.OverrideAccessToken);
+    public ValueTask<AccessTokenResolutionResult> GetToken(IRequireAuthorization request, CancellationToken ct = default)
+        => ValueTask.FromResult<AccessTokenResolutionResult>(request.OverrideAccessToken switch
+        {
+            AccessToken token => new AccessTokenResolutionResult.Available<AccessToken>(token),
+            _ => new AccessTokenResolutionResult.Unavailable()
+        });
 }

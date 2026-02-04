@@ -37,7 +37,7 @@ public class ConcurrentUserAccessTokenResolver(
     /// </summary>
     public TimeSpan ExpirationBuffer { get; init; } = TimeSpan.FromMinutes(5);
 
-    public async ValueTask<UserAccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
+    public async ValueTask<AccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
     {
         using IDisposable? tokenResolutionLoggerScope = _logger.BeginScope("Resolving user access token including one of {Scopes} for {UserId} on {ClientId}", key.ValidScopes, key.User.UserId, key.User.ClientId);
 
@@ -52,10 +52,10 @@ public class ConcurrentUserAccessTokenResolver(
                 return await RequestNewToken(key, ct);
 
             if (IsTokenValid(storedDetails))
-                return new UserAccessTokenResolutionResult.Success(storedDetails.AccessToken);
+                return new AccessTokenResolutionResult.Valid<UserAccessToken>(storedDetails.AccessToken);
 
             if (!CanRefreshToken(storedDetails))
-                return new UserAccessTokenResolutionResult.Expired(storedDetails.AccessToken);
+                return new AccessTokenResolutionResult.Expired<UserAccessToken>(storedDetails.AccessToken);
 
             return await RefreshTokenAsync(key, storedDetails, ct);
         }
@@ -95,7 +95,7 @@ public class ConcurrentUserAccessTokenResolver(
         return true;
     }
 
-    private async ValueTask<UserAccessTokenResolutionResult> RefreshTokenAsync(
+    private async ValueTask<AccessTokenResolutionResult> RefreshTokenAsync(
         UserAccessTokenKey key,
         UserAccessTokenDetails storedDetails,
         CancellationToken ct)
@@ -116,23 +116,23 @@ public class ConcurrentUserAccessTokenResolver(
             };
             await _tokenStore.SaveTokenDetails(refreshedKey, refreshedDetails, ct);
             _logger.LogInformation("Refreshed token details with {ExpiresAt} saved to store.", refreshedDetails.ExpiresAt);
-            return new UserAccessTokenResolutionResult.Success(refreshedDetails.AccessToken);
+            return new AccessTokenResolutionResult.Valid<UserAccessToken>(refreshedDetails.AccessToken);
         }
         catch (TwitchApiException apiException)
         {
             // This could be caused by a number of things (revoked token, rate limits, bad request, etc.), so we can't necessarily delete the stored token or request a new one.
             _logger.LogWarning(apiException, "Refresh failed with HTTP status code {StatusCode}. Falling back to expired token.", apiException.StatusCode);
-            return new UserAccessTokenResolutionResult.Expired(storedDetails.AccessToken);
+            return new AccessTokenResolutionResult.Expired<UserAccessToken>(storedDetails.AccessToken);
         }
     }
 
-    private async ValueTask<UserAccessTokenResolutionResult.RequiresNewAuthorization> RequestNewToken(UserAccessTokenKey key, CancellationToken ct)
+    private async ValueTask<AccessTokenResolutionResult.Unavailable> RequestNewToken(UserAccessTokenKey key, CancellationToken ct)
     {
         if (_newTokenRequester is not null)
         {
             _logger.LogInformation("Requesting new user access token authorization.");
             await _newTokenRequester.RequestUserAccessToken(key, ct);
         }
-        return new UserAccessTokenResolutionResult.RequiresNewAuthorization();
+        return AccessTokenResolutionResult.Unavailable.Instance;
     }
 }
