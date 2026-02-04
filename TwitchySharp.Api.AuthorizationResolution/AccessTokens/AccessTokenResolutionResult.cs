@@ -16,11 +16,11 @@ public abstract record AccessTokenResolutionResult
 {
     public record Available<TToken>(TToken AccessToken) : AccessTokenResolutionResult, IHaveAccessToken<TToken>
         where TToken : AccessToken;
-    public record Valid<TToken>(TToken AccessToken) : Available<TToken>(AccessToken), IHaveAccessToken<TToken>
+    public record Valid<TToken>(TToken AccessToken) : Available<TToken>(AccessToken)
         where TToken: AccessToken;
-    public record Expired<TToken>(TToken AccessToken) : Available<TToken>(AccessToken), IHaveAccessToken<TToken>
+    public record Expired<TToken>(TToken AccessToken) : Available<TToken>(AccessToken)
         where TToken : AccessToken;
-    public record Revoked<TToken>(TToken AccessToken) : Available<TToken>(AccessToken), IHaveAccessToken<TToken>
+    public record Revoked<TToken>(TToken AccessToken) : Available<TToken>(AccessToken)
         where TToken : AccessToken;
     public record Unavailable() : AccessTokenResolutionResult
     {
