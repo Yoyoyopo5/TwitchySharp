@@ -278,7 +278,7 @@ public class Test_InMemoryUserAccessTokenStore
                 var key = new UserAccessTokenKey { User = user, ValidScopes = ImmutableHashSet<Scope>.Empty };
                 var details = new UserAccessTokenDetails
                 {
-                    User = user,
+                    Identity = user,
                     AccessToken = new UserAccessToken($"token_{userId}"),
                     ExpiresAt = DateTimeOffset.UtcNow.AddHours(4),
                     Scopes = ImmutableHashSet<Scope>.Empty
@@ -454,7 +454,7 @@ public class Test_InMemoryUserAccessTokenStore
     {
         return new UserAccessTokenDetails
         {
-            User = TestUserIdentity,
+            Identity = TestUserIdentity,
             AccessToken = token ?? TestToken,
             ExpiresAt = DateTimeOffset.UtcNow.AddHours(4),
             Scopes = scopes ?? ImmutableHashSet.Create(Scope.ChannelModerate)

@@ -7,16 +7,16 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// including its associated user identity, expiration, refresh token, and scopes. 
 /// </summary>
 public record UserAccessTokenDetails
-    : AccessTokenDetails
+    : AccessTokenDetails<UserIdentity, UserAccessToken>
 {
     /// <summary>
     /// The user and client pair that this access token is associated with.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public override required UserIdentity Identity { get; init; }
     /// <summary>
     /// The access token.
     /// </summary>
-    public required UserAccessToken AccessToken { get; init; }
+    public override required UserAccessToken AccessToken { get; init; }
     /// <summary>
     /// The refresh token that can be used to obtain a new access token when this one expires, if any.
     /// </summary>

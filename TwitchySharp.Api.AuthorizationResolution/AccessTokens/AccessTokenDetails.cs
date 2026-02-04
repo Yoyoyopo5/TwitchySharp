@@ -10,7 +10,11 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// <remarks>
 /// See <see cref="UserAccessTokenDetails"/>, <see cref="AppAccessTokenDetails"/>, and <see cref="ExtensionJsonWebToken"/>.
 /// </remarks>
-public abstract record AccessTokenDetails
+public abstract record AccessTokenDetails<TIdentity, TToken>
+    where TIdentity : TwitchApiIdentity
+    where TToken: AccessToken
 {
+    public abstract TIdentity Identity { get; init; }
+    public abstract TToken AccessToken { get; init; }
     public required DateTimeOffset ExpiresAt { get; init; }
 }

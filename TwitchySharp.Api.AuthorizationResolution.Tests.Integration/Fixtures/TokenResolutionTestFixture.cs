@@ -59,7 +59,7 @@ public class TokenResolutionTestFixture
     {
         return new UserAccessTokenDetails
         {
-            User = TestUserIdentity,
+            Identity = TestUserIdentity,
             AccessToken = AccessToken,
             RefreshToken = refreshToken ?? RefreshToken,
             ExpiresAt = expiresAt ?? DateTimeOffset.UtcNow.AddHours(4),

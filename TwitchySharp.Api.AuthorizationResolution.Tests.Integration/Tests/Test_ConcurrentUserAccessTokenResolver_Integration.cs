@@ -114,7 +114,7 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         // Arrange - Create details directly without refresh token
         var expiredDetails = new UserAccessTokenDetails
         {
-            User = TokenResolutionTestFixture.TestUserIdentity,
+            Identity = TokenResolutionTestFixture.TestUserIdentity,
             AccessToken = TokenResolutionTestFixture.AccessToken,
             RefreshToken = null, // No refresh token
             ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(-10),
@@ -217,14 +217,14 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
 
         var details1 = new UserAccessTokenDetails
         {
-            User = user1,
+            Identity = user1,
             AccessToken = new UserAccessToken("token1"),
             ExpiresAt = DateTimeOffset.UtcNow.AddHours(4),
             Scopes = ImmutableHashSet.Create(Scope.ChannelModerate)
         };
         var details2 = new UserAccessTokenDetails
         {
-            User = user2,
+            Identity = user2,
             AccessToken = new UserAccessToken("token2"),
             ExpiresAt = DateTimeOffset.UtcNow.AddHours(4),
             Scopes = ImmutableHashSet.Create(Scope.ChannelModerate)

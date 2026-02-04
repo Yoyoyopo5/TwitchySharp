@@ -82,12 +82,12 @@ public class ConcurrentUserAccessTokenResolver(
 
     private bool CanRefreshToken(UserAccessTokenDetails details)
     {
-        if (_refresher is null || details.RefreshToken is null || details.User.ClientId is null)
+        if (_refresher is null || details.RefreshToken is null || details.Identity.ClientId is null)
         {
             _logger.LogWarning("Expired token unable to be refreshed due to {MissingDependency}",
                 _refresher == null ? nameof(IRefreshUserAccessToken)
                 : !details.RefreshToken.HasValue ? nameof(RefreshToken)
-                : !details.User.ClientId.HasValue ? nameof(ClientId)
+                : !details.Identity.ClientId.HasValue ? nameof(ClientId)
                 : "missing dependency");
             return false;
         }
@@ -103,7 +103,7 @@ public class ConcurrentUserAccessTokenResolver(
         _logger.LogDebug("Refreshing user access token.");
         try
         {
-            AccessTokenRefreshResponse refresh = await _refresher!.RefreshUserAccessToken(storedDetails.User.ClientId!.Value, storedDetails.RefreshToken!.Value, ct);
+            AccessTokenRefreshResponse refresh = await _refresher!.RefreshUserAccessToken(storedDetails.Identity.ClientId!.Value, storedDetails.RefreshToken!.Value, ct);
             _logger.LogDebug("User access token refreshed successfully.");
             ImmutableHashSet<Scope> refreshScopes = refresh.Scope?.ToImmutableHashSet() ?? [];
             UserAccessTokenKey refreshedKey = key with { ValidScopes = refreshScopes };

@@ -38,7 +38,7 @@ public class InMemoryUserAccessTokenStore : IUserAccessTokenStore
             if (!_tokenIndex.TryRemove(token, out UserAccessTokenDetails? details))
                 return ValueTask.FromResult(details);
 
-            _userIndex.TryRemove(details.User, out _);
+            _userIndex.TryRemove(details.Identity, out _);
             return ValueTask.FromResult<UserAccessTokenDetails?>(details);
         }
     }
