@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 namespace TwitchySharp.Api.AuthorizationResolution;
 
 /// <summary>
-/// A thread-safe in-memory implementation of <see cref="IUserAccessTokenStore"/>.
+/// A thread-safe in-memory implementation of <see cref="IStoreUserAccessTokens"/>.
 /// </summary>
 /// <remarks>
 /// Stores one token per user/client pair. Scope matching at lookup time uses "at least one of" semantics:
 /// if the key specifies scopes, the stored token must have at least one of those scopes to match.
 /// </remarks>
-public class InMemoryUserAccessTokenStore : IUserAccessTokenStore
+public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
 {
     private readonly ConcurrentDictionary<UserAccessToken, UserAccessTokenDetails> _tokenIndex = new();
     private readonly ConcurrentDictionary<UserIdentity, UserAccessTokenDetails> _userIndex = new();
@@ -31,7 +31,7 @@ public class InMemoryUserAccessTokenStore : IUserAccessTokenStore
     }
 
     /// <inheritdoc/>
-    public ValueTask<UserAccessTokenDetails?> RemoveToken(UserAccessToken token, CancellationToken ct = default)
+    public ValueTask<UserAccessTokenDetails?> RemoveTokenDetails(UserAccessToken token, CancellationToken ct = default)
     {
         lock (_lock)
         {

@@ -8,35 +8,54 @@ using TwitchySharp.Shared.Models;
 namespace TwitchySharp.Api.AuthorizationResolution;
 /// <summary>
 /// A thread-safe implementation of <see cref="IResolveUserAccessToken"/> that retrieves user access tokens from a supplied store using <see cref="UserAccessTokenKey"/>,
-/// with support for refreshing expired tokens via a supplied <see cref="IRefreshUserAccessToken"/>, and requesting new tokens via a supplied <see cref="IRequestUserAccessToken"/>.
+/// with support for refreshing expired tokens via a supplied <see cref="IRefreshUserAccessToken"/>.
 /// </summary>
 /// <remarks>
 /// Contains internal state to ensure that concurrent requests for the same user's access token are properly synchronized,
 /// register or use as a singleton to avoid race conditions causing multiple token refreshes.
 /// </remarks>
 /// <param name="tokenStore">The token store to retrieve and store user access tokens with.</param>
-/// <param name="refresher">The service to use to refresh expired tokens.</param>
-/// <param name="newTokenRequester">An optional service that is notified when a new user access token is needed.</param>
+/// <param name="refresher">
+/// Specify this parameter to allow for proactive refreshing of expired or near-expired tokens.
+/// Initialize with the <see cref="ExpirationBuffer"/> to customize the buffer time for considering a token "near-expired".
+/// </param>
 /// <param name="logger">Optional logger.</param>
 public class ConcurrentUserAccessTokenResolver(
-    IUserAccessTokenStore tokenStore,
-    IRefreshUserAccessToken? refresher,
-    IRequestUserAccessToken? newTokenRequester,
+    IStoreUserAccessTokens tokenStore,
+    IRefreshUserAccessToken? refresher = null,
     ILogger<ConcurrentUserAccessTokenResolver>? logger = null
     )
     : IResolveUserAccessToken
 {
-    private readonly IUserAccessTokenStore _tokenStore = tokenStore;
+    private readonly IStoreUserAccessTokens _tokenStore = tokenStore;
     private readonly IRefreshUserAccessToken? _refresher = refresher;
-    private readonly IRequestUserAccessToken? _newTokenRequester = newTokenRequester;
     private readonly ILogger<ConcurrentUserAccessTokenResolver> _logger = logger ?? NullLogger<ConcurrentUserAccessTokenResolver>.Instance;
     private readonly ConcurrentDictionary<UserIdentity, SemaphoreSlim> _semaphores = new();
 
     /// <summary>
     /// The amount of time before <see cref="AccessTokenDetails.ExpiresAt"/> to trigger a refresh call.
     /// </summary>
+    /// <remarks>
+    /// Defaults to 5 minutes.
+    /// </remarks>
     public TimeSpan ExpirationBuffer { get; init; } = TimeSpan.FromMinutes(5);
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <returns>
+    /// <list type="bullet">
+    /// <item>
+    /// <see cref="AccessTokenResolutionResult.Unavailable"/> if the requested <see cref="UserAccessToken"/> does not exist.
+    /// </item>
+    /// <item>
+    /// <see cref="AccessTokenResolutionResult.Valid{TToken}"/> if the requested <see cref="UserAccessToken"/> is unexpired or was expired and successfully refreshed.
+    /// </item>
+    /// <item>
+    /// <see cref="AccessTokenResolutionResult.Expired{TToken}"/> if the requested <see cref="UserAccessToken"/> is expired and could not be refreshed.
+    /// </item>
+    /// </list>
+    /// </returns>
     public async ValueTask<AccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
     {
         using IDisposable? tokenResolutionLoggerScope = _logger.BeginScope("Resolving user access token including one of {Scopes} for {UserId} on {ClientId}", key.ValidScopes, key.User.UserId, key.User.ClientId);
@@ -49,7 +68,7 @@ public class ConcurrentUserAccessTokenResolver(
         try
         {
             if (await TryGetStoredToken(key, ct) is not UserAccessTokenDetails storedDetails)
-                return await RequestNewToken(key, ct);
+                return AccessTokenResolutionResult.Unavailable.Instance;
 
             if (IsTokenValid(storedDetails))
                 return new AccessTokenResolutionResult.Valid<UserAccessToken>(storedDetails.AccessToken);
@@ -124,15 +143,5 @@ public class ConcurrentUserAccessTokenResolver(
             _logger.LogWarning(apiException, "Refresh failed with HTTP status code {StatusCode}. Falling back to expired token.", apiException.StatusCode);
             return new AccessTokenResolutionResult.Expired<UserAccessToken>(storedDetails.AccessToken);
         }
-    }
-
-    private async ValueTask<AccessTokenResolutionResult.Unavailable> RequestNewToken(UserAccessTokenKey key, CancellationToken ct)
-    {
-        if (_newTokenRequester is not null)
-        {
-            _logger.LogInformation("Requesting new user access token authorization.");
-            await _newTokenRequester.RequestUserAccessToken(key, ct);
-        }
-        return AccessTokenResolutionResult.Unavailable.Instance;
     }
 }

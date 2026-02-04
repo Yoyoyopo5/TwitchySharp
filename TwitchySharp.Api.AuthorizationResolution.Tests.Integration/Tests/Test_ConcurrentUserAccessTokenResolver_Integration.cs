@@ -46,23 +46,6 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
     }
 
     [Fact]
-    public async Task GetToken_NoTokenInStore_NotifiesRequester()
-    {
-        // Arrange
-        var store = new InMemoryUserAccessTokenStore();
-        var requester = new MockTokenRequester();
-        var resolver = new ConcurrentUserAccessTokenResolver(store, null, requester);
-        var key = _fixture.CreateTestTokenKey();
-
-        // Act
-        await resolver.GetToken(key);
-
-        // Assert
-        Assert.True(requester.WasRequested);
-        Assert.Equal(key.User, requester.RequestedKey?.User);
-    }
-
-    [Fact]
     public async Task GetToken_ExpiredTokenWithRefresh_RefreshesAndReturnsValid()
     {
         // Arrange
@@ -250,19 +233,6 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
     }
 
     #region Mock Types
-
-    private class MockTokenRequester : IRequestUserAccessToken
-    {
-        public bool WasRequested { get; private set; }
-        public UserAccessTokenKey? RequestedKey { get; private set; }
-
-        public ValueTask RequestUserAccessToken(UserAccessTokenKey key, CancellationToken ct = default)
-        {
-            WasRequested = true;
-            RequestedKey = key;
-            return ValueTask.CompletedTask;
-        }
-    }
 
     private class MockTokenRefresher(string newAccessToken) : IRefreshUserAccessToken
     {

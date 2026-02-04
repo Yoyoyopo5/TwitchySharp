@@ -211,7 +211,7 @@ public class Test_InMemoryUserAccessTokenStore
         await store.SaveTokenDetails(key, details);
 
         // Act
-        var removed = await store.RemoveToken(TestToken);
+        var removed = await store.RemoveTokenDetails(TestToken);
 
         // Assert
         Assert.NotNull(removed);
@@ -233,7 +233,7 @@ public class Test_InMemoryUserAccessTokenStore
         var nonExistentToken = new UserAccessToken("non_existent_token");
 
         // Act
-        var result = await store.RemoveToken(nonExistentToken);
+        var result = await store.RemoveTokenDetails(nonExistentToken);
 
         // Assert
         Assert.Null(result);
@@ -249,8 +249,8 @@ public class Test_InMemoryUserAccessTokenStore
         await store.SaveTokenDetails(key, details);
 
         // Act
-        var firstRemoval = await store.RemoveToken(TestToken);
-        var secondRemoval = await store.RemoveToken(TestToken);
+        var firstRemoval = await store.RemoveTokenDetails(TestToken);
+        var secondRemoval = await store.RemoveTokenDetails(TestToken);
 
         // Assert
         Assert.NotNull(firstRemoval);
@@ -344,7 +344,7 @@ public class Test_InMemoryUserAccessTokenStore
             int index = i;
             if (index % 2 == 0)
             {
-                tasks.Add(Task.Run(async () => await store.RemoveToken(TestToken)));
+                tasks.Add(Task.Run(async () => await store.RemoveTokenDetails(TestToken)));
             }
             else
             {
@@ -400,7 +400,7 @@ public class Test_InMemoryUserAccessTokenStore
         await store.SaveTokenDetails(key, details);
 
         // Act
-        await store.RemoveToken(TestToken);
+        await store.RemoveTokenDetails(TestToken);
 
         // Assert - Both indexes should be empty
         var byKey = await store.GetTokenDetails(key);
