@@ -32,6 +32,8 @@ public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResol
             return null;
 
         ClientIdentity? identity = await ResolveClientIdentity(request, ct).ConfigureAwait(false);
+        // When we migrate to twitch delegating handlers, we will need to split this class up into a pipeline,
+        // So that the token resolver can have access to the resolved client identity as it is often null in requests.
         AccessToken? token = await ResolveAccessToken(request, ct).ConfigureAwait(false);
 
         return new TwitchAuthorizationRequestOptions(identity?.ClientId, token);
