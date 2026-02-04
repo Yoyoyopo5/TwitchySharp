@@ -15,7 +15,7 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
     private readonly TokenResolutionTestFixture _fixture = fixture;
 
     [Fact]
-    public async Task GetToken_ValidTokenInStore_ReturnsSuccessImmediately()
+    public async Task GetToken_ValidTokenInStore_ReturnsValidImmediately()
     {
         // Arrange
         var store = _fixture.CreatePopulatedTokenStore();
@@ -26,12 +26,12 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert
-        var success = Assert.IsType<UserAccessTokenResolutionResult.Success>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, success.Token.Value);
+        var valid = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, valid.AccessToken.Value);
     }
 
     [Fact]
-    public async Task GetToken_NoTokenInStore_ReturnsRequiresNewAuthorization()
+    public async Task GetToken_NoTokenInStore_ReturnsUnavailable()
     {
         // Arrange
         var store = new InMemoryUserAccessTokenStore();
@@ -42,7 +42,7 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert
-        Assert.IsType<UserAccessTokenResolutionResult.RequiresNewAuthorization>(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
     }
 
     [Fact]
-    public async Task GetToken_ExpiredTokenWithRefresh_RefreshesAndReturnsSuccess()
+    public async Task GetToken_ExpiredTokenWithRefresh_RefreshesAndReturnsValid()
     {
         // Arrange
         var expiredDetails = _fixture.CreateTestTokenDetails(
@@ -79,8 +79,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert
-        var success = Assert.IsType<UserAccessTokenResolutionResult.Success>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, success.Token.Value);
+        var valid = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, valid.AccessToken.Value);
 
         // Verify token was saved to store
         var storedToken = await store.GetTokenDetails(key);
@@ -104,8 +104,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert
-        var expired = Assert.IsType<UserAccessTokenResolutionResult.Expired>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.Token.Value);
+        var expired = Assert.IsType<AccessTokenResolutionResult.Expired<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.AccessToken.Value);
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert
-        var expired = Assert.IsType<UserAccessTokenResolutionResult.Expired>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.Token.Value);
+        var expired = Assert.IsType<AccessTokenResolutionResult.Expired<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.AccessToken.Value);
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         // Assert - All should succeed
         Assert.All(results, result =>
         {
-            var success = Assert.IsType<UserAccessTokenResolutionResult.Success>(result);
-            Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, success.Token.Value);
+            var valid = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result);
+            Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, valid.AccessToken.Value);
         });
 
         // Assert - Refresh was only called once
@@ -179,8 +179,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert - Returns expired token instead of throwing
-        var expired = Assert.IsType<UserAccessTokenResolutionResult.Expired>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.Token.Value);
+        var expired = Assert.IsType<AccessTokenResolutionResult.Expired<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestAccessToken, expired.AccessToken.Value);
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result = await resolver.GetToken(key);
 
         // Assert - Token should be refreshed because it's within the buffer
-        var success = Assert.IsType<UserAccessTokenResolutionResult.Success>(result);
-        Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, success.Token.Value);
+        var valid = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result);
+        Assert.Equal(TokenResolutionTestFixture.TestNewAccessToken, valid.AccessToken.Value);
     }
 
     [Fact]
@@ -243,10 +243,10 @@ public class Test_ConcurrentUserAccessTokenResolver_Integration(TokenResolutionT
         var result2 = await resolver.GetToken(key2);
 
         // Assert
-        var success1 = Assert.IsType<UserAccessTokenResolutionResult.Success>(result1);
-        var success2 = Assert.IsType<UserAccessTokenResolutionResult.Success>(result2);
-        Assert.Equal("token1", success1.Token.Value);
-        Assert.Equal("token2", success2.Token.Value);
+        var valid1 = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result1);
+        var valid2 = Assert.IsType<AccessTokenResolutionResult.Valid<UserAccessToken>>(result2);
+        Assert.Equal("token1", valid1.AccessToken.Value);
+        Assert.Equal("token2", valid2.AccessToken.Value);
     }
 
     #region Mock Types

@@ -10,14 +10,15 @@ public class Test_DefaultRequestAuthorizer
     private static readonly ClientId TestClientId = new("test_client_id");
     private static readonly ClientIdentity TestClientIdentity = new(TestClientId);
     private static readonly UserAccessToken TestAccessToken = new("test_access_token");
+    private static readonly AppAccessToken TestAppToken = new("test_app_access_token");
 
     [Fact]
     public async Task GetAuthorization_NonAuthorizableRequest_ReturnsNull()
     {
         // Arrange
-        var clientResolver = new SingleClientIdentityResolver(TestClientIdentity);
-        var tokenResolver = new SingleAccessTokenResolver(TestAccessToken);
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
+        var appResolver = new MockAppAccessTokenResolver(TestAppToken);
+        var identityResolver = new IdentityTokenResolver(AppAccessTokenResolver: appResolver);
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
         var request = new MockNonAuthorizableRequest();
 
         // Act
@@ -31,9 +32,9 @@ public class Test_DefaultRequestAuthorizer
     public async Task GetAuthorization_AuthorizableRequest_ReturnsClientIdAndToken()
     {
         // Arrange
-        var clientResolver = new SingleClientIdentityResolver(TestClientIdentity);
-        var tokenResolver = new SingleAccessTokenResolver(TestAccessToken);
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
+        var appResolver = new MockAppAccessTokenResolver(TestAppToken);
+        var identityResolver = new IdentityTokenResolver(AppAccessTokenResolver: appResolver);
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -42,34 +43,15 @@ public class Test_DefaultRequestAuthorizer
         // Assert
         Assert.NotNull(result);
         Assert.Equal(TestClientId.Value, result.ClientId?.Value);
-        Assert.Equal(TestAccessToken.Value, result.BearerToken?.Value);
+        Assert.Equal(TestAppToken.Value, result.BearerToken?.Value);
     }
 
     [Fact]
-    public async Task GetAuthorization_ClientResolverReturnsNull_ResultHasNullClientId()
+    public async Task GetAuthorization_NoTokenResolverConfigured_ResultHasNullToken()
     {
         // Arrange
-        var clientResolver = new MockNullClientIdentityResolver();
-        var tokenResolver = new SingleAccessTokenResolver(TestAccessToken);
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
-        var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
-
-        // Act
-        var result = await authorizer.GetAuthorization(request);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Null(result.ClientId);
-        Assert.Equal(TestAccessToken.Value, result.BearerToken?.Value);
-    }
-
-    [Fact]
-    public async Task GetAuthorization_TokenResolverReturnsNull_ResultHasNullToken()
-    {
-        // Arrange
-        var clientResolver = new SingleClientIdentityResolver(TestClientIdentity);
-        var tokenResolver = new MockNullTokenResolver();
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
+        var identityResolver = new IdentityTokenResolver(); // No resolvers
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -79,52 +61,15 @@ public class Test_DefaultRequestAuthorizer
         Assert.NotNull(result);
         Assert.Equal(TestClientId.Value, result.ClientId?.Value);
         Assert.Null(result.BearerToken);
-    }
-
-    [Fact]
-    public async Task GetAuthorization_BothResolversReturnNull_ResultHasBothNull()
-    {
-        // Arrange
-        var clientResolver = new MockNullClientIdentityResolver();
-        var tokenResolver = new MockNullTokenResolver();
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
-        var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
-
-        // Act
-        var result = await authorizer.GetAuthorization(request);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Null(result.ClientId);
-        Assert.Null(result.BearerToken);
-    }
-
-    [Fact]
-    public async Task GetAuthorization_CancellationTokenPassed_PropagatedToResolvers()
-    {
-        // Arrange
-        var clientResolver = new MockTrackingClientIdentityResolver(TestClientIdentity);
-        var tokenResolver = new MockTrackingTokenResolver(TestAccessToken);
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
-        var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
-        using var cts = new CancellationTokenSource();
-        var cancellationToken = cts.Token;
-
-        // Act
-        await authorizer.GetAuthorization(request, cancellationToken);
-
-        // Assert
-        Assert.Equal(cancellationToken, clientResolver.ReceivedCancellationToken);
-        Assert.Equal(cancellationToken, tokenResolver.ReceivedCancellationToken);
     }
 
     [Fact]
     public async Task GetAuthorization_MultipleRequestTypes_HandledCorrectly()
     {
         // Arrange
-        var clientResolver = new SingleClientIdentityResolver(TestClientIdentity);
-        var tokenResolver = new SingleAccessTokenResolver(TestAccessToken);
-        var authorizer = new DefaultRequestAuthorizer(clientResolver, tokenResolver);
+        var appResolver = new MockAppAccessTokenResolver(TestAppToken);
+        var identityResolver = new IdentityTokenResolver(AppAccessTokenResolver: appResolver);
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
 
         var authorizableRequest = new MockAuthorizableRequest(TwitchApiIdentity.Default);
         var nonAuthorizableRequest = new MockNonAuthorizableRequest();
@@ -138,6 +83,42 @@ public class Test_DefaultRequestAuthorizer
         Assert.Null(nonAuthorizableResult);
     }
 
+    [Fact]
+    public async Task GetAuthorization_RequestWithClientIdentity_UsesRequestClientIdentity()
+    {
+        // Arrange
+        var requestClientId = new ClientId("request_client_id");
+        var appResolver = new MockAppAccessTokenResolver(TestAppToken);
+        var identityResolver = new IdentityTokenResolver(AppAccessTokenResolver: appResolver);
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
+        var request = new MockAuthorizableRequest(new ClientIdentity(requestClientId));
+
+        // Act
+        var result = await authorizer.GetAuthorization(request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(requestClientId.Value, result.ClientId?.Value);
+    }
+
+    [Fact]
+    public async Task GetAuthorization_RequestWithOverrideToken_UsesOverrideToken()
+    {
+        // Arrange
+        var overrideToken = new UserAccessToken("override_token");
+        var appResolver = new MockAppAccessTokenResolver(TestAppToken);
+        var identityResolver = new IdentityTokenResolver(AppAccessTokenResolver: appResolver);
+        var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
+        var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, overrideToken);
+
+        // Act
+        var result = await authorizer.GetAuthorization(request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(overrideToken.Value, result.BearerToken?.Value);
+    }
+
     #region Mock Types
 
     private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
@@ -148,43 +129,23 @@ public class Test_DefaultRequestAuthorizer
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
+    private record MockAuthorizableRequestWithOverride(TwitchApiIdentity Identity, AccessToken? OverrideAccessToken)
+        : ITwitchRequest, IRequireAuthorization
+    {
+        public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
+
+        public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
+    }
+
     private record MockNonAuthorizableRequest() : ITwitchRequest
     {
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private class MockNullClientIdentityResolver : IResolveClientIdentity
+    private class MockAppAccessTokenResolver(AppAccessToken token) : IResolveAppAccessToken
     {
-        public ValueTask<ClientIdentity?> GetClientId(ITwitchRequest request, CancellationToken ct = default)
-            => ValueTask.FromResult<ClientIdentity?>(null);
-    }
-
-    private class MockNullTokenResolver : IResolveAccessToken
-    {
-        public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
-            => ValueTask.FromResult<AccessToken?>(null);
-    }
-
-    private class MockTrackingClientIdentityResolver(ClientIdentity identity) : IResolveClientIdentity
-    {
-        public CancellationToken ReceivedCancellationToken { get; private set; }
-
-        public ValueTask<ClientIdentity?> GetClientId(ITwitchRequest request, CancellationToken ct = default)
-        {
-            ReceivedCancellationToken = ct;
-            return ValueTask.FromResult<ClientIdentity?>(identity);
-        }
-    }
-
-    private class MockTrackingTokenResolver(AccessToken token) : IResolveAccessToken
-    {
-        public CancellationToken ReceivedCancellationToken { get; private set; }
-
-        public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
-        {
-            ReceivedCancellationToken = ct;
-            return ValueTask.FromResult<AccessToken?>(token);
-        }
+        public ValueTask<AccessTokenResolutionResult> GetToken(ClientIdentity identity, CancellationToken ct = default)
+            => ValueTask.FromResult<AccessTokenResolutionResult>(new AccessTokenResolutionResult.Valid<AppAccessToken>(token));
     }
 
     #endregion

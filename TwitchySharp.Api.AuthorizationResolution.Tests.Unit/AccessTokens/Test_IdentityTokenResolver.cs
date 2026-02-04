@@ -29,13 +29,13 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(UserToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(UserToken.Value, hasToken.AccessToken?.Value);
         Assert.True(userResolver.WasCalled);
     }
 
     [Fact]
-    public async Task GetToken_UserIdentityWithoutUserResolver_ReturnsNull()
+    public async Task GetToken_UserIdentityWithoutUserResolver_ReturnsUnavailable()
     {
         // Arrange
         var resolver = new IdentityTokenResolver(); // No resolvers configured
@@ -45,7 +45,7 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -60,13 +60,13 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(AppToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(AppToken.Value, hasToken.AccessToken?.Value);
         Assert.True(appResolver.WasCalled);
     }
 
     [Fact]
-    public async Task GetToken_ClientIdentityWithoutAppResolver_ReturnsNull()
+    public async Task GetToken_ClientIdentityWithoutAppResolver_ReturnsUnavailable()
     {
         // Arrange
         var resolver = new IdentityTokenResolver(); // No resolvers configured
@@ -76,7 +76,7 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -91,13 +91,13 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(ExtensionToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(ExtensionToken.Value, hasToken.AccessToken?.Value);
         Assert.True(extensionResolver.WasCalled);
     }
 
     [Fact]
-    public async Task GetToken_ExtensionIdentityWithoutExtensionResolver_ReturnsNull()
+    public async Task GetToken_ExtensionIdentityWithoutExtensionResolver_ReturnsUnavailable()
     {
         // Arrange
         var resolver = new IdentityTokenResolver(); // No resolvers configured
@@ -107,7 +107,7 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -123,12 +123,12 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(AppToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(AppToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
-    public async Task GetToken_DefaultIdentity_ReturnsNull()
+    public async Task GetToken_DefaultIdentity_ReturnsUnavailable()
     {
         // Arrange
         var appResolver = new MockAppAccessTokenResolver(AppToken);
@@ -139,30 +139,14 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
-    public async Task GetToken_NonAuthorizableRequest_ReturnsNull()
+    public async Task GetToken_UserResolverReturnsValid_ExtractsToken()
     {
         // Arrange
-        var userResolver = new MockUserAccessTokenResolver(UserToken);
-        var appResolver = new MockAppAccessTokenResolver(AppToken);
-        var resolver = new IdentityTokenResolver(userResolver, appResolver);
-        var request = new MockNonAuthorizableRequest();
-
-        // Act
-        var result = await resolver.GetToken(request);
-
-        // Assert
-        Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task GetToken_UserResolverReturnsSuccess_ExtractsToken()
-    {
-        // Arrange
-        var userResolver = new MockUserAccessTokenResolver(UserToken, MockResultType.Success);
+        var userResolver = new MockUserAccessTokenResolver(UserToken, MockResultType.Valid);
         var resolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
         var request = new MockAuthorizableRequest(TestUserIdentity);
 
@@ -170,8 +154,8 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(UserToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(UserToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
@@ -186,27 +170,12 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(UserToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(UserToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
-    public async Task GetToken_UserResolverReturnsRequiresNewAuth_ReturnsNull()
-    {
-        // Arrange
-        var userResolver = new MockUserAccessTokenResolver(UserToken, MockResultType.RequiresNewAuth);
-        var resolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
-        var request = new MockAuthorizableRequest(TestUserIdentity);
-
-        // Act
-        var result = await resolver.GetToken(request);
-
-        // Assert
-        Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task GetToken_UserResolverReturnsUnavailable_ReturnsNull()
+    public async Task GetToken_UserResolverReturnsUnavailable_ReturnsUnavailable()
     {
         // Arrange
         var userResolver = new MockUserAccessTokenResolver(UserToken, MockResultType.Unavailable);
@@ -217,23 +186,18 @@ public class Test_IdentityTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     #region Mock Types
 
-    private enum MockResultType { Success, Expired, RequiresNewAuth, Unavailable }
+    private enum MockResultType { Valid, Expired, Unavailable }
 
     private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
     {
         public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet.Create(Scope.ChannelModerate);
         public AccessToken? OverrideAccessToken => null;
 
-        public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
-    }
-
-    private record MockNonAuthorizableRequest() : ITwitchRequest
-    {
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
@@ -244,22 +208,21 @@ public class Test_IdentityTokenResolver
 
         public bool WasCalled { get; private set; }
 
-        public MockUserAccessTokenResolver(UserAccessToken token, MockResultType resultType = MockResultType.Success)
+        public MockUserAccessTokenResolver(UserAccessToken token, MockResultType resultType = MockResultType.Valid)
         {
             _token = token;
             _resultType = resultType;
         }
 
-        public ValueTask<UserAccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
+        public ValueTask<AccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
         {
             WasCalled = true;
-            UserAccessTokenResolutionResult result = _resultType switch
+            AccessTokenResolutionResult result = _resultType switch
             {
-                MockResultType.Success => new UserAccessTokenResolutionResult.Success(_token),
-                MockResultType.Expired => new UserAccessTokenResolutionResult.Expired(_token),
-                MockResultType.RequiresNewAuth => new UserAccessTokenResolutionResult.RequiresNewAuthorization(),
-                MockResultType.Unavailable => new UserAccessTokenResolutionResult.Unavailable(),
-                _ => new UserAccessTokenResolutionResult.Success(_token)
+                MockResultType.Valid => new AccessTokenResolutionResult.Valid<UserAccessToken>(_token),
+                MockResultType.Expired => new AccessTokenResolutionResult.Expired<UserAccessToken>(_token),
+                MockResultType.Unavailable => AccessTokenResolutionResult.Unavailable.Instance,
+                _ => new AccessTokenResolutionResult.Valid<UserAccessToken>(_token)
             };
             return ValueTask.FromResult(result);
         }
@@ -269,10 +232,10 @@ public class Test_IdentityTokenResolver
     {
         public bool WasCalled { get; private set; }
 
-        public ValueTask<AppAccessToken?> GetToken(ClientIdentity identity, CancellationToken ct = default)
+        public ValueTask<AccessTokenResolutionResult> GetToken(ClientIdentity identity, CancellationToken ct = default)
         {
             WasCalled = true;
-            return ValueTask.FromResult<AppAccessToken?>(token);
+            return ValueTask.FromResult<AccessTokenResolutionResult>(new AccessTokenResolutionResult.Valid<AppAccessToken>(token));
         }
     }
 
@@ -280,10 +243,10 @@ public class Test_IdentityTokenResolver
     {
         public bool WasCalled { get; private set; }
 
-        public ValueTask<ExtensionJsonWebToken?> GetToken(ExtensionIdentity identity, CancellationToken ct = default)
+        public ValueTask<AccessTokenResolutionResult> GetToken(ExtensionIdentity identity, CancellationToken ct = default)
         {
             WasCalled = true;
-            return ValueTask.FromResult<ExtensionJsonWebToken?>(token);
+            return ValueTask.FromResult<AccessTokenResolutionResult>(new AccessTokenResolutionResult.Valid<ExtensionJsonWebToken>(token));
         }
     }
 

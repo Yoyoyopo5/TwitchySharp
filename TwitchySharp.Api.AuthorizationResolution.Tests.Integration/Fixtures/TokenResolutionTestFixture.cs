@@ -29,11 +29,12 @@ public class TokenResolutionTestFixture
     /// <summary>
     /// Creates a default request authorizer with test configuration.
     /// </summary>
-    public DefaultRequestAuthorizer CreateDefaultAuthorizer() =>
-        new(
-            new DefaultClientIdentityResolver(ClientIdentity),
-            new SingleAccessTokenResolver(AccessToken)
-        );
+    public DefaultRequestAuthorizer CreateDefaultAuthorizer()
+    {
+        var userResolver = new ConcurrentUserAccessTokenResolver(CreatePopulatedTokenStore(), null, null);
+        var identityResolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
+        return new DefaultRequestAuthorizer(ClientIdentity, identityResolver);
+    }
 
     /// <summary>
     /// Creates a user access token store pre-populated with test data.

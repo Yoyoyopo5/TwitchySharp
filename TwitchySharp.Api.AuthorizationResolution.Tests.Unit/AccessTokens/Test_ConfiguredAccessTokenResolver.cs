@@ -20,12 +20,12 @@ public class Test_ConfiguredAccessTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(OverrideToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(OverrideToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
-    public async Task GetToken_RequestWithNullOverrideToken_ReturnsNull()
+    public async Task GetToken_RequestWithNullOverrideToken_ReturnsUnavailable()
     {
         // Arrange
         var resolver = new ConfiguredAccessTokenResolver();
@@ -35,11 +35,11 @@ public class Test_ConfiguredAccessTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
-    public async Task GetToken_AuthorizableRequestWithoutOverride_ReturnsNull()
+    public async Task GetToken_AuthorizableRequestWithoutOverride_ReturnsUnavailable()
     {
         // Arrange
         var resolver = new ConfiguredAccessTokenResolver();
@@ -49,21 +49,7 @@ public class Test_ConfiguredAccessTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.Null(result);
-    }
-
-    [Fact]
-    public async Task GetToken_NonAuthorizableRequest_ReturnsNull()
-    {
-        // Arrange
-        var resolver = new ConfiguredAccessTokenResolver();
-        var request = new MockNonAuthorizableRequest();
-
-        // Act
-        var result = await resolver.GetToken(request);
-
-        // Assert
-        Assert.Null(result);
+        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -78,8 +64,8 @@ public class Test_ConfiguredAccessTokenResolver
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(appToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(appToken.Value, hasToken.AccessToken?.Value);
     }
 
     #region Mock Types
@@ -97,11 +83,6 @@ public class Test_ConfiguredAccessTokenResolver
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
 
-        public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
-    }
-
-    private record MockNonAuthorizableRequest() : ITwitchRequest
-    {
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 

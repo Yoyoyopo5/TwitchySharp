@@ -13,30 +13,30 @@ public class Test_SingleAccessTokenResolver
     public async Task GetToken_AnyRequest_ReturnsConfiguredToken()
     {
         // Arrange
-        var resolver = new SingleAccessTokenResolver(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(ConfiguredToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
     public async Task GetToken_NonAuthorizableRequest_StillReturnsConfiguredToken()
     {
-        // Arrange
-        var resolver = new SingleAccessTokenResolver(ConfiguredToken);
-        var request = new MockNonAuthorizableRequest();
+        // Arrange - Note: SingleAccessTokenResolver<TKey, TToken> works with any key type
+        var resolver = new SingleAccessTokenResolver<object, UserAccessToken>(ConfiguredToken);
+        var request = new object();
 
         // Act
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(ConfiguredToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
@@ -44,25 +44,25 @@ public class Test_SingleAccessTokenResolver
     {
         // Arrange
         var overrideToken = new UserAccessToken("override_token");
-        var resolver = new SingleAccessTokenResolver(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, overrideToken);
 
         // Act
         var result = await resolver.GetToken(request);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(ConfiguredToken.Value, result.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
     }
 
     [Fact]
     public async Task GetToken_MultipleCallsWithDifferentRequests_ReturnsSameToken()
     {
         // Arrange
-        var resolver = new SingleAccessTokenResolver(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
         var request1 = new MockAuthorizableRequest(TwitchApiIdentity.Default);
         var request2 = new MockAuthorizableRequest(new ClientIdentity(new ClientId("other")));
-        var request3 = new MockNonAuthorizableRequest();
+        var request3 = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
         var result1 = await resolver.GetToken(request1);
@@ -70,8 +70,11 @@ public class Test_SingleAccessTokenResolver
         var result3 = await resolver.GetToken(request3);
 
         // Assert
-        Assert.Equal(result1, result2);
-        Assert.Equal(result2, result3);
+        var token1 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result1);
+        var token2 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result2);
+        var token3 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result3);
+        Assert.Equal(token1.AccessToken?.Value, token2.AccessToken?.Value);
+        Assert.Equal(token2.AccessToken?.Value, token3.AccessToken?.Value);
     }
 
     #region Mock Types
@@ -89,11 +92,6 @@ public class Test_SingleAccessTokenResolver
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
 
-        public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
-    }
-
-    private record MockNonAuthorizableRequest() : ITwitchRequest
-    {
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
