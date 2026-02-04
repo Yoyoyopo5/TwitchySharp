@@ -1,8 +1,8 @@
 ﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
 public record ExtensionJwtDetails
-    : AccessTokenDetails
+    : AccessTokenDetails<ExtensionIdentity, ExtensionJsonWebToken>
 {
-    public required ExtensionIdentity Extension { get; init; }
-    public required ExtensionJsonWebToken JsonWebToken { get; init; }
+    public override required ExtensionIdentity Identity { get; init; }
+    public override required ExtensionJsonWebToken AccessToken { get; init; }
 }
