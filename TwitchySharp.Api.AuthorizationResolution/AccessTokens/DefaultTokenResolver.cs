@@ -19,11 +19,11 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// </list>
 /// <para>
 /// This should cover most common scenarios. If you have more complex needs, consider implementing
-/// <see cref="ITokenResolver"/> directly and passing it to a <see cref="SequentialAccessTokenResolver"/>
+/// <see cref="IResolveAccessToken"/> directly and passing it to a <see cref="SequentialAccessTokenResolver"/>
 /// to define your own resolution pipeline.
 /// </para>
 /// </remarks>
-public sealed record DefaultTokenResolver : ITokenResolver
+public sealed record DefaultTokenResolver : IResolveAccessToken
 {
     private readonly SequentialAccessTokenResolver _resolver;
 

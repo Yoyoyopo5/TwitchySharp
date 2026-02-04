@@ -118,13 +118,13 @@ public class Test_SequentialAccessTokenResolver
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private class MockNullTokenResolver : ITokenResolver
+    private class MockNullTokenResolver : IResolveAccessToken
     {
         public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
             => ValueTask.FromResult<AccessToken?>(null);
     }
 
-    private class MockTrackingTokenResolver(AccessToken token) : ITokenResolver
+    private class MockTrackingTokenResolver(AccessToken token) : IResolveAccessToken
     {
         public bool WasCalled { get; private set; }
 

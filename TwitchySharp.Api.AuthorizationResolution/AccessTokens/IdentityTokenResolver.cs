@@ -16,7 +16,7 @@ public record IdentityTokenResolver(
     IResolveUserAccessToken? UserAccessTokenResolver = null,
     IResolveAppAccessToken? AppAccessTokenResolver = null,
     IResolveExtensionJsonWebToken? ExtensionJwtResolver = null
-) : ITokenResolver
+) : IResolveAccessToken
 {
     /// <inheritdoc/>
     public async ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)

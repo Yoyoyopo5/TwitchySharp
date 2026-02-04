@@ -196,7 +196,7 @@ public class Test_DefaultRequestAuthorizer_Pipeline(TokenResolutionTestFixture f
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private class MockNullTokenResolver : ITokenResolver
+    private class MockNullTokenResolver : IResolveAccessToken
     {
         public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
             => ValueTask.FromResult<AccessToken?>(null);

@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// <remarks>
 /// <para>
 /// Resolves authorization headers using an <see cref="IResolveClientIdentity"/> for client id resolution 
-/// and an <see cref="ITokenResolver"/> for access token (bearer auth) resolution.
+/// and an <see cref="IResolveAccessToken"/> for access token (bearer auth) resolution.
 /// </para>
 /// <para>
 /// Resolves <see langword="null"/> if the passed <see cref="ITwitchRequest"/> does not implement <see cref="IRequireAuthorization"/>.
@@ -20,11 +20,11 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// Use <see cref="SingleClientIdentityResolver"/> for simple single-client scenarios.
 /// </param>
 /// <param name="tokenResolver">The resolver for obtaining access tokens based on identity and required scopes.</param>
-public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResolver, ITokenResolver tokenResolver)
+public class DefaultRequestAuthorizer(IResolveClientIdentity clientIdentityResolver, IResolveAccessToken tokenResolver)
     : IAuthorizeTwitchRequest
 {
     private readonly IResolveClientIdentity _clientIdentityResolver = clientIdentityResolver;
-    private readonly ITokenResolver _tokenResolver = tokenResolver;
+    private readonly IResolveAccessToken _tokenResolver = tokenResolver;
 
     public async ValueTask<TwitchAuthorizationRequestOptions?> GetAuthorization(ITwitchRequest request, CancellationToken ct = default)
     {

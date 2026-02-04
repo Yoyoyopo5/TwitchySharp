@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 namespace TwitchySharp.Api.AuthorizationResolution;
 
 /// <summary>
-/// Resolves <see cref="AccessToken"/>s by iterating through a chain of <see cref="ITokenResolver"/>s,
+/// Resolves <see cref="AccessToken"/>s by iterating through a chain of <see cref="IResolveAccessToken"/>s,
 /// with the first non-null <see cref="AccessToken"/> returned, if any.
 /// </summary>
 /// <param name="ResolverChain">The chain of resolvers to use.</param>
-public record SequentialAccessTokenResolver(IEnumerable<ITokenResolver> ResolverChain) : ITokenResolver
+public record SequentialAccessTokenResolver(IEnumerable<IResolveAccessToken> ResolverChain) : IResolveAccessToken
 {
     /// <summary>
     /// <inheritdoc/>
@@ -21,7 +21,7 @@ public record SequentialAccessTokenResolver(IEnumerable<ITokenResolver> Resolver
 
     private async ValueTask<AccessToken?> ResolveChain(ITwitchRequest request, CancellationToken ct = default)
     {
-        foreach (ITokenResolver resolver in ResolverChain)
+        foreach (IResolveAccessToken resolver in ResolverChain)
         {
             if (await resolver.GetToken(request, ct) is AccessToken token)
                 return token;

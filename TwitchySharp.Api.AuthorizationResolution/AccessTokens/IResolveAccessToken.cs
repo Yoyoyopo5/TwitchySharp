@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 
-public interface ITokenResolver
+public interface IResolveAccessToken
 {
     /// <summary>
     /// Resolves an <see cref="AccessToken"/> based on the provided <see cref="ITwitchRequest"/>.

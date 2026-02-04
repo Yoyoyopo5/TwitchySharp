@@ -159,7 +159,7 @@ public class Test_DefaultRequestAuthorizer
             => ValueTask.FromResult<ClientIdentity?>(null);
     }
 
-    private class MockNullTokenResolver : ITokenResolver
+    private class MockNullTokenResolver : IResolveAccessToken
     {
         public ValueTask<AccessToken?> GetToken(ITwitchRequest request, CancellationToken ct = default)
             => ValueTask.FromResult<AccessToken?>(null);
@@ -176,7 +176,7 @@ public class Test_DefaultRequestAuthorizer
         }
     }
 
-    private class MockTrackingTokenResolver(AccessToken token) : ITokenResolver
+    private class MockTrackingTokenResolver(AccessToken token) : IResolveAccessToken
     {
         public CancellationToken ReceivedCancellationToken { get; private set; }
 
