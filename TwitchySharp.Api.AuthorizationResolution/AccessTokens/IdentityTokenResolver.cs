@@ -10,8 +10,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// and dispatching to the appropriate identity-specific resolver.
 /// </summary>
 /// <remarks>
-/// If the passed <see cref="ITwitchRequest"/> does not implement <see cref="IRequireAuthorization"/>,
-/// <see cref="GetToken(ITwitchRequest, CancellationToken)"/> returns <see cref="AccessTokenResolutionResult.Unavailable"/>
+/// If the passed identity is <see cref="TwitchApiIdentity.Default"/>, an <see cref="AccessTokenResolutionResult.Unavailable"/> is returned.
 /// </remarks>
 /// <param name="UserAccessTokenResolver">Resolver for <see cref="UserIdentity"/> requests.</param>
 /// <param name="AppAccessTokenResolver">Resolver for requests using <see cref="ClientIdentity"/> or <see cref="TwitchApiIdentity"/> where <see cref="TwitchApiIdentity.ClientId"/> is not <see langword="null"/>.</param>
@@ -37,7 +36,9 @@ public record IdentityTokenResolver(
             ExtensionIdentity extension when ExtensionJwtResolver is not null
                 => await ExtensionJwtResolver.GetToken(extension, ct),
             TwitchApiIdentity { ClientId: not null } identity when AppAccessTokenResolver is not null
-                => await AppAccessTokenResolver.GetToken(new ClientIdentity(identity.ClientId.Value), ct),
+                => await AppAccessTokenResolver.GetToken(new ClientIdentity(identity.ClientId.Value), ct), 
+            TwitchApiIdentity
+                => new AccessTokenResolutionResult.Unavailable(),
             _ => throw new NotSupportedException($"Unsupported identity type {hasIdentity.Identity.GetType().Name} when resolving access token by identity.")
         };
     }
