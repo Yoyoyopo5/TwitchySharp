@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -77,7 +78,7 @@ public class Test_UserAuthorizedSubscriptionTypeExtensions
     {
         public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelFollow;
         public ConditionKey AuthorizingUserConditionKey => new ConditionKey("nonexistent_key");
-        public IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadFollowers];
+        public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorReadFollowers);
 
         public IReadOnlyDictionary<ConditionKey, object> Condition => new Dictionary<ConditionKey, object>
         {
@@ -92,7 +93,7 @@ public class Test_UserAuthorizedSubscriptionTypeExtensions
     {
         public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelFollow;
         public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
-        public IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadFollowers];
+        public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorReadFollowers);
 
         public IReadOnlyDictionary<ConditionKey, object> Condition => new Dictionary<ConditionKey, object>
         {

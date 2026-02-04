@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -26,8 +27,8 @@ public record GetUsersRequest
 {
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Get;
-    private IEnumerable<Scope> ConfiguredScopes { get; init; } = [];
-    public override IEnumerable<Scope> ValidScopes => ConfiguredScopes;
+    private IReadOnlySet<Scope> ConfiguredScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
+    public override IReadOnlySet<Scope> ValidScopes => ConfiguredScopes;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", UserIds?.Select(x => x.Value))
@@ -60,5 +61,5 @@ public record GetUsersRequest
     /// <param name="user">The user identity to fetch email for.</param>
     /// <returns>A new <see cref="GetUsersRequest"/> configured for email access.</returns>
     public GetUsersRequest IncludingEmail(UserIdentity user)
-        => this with { Identity = user, ConfiguredScopes = [ Scope.UserReadEmail ] };
+        => this with { Identity = user, ConfiguredScopes = ImmutableHashSet.Create(Scope.UserReadEmail) };
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -19,7 +20,7 @@ public record UpdateUserChatColorRequest
     protected override string Path => "/chat/color";
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageChatColor ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserManageChatColor);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

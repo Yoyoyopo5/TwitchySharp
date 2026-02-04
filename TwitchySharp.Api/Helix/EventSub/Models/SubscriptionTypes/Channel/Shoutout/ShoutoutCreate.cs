@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -21,7 +22,7 @@ public sealed record ShoutoutCreate(UserId BroadcasterUserId, UserId ModeratorUs
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ShoutoutCreate;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadShoutouts, Scope.ModeratorManageShoutouts ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorReadShoutouts, Scope.ModeratorManageShoutouts);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

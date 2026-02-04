@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -19,7 +20,7 @@ public record GetUserEmotesRequest
     protected override string Path => "/chat/emotes/user";
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadEmotes ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadEmotes);
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

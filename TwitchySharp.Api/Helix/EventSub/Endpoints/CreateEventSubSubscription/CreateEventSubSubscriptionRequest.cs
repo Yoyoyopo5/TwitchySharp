@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
@@ -44,10 +45,10 @@ public record CreateEventSubSubscriptionRequest
         },
         _ => TwitchApiIdentity.Default
     };
-    public override IEnumerable<Scope> ValidScopes => Subscription.Type switch
+    public override IReadOnlySet<Scope> ValidScopes => Subscription.Type switch
     {
         IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.ValidScopes,
-        _ => []
+        _ => ImmutableHashSet<Scope>.Empty
     };
     public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
 

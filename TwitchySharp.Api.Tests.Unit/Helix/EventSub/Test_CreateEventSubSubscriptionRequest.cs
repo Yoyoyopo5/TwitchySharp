@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
@@ -201,7 +202,7 @@ public class Test_CreateEventSubSubscriptionRequest
     {
         public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelFollow;
         public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
-        public IEnumerable<Scope> ValidScopes => [Scope.ModeratorReadFollowers];
+        public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorReadFollowers);
 
         // Condition is missing the moderator_user_id key
         public IReadOnlyDictionary<ConditionKey, object> Condition => new Dictionary<ConditionKey, object>

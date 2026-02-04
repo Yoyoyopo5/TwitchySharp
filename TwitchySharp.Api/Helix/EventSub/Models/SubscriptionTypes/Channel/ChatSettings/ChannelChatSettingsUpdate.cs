@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -20,7 +21,7 @@ public sealed record ChannelChatSettingsUpdate(UserId BroadcasterUserId, UserId 
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatSettingsUpdate;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadChat ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadChat);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

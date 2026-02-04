@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using TwitchySharp.Api.Authorization;
+using System.Collections.Immutable;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix;
@@ -54,7 +54,7 @@ public abstract record TwitchHelixRequest<TResponseContent>
     /// </summary>
     protected virtual TwitchApiIdentity DefaultIdentity { get; } = TwitchApiIdentity.Default;
     /// <inheritdoc/>
-    public virtual IEnumerable<Scope> ValidScopes { get; } = [];
+    public virtual IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet<Scope>.Empty;
     /// <inheritdoc/>
     public virtual AccessToken? OverrideAccessToken { get; init; }
     /// <summary>

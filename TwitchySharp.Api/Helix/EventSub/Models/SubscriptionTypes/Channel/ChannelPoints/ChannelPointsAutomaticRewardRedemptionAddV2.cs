@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Api.Authorization;
@@ -18,7 +19,7 @@ public sealed record ChannelPointsAutomaticRewardRedemptionAddV2(UserId Broadcas
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

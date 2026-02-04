@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
@@ -36,7 +37,7 @@ public record ValidateAccessTokenRequest
     /// <summary>
     /// No specific scopes are required for token validation.
     /// </summary>
-    public IEnumerable<Scope> ValidScopes => [];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
 
     /// <summary>
     /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.

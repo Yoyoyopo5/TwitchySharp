@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
@@ -23,7 +23,7 @@ public record UpdateUserExtensionsRequest
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Put;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserEditBroadcast ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserEditBroadcast);
     protected override TwitchApiIdentity DefaultIdentity => User;
 
     /// <summary>
@@ -225,7 +225,7 @@ public record ExtensionsConfigurationType<T>
 public record UpdateExtensionParameters
 {
     /// <summary>
-    /// Determines the extension’s activation state
+    /// Determines the extension�fs activation state
     /// </summary>
     public required bool Active { get; init; }
 }

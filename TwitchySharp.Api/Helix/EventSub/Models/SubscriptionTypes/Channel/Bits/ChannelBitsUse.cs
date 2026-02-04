@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Api.Authorization;
@@ -25,7 +26,7 @@ public sealed record ChannelBitsUse(UserId BroadcasterUserId)
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelBitsUse;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.BitsRead ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.BitsRead);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

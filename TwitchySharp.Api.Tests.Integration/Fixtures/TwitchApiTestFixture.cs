@@ -8,6 +8,7 @@ using System;
 using System.Net.Http;
 using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
+using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
@@ -24,7 +25,7 @@ public record SendChatMessageRequest
     protected override string Path => "/chat/messages";
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Message.SenderId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserWriteChat, Scope.UserBot, Scope.ChannelBot ];
+    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserWriteChat, Scope.UserBot, Scope.ChannelBot);
     public override object? ContentObject => Message;
     /// <summary>
     /// Allows for sending the request using an app access token with a user that has authorized the app with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>.
