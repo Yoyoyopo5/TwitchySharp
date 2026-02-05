@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
-namespace TwitchySharp.Api.AuthorizationResolution;
-
-public interface IStoreAccessTokens<TKey, TDetails, TIdentity, TToken>
+public interface IStoreAccessTokens<in TToken, in TKey, TDetails>
     where TToken : AccessToken
-    where TIdentity : TwitchApiIdentity
-    where TDetails : AccessTokenDetails<TIdentity, TToken>
+    where TDetails : IAccessTokenDetails
 {
     /// <summary>
     /// Get stored <typeparamref name="TDetails"/> associated with a specific <typeparamref name="TToken"/>.
