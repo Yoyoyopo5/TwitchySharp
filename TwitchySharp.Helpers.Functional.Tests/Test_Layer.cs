@@ -9,8 +9,8 @@ public class Test_Layer
     public async Task Layer_WithTwoTypeParams_WrapsStep()
     {
         // Arrange
-        Step<int, string> core = input => input.ToString().AsValueTask();
-        Layer<int, string> layer = next => async input => $"[{await next(input)}]";
+        Step<int, string> core = (input, _) => input.ToString().AsValueTask();
+        Layer<int, string> layer = next => async (input, ct) => $"[{await next(input, ct)}]";
 
         // Act
         Step<int, string> wrapped = layer(core);
@@ -24,8 +24,8 @@ public class Test_Layer
     public async Task Layer_WithTwoTypeParams_CanModifyInput()
     {
         // Arrange
-        Step<int, int> core = input => (input * 2).AsValueTask();
-        Layer<int, int> layer = next => input => next(input + 10);
+        Step<int, int> core = (input, _) => (input * 2).AsValueTask();
+        Layer<int, int> layer = next => (input, ct) => next(input + 10, ct);
 
         // Act
         Step<int, int> wrapped = layer(core);
@@ -39,10 +39,10 @@ public class Test_Layer
     public async Task Layer_WithTwoTypeParams_CanModifyOutput()
     {
         // Arrange
-        Step<int, int> core = input => (input * 2).AsValueTask();
-        Layer<int, int> layer = next => async input =>
+        Step<int, int> core = (input, _) => (input * 2).AsValueTask();
+        Layer<int, int> layer = next => async (input, ct) =>
         {
-            int output = await next(input);
+            int output = await next(input, ct);
             return output + 100;
         };
 
@@ -58,8 +58,8 @@ public class Test_Layer
     public async Task Layer_HomomorphicSingleTypeParam_WrapsStep()
     {
         // Arrange
-        Step<string> core = input => input.ToUpper().AsValueTask();
-        Layer<string> layer = next => async input => $"({await next(input)})";
+        Step<string> core = (input, _) => input.ToUpper().AsValueTask();
+        Layer<string> layer = next => async (input, ct) => $"({await next(input, ct)})";
 
         // Act
         Step<string> wrapped = layer(core);
@@ -73,9 +73,9 @@ public class Test_Layer
     public async Task Layer_MultipleLayers_ApplyInOrder()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addOne = next => async input => await next(input) + 1;
-        Layer<int, int> timesTwo = next => async input => await next(input) * 2;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addOne = next => async (input, ct) => await next(input, ct) + 1;
+        Layer<int, int> timesTwo = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act - apply addOne first, then timesTwo wraps around it
         Step<int, int> wrapped = timesTwo(addOne(core));
@@ -90,12 +90,12 @@ public class Test_Layer
     {
         // Arrange
         bool coreCalled = false;
-        Step<int, int> core = input =>
+        Step<int, int> core = (input, _) =>
         {
             coreCalled = true;
             return input.AsValueTask();
         };
-        Layer<int, int> shortCircuit = next => input => (-1).AsValueTask();
+        Layer<int, int> shortCircuit = next => (input, _) => (-1).AsValueTask();
 
         // Act
         Step<int, int> wrapped = shortCircuit(core);
@@ -110,8 +110,8 @@ public class Test_Layer
     public async Task Layer_HomomorphicSingleTypeParam_CanModifyInputAndOutput()
     {
         // Arrange
-        Step<int> core = input => (input * 3).AsValueTask();
-        Layer<int> layer = next => async input => await next(input + 1) + 10;
+        Step<int> core = (input, _) => (input * 3).AsValueTask();
+        Layer<int> layer = next => async (input, ct) => await next(input + 1, ct) + 10;
 
         // Act
         Step<int> wrapped = layer(core);

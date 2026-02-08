@@ -8,25 +8,25 @@ public static partial class FunctionalExtensions
     /// <param name="a">The first step to execute.</param>
     /// <param name="b">The second step, which receives the output of <paramref name="a"/>.</param>
     public static Step<TIn, TOut> Then<TIn, TMid, TOut>(this Step<TIn, TMid> a, Step<TMid, TOut> b)
-        => async input => await b(await a(input));
+        => async (input, ct) => await b(await a(input, ct), ct);
 
     /// <summary>Chains a same-type step into a transforming step.</summary>
     /// <param name="a">The same-type step to execute first.</param>
     /// <param name="b">The transforming step, which receives the refined output of <paramref name="a"/>.</param>
     public static Step<TIn, TOut> Then<TIn, TOut>(this Step<TIn> a, Step<TIn, TOut> b)
-        => async input => await b(await a(input));
+        => async (input, ct) => await b(await a(input, ct), ct);
 
     /// <summary>Chains a transforming step into a same-type step.</summary>
     /// <param name="a">The transforming step to execute first.</param>
     /// <param name="b">The same-type step, which refines the output of <paramref name="a"/>.</param>
     public static Step<TIn, TOut> Then<TIn, TOut>(this Step<TIn, TOut> a, Step<TOut> b)
-        => async input => await b(await a(input));
+        => async (input, ct) => await b(await a(input, ct), ct);
 
     /// <summary>Chains two same-type steps together.</summary>
     /// <param name="a">The first same-type step.</param>
     /// <param name="b">The second same-type step.</param>
     public static Step<T> Then<T>(this Step<T> a, Step<T> b)
-        => async input => await b(await a(input));
+        => async (input, ct) => await b(await a(input, ct), ct);
 
     /// <summary>Wraps a step in a layer, applying middleware behavior.</summary>
     /// <param name="core">The step to wrap.</param>

@@ -11,8 +11,8 @@ public class Test_Then
     public async Task Then_StepTInTMid_StepTMidTOut_ComposesSequentially()
     {
         // Arrange
-        Step<int, string> first = input => input.ToString().AsValueTask();
-        Step<string, int> second = input => input.Length.AsValueTask();
+        Step<int, string> first = (input, _) => input.ToString().AsValueTask();
+        Step<string, int> second = (input, _) => input.Length.AsValueTask();
 
         // Act
         Step<int, int> composed = first.Then(second);
@@ -26,8 +26,8 @@ public class Test_Then
     public async Task Then_StepTInTMid_StepTMidTOut_PassesOutputOfFirstToSecond()
     {
         // Arrange
-        Step<int, double> first = input => (input * 1.5).AsValueTask();
-        Step<double, string> second = input => input.ToString("F1").AsValueTask();
+        Step<int, double> first = (input, _) => (input * 1.5).AsValueTask();
+        Step<double, string> second = (input, _) => input.ToString("F1").AsValueTask();
 
         // Act
         Step<int, string> composed = first.Then(second);
@@ -43,8 +43,8 @@ public class Test_Then
     public async Task Then_HomomorphicStep_HomomorphicStep_ComposesSequentially()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int> timesTwo = input => (input * 2).AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int> timesTwo = (input, _) => (input * 2).AsValueTask();
 
         // Act
         Step<int> composed = addOne.Then(timesTwo);
@@ -58,9 +58,9 @@ public class Test_Then
     public async Task Then_HomomorphicStep_ChainMultiple()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int> timesTwo = input => (input * 2).AsValueTask();
-        Step<int> subtractThree = input => (input - 3).AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int> timesTwo = (input, _) => (input * 2).AsValueTask();
+        Step<int> subtractThree = (input, _) => (input - 3).AsValueTask();
 
         // Act
         Step<int> composed = addOne.Then(timesTwo).Then(subtractThree);
@@ -76,8 +76,8 @@ public class Test_Then
     public async Task Then_HomomorphicStepTIn_StepTInTOut_ComposesSequentially()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int, string> toStr = input => input.ToString().AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int, string> toStr = (input, _) => input.ToString().AsValueTask();
 
         // Act
         Step<int, string> composed = addOne.Then(toStr);
@@ -93,8 +93,8 @@ public class Test_Then
     public async Task Then_StepTInTOut_HomomorphicStepTOut_ComposesSequentially()
     {
         // Arrange
-        Step<string, int> parse = input => int.Parse(input).AsValueTask();
-        Step<int> timesTwo = input => (input * 2).AsValueTask();
+        Step<string, int> parse = (input, _) => int.Parse(input).AsValueTask();
+        Step<int> timesTwo = (input, _) => (input * 2).AsValueTask();
 
         // Act
         Step<string, int> composed = parse.Then(timesTwo);
@@ -111,8 +111,8 @@ public class Test_Then
     {
         // Arrange
         int effectCapture = 0;
-        Step<int, string> step = input => input.ToString().AsValueTask();
-        Effect<int> effect = input =>
+        Step<int, string> step = (input, _) => input.ToString().AsValueTask();
+        Effect<int> effect = (input, _) =>
         {
             effectCapture = input;
             return ValueTask.CompletedTask;
@@ -132,8 +132,8 @@ public class Test_Then
     {
         // Arrange
         List<int> effectLog = new();
-        Step<int, int> step = input => (input * 10).AsValueTask();
-        Effect<int> effect = input =>
+        Step<int, int> step = (input, _) => (input * 10).AsValueTask();
+        Effect<int> effect = (input, _) =>
         {
             effectLog.Add(input);
             return ValueTask.CompletedTask;
@@ -154,8 +154,8 @@ public class Test_Then
     {
         // Arrange
         string effectCapture = "";
-        Step<string> step = input => input.ToUpper().AsValueTask();
-        Effect<string> effect = input =>
+        Step<string> step = (input, _) => input.ToUpper().AsValueTask();
+        Effect<string> effect = (input, _) =>
         {
             effectCapture = input;
             return ValueTask.CompletedTask;
@@ -176,8 +176,8 @@ public class Test_Then
     public async Task Then_StepTInTOut_LayerTInTOut_AppliesLayerToStep()
     {
         // Arrange
-        Step<int, string> core = input => input.ToString().AsValueTask();
-        Layer<int, string> layer = next => async input => $"[{await next(input)}]";
+        Step<int, string> core = (input, _) => input.ToString().AsValueTask();
+        Layer<int, string> layer = next => async (input, ct) => $"[{await next(input, ct)}]";
 
         // Act
         Step<int, string> composed = core.Then(layer);
@@ -191,8 +191,8 @@ public class Test_Then
     public async Task Then_HomomorphicStep_HomomorphicLayer_AppliesLayerToStep()
     {
         // Arrange
-        Step<int> core = input => (input + 1).AsValueTask();
-        Layer<int> layer = next => async input => await next(input) * 10;
+        Step<int> core = (input, _) => (input + 1).AsValueTask();
+        Layer<int> layer = next => async (input, ct) => await next(input, ct) * 10;
 
         // Act
         Step<int> composed = core.Then(layer);
@@ -206,9 +206,9 @@ public class Test_Then
     public async Task Then_StepTInTOut_MultipleLayers_ApplyInChainOrder()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addBracket = next => async input => await next(input) + 100;
-        Layer<int, int> multiply = next => async input => await next(input) * 2;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addBracket = next => async (input, ct) => await next(input, ct) + 100;
+        Layer<int, int> multiply = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act
         Step<int, int> composed = core.Then(addBracket).Then(multiply);
@@ -224,8 +224,8 @@ public class Test_Then
     public async Task Then_MixedStepAndLayer_ComposeCorrectly()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Layer<int> timesThreeLayer = next => async input => await next(input) * 3;
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Layer<int> timesThreeLayer = next => async (input, ct) => await next(input, ct) * 3;
 
         // Act
         Step<int> composed = addOne.Then(timesThreeLayer);
@@ -240,12 +240,12 @@ public class Test_Then
     {
         // Arrange
         List<string> order = new();
-        Step<int, int> step = input =>
+        Step<int, int> step = (input, _) =>
         {
             order.Add("step");
             return (input * 2).AsValueTask();
         };
-        Effect<int> effect = input =>
+        Effect<int> effect = (input, _) =>
         {
             order.Add("effect");
             return ValueTask.CompletedTask;

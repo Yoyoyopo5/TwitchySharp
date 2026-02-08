@@ -9,7 +9,7 @@ public class Test_Ignore
     public async Task Ignore_ConvertsStepToEffect_DiscardsOutput()
     {
         // Arrange
-        Step<int, string> step = input => input.ToString().AsValueTask();
+        Step<int, string> step = (input, _) => input.ToString().AsValueTask();
 
         // Act
         Effect<int> effect = step.Ignore();
@@ -23,7 +23,7 @@ public class Test_Ignore
     {
         // Arrange
         bool stepExecuted = false;
-        Step<int, string> step = input =>
+        Step<int, string> step = (input, _) =>
         {
             stepExecuted = true;
             return input.ToString().AsValueTask();
@@ -42,7 +42,7 @@ public class Test_Ignore
     {
         // Arrange
         int capturedInput = 0;
-        Step<int, string> step = input =>
+        Step<int, string> step = (input, _) =>
         {
             capturedInput = input;
             return input.ToString().AsValueTask();
@@ -60,7 +60,7 @@ public class Test_Ignore
     public async Task Ignore_ReturnsCompletedValueTask()
     {
         // Arrange
-        Step<int, int> step = input => (input * 2).AsValueTask();
+        Step<int, int> step = (input, _) => (input * 2).AsValueTask();
 
         // Act
         Effect<int> effect = step.Ignore();
@@ -76,12 +76,12 @@ public class Test_Ignore
     {
         // Arrange
         int capturedInput = 0;
-        Step<int, string> innerStep = input =>
+        Step<int, string> innerStep = (input, _) =>
         {
             capturedInput = input;
             return input.ToString().AsValueTask();
         };
-        Step<int> mainStep = input => (input + 1).AsValueTask();
+        Step<int> mainStep = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int> pipeline = mainStep.TapInput(innerStep.Ignore());
@@ -97,12 +97,12 @@ public class Test_Ignore
     {
         // Arrange
         int capturedOutput = 0;
-        Step<int, int> innerStep = input =>
+        Step<int, int> innerStep = (input, _) =>
         {
             capturedOutput = input;
             return (input * 100).AsValueTask();
         };
-        Step<int> mainStep = input => (input + 1).AsValueTask();
+        Step<int> mainStep = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int> pipeline = mainStep.Tap(innerStep.Ignore());
@@ -118,7 +118,7 @@ public class Test_Ignore
     {
         // Arrange
         bool completed = false;
-        Step<int, string> step = async input =>
+        Step<int, string> step = async (input, _) =>
         {
             await Task.Delay(1);
             completed = true;
@@ -138,7 +138,7 @@ public class Test_Ignore
     {
         // Arrange
         int callCount = 0;
-        Step<int, int> step = input =>
+        Step<int, int> step = (input, _) =>
         {
             callCount++;
             return (input * 2).AsValueTask();

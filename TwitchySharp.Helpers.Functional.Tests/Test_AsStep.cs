@@ -55,7 +55,7 @@ public class Test_AsStep
     {
         // Arrange
         Func<int, string> intToStr = x => x.ToString();
-        Step<string, int> strLen = input => input.Length.AsValueTask();
+        Step<string, int> strLen = (input, _) => input.Length.AsValueTask();
 
         // Act
         Step<int, int> pipeline = intToStr.AsStep().Then(strLen);
@@ -132,7 +132,7 @@ public class Test_AsStep
     {
         // Arrange
         Func<int, int> func = x => x * 3;
-        Layer<int> addTenLayer = next => async input => await next(input) + 10;
+        Layer<int> addTenLayer = next => async (input, ct) => await next(input, ct) + 10;
 
         // Act
         Step<int> pipeline = FunctionalExtensions.AsStep<int>(func).Then(addTenLayer);
@@ -148,7 +148,7 @@ public class Test_AsStep
         // Arrange
         int captured = 0;
         Func<int, int> func = x => x + 1;
-        Effect<int> effect = output =>
+        Effect<int> effect = (output, _) =>
         {
             captured = output;
             return ValueTask.CompletedTask;

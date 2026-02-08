@@ -132,7 +132,7 @@ public class Test_AsValueTask
         // Arrange
         int effectCapture = 0;
         Action<int> action = x => effectCapture = x;
-        Step<int> step = input => (input + 1).AsValueTask();
+        Step<int> step = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int> composed = step.TapInput(action.AsEffect());

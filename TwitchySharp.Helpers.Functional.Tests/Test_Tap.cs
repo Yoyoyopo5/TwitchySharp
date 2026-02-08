@@ -12,8 +12,8 @@ public class Test_Tap
     {
         // Arrange
         string captured = "";
-        Step<int, string> step = input => input.ToString().AsValueTask();
-        Effect<string> effect = output =>
+        Step<int, string> step = (input, _) => input.ToString().AsValueTask();
+        Effect<string> effect = (output, _) =>
         {
             captured = output;
             return ValueTask.CompletedTask;
@@ -32,8 +32,8 @@ public class Test_Tap
     public async Task Tap_Heteromorphic_StepOutputIsUnchanged()
     {
         // Arrange
-        Step<int, int> step = input => (input * 2).AsValueTask();
-        Effect<int> effect = output => ValueTask.CompletedTask;
+        Step<int, int> step = (input, _) => (input * 2).AsValueTask();
+        Effect<int> effect = (output, _) => ValueTask.CompletedTask;
 
         // Act
         Step<int, int> tapped = step.Tap(effect);
@@ -48,12 +48,12 @@ public class Test_Tap
     {
         // Arrange
         List<string> order = new();
-        Step<int, string> step = input =>
+        Step<int, string> step = (input, _) =>
         {
             order.Add("step");
             return input.ToString().AsValueTask();
         };
-        Effect<string> effect = output =>
+        Effect<string> effect = (output, _) =>
         {
             order.Add("effect");
             return ValueTask.CompletedTask;
@@ -74,8 +74,8 @@ public class Test_Tap
     {
         // Arrange
         int capturedOutput = 0;
-        Step<int, int> step = input => (input * 10).AsValueTask();
-        Effect<int> effect = output =>
+        Step<int, int> step = (input, _) => (input * 10).AsValueTask();
+        Effect<int> effect = (output, _) =>
         {
             capturedOutput = output;
             return ValueTask.CompletedTask;
@@ -97,8 +97,8 @@ public class Test_Tap
     {
         // Arrange
         string captured = "";
-        Step<string> step = input => input.ToUpper().AsValueTask();
-        Effect<string> effect = output =>
+        Step<string> step = (input, _) => input.ToUpper().AsValueTask();
+        Effect<string> effect = (output, _) =>
         {
             captured = output;
             return ValueTask.CompletedTask;
@@ -118,12 +118,12 @@ public class Test_Tap
     {
         // Arrange
         List<string> order = new();
-        Step<int> step = input =>
+        Step<int> step = (input, _) =>
         {
             order.Add("step");
             return (input + 1).AsValueTask();
         };
-        Effect<int> effect = output =>
+        Effect<int> effect = (output, _) =>
         {
             order.Add("effect");
             return ValueTask.CompletedTask;
@@ -143,8 +143,8 @@ public class Test_Tap
     public async Task Tap_Homomorphic_ResultIsUnchanged()
     {
         // Arrange
-        Step<int> step = input => (input * 3).AsValueTask();
-        Effect<int> effect = output => ValueTask.CompletedTask;
+        Step<int> step = (input, _) => (input * 3).AsValueTask();
+        Effect<int> effect = (output, _) => ValueTask.CompletedTask;
 
         // Act
         Step<int> tapped = step.Tap(effect);
@@ -161,8 +161,8 @@ public class Test_Tap
     {
         // Arrange
         int capturedInput = 0;
-        Step<int, string> step = input => input.ToString().AsValueTask();
-        Effect<int> effect = input =>
+        Step<int, string> step = (input, _) => input.ToString().AsValueTask();
+        Effect<int> effect = (input, _) =>
         {
             capturedInput = input;
             return ValueTask.CompletedTask;
@@ -182,12 +182,12 @@ public class Test_Tap
     {
         // Arrange
         List<string> order = new();
-        Step<int, string> step = input =>
+        Step<int, string> step = (input, _) =>
         {
             order.Add("step");
             return input.ToString().AsValueTask();
         };
-        Effect<int> effect = input =>
+        Effect<int> effect = (input, _) =>
         {
             order.Add("effect");
             return ValueTask.CompletedTask;
@@ -207,8 +207,8 @@ public class Test_Tap
     public async Task TapInput_Heteromorphic_StepOutputIsUnchanged()
     {
         // Arrange
-        Step<int, int> step = input => (input * 5).AsValueTask();
-        Effect<int> effect = input => ValueTask.CompletedTask;
+        Step<int, int> step = (input, _) => (input * 5).AsValueTask();
+        Effect<int> effect = (input, _) => ValueTask.CompletedTask;
 
         // Act
         Step<int, int> tapped = step.TapInput(effect);
@@ -225,8 +225,8 @@ public class Test_Tap
     {
         // Arrange
         int capturedInput = 0;
-        Step<int> step = input => (input + 100).AsValueTask();
-        Effect<int> effect = input =>
+        Step<int> step = (input, _) => (input + 100).AsValueTask();
+        Effect<int> effect = (input, _) =>
         {
             capturedInput = input;
             return ValueTask.CompletedTask;
@@ -246,12 +246,12 @@ public class Test_Tap
     {
         // Arrange
         List<string> order = new();
-        Step<int> step = input =>
+        Step<int> step = (input, _) =>
         {
             order.Add("step");
             return (input + 1).AsValueTask();
         };
-        Effect<int> effect = input =>
+        Effect<int> effect = (input, _) =>
         {
             order.Add("effect");
             return ValueTask.CompletedTask;
@@ -275,13 +275,13 @@ public class Test_Tap
         // Arrange
         int tapCapture = 0;
         int tapInputCapture = 0;
-        Step<int, int> step = input => (input * 10).AsValueTask();
-        Effect<int> tapEffect = output =>
+        Step<int, int> step = (input, _) => (input * 10).AsValueTask();
+        Effect<int> tapEffect = (output, _) =>
         {
             tapCapture = output;
             return ValueTask.CompletedTask;
         };
-        Effect<int> tapInputEffect = input =>
+        Effect<int> tapInputEffect = (input, _) =>
         {
             tapInputCapture = input;
             return ValueTask.CompletedTask;
@@ -307,9 +307,9 @@ public class Test_Tap
     {
         // Arrange
         List<int> captures = new();
-        Step<int> step = input => (input + 1).AsValueTask();
-        Effect<int> effectA = output => { captures.Add(output); return ValueTask.CompletedTask; };
-        Effect<int> effectB = output => { captures.Add(output * 10); return ValueTask.CompletedTask; };
+        Step<int> step = (input, _) => (input + 1).AsValueTask();
+        Effect<int> effectA = (output, _) => { captures.Add(output); return ValueTask.CompletedTask; };
+        Effect<int> effectB = (output, _) => { captures.Add(output * 10); return ValueTask.CompletedTask; };
 
         // Act
         Step<int> tapped = step.Tap(effectA).Tap(effectB);
@@ -327,13 +327,13 @@ public class Test_Tap
     {
         // Arrange
         List<string> log = new();
-        Step<int, int> step = input => (input * 2).AsValueTask();
-        Effect<int> inputEffect = input =>
+        Step<int, int> step = (input, _) => (input * 2).AsValueTask();
+        Effect<int> inputEffect = (input, _) =>
         {
             log.Add($"input:{input}");
             return ValueTask.CompletedTask;
         };
-        Effect<int> outputEffect = output =>
+        Effect<int> outputEffect = (output, _) =>
         {
             log.Add($"output:{output}");
             return ValueTask.CompletedTask;

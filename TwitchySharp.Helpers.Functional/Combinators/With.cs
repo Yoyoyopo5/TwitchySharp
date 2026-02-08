@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace TwitchySharp.Helpers.Functional;
 
@@ -8,6 +9,7 @@ public static partial class FunctionalExtensions
     /// <remarks>The primary way to invoke a pipeline: <c>input.With(pipeline)</c>.</remarks>
     /// <param name="input">The value to pipe into the step.</param>
     /// <param name="step">The step or composed pipeline to execute.</param>
-    public static ValueTask<TOut> With<TIn, TOut>(this TIn input, Step<TIn, TOut> step)
-        => step(input);
+    /// <param name="ct">Cancellation token for cooperative cancellation.</param>
+    public static ValueTask<TOut> With<TIn, TOut>(this TIn input, Step<TIn, TOut> step, CancellationToken ct = default)
+        => step(input, ct);
 }

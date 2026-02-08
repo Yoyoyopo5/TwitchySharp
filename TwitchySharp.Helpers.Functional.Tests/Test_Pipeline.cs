@@ -9,9 +9,9 @@ public class Test_Pipeline
     public async Task Pipeline_StepChain_ProcessesDataThroughMultipleTransformations()
     {
         // Arrange
-        Step<string, int> parse = input => int.Parse(input).AsValueTask();
-        Step<int, int> doubleIt = input => (input * 2).AsValueTask();
-        Step<int, string> format = input => $"Result: {input}".AsValueTask();
+        Step<string, int> parse = (input, _) => int.Parse(input).AsValueTask();
+        Step<int, int> doubleIt = (input, _) => (input * 2).AsValueTask();
+        Step<int, string> format = (input, _) => $"Result: {input}".AsValueTask();
 
         // Act
         Step<string, string> pipeline = parse.Then(doubleIt).Then(format);
@@ -26,11 +26,11 @@ public class Test_Pipeline
     {
         // Arrange
         List<string> log = new();
-        Step<int, int> core = input => (input * 2).AsValueTask();
-        Layer<int, int> loggingLayer = next => async input =>
+        Step<int, int> core = (input, _) => (input * 2).AsValueTask();
+        Layer<int, int> loggingLayer = next => async (input, ct) =>
         {
             log.Add($"input: {input}");
-            int result = await next(input);
+            int result = await next(input, ct);
             log.Add($"output: {result}");
             return result;
         };
@@ -51,8 +51,8 @@ public class Test_Pipeline
     {
         // Arrange
         List<int> auditLog = new();
-        Step<int, int> addTen = input => (input + 10).AsValueTask();
-        Effect<int> audit = input =>
+        Step<int, int> addTen = (input, _) => (input + 10).AsValueTask();
+        Effect<int> audit = (input, _) =>
         {
             auditLog.Add(input);
             return ValueTask.CompletedTask;
@@ -72,8 +72,8 @@ public class Test_Pipeline
     public async Task Pipeline_WithInvocation_UsesWithToFeedInput()
     {
         // Arrange
-        Step<int, string> toStr = input => input.ToString().AsValueTask();
-        Step<string, string> wrap = input => $"[{input}]".AsValueTask();
+        Step<int, string> toStr = (input, _) => input.ToString().AsValueTask();
+        Step<string, string> wrap = (input, _) => $"[{input}]".AsValueTask();
         Step<int, string> pipeline = toStr.Then(wrap);
 
         // Act
@@ -88,16 +88,16 @@ public class Test_Pipeline
     {
         // Arrange
         List<string> eventLog = new();
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int> timesTwo = input => (input * 2).AsValueTask();
-        Layer<int> validationLayer = next => async input =>
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int> timesTwo = (input, _) => (input * 2).AsValueTask();
+        Layer<int> validationLayer = next => async (input, ct) =>
         {
             eventLog.Add("validating");
-            int result = await next(input);
+            int result = await next(input, ct);
             eventLog.Add("validated");
             return result;
         };
-        Effect<int> logEffect = input =>
+        Effect<int> logEffect = (input, _) =>
         {
             eventLog.Add($"processing: {input}");
             return ValueTask.CompletedTask;
@@ -121,8 +121,8 @@ public class Test_Pipeline
     public async Task Pipeline_ExpandContractInPipeline_EnablesTypeConversion()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int, string> toStr = input => input.ToString().AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int, string> toStr = (input, _) => input.ToString().AsValueTask();
 
         // Act -- use Expand to go from Step<int> to Step<int,int>, then chain with Step<int,string>
         Step<int, string> pipeline = addOne.Expand().Then(toStr);
@@ -136,9 +136,9 @@ public class Test_Pipeline
     public async Task Pipeline_MultipleLayersNested_ApplyOuterToInner()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addPrefix = next => async input => await next(input) + 100;
-        Layer<int, int> multiplyWrapper = next => async input => await next(input) * 2;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addPrefix = next => async (input, ct) => await next(input, ct) + 100;
+        Layer<int, int> multiplyWrapper = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act
         Step<int, int> pipeline = core.Then(addPrefix).Then(multiplyWrapper);
@@ -154,7 +154,7 @@ public class Test_Pipeline
         // Arrange
         List<int> captured = new();
         Action<int> syncAction = x => captured.Add(x);
-        Step<int> identity = input => input.AsValueTask();
+        Step<int> identity = (input, _) => input.AsValueTask();
 
         // Act
         Step<int> pipeline = identity.TapInput(syncAction.AsEffect());
@@ -171,10 +171,10 @@ public class Test_Pipeline
     {
         // Arrange
         List<int> trace = new();
-        Step<int> step1 = input => { trace.Add(1); return (input + 1).AsValueTask(); };
-        Step<int> step2 = input => { trace.Add(2); return (input * 2).AsValueTask(); };
-        Step<int> step3 = input => { trace.Add(3); return (input - 3).AsValueTask(); };
-        Step<int> step4 = input => { trace.Add(4); return (input * input).AsValueTask(); };
+        Step<int> step1 = (input, _) => { trace.Add(1); return (input + 1).AsValueTask(); };
+        Step<int> step2 = (input, _) => { trace.Add(2); return (input * 2).AsValueTask(); };
+        Step<int> step3 = (input, _) => { trace.Add(3); return (input - 3).AsValueTask(); };
+        Step<int> step4 = (input, _) => { trace.Add(4); return (input * input).AsValueTask(); };
 
         // Act
         Step<int> pipeline = step1.Then(step2).Then(step3).Then(step4);
@@ -190,16 +190,16 @@ public class Test_Pipeline
     {
         // Arrange
         bool coreExecuted = false;
-        Step<int, string> core = input =>
+        Step<int, string> core = (input, _) =>
         {
             coreExecuted = true;
             return input.ToString().AsValueTask();
         };
-        Layer<int, string> guard = next => input =>
+        Layer<int, string> guard = next => (input, ct) =>
         {
             if (input < 0)
                 return "negative".AsValueTask();
-            return next(input);
+            return next(input, ct);
         };
 
         // Act
@@ -219,14 +219,14 @@ public class Test_Pipeline
         // Arrange - simulate a request processing pipeline
         List<string> auditTrail = new();
 
-        Step<string, int> parseRequest = input => int.Parse(input).AsValueTask();
-        Step<int, int> processBusinessLogic = input => (input * 100).AsValueTask();
-        Step<int, string> formatResponse = input => $"OK:{input}".AsValueTask();
+        Step<string, int> parseRequest = (input, _) => int.Parse(input).AsValueTask();
+        Step<int, int> processBusinessLogic = (input, _) => (input * 100).AsValueTask();
+        Step<int, string> formatResponse = (input, _) => $"OK:{input}".AsValueTask();
 
-        Layer<string, string> timingLayer = next => async input =>
+        Layer<string, string> timingLayer = next => async (input, ct) =>
         {
             auditTrail.Add("start");
-            string result = await next(input);
+            string result = await next(input, ct);
             auditTrail.Add("end");
             return result;
         };

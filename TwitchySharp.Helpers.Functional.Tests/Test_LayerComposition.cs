@@ -11,9 +11,9 @@ public class Test_LayerComposition
     public async Task Then_TwoHeteromorphicLayers_ComposesInOrder()
     {
         // Arrange
-        Step<int, string> core = input => input.ToString().AsValueTask();
-        Layer<int, string> bracketLayer = next => async input => $"[{await next(input)}]";
-        Layer<int, string> parenLayer = next => async input => $"({await next(input)})";
+        Step<int, string> core = (input, _) => input.ToString().AsValueTask();
+        Layer<int, string> bracketLayer = next => async (input, ct) => $"[{await next(input, ct)}]";
+        Layer<int, string> parenLayer = next => async (input, ct) => $"({await next(input, ct)})";
 
         // Act
         Layer<int, string> composed = bracketLayer.Then(parenLayer);
@@ -29,18 +29,18 @@ public class Test_LayerComposition
     {
         // Arrange
         List<string> order = new();
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> layerA = next => async input =>
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> layerA = next => async (input, ct) =>
         {
             order.Add("A-before");
-            int result = await next(input);
+            int result = await next(input, ct);
             order.Add("A-after");
             return result;
         };
-        Layer<int, int> layerB = next => async input =>
+        Layer<int, int> layerB = next => async (input, ct) =>
         {
             order.Add("B-before");
-            int result = await next(input);
+            int result = await next(input, ct);
             order.Add("B-after");
             return result;
         };
@@ -62,9 +62,9 @@ public class Test_LayerComposition
     public async Task Then_HeteromorphicLayers_ResultPassesThroughBoth()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addTen = next => async input => await next(input) + 10;
-        Layer<int, int> timesTwo = next => async input => await next(input) * 2;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addTen = next => async (input, ct) => await next(input, ct) + 10;
+        Layer<int, int> timesTwo = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act
         Layer<int, int> composed = addTen.Then(timesTwo);
@@ -79,9 +79,9 @@ public class Test_LayerComposition
     public async Task Then_HeteromorphicLayers_EquivalentToManualApplication()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addTen = next => async input => await next(input) + 10;
-        Layer<int, int> timesTwo = next => async input => await next(input) * 2;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addTen = next => async (input, ct) => await next(input, ct) + 10;
+        Layer<int, int> timesTwo = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act
         Layer<int, int> composed = addTen.Then(timesTwo);
@@ -96,10 +96,10 @@ public class Test_LayerComposition
     public async Task Then_ThreeHeteromorphicLayers_ChainCorrectly()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addOne = next => async input => await next(input) + 1;
-        Layer<int, int> timesTwo = next => async input => await next(input) * 2;
-        Layer<int, int> addHundred = next => async input => await next(input) + 100;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addOne = next => async (input, ct) => await next(input, ct) + 1;
+        Layer<int, int> timesTwo = next => async (input, ct) => await next(input, ct) * 2;
+        Layer<int, int> addHundred = next => async (input, ct) => await next(input, ct) + 100;
 
         // Act
         Layer<int, int> composed = addOne.Then(timesTwo).Then(addHundred);
@@ -116,9 +116,9 @@ public class Test_LayerComposition
     public async Task Then_TwoHomomorphicLayers_ComposesInOrder()
     {
         // Arrange
-        Step<string> core = input => input.AsValueTask();
-        Layer<string> bracketLayer = next => async input => $"[{await next(input)}]";
-        Layer<string> parenLayer = next => async input => $"({await next(input)})";
+        Step<string> core = (input, _) => input.AsValueTask();
+        Layer<string> bracketLayer = next => async (input, ct) => $"[{await next(input, ct)}]";
+        Layer<string> parenLayer = next => async (input, ct) => $"({await next(input, ct)})";
 
         // Act
         Layer<string> composed = bracketLayer.Then(parenLayer);
@@ -134,18 +134,18 @@ public class Test_LayerComposition
     {
         // Arrange
         List<string> order = new();
-        Step<int> core = input => input.AsValueTask();
-        Layer<int> layerA = next => async input =>
+        Step<int> core = (input, _) => input.AsValueTask();
+        Layer<int> layerA = next => async (input, ct) =>
         {
             order.Add("A-before");
-            int result = await next(input);
+            int result = await next(input, ct);
             order.Add("A-after");
             return result;
         };
-        Layer<int> layerB = next => async input =>
+        Layer<int> layerB = next => async (input, ct) =>
         {
             order.Add("B-before");
-            int result = await next(input);
+            int result = await next(input, ct);
             order.Add("B-after");
             return result;
         };
@@ -167,9 +167,9 @@ public class Test_LayerComposition
     public async Task Then_HomomorphicLayers_EquivalentToManualApplication()
     {
         // Arrange
-        Step<int> core = input => input.AsValueTask();
-        Layer<int> addTen = next => async input => await next(input) + 10;
-        Layer<int> timesTwo = next => async input => await next(input) * 2;
+        Step<int> core = (input, _) => input.AsValueTask();
+        Layer<int> addTen = next => async (input, ct) => await next(input, ct) + 10;
+        Layer<int> timesTwo = next => async (input, ct) => await next(input, ct) * 2;
 
         // Act
         Layer<int> composed = addTen.Then(timesTwo);
@@ -186,9 +186,9 @@ public class Test_LayerComposition
     public async Task Then_ComposedLayerAppliedViaStepThen_Works()
     {
         // Arrange
-        Step<int, int> core = input => input.AsValueTask();
-        Layer<int, int> addOne = next => async input => await next(input) + 1;
-        Layer<int, int> timesThree = next => async input => await next(input) * 3;
+        Step<int, int> core = (input, _) => input.AsValueTask();
+        Layer<int, int> addOne = next => async (input, ct) => await next(input, ct) + 1;
+        Layer<int, int> timesThree = next => async (input, ct) => await next(input, ct) * 3;
 
         // Act
         Layer<int, int> composed = addOne.Then(timesThree);

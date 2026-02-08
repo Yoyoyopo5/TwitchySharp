@@ -9,7 +9,7 @@ public class Test_ExpandContract
     public async Task Expand_HomomorphicStep_BecomesStepTT()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int, int> expanded = addOne.Expand();
@@ -23,7 +23,7 @@ public class Test_ExpandContract
     public async Task Contract_StepTT_BecomesHomomorphicStep()
     {
         // Arrange
-        Step<int, int> doubleIt = input => (input * 2).AsValueTask();
+        Step<int, int> doubleIt = (input, _) => (input * 2).AsValueTask();
 
         // Act
         Step<int> contracted = doubleIt.Contract();
@@ -37,7 +37,7 @@ public class Test_ExpandContract
     public async Task ExpandThenContract_RoundTrip_PreservesBehavior()
     {
         // Arrange
-        Step<int> original = input => (input + 10).AsValueTask();
+        Step<int> original = (input, _) => (input + 10).AsValueTask();
 
         // Act
         Step<int> roundTripped = original.Expand().Contract();
@@ -54,7 +54,7 @@ public class Test_ExpandContract
     public async Task ContractThenExpand_RoundTrip_PreservesBehavior()
     {
         // Arrange
-        Step<string, string> original = input => input.ToUpper().AsValueTask();
+        Step<string, string> original = (input, _) => input.ToUpper().AsValueTask();
 
         // Act
         Step<string, string> roundTripped = original.Contract().Expand();
@@ -71,8 +71,8 @@ public class Test_ExpandContract
     public async Task Expand_AllowsChainingWithTwoTypeParamThen()
     {
         // Arrange
-        Step<int> addOne = input => (input + 1).AsValueTask();
-        Step<int, string> toStr = input => input.ToString().AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
+        Step<int, string> toStr = (input, _) => input.ToString().AsValueTask();
 
         // Act
         Step<int, string> composed = addOne.Expand().Then(toStr);
@@ -86,8 +86,8 @@ public class Test_ExpandContract
     public async Task Contract_AllowsChainingWithHomomorphicThen()
     {
         // Arrange
-        Step<int, int> doubleIt = input => (input * 2).AsValueTask();
-        Step<int> addOne = input => (input + 1).AsValueTask();
+        Step<int, int> doubleIt = (input, _) => (input * 2).AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int> composed = doubleIt.Contract().Then(addOne);
@@ -101,7 +101,7 @@ public class Test_ExpandContract
     public async Task Expand_WithStringType_Works()
     {
         // Arrange
-        Step<string> trimStep = input => input.Trim().AsValueTask();
+        Step<string> trimStep = (input, _) => input.Trim().AsValueTask();
 
         // Act
         Step<string, string> expanded = trimStep.Expand();
@@ -115,7 +115,7 @@ public class Test_ExpandContract
     public async Task Contract_WithStringType_Works()
     {
         // Arrange
-        Step<string, string> toLower = input => input.ToLower().AsValueTask();
+        Step<string, string> toLower = (input, _) => input.ToLower().AsValueTask();
 
         // Act
         Step<string> contracted = toLower.Contract();

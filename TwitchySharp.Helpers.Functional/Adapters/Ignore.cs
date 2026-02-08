@@ -8,5 +8,5 @@ public static partial class FunctionalExtensions
     /// <remarks>The step still executes fully, but the result is thrown away. Useful for fire-and-forget scenarios at the end of a pipeline.</remarks>
     /// <param name="step">The step whose output will be discarded.</param>
     public static Effect<TIn> Ignore<TIn, TOut>(this Step<TIn, TOut> step)
-        => async input => { await step(input); };
+        => async (input, ct) => { await step(input, ct); };
 }

@@ -9,7 +9,7 @@ public class Test_Step
     public async Task Step_WithTwoTypeParams_TransformsInput()
     {
         // Arrange
-        Step<int, string> step = input => input.ToString().AsValueTask();
+        Step<int, string> step = (input, _) => input.ToString().AsValueTask();
 
         // Act
         string result = await step(42);
@@ -22,7 +22,7 @@ public class Test_Step
     public async Task Step_WithTwoTypeParams_HandlesNullableOutput()
     {
         // Arrange
-        Step<string, string?> step = input => ((string?)null).AsValueTask();
+        Step<string, string?> step = (input, _) => ((string?)null).AsValueTask();
 
         // Act
         string? result = await step("hello");
@@ -35,7 +35,7 @@ public class Test_Step
     public async Task Step_WithTwoTypeParams_CanBeAsync()
     {
         // Arrange
-        Step<int, int> step = async input =>
+        Step<int, int> step = async (input, _) =>
         {
             await Task.Delay(1);
             return input * 2;
@@ -52,7 +52,7 @@ public class Test_Step
     public async Task Step_HomomorphicSingleTypeParam_ReturnsSameType()
     {
         // Arrange
-        Step<int> step = input => (input + 1).AsValueTask();
+        Step<int> step = (input, _) => (input + 1).AsValueTask();
 
         // Act
         int result = await step(10);
@@ -65,7 +65,7 @@ public class Test_Step
     public async Task Step_HomomorphicSingleTypeParam_IdentityFunction()
     {
         // Arrange
-        Step<string> identity = input => input.AsValueTask();
+        Step<string> identity = (input, _) => input.AsValueTask();
 
         // Act
         string result = await identity("unchanged");
@@ -78,7 +78,7 @@ public class Test_Step
     public async Task Step_WithTwoTypeParams_TransformsBetweenDifferentTypes()
     {
         // Arrange
-        Step<double, int> step = input => ((int)Math.Floor(input)).AsValueTask();
+        Step<double, int> step = (input, _) => ((int)Math.Floor(input)).AsValueTask();
 
         // Act
         int result = await step(3.7);
@@ -91,7 +91,7 @@ public class Test_Step
     public async Task Step_HomomorphicSingleTypeParam_CanBeAsync()
     {
         // Arrange
-        Step<string> step = async input =>
+        Step<string> step = async (input, _) =>
         {
             await Task.Delay(1);
             return input.ToUpper();

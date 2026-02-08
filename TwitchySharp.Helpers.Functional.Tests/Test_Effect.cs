@@ -10,7 +10,7 @@ public class Test_Effect
     {
         // Arrange
         int captured = 0;
-        Effect<int> effect = input =>
+        Effect<int> effect = (input, _) =>
         {
             captured = input;
             return ValueTask.CompletedTask;
@@ -27,7 +27,7 @@ public class Test_Effect
     public async Task Effect_ReturnsCompletedValueTask()
     {
         // Arrange
-        Effect<string> effect = input => ValueTask.CompletedTask;
+        Effect<string> effect = (input, _) => ValueTask.CompletedTask;
 
         // Act
         ValueTask task = effect("test");
@@ -42,7 +42,7 @@ public class Test_Effect
     {
         // Arrange
         List<string> log = new();
-        Effect<string> effect = async input =>
+        Effect<string> effect = async (input, _) =>
         {
             await Task.Delay(1);
             log.Add(input);
@@ -63,7 +63,7 @@ public class Test_Effect
     {
         // Arrange
         string? captured = "not null";
-        Effect<string?> effect = input =>
+        Effect<string?> effect = (input, _) =>
         {
             captured = input;
             return ValueTask.CompletedTask;
@@ -81,7 +81,7 @@ public class Test_Effect
     {
         // Arrange
         int callCount = 0;
-        Effect<int> effect = input =>
+        Effect<int> effect = (input, _) =>
         {
             callCount++;
             return ValueTask.CompletedTask;

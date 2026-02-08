@@ -9,7 +9,7 @@ public static partial class FunctionalExtensions
     /// <remarks>The resulting effect completes synchronously. Use with <c>.Tap()</c> or <c>.TapInput()</c> to attach to a pipeline.</remarks>
     /// <param name="effect">The synchronous action to adapt.</param>
     public static Effect<T> AsEffect<T>(this Action<T> effect)
-        => input =>
+        => (input, ct) =>
         {
             effect(input);
             return ValueTask.CompletedTask;

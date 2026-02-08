@@ -77,7 +77,7 @@ public class Test_Identity
     {
         // Arrange
         Step<int> identity = FunctionalExtensions.Identity<int>();
-        Step<int> addOne = input => (input + 1).AsValueTask();
+        Step<int> addOne = (input, _) => (input + 1).AsValueTask();
 
         // Act
         Step<int> pipeline = identity.Then(addOne);
@@ -92,7 +92,7 @@ public class Test_Identity
     {
         // Arrange
         Step<int> identity = FunctionalExtensions.Identity<int>();
-        Step<int, string> toStr = input => input.ToString().AsValueTask();
+        Step<int, string> toStr = (input, _) => input.ToString().AsValueTask();
 
         // Act
         Step<int, string> pipeline = identity.Expand().Then(toStr);
@@ -108,10 +108,10 @@ public class Test_Identity
         // Arrange
         int layerSaw = 0;
         Step<int> identity = FunctionalExtensions.Identity<int>();
-        Layer<int> captureLayer = next => async input =>
+        Layer<int> captureLayer = next => async (input, ct) =>
         {
             layerSaw = input;
-            return await next(input);
+            return await next(input, ct);
         };
 
         // Act
