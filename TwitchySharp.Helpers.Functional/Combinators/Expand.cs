@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Helpers.Functional;
+﻿namespace TwitchySharp.Helpers.Functional;
 
 public static partial class FunctionalExtensions
 {
-    public static Step<T, T> Expand<T>(this Step<T> step)
+    /// <summary>Converts a <see cref="Step{T}"/> into a <see cref="Step{TIn, TOut}"/> where both type parameters are the same.</summary>
+    /// <param name="step">The same-type step to widen.</param>
+    internal static Step<T, T> Expand<T>(this Step<T> step)
         => input => step(input);
 }

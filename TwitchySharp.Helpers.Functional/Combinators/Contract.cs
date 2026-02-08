@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Helpers.Functional;
+﻿namespace TwitchySharp.Helpers.Functional;
 
 public static partial class FunctionalExtensions
 {
-    public static Step<T> Contract<T>(this Step<T, T> step)
+    /// <summary>Converts a <see cref="Step{TIn, TOut}"/> (where both type parameters are the same) into a <see cref="Step{T}"/>.</summary>
+    /// <param name="step">The heteromorphic step to narrow.</param>
+    internal static Step<T> Contract<T>(this Step<T, T> step)
         => input => step(input);
 }

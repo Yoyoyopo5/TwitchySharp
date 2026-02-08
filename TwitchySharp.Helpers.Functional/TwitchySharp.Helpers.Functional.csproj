@@ -6,4 +6,8 @@
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="TwitchySharp.Helpers.Functional.Tests" />
+  </ItemGroup>
+
 </Project>
