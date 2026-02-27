@@ -7,4 +7,4 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// Defines methods for storing, retrieving, and removing <see cref="UserAccessTokenDetails"/>s.
 /// </summary>
 public interface IStoreUserAccessTokens
-    : IStoreAccessTokens<UserAccessToken, UserAccessTokenKey, UserAccessTokenDetails>;
+    : ITokenStore<UserAccessToken, UserAccessTokenKey, UserAccessTokenDetails>;

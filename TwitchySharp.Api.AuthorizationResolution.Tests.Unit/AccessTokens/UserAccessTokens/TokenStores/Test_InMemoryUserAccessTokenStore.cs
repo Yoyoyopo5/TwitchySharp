@@ -275,7 +275,7 @@ public class Test_InMemoryUserAccessTokenStore
             tasks.Add(Task.Run(async () =>
             {
                 var user = new UserIdentity(new UserId($"user_{userId}")) { ClientId = TestClientId };
-                var key = new UserAccessTokenKey { User = user, ValidScopes = ImmutableHashSet<Scope>.Empty };
+                var key = new UserAccessTokenKey { Identity = user, ValidScopes = ImmutableHashSet<Scope>.Empty };
                 var details = new UserAccessTokenDetails
                 {
                     Identity = user,
@@ -293,7 +293,7 @@ public class Test_InMemoryUserAccessTokenStore
         for (int i = 0; i < 100; i++)
         {
             var user = new UserIdentity(new UserId($"user_{i}")) { ClientId = TestClientId };
-            var key = new UserAccessTokenKey { User = user, ValidScopes = ImmutableHashSet<Scope>.Empty };
+            var key = new UserAccessTokenKey { Identity = user, ValidScopes = ImmutableHashSet<Scope>.Empty };
             var result = await store.GetTokenDetails(key);
             Assert.NotNull(result);
             Assert.Equal($"token_{i}", result.AccessToken.Value);
@@ -443,7 +443,7 @@ public class Test_InMemoryUserAccessTokenStore
     {
         return new UserAccessTokenKey
         {
-            User = TestUserIdentity,
+            Identity = TestUserIdentity,
             ValidScopes = validScopes ?? ImmutableHashSet.Create(Scope.ChannelModerate)
         };
     }

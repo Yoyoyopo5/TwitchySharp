@@ -32,7 +32,7 @@ public class TokenResolutionTestFixture
     public DefaultRequestAuthorizer CreateDefaultAuthorizer()
     {
         var userResolver = new ConcurrentUserAccessTokenResolver(CreatePopulatedTokenStore(), null, null);
-        var identityResolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
+        var identityResolver = new IdentityTypeTokenResolver(UserAccessTokenResolver: userResolver);
         return new DefaultRequestAuthorizer(ClientIdentity, identityResolver);
     }
 
@@ -75,7 +75,7 @@ public class TokenResolutionTestFixture
     {
         return new UserAccessTokenKey
         {
-            User = TestUserIdentity,
+            Identity = TestUserIdentity,
             ValidScopes = validScopes ?? ImmutableHashSet.Create(Scope.ChannelModerate)
         };
     }

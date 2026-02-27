@@ -15,8 +15,8 @@ public class Test_UserAccessTokenKey
     {
         // Arrange
         var scopes = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
 
         // Act & Assert
         Assert.Equal(key1, key2);
@@ -29,8 +29,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit, Scope.BitsRead);
         var scopes2 = ImmutableHashSet.Create(Scope.BitsRead, Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
 
         // Act & Assert
         Assert.Equal(key1, key2);
@@ -42,8 +42,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate);
         var scopes2 = ImmutableHashSet.Create(Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
 
         // Act & Assert
         Assert.NotEqual(key1, key2);
@@ -55,8 +55,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var user2 = new UserIdentity(new UserId("different_user")) { ClientId = TestClientId };
         var scopes = ImmutableHashSet.Create(Scope.ChannelModerate);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
-        var key2 = new UserAccessTokenKey { User = user2, ValidScopes = scopes };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
+        var key2 = new UserAccessTokenKey { Identity = user2, ValidScopes = scopes };
 
         // Act & Assert
         Assert.NotEqual(key1, key2);
@@ -66,8 +66,8 @@ public class Test_UserAccessTokenKey
     public void Equals_EmptyScopes_WorksCorrectly()
     {
         // Arrange
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
 
         // Act & Assert
         Assert.Equal(key1, key2);
@@ -77,8 +77,8 @@ public class Test_UserAccessTokenKey
     public void Equals_OneEmptyOneWithScopes_ReturnsFalse()
     {
         // Arrange
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet.Create(Scope.ChannelModerate) };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet.Create(Scope.ChannelModerate) };
 
         // Act & Assert
         Assert.NotEqual(key1, key2);
@@ -89,8 +89,8 @@ public class Test_UserAccessTokenKey
     {
         // Arrange
         var scopes = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
 
         // Act & Assert
         Assert.Equal(key1.GetHashCode(), key2.GetHashCode());
@@ -102,8 +102,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit, Scope.BitsRead);
         var scopes2 = ImmutableHashSet.Create(Scope.BitsRead, Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
 
         // Act & Assert
         Assert.Equal(key1.GetHashCode(), key2.GetHashCode());
@@ -115,8 +115,8 @@ public class Test_UserAccessTokenKey
         // Arrange (note: hash collisions are possible but unlikely for different data)
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate);
         var scopes2 = ImmutableHashSet.Create(Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
 
         // Act & Assert - These should likely be different (though hash collisions are technically possible)
         // This tests the hash function is considering scope content
@@ -127,8 +127,8 @@ public class Test_UserAccessTokenKey
     public void GetHashCode_EmptyScopes_WorksCorrectly()
     {
         // Arrange
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
 
         // Act & Assert
         Assert.Equal(key1.GetHashCode(), key2.GetHashCode());
@@ -139,8 +139,8 @@ public class Test_UserAccessTokenKey
     {
         // Arrange
         var scopes = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes };
         var dict = new Dictionary<UserAccessTokenKey, string> { { key1, "test_value" } };
 
         // Act
@@ -157,8 +157,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit, Scope.BitsRead);
         var scopes2 = ImmutableHashSet.Create(Scope.BitsRead, Scope.ChannelModerate, Scope.ChatEdit);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
         var dict = new Dictionary<UserAccessTokenKey, string> { { key1, "test_value" } };
 
         // Act
@@ -175,8 +175,8 @@ public class Test_UserAccessTokenKey
         // Arrange
         var scopes1 = ImmutableHashSet.Create(Scope.ChannelModerate, Scope.ChatEdit);
         var scopes2 = ImmutableHashSet.Create(Scope.ChatEdit, Scope.ChannelModerate);
-        var key1 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes1 };
-        var key2 = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = scopes2 };
+        var key1 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes1 };
+        var key2 = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = scopes2 };
         var set = new HashSet<UserAccessTokenKey> { key1 };
 
         // Act & Assert
@@ -187,7 +187,7 @@ public class Test_UserAccessTokenKey
     public void Equals_NullOther_ReturnsFalse()
     {
         // Arrange
-        var key = new UserAccessTokenKey { User = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
+        var key = new UserAccessTokenKey { Identity = TestUserIdentity, ValidScopes = ImmutableHashSet<Scope>.Empty };
 
         // Act & Assert
         Assert.False(key.Equals(null));
@@ -197,7 +197,7 @@ public class Test_UserAccessTokenKey
     public void DefaultValidScopes_IsEmptySet()
     {
         // Arrange
-        var key = new UserAccessTokenKey { User = TestUserIdentity };
+        var key = new UserAccessTokenKey { Identity = TestUserIdentity };
 
         // Act & Assert
         Assert.Empty(key.ValidScopes);

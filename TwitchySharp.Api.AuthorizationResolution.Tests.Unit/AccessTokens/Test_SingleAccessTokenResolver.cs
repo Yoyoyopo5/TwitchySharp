@@ -17,11 +17,11 @@ public class Test_SingleAccessTokenResolver
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     [Fact]
@@ -32,11 +32,11 @@ public class Test_SingleAccessTokenResolver
         var request = new object();
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     [Fact]
@@ -48,11 +48,11 @@ public class Test_SingleAccessTokenResolver
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, overrideToken);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(ConfiguredToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(ConfiguredToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     [Fact]
@@ -65,16 +65,16 @@ public class Test_SingleAccessTokenResolver
         var request3 = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
-        var result1 = await resolver.GetToken(request1);
-        var result2 = await resolver.GetToken(request2);
-        var result3 = await resolver.GetToken(request3);
+        var result1 = await resolver.ResolveAsync(request1);
+        var result2 = await resolver.ResolveAsync(request2);
+        var result3 = await resolver.ResolveAsync(request3);
 
         // Assert
-        var token1 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result1);
-        var token2 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result2);
-        var token3 = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result3);
-        Assert.Equal(token1.AccessToken?.Value, token2.AccessToken?.Value);
-        Assert.Equal(token2.AccessToken?.Value, token3.AccessToken?.Value);
+        var token1 = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result1);
+        var token2 = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result2);
+        var token3 = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result3);
+        Assert.Equal(token1.AccessTokenDetails?.Value, token2.AccessTokenDetails?.Value);
+        Assert.Equal(token2.AccessTokenDetails?.Value, token3.AccessTokenDetails?.Value);
     }
 
     #region Mock Types

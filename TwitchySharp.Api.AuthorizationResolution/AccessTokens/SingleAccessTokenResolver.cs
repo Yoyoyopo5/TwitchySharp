@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 public record SingleAccessTokenResolver<TKey, TToken>(TToken Token) : IResolveAccessToken<TKey>
     where TToken : AccessToken
 {
-    private readonly AccessTokenResolutionResult.Available<TToken> _tokenResult = new(Token);
-    public ValueTask<AccessTokenResolutionResult> GetToken(TKey key, CancellationToken ct = default)
-        => ValueTask.FromResult(_tokenResult as AccessTokenResolutionResult);
+    private readonly AccessTokenDetailsResolutionResult.Available<TToken> _tokenResult = new(Token);
+    public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(TKey key, CancellationToken ct = default)
+        => ValueTask.FromResult(_tokenResult as AccessTokenDetailsResolutionResult);
 }

@@ -19,16 +19,16 @@ public class Test_DefaultTokenResolver
     {
         // Arrange
         var userResolver = new MockUserAccessTokenResolver(UserToken);
-        var identityResolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
+        var identityResolver = new IdentityTypeTokenResolver(UserAccessTokenResolver: userResolver);
         var resolver = new DefaultTokenResolver(identityResolver);
         var request = new MockAuthorizableRequestWithOverride(TestUserIdentity, OverrideToken);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(OverrideToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(OverrideToken.Value, hasToken.AccessTokenDetails?.Value);
         Assert.False(userResolver.WasCalled); // Should not call user resolver when override is present
     }
 
@@ -37,16 +37,16 @@ public class Test_DefaultTokenResolver
     {
         // Arrange
         var userResolver = new MockUserAccessTokenResolver(UserToken);
-        var identityResolver = new IdentityTokenResolver(UserAccessTokenResolver: userResolver);
+        var identityResolver = new IdentityTypeTokenResolver(UserAccessTokenResolver: userResolver);
         var resolver = new DefaultTokenResolver(identityResolver);
         var request = new MockAuthorizableRequest(TestUserIdentity);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(UserToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(UserToken.Value, hasToken.AccessTokenDetails?.Value);
         Assert.True(userResolver.WasCalled);
     }
 
@@ -54,31 +54,31 @@ public class Test_DefaultTokenResolver
     public async Task GetToken_NoResolversConfigured_ReturnsUnavailableForUserIdentity()
     {
         // Arrange
-        var identityResolver = new IdentityTokenResolver(); // No resolvers configured
+        var identityResolver = new IdentityTypeTokenResolver(); // No resolvers configured
         var resolver = new DefaultTokenResolver(identityResolver);
         var request = new MockAuthorizableRequest(TestUserIdentity);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
+        Assert.IsType<AccessTokenDetailsResolutionResult.Unavailable>(result);
     }
 
     [Fact]
     public async Task GetToken_NoResolversButHasOverride_ReturnsOverride()
     {
         // Arrange
-        var identityResolver = new IdentityTokenResolver(); // No resolvers configured
+        var identityResolver = new IdentityTypeTokenResolver(); // No resolvers configured
         var resolver = new DefaultTokenResolver(identityResolver);
         var request = new MockAuthorizableRequestWithOverride(TestUserIdentity, OverrideToken);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(OverrideToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(OverrideToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     #region Mock Types
@@ -103,10 +103,10 @@ public class Test_DefaultTokenResolver
     {
         public bool WasCalled { get; private set; }
 
-        public ValueTask<AccessTokenResolutionResult> GetToken(UserAccessTokenKey key, CancellationToken ct = default)
+        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(UserAccessTokenKey key, CancellationToken ct = default)
         {
             WasCalled = true;
-            return ValueTask.FromResult<AccessTokenResolutionResult>(new AccessTokenResolutionResult.Valid<UserAccessToken>(token));
+            return ValueTask.FromResult<AccessTokenDetailsResolutionResult>(new AccessTokenDetailsResolutionResult.Valid<UserAccessToken>(token));
         }
     }
 

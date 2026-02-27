@@ -9,12 +9,13 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// <summary>
 /// A key used to retrieve a specific <see cref="UserAccessTokenDetails"/>.
 /// </summary>
-public record UserAccessTokenKey
+internal record UserAccessTokenKey
+    : AccessTokenKey<UserIdentity>
 {
     /// <summary>
-    /// The access token must have been created for this user and client combination.
+    /// The user identity.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required new UserIdentity Identity { get; init; }
     /// <summary>
     /// The access token must have one of these scopes.
     /// </summary>
@@ -25,7 +26,7 @@ public record UserAccessTokenKey
     /// </summary>
     public virtual bool Equals(UserAccessTokenKey? other) =>
           other is not null &&
-          User == other.User &&
+          Identity == other.Identity &&
           ValidScopes.SetEquals(other.ValidScopes);
 
     /// <summary>
@@ -34,7 +35,7 @@ public record UserAccessTokenKey
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(User);
+        hash.Add(Identity);
         // Order-independent hash for set
         int scopeHash = 0;
         foreach (Scope scope in ValidScopes)

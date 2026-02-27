@@ -1,6 +1,6 @@
 ﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
-public interface IStoreAccessTokens<in TToken, in TKey, TDetails>
+public interface ITokenStore<in TToken, in TKey, TDetails>
     where TToken : AccessToken
     where TDetails : IAccessTokenDetails
 {

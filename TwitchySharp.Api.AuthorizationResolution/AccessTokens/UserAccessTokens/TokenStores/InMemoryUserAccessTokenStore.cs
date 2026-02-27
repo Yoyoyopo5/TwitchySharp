@@ -18,7 +18,7 @@ public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
     /// <inheritdoc/>
     public ValueTask<UserAccessTokenDetails?> GetTokenDetails(UserAccessTokenKey key, CancellationToken ct = default)
     {
-        if (_userIndex.TryGetValue(key.User, out UserAccessTokenDetails? details) && details.Scopes.HasRequiredScope(key.ValidScopes))
+        if (_userIndex.TryGetValue(key.Identity, out UserAccessTokenDetails? details) && details.Scopes.HasRequiredScope(key.ValidScopes))
             return ValueTask.FromResult<UserAccessTokenDetails?>(details);
         return ValueTask.FromResult<UserAccessTokenDetails?>(null);
     }
@@ -49,10 +49,10 @@ public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
         lock (_lock)
         {
             // Remove old token for this user if one exists
-            if (_userIndex.TryGetValue(key.User, out UserAccessTokenDetails? existingDetails))
+            if (_userIndex.TryGetValue(key.Identity, out UserAccessTokenDetails? existingDetails))
                 _tokenIndex.TryRemove(existingDetails.AccessToken, out _);
 
-            _userIndex[key.User] = details;
+            _userIndex[key.Identity] = details;
             _tokenIndex[details.AccessToken] = details;
 
             return ValueTask.FromResult(details);

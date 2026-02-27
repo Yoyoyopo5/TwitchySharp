@@ -17,11 +17,11 @@ public class Test_ConfiguredAccessTokenResolver
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, OverrideToken);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(OverrideToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(OverrideToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     [Fact]
@@ -32,10 +32,10 @@ public class Test_ConfiguredAccessTokenResolver
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, null);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
+        Assert.IsType<AccessTokenDetailsResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -46,10 +46,10 @@ public class Test_ConfiguredAccessTokenResolver
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        Assert.IsType<AccessTokenResolutionResult.Unavailable>(result);
+        Assert.IsType<AccessTokenDetailsResolutionResult.Unavailable>(result);
     }
 
     [Fact]
@@ -61,11 +61,11 @@ public class Test_ConfiguredAccessTokenResolver
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, appToken);
 
         // Act
-        var result = await resolver.GetToken(request);
+        var result = await resolver.ResolveAsync(request);
 
         // Assert
-        var hasToken = Assert.IsAssignableFrom<IHaveAccessToken<AccessToken>>(result);
-        Assert.Equal(appToken.Value, hasToken.AccessToken?.Value);
+        var hasToken = Assert.IsAssignableFrom<IHaveAccessTokenDetails<AccessToken>>(result);
+        Assert.Equal(appToken.Value, hasToken.AccessTokenDetails?.Value);
     }
 
     #region Mock Types

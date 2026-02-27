@@ -50,7 +50,7 @@ public class Test_DefaultRequestAuthorizer
     public async Task GetAuthorization_NoTokenResolverConfigured_ResultHasNullToken()
     {
         // Arrange
-        var identityResolver = new IdentityTokenResolver(); // No resolvers
+        var identityResolver = new IdentityTypeTokenResolver(); // No resolvers
         var authorizer = new DefaultRequestAuthorizer(TestClientIdentity, identityResolver);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
@@ -144,8 +144,8 @@ public class Test_DefaultRequestAuthorizer
 
     private class MockAppAccessTokenResolver(AppAccessToken token) : IResolveAppAccessToken
     {
-        public ValueTask<AccessTokenResolutionResult> GetToken(ClientIdentity identity, CancellationToken ct = default)
-            => ValueTask.FromResult<AccessTokenResolutionResult>(new AccessTokenResolutionResult.Valid<AppAccessToken>(token));
+        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(ClientIdentity identity, CancellationToken ct = default)
+            => ValueTask.FromResult<AccessTokenDetailsResolutionResult>(new AccessTokenDetailsResolutionResult.Valid<AppAccessToken>(token));
     }
 
     #endregion
