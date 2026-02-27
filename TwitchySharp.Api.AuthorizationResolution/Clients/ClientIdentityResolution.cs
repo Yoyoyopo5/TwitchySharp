@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// </summary>
 /// <param name="request">The authorization requirement.</param>
 /// <returns>A <see cref="ValueTask"/> containing the resolved <see cref="ClientId"/>, if any.</returns>
-internal delegate ValueTask<ClientId?> ClientIdResolver(IRequireAuthorization request, CancellationToken ct = default);
+public delegate ValueTask<ClientId?> ClientIdResolver(IRequireAuthorization request, CancellationToken ct = default);
 
 internal static class ClientIdentityResolution
 {

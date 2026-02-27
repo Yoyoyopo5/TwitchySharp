@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,58 +21,70 @@ internal record TwitchRequestContext // Need to move this to Api project.
 
 internal delegate ValueTask<TwitchResponse> TwitchRequestHandler(TwitchRequestContext context, CancellationToken ct = default);
 
-internal record TwitchClientBuilder // Need to move this to Api project.
+public record TwitchClientBuilder // Need to move this to Api project.
     : MiddlewarePipelineBuilder<TwitchRequestHandler>;
 
-internal static class TwitchClientBuilderExtensions
+public record TwitchAuthorizationResolutionOptions
 {
-    public static TwitchClientBuilder UseAuthorizationResolution(this TwitchClientBuilder builder, 
-        ClientIdResolver? fallbackClientResolver = null, 
-        BearerTokenResolver<IRequireAuthorization>? fallbackTokenResolver = null
+    public required ITwitchClient AuthorizationClient { get; init; }
+    public required ClientSecretResolver SecretResolver { get; init; }
+    public ClientIdResolver? FallbackClientIdResolver { get; init; }
+    public BearerTokenResolver<IRequireAuthorization>? FallbackTokenResolver { get; init; }
+    public ILoggerFactory? LoggerFactory { get; init; }
+}
+
+public static class TwitchClientBuilderExtensions
+{
+    public static TwitchClientBuilder UseAuthorizationResolution(this TwitchClientBuilder builder,
+        Func<TwitchAuthorizationResolutionOptions> configure
         )
-        => (TwitchClientBuilder)builder.Use(next => async (context, ct) => await next(context.Request switch
+    {
+        TwitchAuthorizationResolutionOptions config = configure();
+        return (TwitchClientBuilder)builder.Use(next => async (context, ct) => await next(context.Request switch
         {
             IRequireAuthorization requiresAuthorization => context with
             {
-                ClientId = await DefaultClientIdResolver(fallbackClientResolver)(requiresAuthorization, ct),
-                BearerToken = await DefaultBearerTokenResolver(fallbackTokenResolver)(requiresAuthorization, ct)
+                ClientId = await DefaultClientIdResolver(config)(requiresAuthorization, ct),
+                BearerToken = await DefaultBearerTokenResolver(config)(requiresAuthorization, ct)
             },
             _ => context
         }, ct));
+    }
 
 
-    private readonly static Func<ClientIdResolver?, ClientIdResolver> DefaultClientIdResolver =
-        next => new MiddlewarePipelineBuilder<ClientIdResolver>()
+    private readonly static Func<TwitchAuthorizationResolutionOptions, ClientIdResolver> DefaultClientIdResolver =
+        config => new MiddlewarePipelineBuilder<ClientIdResolver>()
         .Use(ClientIdentityResolution.UseConfiguredClientId)
-        .Finally(next ?? ClientIdentityResolution.UseFallbackClientId(null));
+        .Finally(config.FallbackClientIdResolver ?? ClientIdentityResolution.UseFallbackClientId(null));
 
-    private static readonly ConcurrentDictionary<TwitchApiIdentity, SemaphoreSlim> _semaphores = [];
-
-    private readonly static Func<BearerTokenResolver<IRequireAuthorization>?, BearerTokenResolver<IRequireAuthorization>> DefaultBearerTokenResolver =
-        next => new MiddlewarePipelineBuilder<BearerTokenResolver<IRequireAuthorization>>() // Oh my god
+    private readonly static Func<TwitchAuthorizationResolutionOptions, BearerTokenResolver<IRequireAuthorization>> DefaultBearerTokenResolver =
+        config => new MiddlewarePipelineBuilder<BearerTokenResolver<IRequireAuthorization>>()
         .Use(BearerTokenResolution.UseOverrideToken)
-        .Use(BearerTokenResolution.UseIdentityResolution<UserIdentity>(
-            async (request, ct) => 
-                (await Concurrent.UseConcurrent<UserAccessTokenKey, AccessTokenDetailsResolutionResult>(key => _semaphores.GetOrAdd(key.Identity, (_) => new SemaphoreSlim(1, 1)))(
-                    (key, ct) => TokenDetailsResolution.UseRefresh<UserAccessTokenKey, UserAccessTokenDetails>(TokenRefreshing.CreateUserAccessTokenRefresher<UserAccessTokenKey>(
-                        (clientId, ct) => default,
-                        null
-                        ))((key, ct) => throw new NotImplementedException())(key, ct)
-                    )(new UserAccessTokenKey 
-                    {
-                        Identity = (UserIdentity)request.Identity,
-                        ValidScopes = request.ValidScopes
-                    }, ct)) switch
+        .Use(async (request, ct)
+                => request.Identity switch
                 {
-                    IHaveAccessTokenDetails<UserAccessTokenDetails> result => result.AccessTokenDetails.AccessToken,
+                    UserIdentity userIdentity => await new MiddlewarePipelineBuilder<AccessTokenDetailsResolver<UserAccessTokenKey>>()
+                        .Use(TokenDetailsResolution.UseRefresh<UserAccessTokenKey, UserAccessTokenDetails>(
+                            new MiddlewarePipelineBuilder<AccessTokenRefresher<UserAccessTokenDetails>>()
+                                .Use(next => new AccessTokenRefresher<UserAccessTokenDetails>(ThreadSafety.Lazily<UserAccessTokenDetails, UserAccessTokenDetails, AccessTokenRefreshResult>(key => key)((details, ct) => next(details, ct))))
+                                .Finally(TokenRefreshing.CreateUserAccessTokenRefresher<UserAccessTokenDetails>(
+                                        config.SecretResolver,
+                                        config.AuthorizationClient,
+                                        config.FallbackClientIdResolver is null ? null : async _ => await config.FallbackClientIdResolver(request, ct),
+                                        config.LoggerFactory?.CreateLogger("RefreshUserAccessToken")
+                                        )
+                                    )
+                                )
+                            )
+                        .Finally((key, ct) => throw new NotImplementedException())(new UserAccessTokenKey { Identity = userIdentity, ValidScopes = request.ValidScopes }, ct) switch
+                        {
+                            IHaveAccessTokenDetails<UserAccessTokenDetails> result => result.AccessTokenDetails.AccessToken,
+                            _ => null
+                        },
+                    ExtensionIdentity extensionIdentity => throw new NotImplementedException(),
+                    TwitchApiIdentity { ClientId: not null } appIdentity => throw new NotImplementedException(),
                     _ => null
                 }
-            ))
-        .Use(BearerTokenResolution.UseIdentityResolution<ExtensionIdentity>(
-            (request, ct) => throw new NotImplementedException()
-            ))
-        .Use(BearerTokenResolution.UseIdentityResolution<TwitchApiIdentity>(
-            (request, ct) => throw new NotImplementedException()
-            ))
-        .Finally(next ?? BearerTokenResolution.UseToken(null));
+            )
+        .Finally(config.FallbackTokenResolver ?? BearerTokenResolution.UseToken(null));
 }

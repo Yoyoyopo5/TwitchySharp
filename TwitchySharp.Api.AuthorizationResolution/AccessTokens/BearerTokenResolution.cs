@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 /// </summary>
 /// <param name="request">The authorization requirement.</param>
 /// <returns>A <see cref="ValueTask"/> containing the resolved <see cref="AccessToken"/>, if any.</returns>
-internal delegate ValueTask<AccessToken?> BearerTokenResolver<T>(T key, CancellationToken ct = default);
+public delegate ValueTask<AccessToken?> BearerTokenResolver<T>(T key, CancellationToken ct = default);
 
 internal static class BearerTokenResolution
 {
