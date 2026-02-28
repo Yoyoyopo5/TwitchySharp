@@ -1,7 +1,6 @@
 ﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
-public interface ITokenStore<in TToken, in TKey, TDetails>
-    where TToken : AccessToken
+public interface ITokenStore<in TKey, TDetails>
     where TDetails : IAccessTokenDetails
 {
     /// <summary>
@@ -9,7 +8,7 @@ public interface ITokenStore<in TToken, in TKey, TDetails>
     /// </summary>
     /// <param name="accessToken">The access token to retrieve details for.</param>
     /// <returns>A <see cref="ValueTask"/> containing the stored <typeparamref name="TDetails"/> associated with the <paramref name="accessToken"/>, if any.</returns>
-    ValueTask<TDetails?> GetTokenDetails(TToken accessToken, CancellationToken ct = default);
+    ValueTask<TDetails?> GetTokenDetails(AccessToken accessToken, CancellationToken ct = default);
     /// <summary>
     /// Retrieve a <typeparamref name="TDetails"/> for a given <typeparamref name="TKey"/>.
     /// </summary>
@@ -21,7 +20,7 @@ public interface ITokenStore<in TToken, in TKey, TDetails>
     /// </summary>
     /// <param name="accessToken">The access token to remove.</param>
     /// <returns>A <see cref="ValueTask"/> continaing the removed <typeparamref name="TDetails"/>, if any.</returns>
-    ValueTask<TDetails?> RemoveTokenDetails(TToken accessToken, CancellationToken ct = default);
+    ValueTask<TDetails?> RemoveTokenDetails(AccessToken accessToken, CancellationToken ct = default);
     /// <summary>
     /// Add or update the <typeparamref name="TDetails"/> for a given <typeparamref name="TKey"/>.
     /// </summary>

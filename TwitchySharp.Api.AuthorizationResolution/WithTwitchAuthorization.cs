@@ -4,7 +4,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
@@ -31,6 +33,15 @@ public record TwitchAuthorizationResolutionOptions
     public ClientIdResolver? FallbackClientIdResolver { get; init; }
     public BearerTokenResolver<IRequireAuthorization>? FallbackTokenResolver { get; init; }
     public ILoggerFactory? LoggerFactory { get; init; }
+}
+
+public static class TwitchAuthorizationResolutionOptionsExtensions
+{
+    public static TwitchAuthorizationResolutionOptions WithTokenStore<TIdentity>(this TwitchAuthorizationResolutionOptions options, ITokenStore<TKey, TDetails> store)
+        where TIdentity : IAccessTokenDetails
+    {
+
+    }
 }
 
 public static class TwitchClientBuilderExtensions
@@ -64,6 +75,9 @@ public static class TwitchClientBuilderExtensions
                 => request.Identity switch
                 {
                     UserIdentity userIdentity => await new MiddlewarePipelineBuilder<AccessTokenDetailsResolver<UserAccessTokenKey>>()
+                        .Use(TokenStore.WriteNewTokens<UserAccessTokenKey>(
+                            
+                            ))
                         .Use(TokenDetailsResolution.UseRefresh<UserAccessTokenKey, UserAccessTokenDetails>(
                             new MiddlewarePipelineBuilder<AccessTokenRefresher<UserAccessTokenDetails>>()
                                 .Use(next => new AccessTokenRefresher<UserAccessTokenDetails>(ThreadSafety.Lazily<UserAccessTokenDetails, UserAccessTokenDetails, AccessTokenRefreshResult>(key => key)((details, ct) => next(details, ct))))

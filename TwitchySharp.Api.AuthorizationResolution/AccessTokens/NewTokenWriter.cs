@@ -40,6 +40,19 @@ public record NewTokenWriter<TKey, TToken, TDetails>(
         _logger.LogInformation("Saved new token for {Identity}", newToken.AccessTokenDetails.Identity);
         return innerResult;
     }
+}  
+
+internal static class TokenStore
+{
+    public static Func<AccessTokenDetailsResolver<TKey>, AccessTokenDetailsResolver<TKey>> WriteNewTokens<TKey, TDetails>(Func<TKey, TDetails, CancellationToken, ValueTask> save)
+        where TDetails : IAccessTokenDetails
+        => next => async (key, ct) =>
+        {
+            AccessTokenDetailsResolutionResult result = await next(key, ct);
+            if (result is AccessTokenDetailsResolutionResult.New<TDetails> newToken)
+                await save(key, newToken.AccessTokenDetails, ct);
+            return result;
+        };
 }
 
 
