@@ -1,12 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
@@ -18,31 +10,13 @@ internal record TwitchRequestContext // Need to move this to Api project.
     public AccessToken? BearerToken { get; init; }
 
     public static implicit operator TwitchRequestContext(TwitchRequest request)
-        => new() { Request = request };
+      => new() { Request = request };
 }
 
 internal delegate ValueTask<TwitchResponse> TwitchRequestHandler(TwitchRequestContext context, CancellationToken ct = default);
 
 public record TwitchClientBuilder // Need to move this to Api project.
     : MiddlewarePipelineBuilder<TwitchRequestHandler>;
-
-public record TwitchAuthorizationResolutionOptions
-{
-    public required ITwitchClient AuthorizationClient { get; init; }
-    public required ClientSecretResolver SecretResolver { get; init; }
-    public ClientIdResolver? FallbackClientIdResolver { get; init; }
-    public BearerTokenResolver<IRequireAuthorization>? FallbackTokenResolver { get; init; }
-    public ILoggerFactory? LoggerFactory { get; init; }
-}
-
-public static class TwitchAuthorizationResolutionOptionsExtensions
-{
-    public static TwitchAuthorizationResolutionOptions WithTokenStore<TIdentity>(this TwitchAuthorizationResolutionOptions options, ITokenStore<TKey, TDetails> store)
-        where TIdentity : IAccessTokenDetails
-    {
-
-    }
-}
 
 public static class TwitchClientBuilderExtensions
 {
@@ -63,33 +37,84 @@ public static class TwitchClientBuilderExtensions
     }
 
 
+    // TODO: Remove, absorb into options record
     private readonly static Func<TwitchAuthorizationResolutionOptions, ClientIdResolver> DefaultClientIdResolver =
         config => new MiddlewarePipelineBuilder<ClientIdResolver>()
         .Use(ClientIdentityResolution.UseConfiguredClientId)
-        .Finally(config.FallbackClientIdResolver ?? ClientIdentityResolution.UseFallbackClientId(null));
+        .Finally(config.ResolveClientId ?? ClientIdentityResolution.UseFallbackClientId(null));
 
+    // TODO: Remove, absord into options record
     private readonly static Func<TwitchAuthorizationResolutionOptions, BearerTokenResolver<IRequireAuthorization>> DefaultBearerTokenResolver =
         config => new MiddlewarePipelineBuilder<BearerTokenResolver<IRequireAuthorization>>()
         .Use(BearerTokenResolution.UseOverrideToken)
+        .Use(async (request, ct)  
+                => config.IdentityConfigs.GetValueOrDefault(request.Identity.GetType()) switch 
+                    {
+                        ITokenResolutionOptions identityConfig => await new MiddlewarePipelineBuilder<AccessTokenDetailsResolver<object?>>()
+                            // Write new tokens
+                            .Use(identityConfig.TokenStore switch 
+                                {
+                                    { } store => ,
+                                    _ => next => (key, ct) => next(key, ct) // Noop
+                                }
+                                )
+                            // Proactive refresh
+                            .Use(identityConfig.Refresher switch 
+                                {
+                                    { } refresher =>  
+                                    TokenDetailsResolution.UseRefresh<object?, IAccessTokenDetails>(
+                                
+                                        new MiddlewarePipelineBuilder<AccessTokenRefresher<IAccessTokenDetails>>()
+                                        .Use(next => new AccessTokenRefresher<IAccessTokenDetails>(ThreadSafety.Lazily<IAccessTokenDetails, IAccessTokenDetails, AccessTokenRefreshResult>(key => key)((details, ct) => next(details, ct))))
+                                        .Finally(refresher)),
+                                            // TODO: Move this to an extension on IdentityOptions
+                                            // .Finally(TokenRefreshing.CreateUserAccessTokenRefresher<UserAccessTokenDetails>(
+                                            // config.SecretResolver,
+                                            // config.AuthorizationClient,
+                                            // config.FallbackClientIdResolver is null ? null : async _ => await config.FallbackClientIdResolver(request, ct),
+                                            // config.LoggerFactory?.CreateLogger("RefreshUserAccessToken")
+                                            // )
+                                    _ => next => (key, ct) => next(key, ct) // Noop
+                                }
+                                )
+                            // Get from store
+                            .Finally(async (key, ct) => AccessTokenDetailsResolutionResult.FromDetails(identityConfig.TokenStore switch
+                                {
+                                    { } store => await store.GetTokenDetails(key, ct),
+                                    _ => null
+                                }))(identityConfig.SelectKey(request), ct) switch // Execute and extract token 
+                                {
+                                    IHaveAccessTokenDetails<IAccessTokenDetails> available => available.AccessTokenDetails.AccessToken,
+                                    _ => null
+                                }
+                                ,
+                        _ => null
+                    }
+                )
         .Use(async (request, ct)
                 => request.Identity switch
                 {
+
                     UserIdentity userIdentity => await new MiddlewarePipelineBuilder<AccessTokenDetailsResolver<UserAccessTokenKey>>()
+                        // Get Token from Store => Proactive Refresh => Write New Token to Store
+                        // Write New Tokens
                         .Use(TokenStore.WriteNewTokens<UserAccessTokenKey>(
                             
                             ))
+                        // Proactive Refresh
                         .Use(TokenDetailsResolution.UseRefresh<UserAccessTokenKey, UserAccessTokenDetails>(
                             new MiddlewarePipelineBuilder<AccessTokenRefresher<UserAccessTokenDetails>>()
                                 .Use(next => new AccessTokenRefresher<UserAccessTokenDetails>(ThreadSafety.Lazily<UserAccessTokenDetails, UserAccessTokenDetails, AccessTokenRefreshResult>(key => key)((details, ct) => next(details, ct))))
                                 .Finally(TokenRefreshing.CreateUserAccessTokenRefresher<UserAccessTokenDetails>(
-                                        config.SecretResolver,
+                                        config.ResolveClientSecret,
                                         config.AuthorizationClient,
-                                        config.FallbackClientIdResolver is null ? null : async _ => await config.FallbackClientIdResolver(request, ct),
+                                        config.ResolveClientId is null ? null : async _ => await config.ResolveClientId(request, ct),
                                         config.LoggerFactory?.CreateLogger("RefreshUserAccessToken")
                                         )
                                     )
                                 )
                             )
+                        // Get Token from Store
                         .Finally((key, ct) => throw new NotImplementedException())(new UserAccessTokenKey { Identity = userIdentity, ValidScopes = request.ValidScopes }, ct) switch
                         {
                             IHaveAccessTokenDetails<UserAccessTokenDetails> result => result.AccessTokenDetails.AccessToken,
@@ -100,5 +125,5 @@ public static class TwitchClientBuilderExtensions
                     _ => null
                 }
             )
-        .Finally(config.FallbackTokenResolver ?? BearerTokenResolution.UseToken(null));
+        .Finally(config.ResolveBearerToken ?? BearerTokenResolution.UseToken(null));
 }

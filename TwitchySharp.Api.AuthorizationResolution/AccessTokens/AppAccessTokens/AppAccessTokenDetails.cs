@@ -1,5 +1,6 @@
 ﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
+// TODO: Remove
 public record AppAccessTokenDetails
     : AccessTokenDetails<ClientIdentity, AppAccessToken>
 {

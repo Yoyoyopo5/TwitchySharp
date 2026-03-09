@@ -3,24 +3,21 @@ using System.Collections.Concurrent;
 namespace TwitchySharp.Api.AuthorizationResolution;
 
 /// <summary>
-/// A thread-safe in-memory implementation of <see cref="IStoreUserAccessTokens"/>.
+/// A thread-safe in-memory token cache.
 /// </summary>
-/// <remarks>
-/// Stores one token per user/client pair. Scope matching at lookup time uses "at least one of" semantics:
-/// if the key specifies scopes, the stored token must have at least one of those scopes to match.
-/// </remarks>
-public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
+public class InMemoryTokenCache<TDetails>
+    where TDetails : IAccessTokenDetails
 {
-    private readonly ConcurrentDictionary<UserAccessToken, UserAccessTokenDetails> _tokenIndex = new();
-    private readonly ConcurrentDictionary<UserIdentity, UserAccessTokenDetails> _userIndex = new();
+    private readonly ConcurrentDictionary<AccessToken, TDetails> _tokenIndex = new();
+    private readonly ConcurrentDictionary<TwitchApiIdentity, TDetails> _identityIndex = new();
     private readonly object _lock = new();
 
     /// <inheritdoc/>
-    public ValueTask<UserAccessTokenDetails?> GetTokenDetails(UserAccessTokenKey key, CancellationToken ct = default)
+    public ValueTask<UserAccessTokenDetails?> GetTokenDetails(IRequireAuthorization key, CancellationToken ct = default)
     {
-        if (_userIndex.TryGetValue(key.Identity, out UserAccessTokenDetails? details) && details.Scopes.HasRequiredScope(key.ValidScopes))
-            return ValueTask.FromResult<UserAccessTokenDetails?>(details);
-        return ValueTask.FromResult<UserAccessTokenDetails?>(null);
+        if (_identityIndex.TryGetValue(key.Identity, out TDetails? details) && details.Scopes.HasRequiredScope(key.ValidScopes))
+            return ValueTask.FromResult<TDetails?>(details);
+        return ValueTask.FromResult<TDetails?>(null);
     }
 
     /// <inheritdoc/>
@@ -38,7 +35,7 @@ public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
             if (!_tokenIndex.TryRemove(token, out UserAccessTokenDetails? details))
                 return ValueTask.FromResult(details);
 
-            _userIndex.TryRemove(details.Identity, out _);
+            _identityIndex.TryRemove(details.Identity, out _);
             return ValueTask.FromResult<UserAccessTokenDetails?>(details);
         }
     }
@@ -49,10 +46,10 @@ public class InMemoryUserAccessTokenStore : IStoreUserAccessTokens
         lock (_lock)
         {
             // Remove old token for this user if one exists
-            if (_userIndex.TryGetValue(key.Identity, out UserAccessTokenDetails? existingDetails))
+            if (_identityIndex.TryGetValue(key.Identity, out UserAccessTokenDetails? existingDetails))
                 _tokenIndex.TryRemove(existingDetails.AccessToken, out _);
 
-            _userIndex[key.Identity] = details;
+            _identityIndex[key.Identity] = details;
             _tokenIndex[details.AccessToken] = details;
 
             return ValueTask.FromResult(details);

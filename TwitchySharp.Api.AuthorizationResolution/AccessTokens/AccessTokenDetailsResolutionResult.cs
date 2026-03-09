@@ -32,4 +32,13 @@ public abstract record AccessTokenDetailsResolutionResult
     {
         public static NotRequired Instance { get; } = new();
     }
+
+    public static AccessTokenDetailsResolutionResult FromDetails<TDetails>(TDetails? details)
+        where TDetails : IAccessTokenDetails
+        => details switch 
+        {
+            IAccessTokenDetails exists when DateTimeOffset.UtcNow > exists.ExpiresAt => new AccessTokenDetailsResolutionResult.Expired<TDetails>(details),
+            IAccessTokenDetails exists => new AccessTokenDetailsResolutionResult.Available<TDetails>(details),
+            _ => new AccessTokenDetailsResolutionResult.Unavailable()
+        };
 }

@@ -27,5 +27,5 @@ public interface ITokenStore<in TKey, TDetails>
     /// <param name="key">The key to set the <typeparamref name="TDetails"/> for.</param>
     /// <param name="details">The details to set.</param>
     /// <returns>The <typeparamref name="TDetails"/> that were stored.</returns>
-    ValueTask<TDetails> SaveTokenDetails(TKey key, TDetails details, CancellationToken ct = default);
+    ValueTask<TDetails?> SaveTokenDetails(TKey key, TDetails details, CancellationToken ct = default);
 }
