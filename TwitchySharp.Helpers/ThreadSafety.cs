@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace TwitchySharp.Api.AuthorizationResolution;
+namespace TwitchySharp.Helpers;
 
-internal static class ThreadSafety
+public static class ThreadSafety
 {
     // Use internally to allow eviction of semaphores with no waiting threads.
     private class RefCountingSemaphore
@@ -43,7 +44,7 @@ internal static class ThreadSafety
                     Interlocked.Increment(ref existing.RefCount);
                     return existing;
                 });
-            
+
             try
             {
                 await wrapper.Semaphore.WaitAsync(ct).ConfigureAwait(false);

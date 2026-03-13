@@ -14,9 +14,9 @@ public class Test_SequentialAccessTokenResolver
     public async Task GetToken_FirstResolverReturnsValue_ReturnsFirstValue()
     {
         // Arrange
-        var firstResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(FirstToken);
-        var secondResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(SecondToken);
-        var resolver = new SequentialResolver<IRequireAuthorization>([firstResolver, secondResolver]);
+        var firstResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(FirstToken);
+        var secondResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(SecondToken);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([firstResolver, secondResolver]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -32,8 +32,8 @@ public class Test_SequentialAccessTokenResolver
     {
         // Arrange
         var firstResolver = new MockUnavailableTokenResolver();
-        var secondResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(SecondToken);
-        var resolver = new SequentialResolver<IRequireAuthorization>([firstResolver, secondResolver]);
+        var secondResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(SecondToken);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([firstResolver, secondResolver]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -50,7 +50,7 @@ public class Test_SequentialAccessTokenResolver
         // Arrange
         var firstResolver = new MockUnavailableTokenResolver();
         var secondResolver = new MockUnavailableTokenResolver();
-        var resolver = new SequentialResolver<IRequireAuthorization>([firstResolver, secondResolver]);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([firstResolver, secondResolver]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -64,7 +64,7 @@ public class Test_SequentialAccessTokenResolver
     public async Task GetToken_EmptyResolverChain_ReturnsUnavailable()
     {
         // Arrange
-        var resolver = new SequentialResolver<IRequireAuthorization>([]);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -78,9 +78,9 @@ public class Test_SequentialAccessTokenResolver
     public async Task GetToken_StopsAtFirstAvailableResult_DoesNotCallSubsequentResolvers()
     {
         // Arrange
-        var firstResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(FirstToken);
+        var firstResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(FirstToken);
         var trackingResolver = new MockTrackingTokenResolver(SecondToken);
-        var resolver = new SequentialResolver<IRequireAuthorization>([firstResolver, trackingResolver]);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([firstResolver, trackingResolver]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -96,7 +96,7 @@ public class Test_SequentialAccessTokenResolver
         // Arrange
         var firstResolver = new MockUnavailableTokenResolver();
         var trackingResolver = new MockTrackingTokenResolver(SecondToken);
-        var resolver = new SequentialResolver<IRequireAuthorization>([firstResolver, trackingResolver]);
+        var resolver = new SequentialResolver<IAuthorizedTwitchRequest>([firstResolver, trackingResolver]);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -110,7 +110,7 @@ public class Test_SequentialAccessTokenResolver
 
     #region Mock Types
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;
@@ -118,17 +118,17 @@ public class Test_SequentialAccessTokenResolver
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private class MockUnavailableTokenResolver : IResolveAccessToken<IRequireAuthorization>
+    private class MockUnavailableTokenResolver : IResolveAccessToken<IAuthorizedTwitchRequest>
     {
-        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IRequireAuthorization request, CancellationToken ct = default)
+        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IAuthorizedTwitchRequest request, CancellationToken ct = default)
             => ValueTask.FromResult<AccessTokenDetailsResolutionResult>(AccessTokenDetailsResolutionResult.Unavailable.Instance);
     }
 
-    private class MockTrackingTokenResolver(AccessToken token) : IResolveAccessToken<IRequireAuthorization>
+    private class MockTrackingTokenResolver(AccessToken token) : IResolveAccessToken<IAuthorizedTwitchRequest>
     {
         public bool WasCalled { get; private set; }
 
-        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IRequireAuthorization request, CancellationToken ct = default)
+        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IAuthorizedTwitchRequest request, CancellationToken ct = default)
         {
             WasCalled = true;
             return ValueTask.FromResult<AccessTokenDetailsResolutionResult>(new AccessTokenDetailsResolutionResult.Available<AccessToken>(token));

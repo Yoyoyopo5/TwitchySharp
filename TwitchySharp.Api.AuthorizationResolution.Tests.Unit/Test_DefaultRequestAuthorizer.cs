@@ -121,7 +121,7 @@ public class Test_DefaultRequestAuthorizer
 
     #region Mock Types
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;
@@ -130,7 +130,7 @@ public class Test_DefaultRequestAuthorizer
     }
 
     private record MockAuthorizableRequestWithOverride(TwitchApiIdentity Identity, AccessToken? OverrideAccessToken)
-        : ITwitchRequest, IRequireAuthorization
+        : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
 

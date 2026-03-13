@@ -1,122 +1,153 @@
+using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
-using Microsoft.Extensions.Logging;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 
+/// <summary>
+/// Options used to configure Twitch Hexlix API authorization header resolution.
+/// </summary>
+/// <remarks>
+/// The <see cref="TwitchRequestAuthorizationContext"/> on the <see cref="IAuthorizedTwitchRequest"/> interface implemented by requests needing <c>Client-Id</c> and
+/// <c>Authorization</c> headers is used to resolve the actual header values using functions defined on these options.
+/// </remarks>
 public record TwitchAuthorizationResolutionOptions
 {
-    public required ITwitchClient AuthorizationClient { get; init; }
-    public ClientIdResolver? ResolveClientId { get; init; }
-    public BearerTokenResolver<IRequireAuthorization>? ResolveBearerToken { get; init; }
+    /// <summary>
+    /// The fallback client id resolver to use when no other configured resolvers match.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to return a <see langword="null"/> client id.
+    /// You can set this if you want to use a single client id for all requests.
+    /// </remarks>
+    public ClientIdResolver FallbackClientIdResolver { get; init; }
+        = (context, ct) => ValueTask.FromResult((ClientId?)null);
 
-    internal MiddlewarePipelineBuilder<ClientIdResolver> ClientIdResolverBuilder { get; init; } = new();
-    internal MiddlewarePipelineBuilder<BearerTokenResolver<IRequireAuthorization>> BearerTokenResolverBuilder { get; init; } = new();
+    /// <summary>
+    /// The fallback bearer token resolver to use when no other configured resolver match.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to return a <see langword="null"/> token.
+    /// You can set this if you want to use a single access token for all requests.
+    /// </remarks>
+    public BearerTokenResolver FallbackBearerTokenResolver { get; init; }
+        = (context, ct) => ValueTask.FromResult((IAccessToken?)null);
 
-    public ILoggerFactory? LoggerFactory { get; init; }
+    internal MiddlewarePipelineBuilder<ClientIdResolver> ClientIdResolverBuilder { get; init; }
+        = new MiddlewarePipelineBuilder<ClientIdResolver>()
+            .Use(ClientIdentityResolution.UseNoneIdentity)
+            .Use(ClientIdentityResolution.UseConfiguredClientId);
+    internal MiddlewarePipelineBuilder<BearerTokenResolver> BearerTokenResolverBuilder { get; init; }
+        = new MiddlewarePipelineBuilder<BearerTokenResolver>()
+            .Use(BearerTokenResolution.UseOverrideToken)
+            .Use(BearerTokenResolution.UseNoneIdentity);
+
+    internal ClientIdResolver ClientIdResolver => ClientIdResolverBuilder.Finally(FallbackClientIdResolver);
+    internal BearerTokenResolver BearerTokenResolver => BearerTokenResolverBuilder.Finally(FallbackBearerTokenResolver);
 }
 
 public static partial class TwitchAuthorizationResolutionOptionsExtensions
 {
-    public static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options, 
+    /// <summary>
+    /// Configure token resolution options for requests using <see cref="TwitchIdentity.Client"/>.
+    /// </summary>
+    /// <param name="options">The resolution options to configure.</param>
+    /// <param name="appOptions">The <see cref="TwitchIdentity.Client"/> specific token resolution options.</param>
+    /// <returns>The <paramref name="options"/> with added configuration.</returns>
+    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+        AppAccessTokenResolutionOptions appOptions
+        )
+        => options.ConfigureIdentity<TwitchIdentity.Client, AccessTokenDetails.App>(appOptions);
+
+    /// <summary>
+    /// Configure token resolution options for requests using <see cref="TwitchIdentity.User"/>.
+    /// </summary>
+    /// <param name="options">The resolution options to configure.</param>
+    /// <param name="userOptions">The <see cref="TwitchIdentity.User"/> specific token resolution options.</param>
+    /// <returns>The <paramref name="options"/> with added configuration.</returns>
+    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+        UserAccessTokenResolutionOptions userOptions
+        )
+        => options.ConfigureIdentity<TwitchIdentity.User, AccessTokenDetails.User>(userOptions);
+
+    /// <summary>
+    /// Configure token resolution options for requests using <see cref="TwitchIdentity.Extension"/>.
+    /// </summary>
+    /// <param name="options">The resolution options to configure.</param>
+    /// <param name="userOptions">The <see cref="TwitchIdentity.Extension"/> specific token resolution options.</param>
+    /// <returns>The <paramref name="options"/> with added configuration.</returns>
+    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+        ExtensionAccessTokenResolutionOptions extensionOptions
+        )
+        => options.ConfigureIdentity<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>(extensionOptions);
+
+    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
+        ITokenResolutionOptions<TDetails> identityOptions)
+        where TIdentity : TwitchIdentity
+        where TDetails : AccessTokenDetails
+        => options.ConfigureIdentity<TIdentity, TDetails>(identityOptions.ToTokenResolutionOptions());
+
+    /// <summary>
+    /// Configure bearer token resolution for a specific <see cref="TwitchIdentity"/>.
+    /// </summary>
+    /// <remarks>
+    /// Handles pattern matching requests by identity, plus thread safety on refresh and acquire new.
+    /// </remarks>
+    /// <typeparam name="TIdentity">The <see cref="TwitchIdentity"/> to configure bearer token resolution for.</typeparam>
+    /// <typeparam name="TDetails">The <see cref="AccessTokenDetails"/> that should be resolved for <typeparamref name="TIdentity"/>.</typeparam>
+    /// <param name="options">The options to configure.</param>
+    /// <param name="identityOptions">The identity-specific bearer token resolution options.</param>
+    /// <returns>The configured <paramref name="options"/>.</returns>
+    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options, 
         TokenResolutionOptions<TDetails> identityOptions
         )
-        where TIdentity : TwitchApiIdentity
-        where TDetails : IAccessTokenDetails
+        where TIdentity : TwitchIdentity
+        where TDetails : AccessTokenDetails
     {
-        MiddlewarePipelineBuilder<AccessTokenDetailsResolver<IRequireAuthorization>> identityPipelineBuilder = new();
+        MiddlewarePipelineBuilder<AccessTokenDetailsResolver> identityPipelineBuilder = new();
 
         if (identityOptions.OnNewToken is not null)
-            identityPipelineBuilder.Use(next => async (requirement, ct) => {
-                AccessTokenDetailsResolutionResult result = await next(requirement, ct);
+            identityPipelineBuilder.Use(next => async (request, ct) => {
+                AccessTokenDetailsResolutionResult result = await next(request, ct);
                 if (result is AccessTokenDetailsResolutionResult.New<TDetails> newTokenResult)
                     await identityOptions.OnNewToken(newTokenResult.AccessTokenDetails, ct);
                 return result;
                 });
 
         if (identityOptions.RefreshToken is not null)
-            identityPipelineBuilder.Use(next => (requirement, ct) =>
-                ThreadSafety.Lazily<IRequireAuthorization, TIdentity, AccessTokenDetailsResolutionResult>(
-                    requirement => (TIdentity)requirement.Identity)(async (requirement, ct) =>
-                    await next(requirement, ct) switch 
+            identityPipelineBuilder.Use(next => (context, ct) =>
+                ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
+                    request => (TIdentity)request.Identity)(async (context, ct) =>
+                    await next(context, ct) switch 
                     {
                         AccessTokenDetailsResolutionResult.Expired<TDetails> expiredTokenResult => 
                             (await identityOptions.RefreshToken(expiredTokenResult.AccessTokenDetails, ct)).ToResolutionResult(),
                         AccessTokenDetailsResolutionResult other => other
-                    })(requirement, ct));
+                    })(context, ct));
 
         if (identityOptions.AcquireNewToken is not null)
-            identityPipelineBuilder.Use(next => (requirement, ct) => 
-                ThreadSafety.Lazily<IRequireAuthorization, TIdentity, AccessTokenDetailsResolutionResult>(
-                    requirement => (TIdentity)requirement.Identity)(async (requirement, ct) =>
-                    await next(requirement, ct) switch
+            identityPipelineBuilder.Use(next => (context, ct) => 
+                ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
+                    request => (TIdentity)request.Identity)(async (context, ct) =>
+                    await next(context, ct) switch
                     {
                         AccessTokenDetailsResolutionResult.Unavailable
                         or AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
-                            AccessTokenDetailsResolutionResult.FromDetails(await identityOptions.AcquireNewToken(requirement, ct)),
+                            AccessTokenDetailsResolutionResult.FromDetails(await identityOptions.AcquireNewToken(context, ct)),
                         AccessTokenDetailsResolutionResult other => other
-                    })(requirement, ct));
+                    })(context, ct));
         
-        AccessTokenDetailsResolver<IRequireAuthorization> identityPipeline = identityPipelineBuilder.Finally(async (requirement, ct) => 
-                AccessTokenDetailsResolutionResult.FromDetails<TDetails>(
+        AccessTokenDetailsResolver identityPipeline = identityPipelineBuilder.Finally(async (request, ct) => 
+                AccessTokenDetailsResolutionResult.FromDetails( // This checks expiry.
                     identityOptions.GetCachedToken is not null 
-                    ? await identityOptions.GetCachedToken(requirement, ct) 
+                    ? await identityOptions.GetCachedToken(request, ct) 
                     : default));
            
-        // Add the identity pipeline conditionally if requirement identity is TIdentity
-        options.BearerTokenResolverBuilder.Use(next => (requirement, ct) => 
-                requirement.Identity is TIdentity 
-                ? identityPipeline.ExtractBearerToken<IRequireAuthorization, TDetails>()(requirement, ct)
-                : next(requirement, ct));
+        // Add the identity pipeline to run conditionally if request identity is TIdentity
+        options.BearerTokenResolverBuilder.Use(next => (context, ct) => 
+                context.Identity is TIdentity 
+                ? identityPipeline.ExtractBearerToken<TDetails>()(context, ct)
+                : next(context, ct));
        
         return options;
     }
-
-    // May not even need this if the per-identity options types are convertible to TokenResolutionOptions.
-    public static TwitchAuthorizationResolutionOptions ConfigureUserIdentity(this TwitchAuthorizationResolutionOptions options,
-        UserAccessTokenResolutionOptions userOptions)
-        => options.ConfigureIdentity<UserIdentity, UserAccessTokenDetails>(userOptions);
-}
-
-public record UserAccessTokenResolutionOptions
-{
-    public Func<IRequireAuthorization, CancellationToken, ValueTask<UserAccessTokenDetails?>>? GetCachedToken { get; init; }
-    public Func<UserAccessTokenDetails, CancellationToken, ValueTask>? OnNewToken { get; init; }
-    public Func<IRequireAuthorization, CancellationToken, ValueTask<UserAccessTokenDetails?>>? AcquireNewToken { get; init; } 
-
-    public required ClientSecretResolver ClientSecretResolver { get; init; }
-    public required ITwitchClient AuthorizationClient { get; init; }
-    public Func<UserAccessTokenDetails, CancellationToken, ValueTask<ClientId?>>? ResolveFallbackClientId { get; init; }
-    public ILoggerFactory? LoggerFactory { get; init; }
-
-    public static implicit operator TokenResolutionOptions<UserAccessTokenDetails>(UserAccessTokenResolutionOptions options)
-        => new()
-        {
-            GetCachedToken = options.GetCachedToken,
-            RefreshToken = TokenRefreshing.CreateUserAccessTokenRefresher(
-                    options.ClientSecretResolver,
-                    options.AuthorizationClient,
-                    options.ResolveFallbackClientId,
-                    options.LoggerFactory
-                    ),
-            AcquireNewToken = options.AcquireNewToken,
-            OnNewToken = options.OnNewToken
-        };
-}
-
-public record AppAccessTokenResolutionOptions
-{
-    public static implicit operator TokenResolutionOptions<AccessTokenDetails<ClientIdentity, AppAccessToken>>(AppAccessTokenResolutionOptions options)
-        => new()
-        {
-
-        };
-}
-
-public record ExtensionAccessTokenResolutionOptions
-{
-    public static implicit operator TokenResolutionOptions<AccessTokenDetails<ExtensionIdentity, ExtensionJsonWebToken>>(ExtensionAccessTokenResolutionOptions options)
-        => new()
-        {
-
-        };
 }

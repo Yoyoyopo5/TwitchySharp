@@ -13,7 +13,7 @@ public class Test_SingleAccessTokenResolver
     public async Task GetToken_AnyRequest_ReturnsConfiguredToken()
     {
         // Arrange
-        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(ConfiguredToken);
         var request = new MockAuthorizableRequest(TwitchApiIdentity.Default);
 
         // Act
@@ -44,7 +44,7 @@ public class Test_SingleAccessTokenResolver
     {
         // Arrange
         var overrideToken = new UserAccessToken("override_token");
-        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(ConfiguredToken);
         var request = new MockAuthorizableRequestWithOverride(TwitchApiIdentity.Default, overrideToken);
 
         // Act
@@ -59,7 +59,7 @@ public class Test_SingleAccessTokenResolver
     public async Task GetToken_MultipleCallsWithDifferentRequests_ReturnsSameToken()
     {
         // Arrange
-        var resolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(ConfiguredToken);
+        var resolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(ConfiguredToken);
         var request1 = new MockAuthorizableRequest(TwitchApiIdentity.Default);
         var request2 = new MockAuthorizableRequest(new ClientIdentity(new ClientId("other")));
         var request3 = new MockAuthorizableRequest(TwitchApiIdentity.Default);
@@ -79,7 +79,7 @@ public class Test_SingleAccessTokenResolver
 
     #region Mock Types
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;
@@ -88,7 +88,7 @@ public class Test_SingleAccessTokenResolver
     }
 
     private record MockAuthorizableRequestWithOverride(TwitchApiIdentity Identity, AccessToken? OverrideAccessToken)
-        : ITwitchRequest, IRequireAuthorization
+        : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
 

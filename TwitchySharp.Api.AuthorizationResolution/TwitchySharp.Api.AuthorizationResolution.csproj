@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Api\TwitchySharp.Api.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

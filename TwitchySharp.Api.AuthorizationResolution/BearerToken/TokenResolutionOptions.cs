@@ -1,7 +1,13 @@
 namespace TwitchySharp.Api.AuthorizationResolution;
 
-public record TokenResolutionOptions<TDetails>
-    where TDetails : IAccessTokenDetails
+internal interface ITokenResolutionOptions<TDetails>
+    where TDetails : AccessTokenDetails
+{
+    TokenResolutionOptions<TDetails> ToTokenResolutionOptions();
+}
+
+internal record TokenResolutionOptions<TDetails>
+    where TDetails : AccessTokenDetails
 {
     /// <summary>
     /// The function used to get a cached token.
@@ -10,12 +16,12 @@ public record TokenResolutionOptions<TDetails>
     /// This is the first function that runs on token resolution, and if it returns <see cref="AccessTokenDetailsResolutionResult.Valid{TDetails}"/> 
     /// or <see cref="AccessTokenDetailsResolutionResult.Available{TDetails}"/>, the token is returned immediately.
     /// </remarks>
-    public Func<IRequireAuthorization, CancellationToken, ValueTask<TDetails?>>? GetCachedToken { get; init; }
+    public AccessTokenDetailsResolver<TDetails>? GetCachedToken { get; init; }
     /// <summary>
     /// The function to run when <see cref="GetCachedToken"/> returns <see cref="AccessTokenDetailsResolutionResult.Unavailable"/>
     /// or <see cref="AccessTokenDetailsResolutionResult.Revoked{TDetails}"/>.
     /// </summary>
-    public Func<IRequireAuthorization, CancellationToken, ValueTask<TDetails?>>? AcquireNewToken { get; init; }
+    public AccessTokenDetailsResolver<TDetails>? AcquireNewToken { get; init; }
     /// <summary>
     /// The function to run when <see cref="GetCachedToken"/> returns <see cref="AccessTokenDetailsResolutionResult.Expired{TDetails}"/>.
     /// </summary>

@@ -193,7 +193,7 @@ public class Test_IdentityTokenResolver
 
     private enum MockResultType { Valid, Expired, Unavailable }
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet.Create(Scope.ChannelModerate);
         public AccessToken? OverrideAccessToken => null;

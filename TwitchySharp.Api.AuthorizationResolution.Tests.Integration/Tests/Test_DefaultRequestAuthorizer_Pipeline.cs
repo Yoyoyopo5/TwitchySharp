@@ -126,15 +126,15 @@ public class Test_DefaultRequestAuthorizer_Pipeline(TokenResolutionTestFixture f
         var firstToken = new UserAccessToken("first_token");
         var secondToken = new UserAccessToken("second_token");
         var unavailableResolver = new MockUnavailableTokenResolver();
-        var firstResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(firstToken);
-        var secondResolver = new SingleAccessTokenResolver<IRequireAuthorization, UserAccessToken>(secondToken);
-        var sequentialResolver = new SequentialResolver<IRequireAuthorization>([unavailableResolver, firstResolver, secondResolver]);
+        var firstResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(firstToken);
+        var secondResolver = new SingleAccessTokenResolver<IAuthorizedTwitchRequest, UserAccessToken>(secondToken);
+        var sequentialResolver = new SequentialResolver<IAuthorizedTwitchRequest>([unavailableResolver, firstResolver, secondResolver]);
         var identityResolver = new IdentityTypeTokenResolver();
 
         // Create a custom authorizer that uses the sequential resolver via DefaultTokenResolver
         // Since DefaultTokenResolver wraps IdentityTokenResolver, we need a different approach
         // We'll create a custom setup that demonstrates the sequential behavior
-        var combinedResolver = new SequentialResolver<IRequireAuthorization>([
+        var combinedResolver = new SequentialResolver<IAuthorizedTwitchRequest>([
             new ConfiguredAccessTokenResolver(),
             unavailableResolver,
             firstResolver,
@@ -178,7 +178,7 @@ public class Test_DefaultRequestAuthorizer_Pipeline(TokenResolutionTestFixture f
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;
@@ -187,16 +187,16 @@ public class Test_DefaultRequestAuthorizer_Pipeline(TokenResolutionTestFixture f
     }
 
     private record MockAuthorizableRequestWithOverride(TwitchApiIdentity Identity, AccessToken? OverrideAccessToken)
-        : ITwitchRequest, IRequireAuthorization
+        : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 
         public HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions serializerOptions) => new();
     }
 
-    private class MockUnavailableTokenResolver : IResolveAccessToken<IRequireAuthorization>
+    private class MockUnavailableTokenResolver : IResolveAccessToken<IAuthorizedTwitchRequest>
     {
-        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IRequireAuthorization request, CancellationToken ct = default)
+        public ValueTask<AccessTokenDetailsResolutionResult> ResolveAsync(IAuthorizedTwitchRequest request, CancellationToken ct = default)
             => ValueTask.FromResult<AccessTokenDetailsResolutionResult>(AccessTokenDetailsResolutionResult.Unavailable.Instance);
     }
 

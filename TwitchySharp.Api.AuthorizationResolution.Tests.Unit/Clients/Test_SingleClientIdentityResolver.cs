@@ -58,7 +58,7 @@ public class Test_SingleClientIdentityResolver
 
     #region Mock Types
 
-    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IRequireAuthorization
+    private record MockAuthorizableRequest(TwitchApiIdentity Identity) : ITwitchRequest, IAuthorizedTwitchRequest
     {
         public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
         public AccessToken? OverrideAccessToken => null;

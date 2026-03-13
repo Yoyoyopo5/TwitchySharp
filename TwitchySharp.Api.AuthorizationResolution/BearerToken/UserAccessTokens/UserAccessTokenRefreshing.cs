@@ -5,25 +5,21 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 
-public delegate ValueTask<ClientSecret?> ClientSecretResolver(ClientId? clientId, CancellationToken ct = default);
-
-public delegate ValueTask<AccessTokenRefreshResult> AccessTokenRefresher<TDetails>(TDetails tokenDetails, CancellationToken ct = default);
-
 internal static partial class TokenRefreshing
-{ 
-    public static AccessTokenRefresher<UserAccessTokenDetails> CreateUserAccessTokenRefresher(
+{
+    public static AccessTokenRefresher<AccessTokenDetails.User> CreateUserAccessTokenRefresher(
         ClientSecretResolver resolveClientSecret,
         ITwitchClient twitchClient,
-        Func<UserAccessTokenDetails, CancellationToken, ValueTask<ClientId?>>? resolveFallbackClientId = null,
+        Func<AccessTokenDetails.User, CancellationToken, ValueTask<ClientId?>>? resolveFallbackClientId = null,
         ILoggerFactory? loggerFactory = null
         )
         => (details, ct) => RefreshUserAccessToken(details, resolveClientSecret, twitchClient, resolveFallbackClientId, loggerFactory?.CreateLogger(nameof(RefreshUserAccessToken)), ct);
 
     private static async ValueTask<AccessTokenRefreshResult> RefreshUserAccessToken(
-        UserAccessTokenDetails accessTokenDetails,
+        AccessTokenDetails.User accessTokenDetails,
         ClientSecretResolver resolveClientSecret,
         ITwitchClient twitchClient,
-        Func<UserAccessTokenDetails, CancellationToken, ValueTask<ClientId?>>? resolveFallbackClientId = null,
+        Func<AccessTokenDetails.User, CancellationToken, ValueTask<ClientId?>>? resolveFallbackClientId = null,
         ILogger? logger = null,
         CancellationToken ct = default
         )
@@ -33,19 +29,19 @@ internal static partial class TokenRefreshing
         if ((accessTokenDetails.Identity.ClientId ?? (resolveFallbackClientId is not null ? await resolveFallbackClientId(accessTokenDetails, ct) : null)) is not ClientId clientId)
         {
             logger?.LogWarning("The token was unable to be refreshed becuase the identity of the token to refresh must have a non-null ClientId or a fallback must be configured.");
-            return new AccessTokenRefreshResult.Expired<UserAccessTokenDetails>(accessTokenDetails);
+            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(accessTokenDetails);
         }
 
         if (accessTokenDetails.RefreshToken is not RefreshToken refreshToken)
         {
             logger?.LogWarning("The token was unable to be refreshed becuase the user access token does not have an associated refresh token.");
-            return new AccessTokenRefreshResult.Expired<UserAccessTokenDetails>(accessTokenDetails);
+            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(accessTokenDetails);
         }
 
         if (await resolveClientSecret(accessTokenDetails.Identity.ClientId, ct) is not ClientSecret secret)
         {
             logger?.LogWarning("The token was unable to be refreshed becuase a client secret could not be resolved for {ClientId}.", token.AccessTokenDetails.Identity.ClientId);
-            return new AccessTokenRefreshResult.Expired<UserAccessTokenDetails>(accessTokenDetails);
+            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(accessTokenDetails);
         }
 
         AccessTokenRefreshRequest request = new()
@@ -59,7 +55,7 @@ internal static partial class TokenRefreshing
         {
             ITwitchResponse<AccessTokenRefreshResponse> response = await twitchClient.SendAsync(request, ct);
             logger?.LogInformation($"Successfully refreshed user access token.");
-            return new AccessTokenRefreshResult.Refreshed<UserAccessTokenDetails>(accessTokenDetails with
+            return new AccessTokenRefreshResult.Refreshed<AccessTokenDetails.User>(accessTokenDetails with
             {
                 AccessToken = response.Content.AccessToken,
                 RefreshToken = response.Content.RefreshToken,
@@ -70,7 +66,7 @@ internal static partial class TokenRefreshing
         catch (TwitchApiException apiException)
         {
             logger?.LogWarning(apiException, "The token was unable to be refreshed because the API returned an HTTP error code {ErrorCode}.", apiException.StatusCode);
-            return new AccessTokenRefreshResult.Expired<UserAccessTokenDetails>(accessTokenDetails);
+            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(accessTokenDetails);
         }
     }
 }
