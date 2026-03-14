@@ -25,22 +25,9 @@ public record ValidateAccessTokenRequest
     /// </remarks>
     public required UserAccessToken AccessToken { get; init; }
 
-    /// <summary>
-    /// The identity for this request.
-    /// </summary>
-    /// <remarks>
-    /// Validation does not require a specific identity context.
-    /// The <see cref="AccessToken"/> will be used in the Authorization header.
-    /// </remarks>
-    public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
-
-    /// <summary>
-    /// No specific scopes are required for token validation.
-    /// </summary>
-    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet<Scope>.Empty;
-
-    /// <summary>
-    /// The access token used for authorization. Returns the <see cref="AccessToken"/> to validate.
-    /// </summary>
-    public AccessToken? OverrideAccessToken => AccessToken;
+    public TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = TwitchIdentity.None.Instance,
+        AccessToken = AccessToken
+    };
 }
