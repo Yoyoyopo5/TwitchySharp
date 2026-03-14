@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -29,6 +32,9 @@ public record ManageHeldAutoModMessagesRequest
     /// Data used to identify the message and select the action.
     /// </summary>
     public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
+
+    protected override ValueTask<ManageHeldAutoModMessagesResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new ManageHeldAutoModMessagesResponse());
 }
 
 /// <summary>

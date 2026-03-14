@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -59,4 +62,7 @@ public record UpdateGuestStarSlotRequest
     /// If the destination slot is occupied, the user assigned will be swapped into the source slot.
     /// </remarks>
     public GuestStarSlotId? DestinationSlotId { get; init; }
+
+    protected override ValueTask<UpdateGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateGuestStarSlotResponse());
 }

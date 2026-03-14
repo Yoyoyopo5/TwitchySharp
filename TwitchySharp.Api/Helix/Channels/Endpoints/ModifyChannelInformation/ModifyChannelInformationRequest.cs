@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
@@ -41,6 +44,9 @@ public record ModifyChannelInformationRequest
     /// The channel information to be set on the broadcaster's channel.
     /// </summary>
     public required ModifyChannelInformationRequestData ChannelInformation { get; init; }
+
+    protected override ValueTask<ModifyChannelInformationResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+         => ValueTask.FromResult(new ModifyChannelInformationResponse());
 }
 
 /// <summary>

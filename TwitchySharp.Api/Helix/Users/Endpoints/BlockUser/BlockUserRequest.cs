@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -48,4 +51,7 @@ public record BlockUserRequest
     /// The reason that the broadcaster is blocking the user.
     /// </summary>
     public BlockUserReason? Reason { get; init; }
+
+    protected override ValueTask<BlockUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new BlockUserResponse());
 }

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -62,6 +65,9 @@ public record UpdateGuestStarSlotSettingsRequest
     /// The settings to update.
     /// </summary>
     public required GuestStarSlotSettings Settings { get; init; }
+
+    protected override ValueTask<UpdateGuestStarSlotSettingsResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateGuestStarSlotSettingsResponse());
 }
 
 /// <summary>

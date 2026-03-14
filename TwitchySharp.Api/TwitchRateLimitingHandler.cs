@@ -7,12 +7,25 @@ using System.Threading.Tasks;
 
 namespace TwitchySharp.Api;
 
+public static class TwitchRateLimiting // Should consider putting this in another project.
+{
+    private static TwitchRequestHandler CreateRateLimitQueueHandler(TwitchRequestHandler next)
+        => (context, ct) => throw new NotImplementedException();
+
+    public static ITwitchClientBuilder WithRateLimitQueue(this ITwitchClientBuilder builder)
+    {
+        builder.Use(CreateRateLimitQueueHandler);
+        return builder;
+    }
+}
+
 /// <summary>
 /// Resolves and updates <see cref="TwitchRateLimitDetails"/> based on client id.
 /// </summary>
 /// <remarks>
 /// See <see cref="DefaultTwitchRateLimitResolver"/>.
 /// </remarks>
+[Obsolete("Use WithRateLimitQueue")]
 public interface IResolveTwitchRateLimits
 {
     ValueTask<TwitchRateLimitDetails> GetRateLimit(string clientId);
@@ -22,6 +35,7 @@ public interface IResolveTwitchRateLimits
 /// <summary>
 /// Uses a <see cref="ConcurrentDictionary{TKey, TValue}"/> to store rate limit details for specific client ids.
 /// </summary>
+[Obsolete("Use WithRateLimitQueue")]
 public class DefaultTwitchRateLimitResolver
     : IResolveTwitchRateLimits
 {
@@ -44,6 +58,7 @@ public class DefaultTwitchRateLimitResolver
 /// See <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch Rate Limits</see> for more information.
 /// </remarks>
 /// <param name="rateLimitResolver">The resolver to use for getting cached rate limit information.</param>
+[Obsolete("Use WithRateLimitQueue")]
 public class TwitchRateLimitingHandler(IResolveTwitchRateLimits rateLimitResolver) : DelegatingHandler
 {
     private const string GLOBAL_KEY = "GLOBAL";
@@ -74,7 +89,7 @@ public class TwitchRateLimitingHandler(IResolveTwitchRateLimits rateLimitResolve
     }
 
     private static string GetResourceKey(HttpRequestMessage request)
-        => request.Options.TryGetValue(TwitchRequestOptionsKeys.Authorization, out TwitchAuthorizationRequestOptions? authOptions) switch
+        => request.Options.TryGetValue(TwitchRequestOptionsKeys.Authorization, out TwitchAuthorizationHeaders? authOptions) switch
         {
             true when authOptions.ClientId.HasValue => authOptions.ClientId.Value,
             _ => GLOBAL_KEY

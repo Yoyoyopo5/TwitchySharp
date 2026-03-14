@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -44,4 +47,7 @@ public record UnbanUserRequest
     /// The user id of the user to unban or remove a time-out on.
     /// </summary>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<UnbanUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UnbanUserResponse());
 }

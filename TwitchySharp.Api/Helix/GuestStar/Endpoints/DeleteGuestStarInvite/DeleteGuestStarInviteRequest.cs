@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -50,4 +53,7 @@ public record DeleteGuestStarInviteRequest
     /// The user id of the user to revoke the invite for.
     /// </summary>
     public required UserId GuestId { get; init; }
+
+    protected override ValueTask<DeleteGuestStarInviteResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteGuestStarInviteResponse());
 }

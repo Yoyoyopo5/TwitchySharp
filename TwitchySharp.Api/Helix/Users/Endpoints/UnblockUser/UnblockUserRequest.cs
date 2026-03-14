@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -39,4 +42,7 @@ public record UnblockUserRequest
     /// The API ignores the request if the broadcaster hasn't blocked the user.
     /// </remarks>
     public required UserId TargetUserId { get; init; }
+
+    protected override ValueTask<UnblockUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UnblockUserResponse());
 }

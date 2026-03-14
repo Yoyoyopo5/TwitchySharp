@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -53,4 +56,7 @@ public record DeleteChatMessagesRequest
     /// If this parameter is <see langword="null"/>, the request removes all messages in the chatroom.
     /// </remarks>
     public MessageId? MessageId { get; init; }
+
+    protected override ValueTask<DeleteChatMessagesResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteChatMessagesResponse());
 }

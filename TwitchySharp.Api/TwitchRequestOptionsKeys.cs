@@ -9,11 +9,11 @@ namespace TwitchySharp.Api;
 public static class TwitchRequestOptionsKeys
 {
     /// <summary>
-    /// Metadata used to set the correct <see cref="TwitchAuthorizationRequestOptions"/>.
+    /// Metadata used to set the correct <see cref="TwitchAuthorizationHeaders"/>.
     /// </summary>
     internal static HttpRequestOptionsKey<TwitchRequest> TwitchRequest { get; } = new("twitch-request");
     /// <summary>
     /// Information used to set the headers required for authorization.
     /// </summary>
-    public static HttpRequestOptionsKey<TwitchAuthorizationRequestOptions> Authorization { get; } = new("twitch-authorization");
+    public static HttpRequestOptionsKey<TwitchAuthorizationHeaders> Authorization { get; } = new("twitch-authorization");
 }

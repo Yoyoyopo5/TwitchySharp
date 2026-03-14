@@ -7,6 +7,9 @@ using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Helpers.JsonConverters;
+using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -37,6 +40,9 @@ public record UpdateChannelStreamScheduleRequest
     /// The request parameters.
     /// </summary>
     public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
+
+    protected override ValueTask<UpdateChannelStreamScheduleResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateChannelStreamScheduleResponse());
 }
 
 /// <summary>

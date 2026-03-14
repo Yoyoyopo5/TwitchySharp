@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/validate-tokens/">Validate Tokens</see> for more information.
 /// </remarks>
 public record ValidateAccessTokenRequest
-    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>, IRequireAuthorization
+    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>, IAuthorizedTwitchRequest
 {
     public override HttpMethod Method => HttpMethod.Get;
     protected override string Path => "/validate";

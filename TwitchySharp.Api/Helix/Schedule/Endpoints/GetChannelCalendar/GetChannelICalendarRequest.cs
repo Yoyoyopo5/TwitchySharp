@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -28,4 +31,10 @@ public record GetChannelICalendarRequest
     /// The user id of the broadcaster (channel) to get the streaming schedule for.
     /// </summary>
     public required UserId BroadcasterId { get; init; }
+
+    protected override async ValueTask<GetChannelICalendarResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+    {
+        using StreamReader sr = new(contentStream);
+        return new GetChannelICalendarResponse(await sr.ReadToEndAsync(ct));
+    }
 }

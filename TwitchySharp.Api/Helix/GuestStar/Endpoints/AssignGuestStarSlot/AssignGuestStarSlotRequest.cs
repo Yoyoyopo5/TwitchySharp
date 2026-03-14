@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -63,4 +66,7 @@ public record AssignGuestStarSlotRequest
     /// The max number of slots allowed for the session is reported by a <see cref="GetChannelGuestStarSettingsResponse"/>.
     /// </remarks>
     public required GuestStarSlotId SlotId { get; init; }
+
+    protected override ValueTask<AssignGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new AssignGuestStarSlotResponse());
 }

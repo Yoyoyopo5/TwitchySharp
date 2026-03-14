@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -44,6 +47,9 @@ public record SetExtensionRequiredConfigurationRequest
     /// The data used to set the required configuration setting.
     /// </summary>
     public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
+
+    protected override ValueTask<SetExtensionRequiredConfigurationResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SetExtensionRequiredConfigurationResponse());
 }
 
 /// <summary>

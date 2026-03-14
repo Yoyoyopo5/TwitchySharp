@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -45,6 +48,9 @@ public record SendChatAnnouncementRequest
     /// The announcement to send.
     /// </summary>
     public required SendChatAnnouncementRequestData Announcement { get; init; }
+
+    protected override ValueTask<SendChatAnnouncementResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendChatAnnouncementResponse());
 }
 
 /// <summary>

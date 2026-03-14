@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Helix.ChannelPoints;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -41,4 +45,7 @@ public record AddChannelVipRequest
     /// The id of the user to give VIP status to.
     /// </summary>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<AddChannelVipResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new AddChannelVipResponse());
 }

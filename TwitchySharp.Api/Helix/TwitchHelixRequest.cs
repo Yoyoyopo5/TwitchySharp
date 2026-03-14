@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix;
 /// </summary>
 /// <typeparam name="TResponseContent">The response content type of the request.</typeparam>
 public abstract record TwitchHelixRequest<TResponseContent>
-    : TwitchRequest<TResponseContent>, IRequireAuthorization
+    : TwitchRequest<TResponseContent>, IAuthorizedTwitchRequest
 {
     /// <summary>
     /// The host for the Helix request.
@@ -35,28 +35,8 @@ public abstract record TwitchHelixRequest<TResponseContent>
     /// This is appended to the <see cref="BasePath"/> when forming the <see cref="RequestUri"/>.
     /// </remarks>
     protected abstract string Path { get; }
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <remarks>
-    /// Generally, this is set automatically by specific request types and does not need to be configured.
-    /// However, you can override the identity for setting a specific <see cref="ClientIdentity"/> or <see cref="UserIdentity"/> to make the request as.
-    /// This identity will always override any default identity set by the individual request type.
-    /// </remarks>
-    public TwitchApiIdentity Identity
-    {
-        get => _configuredIdentity ?? DefaultIdentity; // Allow override of default identity.
-        init => _configuredIdentity = value;
-    }
-    private TwitchApiIdentity? _configuredIdentity;
-    /// <summary>
-    /// The default identity to use for the request.
-    /// </summary>
-    protected virtual TwitchApiIdentity DefaultIdentity { get; } = TwitchApiIdentity.Default;
-    /// <inheritdoc/>
-    public virtual IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet<Scope>.Empty;
-    /// <inheritdoc/>
-    public virtual AccessToken? OverrideAccessToken { get; init; }
+    public virtual TwitchRequestAuthorizationContext AuthorizationContext { get; }
+        = new() { Identity = TwitchIdentity.Default.Instance };
     /// <summary>
     /// Query parameters for the request.
     /// </summary>

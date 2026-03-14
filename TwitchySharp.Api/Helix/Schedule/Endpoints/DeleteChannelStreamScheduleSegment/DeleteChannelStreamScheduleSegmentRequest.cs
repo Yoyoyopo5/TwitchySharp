@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -40,4 +43,7 @@ public record DeleteChannelStreamScheduleSegmentRequest
     /// The id of the segment to remove.
     /// </summary>
     public required StreamScheduleSegmentId SegmentId { get; init; }
+
+    protected override ValueTask<DeleteChannelStreamScheduleSegmentResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteChannelStreamScheduleSegmentResponse());
 }

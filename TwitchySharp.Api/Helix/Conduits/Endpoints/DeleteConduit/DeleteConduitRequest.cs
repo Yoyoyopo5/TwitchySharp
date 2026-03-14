@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -28,4 +31,7 @@ public record DeleteConduitRequest
     /// The id of the conduit you want to delete.
     /// </summary>
     public required ConduitId ConduitId { get; init; }
+
+    protected override ValueTask<DeleteConduitResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteConduitResponse());
 }

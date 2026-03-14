@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -40,4 +43,7 @@ public record RemoveChannelModeratorRequest
     /// The user id of the moderator to remove from the broadcaster's channel.
     /// </summary>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<RemoveChannelModeratorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new RemoveChannelModeratorResponse());
 }

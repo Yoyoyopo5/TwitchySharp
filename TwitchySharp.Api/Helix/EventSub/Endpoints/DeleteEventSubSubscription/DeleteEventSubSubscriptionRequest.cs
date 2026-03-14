@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
@@ -81,4 +84,7 @@ public record DeleteEventSubSubscriptionRequest()
     /// The id of the subscription to delete.
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
+
+    protected override ValueTask<DeleteEventSubSubscriptionResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteEventSubSubscriptionResponse());
 }

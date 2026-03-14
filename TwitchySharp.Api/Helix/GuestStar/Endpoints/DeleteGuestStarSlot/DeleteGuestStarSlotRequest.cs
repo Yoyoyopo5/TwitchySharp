@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -64,4 +67,7 @@ public record DeleteGuestStarSlotRequest
     /// Determines whether the user should be reinvited to the session, sending them back to the invite queue.
     /// </summary>
     public bool? ShouldReinviteGuest { get; init; }
+
+    protected override ValueTask<DeleteGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteGuestStarSlotResponse());
 }

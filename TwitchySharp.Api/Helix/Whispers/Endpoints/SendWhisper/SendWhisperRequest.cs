@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -54,6 +57,9 @@ public record SendWhisperRequest
     /// The whisper content to send.
     /// </summary>
     public required SendWhisperRequestData Whisper { get; init; }
+
+    protected override ValueTask<SendWhisperResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendWhisperResponse());
 }
 
 /// <summary>

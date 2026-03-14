@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.AuthorizationResolution;
+using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration.Fixtures;
@@ -21,62 +22,37 @@ public class TokenResolutionTestFixture
 
     public static readonly ClientId ClientId = new(TestClientId);
     public static readonly ClientSecret ClientSecret = new(TestClientSecret);
-    public static readonly ClientIdentity ClientIdentity = new(ClientId);
-    public static readonly UserIdentity TestUserIdentity = new(new UserId(TestUserId)) { ClientId = ClientId };
+    public static readonly TwitchIdentity.Client ClientIdentity = new(ClientId);
+    public static readonly TwitchIdentity.User TestUserIdentity = new(new UserId(TestUserId)) { ClientId = ClientId };
     public static readonly UserAccessToken AccessToken = new(TestAccessToken);
     public static readonly RefreshToken RefreshToken = new(TestRefreshToken);
 
-    /// <summary>
-    /// Creates a default request authorizer with test configuration.
-    /// </summary>
-    public DefaultRequestAuthorizer CreateDefaultAuthorizer()
+    public ITwitchClient CreateTestClient()
     {
-        var userResolver = new ConcurrentUserAccessTokenResolver(CreatePopulatedTokenStore(), null, null);
-        var identityResolver = new IdentityTypeTokenResolver(UserAccessTokenResolver: userResolver);
-        return new DefaultRequestAuthorizer(ClientIdentity, identityResolver);
+
     }
 
-    /// <summary>
-    /// Creates a user access token store pre-populated with test data.
-    /// </summary>
-    public InMemoryUserAccessTokenStore CreatePopulatedTokenStore(
-        UserAccessTokenDetails? details = null,
-        UserAccessTokenKey? key = null)
+    private record TestClient : ITwitchClient
     {
-        var store = new InMemoryUserAccessTokenStore();
-        details ??= CreateTestTokenDetails();
-        key ??= CreateTestTokenKey();
-        store.SaveTokenDetails(key, details);
-        return store;
-    }
+        public required TwitchRequestHandler RequestHandler { get; init; }
+        public ValueTask<TwitchResponse> SendAsync(TwitchRequest request, CancellationToken ct = default)
+            => RequestHandler(request, ct);
 
-    /// <summary>
-    /// Creates test user access token details.
-    /// </summary>
-    public UserAccessTokenDetails CreateTestTokenDetails(
-        DateTimeOffset? expiresAt = null,
-        RefreshToken? refreshToken = null,
-        IReadOnlySet<Scope>? scopes = null)
-    {
-        return new UserAccessTokenDetails
+        public ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
         {
-            Identity = TestUserIdentity,
-            AccessToken = AccessToken,
-            RefreshToken = refreshToken ?? RefreshToken,
-            ExpiresAt = expiresAt ?? DateTimeOffset.UtcNow.AddHours(4),
-            Scopes = scopes ?? ImmutableHashSet.Create(Scope.ChannelModerate)
-        };
+            throw new NotImplementedException();
+        }
     }
 
-    /// <summary>
-    /// Creates a test user access token key.
-    /// </summary>
-    public UserAccessTokenKey CreateTestTokenKey(IReadOnlySet<Scope>? validScopes = null)
+    public record TestClientBuilder : ITwitchClientBuilder
     {
-        return new UserAccessTokenKey
+        private readonly MiddlewarePipelineBuilder<TwitchRequestHandler> _handlerBuilder = new();
+        public ITwitchClientBuilder Use(Func<TwitchRequestHandler, TwitchRequestHandler> func)
         {
-            Identity = TestUserIdentity,
-            ValidScopes = validScopes ?? ImmutableHashSet.Create(Scope.ChannelModerate)
-        };
+            _handlerBuilder.Use(func);
+            return this;
+        }
+        public ITwitchClient Build()
+            => new TestClient { RequestHandler = _handlerBuilder.Finally(CreateTerminalHandler(HttpClient)) };
     }
 }

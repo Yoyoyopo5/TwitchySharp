@@ -67,7 +67,7 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     /// </summary>
     /// <param name="authorizer">Optional request authorizer. Pass null for authorization endpoints that don't need auth.</param>
     /// <returns>A TwitchClient configured to use the mock server.</returns>
-    public TwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null) =>
+    public ObsoleteTwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null) =>
         new(CreateClient(), authorizer);
 
     /// <summary>

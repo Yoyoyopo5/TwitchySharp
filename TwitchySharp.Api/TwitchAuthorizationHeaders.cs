@@ -13,4 +13,4 @@ namespace TwitchySharp.Api;
 /// The access token to set in the <c>Authorization: Bearer</c> header.
 /// May be null for requests that only require a client ID.
 /// </param>
-public record TwitchAuthorizationRequestOptions(ClientId? ClientId, AccessToken? BearerToken);
+public readonly record struct TwitchAuthorizationHeaders(ClientId? ClientId, IAccessToken? BearerToken);

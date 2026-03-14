@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -40,6 +43,9 @@ public record SetExtensionConfigurationSegmentRequest
     /// <see cref="SetExtensionConfigurationBroadcasterSegmentData"/> for easier usage.
     /// </summary>
     public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
+
+    protected override ValueTask<SetExtensionConfigurationSegmentResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SetExtensionConfigurationSegmentResponse());
 }
 
 /// <summary>

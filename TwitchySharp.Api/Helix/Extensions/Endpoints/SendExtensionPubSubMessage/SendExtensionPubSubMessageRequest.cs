@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -39,6 +42,9 @@ public record SendExtensionPubSubMessageRequest
     /// Use derived classes <see cref="BroadcastPubSubMessageData"/> and <see cref="GlobalPubSubMessageData"/>.
     /// </summary>
     public required SendExtensionPubSubMessageRequestData Message { get; init; }
+
+    protected override ValueTask<SendExtensionPubSubMessageResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendExtensionPubSubMessageResponse());
 }
 
 /// <summary>
