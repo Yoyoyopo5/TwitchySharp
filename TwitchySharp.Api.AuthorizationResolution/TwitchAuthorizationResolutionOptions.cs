@@ -53,10 +53,10 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     /// <param name="options">The resolution options to configure.</param>
     /// <param name="appOptions">The <see cref="TwitchIdentity.Client"/> specific token resolution options.</param>
     /// <returns>The <paramref name="options"/> with added configuration.</returns>
-    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+    public static TwitchAuthorizationResolutionOptions ConfigureIdentityTokenResolution(this TwitchAuthorizationResolutionOptions options,
         AppAccessTokenResolutionOptions appOptions
         )
-        => options.ConfigureIdentity<TwitchIdentity.Client, AccessTokenDetails.App>(appOptions);
+        => options.ConfigureIdentityTokenResolution<TwitchIdentity.Client, AccessTokenDetails.App>(appOptions);
 
     /// <summary>
     /// Configure token resolution options for requests using <see cref="TwitchIdentity.User"/>.
@@ -64,10 +64,10 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     /// <param name="options">The resolution options to configure.</param>
     /// <param name="userOptions">The <see cref="TwitchIdentity.User"/> specific token resolution options.</param>
     /// <returns>The <paramref name="options"/> with added configuration.</returns>
-    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+    public static TwitchAuthorizationResolutionOptions ConfigureIdentityTokenResolution(this TwitchAuthorizationResolutionOptions options,
         UserAccessTokenResolutionOptions userOptions
         )
-        => options.ConfigureIdentity<TwitchIdentity.User, AccessTokenDetails.User>(userOptions);
+        => options.ConfigureIdentityTokenResolution<TwitchIdentity.User, AccessTokenDetails.User>(userOptions);
 
     /// <summary>
     /// Configure token resolution options for requests using <see cref="TwitchIdentity.Extension"/>.
@@ -75,12 +75,12 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     /// <param name="options">The resolution options to configure.</param>
     /// <param name="userOptions">The <see cref="TwitchIdentity.Extension"/> specific token resolution options.</param>
     /// <returns>The <paramref name="options"/> with added configuration.</returns>
-    public static TwitchAuthorizationResolutionOptions ConfigureTokenResolution(this TwitchAuthorizationResolutionOptions options,
+    public static TwitchAuthorizationResolutionOptions ConfigureIdentityTokenResolution(this TwitchAuthorizationResolutionOptions options,
         ExtensionAccessTokenResolutionOptions extensionOptions
         )
-        => options.ConfigureIdentity<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>(extensionOptions);
+        => options.ConfigureIdentityTokenResolution<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>(extensionOptions);
 
-    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
+    internal static TwitchAuthorizationResolutionOptions ConfigureIdentityTokenResolution<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
         ITokenResolutionOptions<TDetails> identityOptions)
         where TIdentity : TwitchIdentity
         where TDetails : AccessTokenDetails
