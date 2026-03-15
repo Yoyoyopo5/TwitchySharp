@@ -24,22 +24,28 @@ public record SendChatMessageRequest
 {
     protected override string Path => "/chat/messages";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Message.SenderId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserWriteChat, Scope.UserBot, Scope.ChannelBot);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = BotIdentity ?? new TwitchIdentity.User(Message.SenderId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserWriteChat, Scope.UserBot, Scope.ChannelBot)
+    };
     public override object? ContentObject => Message;
+
     /// <summary>
-    /// Allows for sending the request using an app access token with a user that has authorized the app with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>.
+    /// Allows for sending the request using an app access token with a user that has authorized the <paramref name="clientId"/> with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>.
     /// </summary>
-    /// <param name="client">
+    /// <param name="clientId">
     /// The client to use.
-    /// Leave this <see cref="null"/> to use <see cref="TwitchApiIdentity.Default"/>, which is set to a fallback by the <see cref="DefaultRequestAuthorizer"/>.
+    /// Leave this <see cref="null"/> to use <see cref="TwitchIdentity.Client.Default"/>, which is set to a fallback by the <see cref="DefaultRequestAuthorizer"/>.
     /// </param>
     /// <returns>A new <see cref="SendChatMessageRequest"/> with the identity override configured.</returns>
-    public SendChatMessageRequest AsBot(ClientIdentity? client = null)
+    public SendChatMessageRequest AsBot(ClientId? clientId = null)
         => this with
         {
-            Identity = client ?? TwitchApiIdentity.Default
+            BotIdentity = clientId is null ? TwitchIdentity.Client.Default : new TwitchIdentity.Client(clientId)
         };
+
+    private TwitchIdentity? BotIdentity { get; init; }
 
     /// <summary>
     /// The message to send.

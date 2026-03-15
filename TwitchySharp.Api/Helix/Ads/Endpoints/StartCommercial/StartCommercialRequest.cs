@@ -21,8 +21,11 @@ public record StartCommercialRequest
 {
     protected override string Path => "/channels/commercial";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Commercial.BroadcasterId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelEditCommercial);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Commercial.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelEditCommercial)
+    };
     public override object? ContentObject => Commercial;
     public required StartCommercialRequestData Commercial { get; init; }
 }

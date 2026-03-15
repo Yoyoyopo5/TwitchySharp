@@ -27,12 +27,15 @@ public record SetExtensionRequiredConfigurationRequest
 {
     protected override string Path => "/extensions/required_configuration";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = ExtensionIdentity
+    };
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

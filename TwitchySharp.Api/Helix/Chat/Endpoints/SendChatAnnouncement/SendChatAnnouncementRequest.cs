@@ -22,8 +22,11 @@ public record SendChatAnnouncementRequest
 {
     protected override string Path => "/chat/announcements";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorManageAnnouncements);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageAnnouncements)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

@@ -20,8 +20,11 @@ public record GetBitsLeaderboardRequest
 {
     protected override string Path => "/bits/leaderboard";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.BitsRead);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.BitsRead)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("count", Count?.ToString())
@@ -32,7 +35,7 @@ public record GetBitsLeaderboardRequest
     /// <summary>
     /// The broadcaster to get the bits leaderboard for.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The number of results (leaderboard entries) to return.

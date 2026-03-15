@@ -22,8 +22,11 @@ public record BanUserRequest
 {
     protected override string Path => "/moderation/bans";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorManageBannedUsers);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBannedUsers)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

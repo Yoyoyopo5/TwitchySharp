@@ -22,8 +22,11 @@ public record UpdateChatSettingsRequest
 {
     protected override string Path => "/chat/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorManageChatSettings);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageChatSettings)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

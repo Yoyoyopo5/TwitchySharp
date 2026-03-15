@@ -19,8 +19,11 @@ public record GetUserEmotesRequest
 {
     protected override string Path => "/chat/emotes/user";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadEmotes);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(UserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadEmotes)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

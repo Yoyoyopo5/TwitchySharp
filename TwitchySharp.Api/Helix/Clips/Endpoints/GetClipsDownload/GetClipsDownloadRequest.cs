@@ -22,8 +22,11 @@ public record GetClipsDownloadRequest
 {
     protected override string Path => "/clips/downloads";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(EditorId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.EditorManageClips, Scope.ChannelManageClips);
+    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(EditorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.EditorManageClips, Scope.ChannelManageClips)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("editor_id", EditorId)
