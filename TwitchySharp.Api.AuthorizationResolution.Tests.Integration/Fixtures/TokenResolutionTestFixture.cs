@@ -4,7 +4,7 @@ using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
-namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration.Fixtures;
+namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration;
 
 /// <summary>
 /// Test fixture providing test data and helpers for authorization resolution integration tests.
@@ -27,10 +27,8 @@ public class TokenResolutionTestFixture
     public static readonly UserAccessToken AccessToken = new(TestAccessToken);
     public static readonly RefreshToken RefreshToken = new(TestRefreshToken);
 
-    public ITwitchClient CreateTestClient()
-    {
-
-    }
+    public ITwitchClient CreateTestClient(TwitchAuthorizationResolutionOptions options)
+        => new TestClientBuilder().UseAuthorizationResolution(options).Build();
 
     private record TestClient : ITwitchClient
     {
@@ -44,7 +42,7 @@ public class TokenResolutionTestFixture
         }
     }
 
-    public record TestClientBuilder : ITwitchClientBuilder
+    private record TestClientBuilder : ITwitchClientBuilder
     {
         private readonly MiddlewarePipelineBuilder<TwitchRequestHandler> _handlerBuilder = new();
         public ITwitchClientBuilder Use(Func<TwitchRequestHandler, TwitchRequestHandler> func)
@@ -53,6 +51,14 @@ public class TokenResolutionTestFixture
             return this;
         }
         public ITwitchClient Build()
-            => new TestClient { RequestHandler = _handlerBuilder.Finally(CreateTerminalHandler(HttpClient)) };
+            => new TestClient
+            {
+                RequestHandler = _handlerBuilder.Finally((context, ct) => ValueTask.FromResult<TwitchResponse>(new TwitchResponse<TestTwitchResponseData>()
+                {
+                    Request = context.Request,
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new() { RequestAuthorizationHeaders = context.AuthorizationHeaders }
+                }))
+            };
     }
 }
