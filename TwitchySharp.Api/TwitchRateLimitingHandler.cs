@@ -12,13 +12,14 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
     private static Func<TwitchRequestHandler, TwitchRequestHandler> CreateRateLimitQueueHandler(
         Func<ClientId, CancellationToken, ValueTask<TwitchRateLimitDetails?>> getRateLimitDetails,
         Func<ClientId, TwitchRateLimitDetails, CancellationToken, ValueTask> setRateLimitDetails,
-        TimeSpan clockSkew)
+        TimeSpan clockSkew,
+        Func<TwitchRequestContext, SemaphoreSlim>? semaphoreSelector = null)
         => next => async (context, ct) =>
         {
             if (context.AuthorizationHeaders.ClientId is not ClientId clientId)
                 return await next(context, ct);
 
-            return await ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value)
+            return await ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value, semaphoreSelector)
             (async (context, ct) =>
             {
                 if (await getRateLimitDetails(clientId, ct) is TwitchRateLimitDetails cachedDetails
@@ -84,7 +85,8 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
         builder.Use(CreateRateLimitQueueHandler(
             queueOptions.CacheOptions!.GetRateLimitDetails,
             queueOptions.CacheOptions!.SetRateLimitDetails,
-            queueOptions.ClockSkew
+            queueOptions.ClockSkew,
+            queueOptions.SemaphoreSelector
             ));
         return builder;
     }
@@ -103,6 +105,15 @@ public record TwitchRateLimitQueueOptions
     /// The rate limit cache options.
     /// </summary>
     public TwitchRateLimitQueueCacheOptions? CacheOptions { get; init; }
+    /// <summary>
+    /// The semaphore selector for request concurrency.
+    /// </summary>
+    /// <remarks>
+    /// This may be useful if you have a distributed design.
+    /// If left <see langword="null"/>, a default <see cref="ConcurrentDictionary{TKey, TValue}"/> is used.
+    /// Leave this <see langword="null"/> unless you know what you're doing.
+    /// </remarks>
+    public Func<TwitchRequestContext, SemaphoreSlim>? SemaphoreSelector { get; init; }
 }
 
 /// <summary>
