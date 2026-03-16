@@ -101,8 +101,10 @@ public static class ThreadSafety
         where TKey : notnull
     {
         ConcurrentDictionary<TKey, Lazy<Task<TResult>>> cache = new();
-        return next => (value, ct)
-            => new ValueTask<TResult>(cache.GetOrAdd(keySelector(value), k => new Lazy<Task<TResult>>(async () =>
+        return next => (value, ct) =>
+        {
+            Lazy<Task<TResult>>? lazy = null; // stupid closure prevents race condition
+            lazy = cache.GetOrAdd(keySelector(value), k => new Lazy<Task<TResult>>(async () =>
             {
                 try
                 {
@@ -112,8 +114,10 @@ public static class ThreadSafety
                 {
                     // We remove here so that new invocations can trigger the next function again.
                     // But callers that invoked during processing all get the same ValueTask.
-                    cache.TryRemove(k, out _);
+                    cache.TryRemove(new KeyValuePair<TKey, Lazy<Task<TResult>>>(k, lazy!));
                 }
-            })).Value);
+            }));
+            return new ValueTask<TResult>(lazy.Value);
+        };
     }
 }
