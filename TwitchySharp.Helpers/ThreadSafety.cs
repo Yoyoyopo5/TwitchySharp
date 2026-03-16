@@ -8,11 +8,49 @@ namespace TwitchySharp.Helpers;
 
 public static class ThreadSafety
 {
-    // Use internally to allow eviction of semaphores with no waiting threads.
-    private class RefCountingSemaphore
+    private class LocalLockProvider<TKey>
+        where TKey : notnull
     {
-        public required SemaphoreSlim Semaphore { get; init; }
-        public int RefCount = 1;
+        private readonly ConcurrentDictionary<TKey, RefCountingSemaphore> _cache = new();
+        public async ValueTask<IAsyncDisposable> AcquireAsync(TKey key, CancellationToken ct)
+        {
+            while (true)
+            {
+                RefCountingSemaphore wrapper = _cache.AddOrUpdate(key,
+                _ => new RefCountingSemaphore { Semaphore = new(1, 1) },
+                (_, existing) =>
+                {
+                    Interlocked.Increment(ref existing.RefCount);
+                    return existing;
+                });
+
+                await wrapper.Semaphore.WaitAsync(ct).ConfigureAwait(false);
+
+                if (_cache.TryGetValue(key, out RefCountingSemaphore? current) && current == wrapper)
+                    return new Releaser(key, wrapper, _cache);
+
+                wrapper.Semaphore.Release();
+                if (Interlocked.Decrement(ref wrapper.RefCount) < 1)
+                    _cache.TryRemove(new KeyValuePair<TKey, RefCountingSemaphore>(key, wrapper));
+            }
+        }
+
+        private class RefCountingSemaphore
+        {
+            public required SemaphoreSlim Semaphore { get; init; }
+            public int RefCount = 1;
+        }
+
+        private class Releaser(TKey key, RefCountingSemaphore wrapper, ConcurrentDictionary<TKey, RefCountingSemaphore> cache) : IAsyncDisposable
+        {
+            public ValueTask DisposeAsync()
+            {
+                wrapper.Semaphore.Release();
+                if (Interlocked.Decrement(ref wrapper.RefCount) < 1)
+                    cache.TryRemove(new KeyValuePair<TKey, RefCountingSemaphore>(key, wrapper));
+                return ValueTask.CompletedTask;
+            }
+        }
     }
 
     /// <summary>
@@ -22,46 +60,19 @@ public static class ThreadSafety
     /// <typeparam name="TKey">The key type.</typeparam>
     /// <typeparam name="TResult">The result type.</typeparam>
     /// <param name="keySelector">A selector function that derives a <typeparamref name="TKey"/> from the input <typeparamref name="T"/>.</param>
-    /// <param name="semaphoreFactory">A factory function that returns a <see cref="SemaphoreSlim"/> for a given <typeparamref name="T"/>. Use this to configure sempahore lease count.</param>
+    /// <param name="lockFactory">A factory function that returns a <see cref="IAsyncDisposable"/> for a given <typeparamref name="TKey"/>.</param>
     /// <returns>A function returning a function that calls its input within a per-key thread-safe semaphore block.</returns>
     public static Func<Func<T, CancellationToken, ValueTask<TResult>>, Func<T, CancellationToken, ValueTask<TResult>>> Concurrently<T, TKey, TResult>(
         Func<T, TKey> keySelector,
-        Func<T, SemaphoreSlim>? semaphoreFactory = null
+        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
         )
         where TKey : notnull
     {
-        static SemaphoreSlim defaultSemaphoreFactory() => new(1);
-        ConcurrentDictionary<TKey, RefCountingSemaphore> cache = new();
+        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> lockFac = lockFactory is not null ? lockFactory : new LocalLockProvider<TKey>().AcquireAsync;
         return next => async (value, ct) =>
         {
-            TKey key = keySelector(value);
-            // Track refs to prevent mem leak.
-            RefCountingSemaphore wrapper = cache.AddOrUpdate(
-                key,
-                _ => new RefCountingSemaphore { Semaphore = semaphoreFactory is null ? defaultSemaphoreFactory() : semaphoreFactory(value) },
-                (_, existing) =>
-                {
-                    Interlocked.Increment(ref existing.RefCount);
-                    return existing;
-                });
-
-            try
-            {
-                await wrapper.Semaphore.WaitAsync(ct).ConfigureAwait(false);
-                try
-                {
-                    return await next(value, ct);
-                }
-                finally
-                {
-                    wrapper.Semaphore.Release();
-                }
-            }
-            finally
-            {
-                if (Interlocked.Decrement(ref wrapper.RefCount) < 1)
-                    cache.TryRemove(KeyValuePair.Create(key, wrapper));
-            }
+            await using IAsyncDisposable lease = await lockFac(keySelector(value), ct).ConfigureAwait(false);
+            return await next(value, ct).ConfigureAwait(false);
         };
     }
 

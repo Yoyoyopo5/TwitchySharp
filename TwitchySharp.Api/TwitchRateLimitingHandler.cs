@@ -13,14 +13,15 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
         Func<ClientId, CancellationToken, ValueTask<TwitchRateLimitDetails?>> getRateLimitDetails,
         Func<ClientId, TwitchRateLimitDetails, CancellationToken, ValueTask> setRateLimitDetails,
         TimeSpan clockSkew,
-        Func<TwitchRequestContext, SemaphoreSlim>? semaphoreSelector = null)
-        => next => async (context, ct) =>
+        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
+    {
+        var concurrently = ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value, lockFactory);
+        return next => async (context, ct) =>
         {
             if (context.AuthorizationHeaders.ClientId is not ClientId clientId)
                 return await next(context, ct);
 
-            return await ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value, semaphoreSelector)
-            (async (context, ct) =>
+            return await concurrently(async (context, ct) =>
             {
                 if (await getRateLimitDetails(clientId, ct) is TwitchRateLimitDetails cachedDetails
                     && cachedDetails is { Remaining: 0, Reset: not null }
@@ -38,6 +39,7 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
                 return response;
             })(context, ct);
         };
+    }
 
     /// <summary>
     /// Add rate limiting to the <see cref="ITwitchClient"/>.
@@ -86,7 +88,7 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
             queueOptions.CacheOptions!.GetRateLimitDetails,
             queueOptions.CacheOptions!.SetRateLimitDetails,
             queueOptions.ClockSkew,
-            queueOptions.SemaphoreSelector
+            queueOptions.LockFactory
             ));
         return builder;
     }
@@ -106,14 +108,14 @@ public record TwitchRateLimitQueueOptions
     /// </summary>
     public TwitchRateLimitQueueCacheOptions? CacheOptions { get; init; }
     /// <summary>
-    /// The semaphore selector for request concurrency.
+    /// The lock selector for request concurrency.
     /// </summary>
     /// <remarks>
     /// This may be useful if you have a distributed design.
-    /// If left <see langword="null"/>, a default <see cref="ConcurrentDictionary{TKey, TValue}"/> is used.
+    /// If left <see langword="null"/>, a default in-memory lock provider is used.
     /// Leave this <see langword="null"/> unless you know what you're doing.
     /// </remarks>
-    public Func<TwitchRequestContext, SemaphoreSlim>? SemaphoreSelector { get; init; }
+    public Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? LockFactory { get; init; }
 }
 
 /// <summary>
