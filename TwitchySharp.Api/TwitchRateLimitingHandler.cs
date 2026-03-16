@@ -1,97 +1,121 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api;
 
 public static class TwitchRateLimiting // Should consider putting this in another project.
 {
-    private static TwitchRequestHandler CreateRateLimitQueueHandler(TwitchRequestHandler next)
-        => (context, ct) => throw new NotImplementedException();
+    private static Func<TwitchRequestHandler, TwitchRequestHandler> CreateRateLimitQueueHandler(
+        Func<ClientId, CancellationToken, ValueTask<TwitchRateLimitDetails?>> getRateLimitDetails,
+        Func<ClientId, TwitchRateLimitDetails, CancellationToken, ValueTask> setRateLimitDetails,
+        TimeSpan clockSkew)
+        => next => async (context, ct) =>
+        {
+            if (context.AuthorizationHeaders.ClientId is not ClientId clientId)
+                return await next(context, ct);
 
-    public static ITwitchClientBuilder WithRateLimitQueue(this ITwitchClientBuilder builder)
+            return await ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value)
+            (async (context, ct) =>
+            {
+                if (await getRateLimitDetails(clientId, ct) is TwitchRateLimitDetails cachedDetails
+                    && cachedDetails is { Remaining: 0, Reset: not null }
+                    && cachedDetails.Reset.Value > DateTimeOffset.UtcNow)
+                    await Task.Delay(cachedDetails.Reset.Value - DateTimeOffset.UtcNow + clockSkew, ct);
+
+                TwitchResponse response = await next(context, ct);
+                if (response.RateLimitDetails is not null)
+                    await setRateLimitDetails(
+                        clientId,
+                        response.RateLimitDetails.Value,
+                        ct
+                        );
+
+                return response;
+            })(context, ct);
+        };
+
+    /// <summary>
+    /// Add rate limiting to the <see cref="ITwitchClient"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Rate Limiting is concurrent and based on the request's <see cref="ClientId"/> and uses Twitch rate limit HTTP response headers to gate incoming requests.
+    /// Note that adding rate limiting limits the amount of concurrent requests with the same <see cref="ClientId"/> that will be sent at once time to one.
+    /// This ensures that Twitch will never return an HTTP 429 Too Many Requests status code (unless you use multiple <see cref="ITwitchClient"/>s or a distributed architecture).
+    /// </para>
+    /// <para>
+    /// You may define your own rate limit cache via the <paramref name="options"/>.
+    /// If you do not define a cache, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> is used (fine for most use cases).
+    /// </para>
+    /// </remarks>
+    /// <param name="builder">The builder to apply rate limiting to.</param>
+    /// <param name="options">The rate limiter options.</param>
+    /// <returns>The <paramref name="builder"/> with rate limiting configured.</returns>
+    public static ITwitchClientBuilder WithRateLimitQueue(this ITwitchClientBuilder builder, TwitchRateLimitQueueOptions? options = null)
     {
-        builder.Use(CreateRateLimitQueueHandler);
+        var queueOptions = (options ?? new()) switch
+        {
+            { CacheOptions: not null } o => o,
+            { CacheOptions: null } o => new ConcurrentDictionary<ClientId, TwitchRateLimitDetails>() switch
+            {
+                { } cache => o with
+                {
+                    CacheOptions = new TwitchRateLimitQueueCacheOptions
+                    {
+                        GetRateLimitDetails = (clientId, ct) => ValueTask.FromResult<TwitchRateLimitDetails?>(cache.TryGetValue(clientId, out TwitchRateLimitDetails cachedDetails) switch
+                        {
+                            true => cachedDetails,
+                            _ => null
+                        }),
+                        SetRateLimitDetails = (clientId, newDetails, ct) =>
+                        {
+                            cache.AddOrUpdate(clientId, _ => newDetails, (_, _) => newDetails);
+                            return ValueTask.CompletedTask;
+                        }
+                    }
+                }
+            }
+        };
+
+        builder.Use(CreateRateLimitQueueHandler(
+            queueOptions.CacheOptions!.GetRateLimitDetails,
+            queueOptions.CacheOptions!.SetRateLimitDetails,
+            queueOptions.ClockSkew
+            ));
         return builder;
     }
 }
 
 /// <summary>
-/// Resolves and updates <see cref="TwitchRateLimitDetails"/> based on client id.
+/// Options for Twitch rate limiting.
 /// </summary>
-/// <remarks>
-/// See <see cref="DefaultTwitchRateLimitResolver"/>.
-/// </remarks>
-[Obsolete("Use WithRateLimitQueue")]
-public interface IResolveTwitchRateLimits
+public record TwitchRateLimitQueueOptions
 {
-    ValueTask<TwitchRateLimitDetails> GetRateLimit(string clientId);
-    ValueTask SetRateLimit(string clientId, TwitchRateLimitDetails rateLimit);
+    /// <summary>
+    /// The amount of extra time that will be waited after Twitch's rate limit reset time elapses.
+    /// </summary>
+    public TimeSpan ClockSkew { get; init; } = TimeSpan.FromMilliseconds(100);
+    /// <summary>
+    /// The rate limit cache options.
+    /// </summary>
+    public TwitchRateLimitQueueCacheOptions? CacheOptions { get; init; }
 }
 
 /// <summary>
-/// Uses a <see cref="ConcurrentDictionary{TKey, TValue}"/> to store rate limit details for specific client ids.
+/// Options for a Twitch rate limit details cache.
 /// </summary>
-[Obsolete("Use WithRateLimitQueue")]
-public class DefaultTwitchRateLimitResolver
-    : IResolveTwitchRateLimits
+public record TwitchRateLimitQueueCacheOptions
 {
-    private readonly ConcurrentDictionary<string, TwitchRateLimitDetails> _rateLimits = [];
-    public ValueTask<TwitchRateLimitDetails> GetRateLimit(string clientId)
-        => ValueTask.FromResult(_rateLimits.GetValueOrDefault(clientId));
-    public ValueTask SetRateLimit(string clientId, TwitchRateLimitDetails rateLimit)
-    {
-        _rateLimits[clientId] = rateLimit;
-        return ValueTask.CompletedTask;
-    }
-}
-
-/// <summary>
-/// Automatically delays requests based on received rate limit information from the Twitch API.
-/// </summary>
-/// <remarks>
-/// Rate limits should be resolved via client id.
-/// <br/>
-/// See <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch Rate Limits</see> for more information.
-/// </remarks>
-/// <param name="rateLimitResolver">The resolver to use for getting cached rate limit information.</param>
-[Obsolete("Use WithRateLimitQueue")]
-public class TwitchRateLimitingHandler(IResolveTwitchRateLimits rateLimitResolver) : DelegatingHandler
-{
-    private const string GLOBAL_KEY = "GLOBAL";
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct = default)
-    {
-        string rateLimiterKey = GetResourceKey(request);
-        TwitchRateLimitDetails rateLimit = await rateLimitResolver.GetRateLimit(rateLimiterKey);
-        int? remaining = rateLimit.Remaining;
-        DateTimeOffset? limitResetsAt = rateLimit.Reset;
-
-        if (!remaining.HasValue || !limitResetsAt.HasValue)
-            return await SendAndUpdateRateLimiterAsync(rateLimiterKey, request, rateLimitResolver, ct);
-
-        if (remaining.Value > 0)
-            return await SendAndUpdateRateLimiterAsync(rateLimiterKey, request, rateLimitResolver, ct);
-
-        if (DateTimeOffset.UtcNow < limitResetsAt.Value)
-            await Task.Delay(limitResetsAt.Value - DateTimeOffset.UtcNow, ct);
-
-        return await SendAndUpdateRateLimiterAsync(rateLimiterKey, request, rateLimitResolver, ct);
-    }
-
-    private async Task<HttpResponseMessage> SendAndUpdateRateLimiterAsync(string clientId, HttpRequestMessage request, IResolveTwitchRateLimits rateLimitResolver, CancellationToken ct = default)
-    {
-        HttpResponseMessage response = await base.SendAsync(request, ct);
-        await rateLimitResolver.SetRateLimit(clientId, response.Headers.ToTwitchRateLimitDetails());
-        return response;
-    }
-
-    private static string GetResourceKey(HttpRequestMessage request)
-        => request.Options.TryGetValue(TwitchRequestOptionsKeys.Authorization, out TwitchAuthorizationHeaders? authOptions) switch
-        {
-            true when authOptions.ClientId.HasValue => authOptions.ClientId.Value,
-            _ => GLOBAL_KEY
-        };
+    /// <summary>
+    /// Get the current rate limit for a specific <see cref="ClientId"/>, if any exists.
+    /// </summary>
+    public required Func<ClientId, CancellationToken, ValueTask<TwitchRateLimitDetails?>> GetRateLimitDetails { get; init; }
+    /// <summary>
+    /// Set the current rate limit for a specific <see cref="ClientId"/>.
+    /// </summary>
+    public required Func<ClientId, TwitchRateLimitDetails, CancellationToken, ValueTask> SetRateLimitDetails { get; init; }
 }
