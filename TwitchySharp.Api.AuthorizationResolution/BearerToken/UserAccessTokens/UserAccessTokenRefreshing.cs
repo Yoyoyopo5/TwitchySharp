@@ -40,7 +40,7 @@ internal static partial class TokenRefreshing
 
         if (await resolveClientSecret(accessTokenDetails.Identity.ClientId, ct) is not ClientSecret secret)
         {
-            logger?.LogWarning("The token was unable to be refreshed becuase a client secret could not be resolved for {ClientId}.", token.AccessTokenDetails.Identity.ClientId);
+            logger?.LogWarning("The token was unable to be refreshed becuase a client secret could not be resolved for {ClientId}.", accessTokenDetails.Identity.ClientId);
             return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(accessTokenDetails);
         }
 
@@ -53,7 +53,7 @@ internal static partial class TokenRefreshing
 
         try
         {
-            ITwitchResponse<AccessTokenRefreshResponse> response = await twitchClient.SendAsync(request, ct);
+            TwitchResponse<AccessTokenRefreshResponse> response = await twitchClient.SendAsync(request, ct);
             logger?.LogInformation($"Successfully refreshed user access token.");
             return new AccessTokenRefreshResult.Refreshed<AccessTokenDetails.User>(accessTokenDetails with
             {
