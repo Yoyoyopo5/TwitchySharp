@@ -22,7 +22,7 @@ public record UpdateUserChatColorRequest
 {
     protected override string Path => "/chat/color";
     public override HttpMethod Method => HttpMethod.Put;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageChatColor)

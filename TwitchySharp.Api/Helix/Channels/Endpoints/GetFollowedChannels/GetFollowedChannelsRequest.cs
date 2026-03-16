@@ -20,7 +20,7 @@ public record GetFollowedChannelsRequest
 {
     protected override string Path => "/channels/followed";
     public override HttpMethod Method => HttpMethod.Get;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadFollows)

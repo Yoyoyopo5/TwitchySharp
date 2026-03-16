@@ -22,7 +22,7 @@ public record GetExtensionAnalyticsRequest
 {
     protected override string Path => "/analytics/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = User,
         ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadExtensions)

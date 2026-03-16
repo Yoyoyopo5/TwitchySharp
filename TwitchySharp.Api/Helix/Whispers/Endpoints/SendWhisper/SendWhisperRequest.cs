@@ -34,8 +34,11 @@ public record SendWhisperRequest
 {
     protected override string Path => "/whispers";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(FromUserId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserManageWhispers);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(FromUserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserManageWhispers)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_user_id", FromUserId)

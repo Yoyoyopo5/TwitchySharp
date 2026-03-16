@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Models;
 
@@ -23,8 +21,11 @@ public record CreatePollRequest
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Poll.BroadcasterId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManagePolls);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Poll.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePolls)
+    };
     public override object? ContentObject => Poll;
 
     /// <summary>

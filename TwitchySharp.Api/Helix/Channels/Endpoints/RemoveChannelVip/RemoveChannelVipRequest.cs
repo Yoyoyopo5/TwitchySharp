@@ -25,7 +25,7 @@ public record RemoveChannelVipRequest
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Delete;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVips)

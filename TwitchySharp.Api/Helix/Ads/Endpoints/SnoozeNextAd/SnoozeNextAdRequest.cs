@@ -23,7 +23,7 @@ public record SnoozeNextAdRequest
     protected override string Path => "/channels/ads/schedule/snooze";
     public override HttpMethod Method => HttpMethod.Post;
 
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageAds)

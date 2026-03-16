@@ -22,7 +22,7 @@ public record GetCustomRewardRedemptionRequest
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
     public override HttpMethod Method => HttpMethod.Get;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions)

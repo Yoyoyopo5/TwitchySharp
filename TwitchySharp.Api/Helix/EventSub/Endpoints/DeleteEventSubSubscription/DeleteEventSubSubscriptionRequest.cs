@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -32,20 +30,22 @@ public record DeleteEventSubSubscriptionRequest()
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => Subscription switch
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        not null => Subscription.RequiresUserAccessToken() switch
+        Identity = Subscription switch
         {
-            true => Subscription.GetAuthorizingUser() ?? throw new InvalidOperationException(
-                $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription. " + 
-                $"Set the {nameof(Identity)} property manually to suppress this error. " +
-                $"The {nameof(EventSubSubscription)} instance passed to this {nameof(DeleteEventSubSubscriptionRequest)} may be malformed, " +
-                $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete."
-                ),
-            _ => null
-        },
-        _ => null
-    } ?? TwitchApiIdentity.Default;
+            not null => Subscription.RequiresUserAccessToken() switch
+            {
+                true => Subscription.GetAuthorizingUser() ?? throw new InvalidOperationException(
+                    $"Failed to resolve required {nameof(TwitchIdentity.User)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription. " +
+                    $"Set the {nameof(AuthorizationContext)} property manually to suppress this error. " +
+                    $"The {nameof(EventSubSubscription)} instance passed to this {nameof(DeleteEventSubSubscriptionRequest)} may be malformed, " +
+                    $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete."),
+                _ => TwitchIdentity.Client.Default
+            },
+            _ => TwitchIdentity.Client.Default
+        }
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", SubscriptionId);

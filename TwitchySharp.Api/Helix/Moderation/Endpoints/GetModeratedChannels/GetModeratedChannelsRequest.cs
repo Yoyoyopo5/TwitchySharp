@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -20,8 +18,11 @@ public record GetModeratedChannelsRequest
 {
     protected override string Path => "/moderation/channels";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadModeratedChannels);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(UserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadModeratedChannels)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

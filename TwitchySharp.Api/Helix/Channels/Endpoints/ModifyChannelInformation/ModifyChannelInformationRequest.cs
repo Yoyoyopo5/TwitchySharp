@@ -25,7 +25,7 @@ public record ModifyChannelInformationRequest
 {
     protected override string Path => "/channels";
     public override HttpMethod Method => HttpMethod.Patch;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageBroadcast)

@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
@@ -36,8 +34,11 @@ public record CreateStreamMarkerRequest
 {
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Marker.UserId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManageBroadcast);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Marker.UserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageBroadcast)
+    };
     public override object? ContentObject => Marker;
 
     /// <summary>

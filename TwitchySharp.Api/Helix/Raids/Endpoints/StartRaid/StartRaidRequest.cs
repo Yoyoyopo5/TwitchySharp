@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -19,7 +17,7 @@ public record StartRaidRequest
 {
     protected override string Path => "/raids";
     public override HttpMethod Method => HttpMethod.Post;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(FromBroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRaids)

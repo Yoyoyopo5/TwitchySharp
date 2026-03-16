@@ -20,7 +20,7 @@ public record GetBitsLeaderboardRequest
 {
     protected override string Path => "/bits/leaderboard";
     public override HttpMethod Method => HttpMethod.Get;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = User,
         ValidScopes = ImmutableHashSet.Create(Scope.BitsRead)

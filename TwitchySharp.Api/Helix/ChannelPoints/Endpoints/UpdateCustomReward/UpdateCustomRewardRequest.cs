@@ -24,7 +24,7 @@ public record UpdateCustomRewardRequest
 {
     protected override string Path => "/channel_points/custom_rewards";
     public override HttpMethod Method => HttpMethod.Patch;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRedemptions)

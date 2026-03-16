@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -22,7 +20,10 @@ public record GetChannelICalendarRequest
     protected override string Path => "/schedule/icalendar";
     public override HttpMethod Method => HttpMethod.Get;
     // This endpoint does not require any authentication
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.None;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = TwitchIdentity.None.Instance
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

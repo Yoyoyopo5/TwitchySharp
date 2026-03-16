@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
-using TwitchySharp.Helpers.JsonConverters;
-using System.Threading.Tasks;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using TwitchySharp.Helpers;
+using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -26,8 +24,11 @@ public record UpdateChannelStreamScheduleRequest
 {
     protected override string Path => "/schedule/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Settings.BroadcasterId);
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelManageSchedule);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Settings.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", Settings.BroadcasterId)

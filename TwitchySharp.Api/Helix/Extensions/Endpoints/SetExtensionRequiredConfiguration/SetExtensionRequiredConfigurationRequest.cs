@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -27,7 +25,7 @@ public record SetExtensionRequiredConfigurationRequest
 {
     protected override string Path => "/extensions/required_configuration";
     public override HttpMethod Method => HttpMethod.Put;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = ExtensionIdentity
     };

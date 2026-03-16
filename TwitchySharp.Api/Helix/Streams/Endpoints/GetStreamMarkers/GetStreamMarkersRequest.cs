@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -21,8 +19,11 @@ public record GetStreamMarkersRequest
 {
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.ChannelManageBroadcast);
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.ChannelManageBroadcast)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", Query.UserId)
@@ -34,7 +35,7 @@ public record GetStreamMarkersRequest
     /// <summary>
     /// The user to get stream markers as (broadcaster or editor).
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The query specifying which stream markers to retrieve.

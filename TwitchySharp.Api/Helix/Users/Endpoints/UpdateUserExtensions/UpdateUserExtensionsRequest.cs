@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
@@ -23,7 +22,7 @@ public record UpdateUserExtensionsRequest
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Put;
-    public override TwitchRequestAuthorizationContext AuthorizationContext => new()
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
         Identity = User,
         ValidScopes = ImmutableHashSet.Create(Scope.UserEditBroadcast)

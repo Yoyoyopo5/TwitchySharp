@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub;
 using TwitchySharp.Shared.Models;
 
@@ -32,16 +31,16 @@ internal static class UserAuthorizedSubscriptionTypeExtensions
     /// </summary>
     /// <param name="subscriptionType">The subscription type to get the authorizing user from.</param>
     /// <returns>
-    /// A <see cref="UserIdentity"/> for the authorizing user, or <see langword="null"/>
+    /// A <see cref="TwitchIdentity.User"/> for the authorizing user, or <see langword="null"/>
     /// if the condition key is not found in the subscription's condition.
     /// </returns>
-    internal static UserIdentity? GetAuthorizingUser(this IUserAuthorizedSubscriptionType subscriptionType)
+    internal static TwitchIdentity.User? GetAuthorizingUser(this IUserAuthorizedSubscriptionType subscriptionType)
     {
         var conditionKey = subscriptionType.AuthorizingUserConditionKey;
         if (!subscriptionType.Condition.TryGetValue(conditionKey, out object? value))
             return null;
         if (value is not UserId userId)
             return null;
-        return new UserIdentity(userId);
+        return new TwitchIdentity.User(userId);
     }
 }

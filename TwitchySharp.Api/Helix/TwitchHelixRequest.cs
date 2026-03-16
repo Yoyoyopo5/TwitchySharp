@@ -35,8 +35,27 @@ public abstract record TwitchHelixRequest<TResponseContent>
     /// This is appended to the <see cref="BasePath"/> when forming the <see cref="RequestUri"/>.
     /// </remarks>
     protected abstract string Path { get; }
-    public virtual TwitchRequestAuthorizationContext AuthorizationContext { get; }
-        = new() { Identity = TwitchIdentity.Default.Instance };
+    /// <summary>
+    /// The authorization context for the request.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Contains request identity, required scopes, and an optional access token.
+    /// This context is used to set the required Twitch authorization request headers.
+    /// </para>
+    /// <para>
+    /// Typically, you do not need to set this, as it is configured automatically by the request itself.
+    /// You may set this to override a request's default context or assign a specific access token the request should use.
+    /// </para>
+    /// </remarks>
+    public TwitchRequestAuthorizationContext AuthorizationContext
+    {
+        get => _configuredAuthorizationContext ?? DefaultAuthorizationContext;
+        init => _configuredAuthorizationContext = value;
+    }
+    private TwitchRequestAuthorizationContext? _configuredAuthorizationContext = null;
+    protected virtual TwitchRequestAuthorizationContext DefaultAuthorizationContext { get; }
+        = new() { Identity = TwitchIdentity.Client.Default };
     /// <summary>
     /// Query parameters for the request.
     /// </summary>
