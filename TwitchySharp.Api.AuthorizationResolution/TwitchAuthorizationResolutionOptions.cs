@@ -114,39 +114,62 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
                 });
 
         if (identityOptions.RefreshToken is not null)
-            identityPipelineBuilder.Use(next => (context, ct) =>
-                ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
-                    request => (TIdentity)request.Identity)(async (context, ct) =>
-                    await next(context, ct) switch 
+        {
+            var lazily = ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
+                    request => (TIdentity)request.Identity); // We must construct here so the cache creation stays outside the pipeline.
+
+            identityPipelineBuilder.Use(next =>
+            {
+                // and we construct the full function once when the pipeline is built
+                var gate = lazily(async (context, ct) =>
+                    await next(context, ct) switch
                     {
-                        AccessTokenDetailsResolutionResult.Expired<TDetails> expiredTokenResult => 
+                        AccessTokenDetailsResolutionResult.Expired<TDetails> expiredTokenResult =>
                             (await identityOptions.RefreshToken(expiredTokenResult.AccessTokenDetails, ct)).ToResolutionResult(),
                         AccessTokenDetailsResolutionResult other => other
-                    })(context, ct));
+                    });
+
+                return (context, ct) => gate(context, ct);
+            });
+        }
+
 
         if (identityOptions.AcquireNewToken is not null)
-            identityPipelineBuilder.Use(next => (context, ct) => 
-                ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
-                    request => (TIdentity)request.Identity)(async (context, ct) =>
+        {
+            var lazily = ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
+                    request => (TIdentity)request.Identity);
+
+            identityPipelineBuilder.Use(next =>
+            {
+                var gate = lazily(async (context, ct) =>
                     await next(context, ct) switch
                     {
                         AccessTokenDetailsResolutionResult.Unavailable
                         or AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
                             AccessTokenDetailsResolutionResult.FromDetails(await identityOptions.AcquireNewToken(context, ct)),
                         AccessTokenDetailsResolutionResult other => other
-                    })(context, ct));
+                    });
+
+                return (context, ct) => gate(context, ct);
+            });
+        }
+            
         
         AccessTokenDetailsResolver identityPipeline = identityPipelineBuilder.Finally(async (request, ct) => 
                 AccessTokenDetailsResolutionResult.FromDetails( // This checks expiry.
                     identityOptions.GetCachedToken is not null 
                     ? await identityOptions.GetCachedToken(request, ct) 
                     : default));
-           
+
         // Add the identity pipeline to run conditionally if request identity is TIdentity
-        options.BearerTokenResolverBuilder.Use(next => (context, ct) => 
-                context.Identity is TIdentity 
-                ? identityPipeline.ExtractBearerToken<TDetails>()(context, ct)
-                : next(context, ct));
+        options.BearerTokenResolverBuilder.Use(next =>
+        {
+            var extractor = identityPipeline.ExtractBearerToken<TDetails>();
+            return (context, ct) =>
+                context.Identity is TIdentity
+                ? extractor(context, ct)
+                : next(context, ct);
+        });
        
         return options;
     }
