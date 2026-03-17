@@ -30,20 +30,27 @@ public static class AccessTokenDetailsEnumerableExtensions
     public static IEnumerable<AccessTokenDetails> WhereTokenMeetsRequirements(
         this IEnumerable<AccessTokenDetails> tokens,
         TwitchRequestAuthorizationContext context)
-        => tokens
-            .Where(t => t.Identity.GetType() == context.Identity.GetType())
-            .Where(t => t switch
-            {
-                AccessTokenDetails.User userToken => context.ValidScopes.Any(scope => userToken.Scopes.Contains(scope)),
-                _ => true
-            });
+        => context.Identity switch
+        {
+            TwitchIdentity.Client => tokens
+                .OfType<AccessTokenDetails.App>()
+                .WhereTokenMeetsRequirements(context),
+            TwitchIdentity.User => tokens
+                .OfType<AccessTokenDetails.User>()
+                .WhereTokenMeetsRequirements(context),
+            TwitchIdentity.Extension => tokens
+                .OfType<AccessTokenDetails.App>()
+                .WhereTokenMeetsRequirements(context),
+            _ => tokens.Where(t => t.Identity == context.Identity)
+        };
 
     public static IEnumerable<AccessTokenDetails.App> WhereTokenMeetsRequirements(
         this IEnumerable<AccessTokenDetails.App> tokens,
         TwitchRequestAuthorizationContext context)
         => context.Identity switch
         {
-            TwitchIdentity.Client identity => tokens.Where(t => t.Identity == identity),
+            TwitchIdentity.Client identity 
+                => tokens.Where(t => t.Identity == identity),
             _ => []
         };
 
@@ -55,7 +62,11 @@ public static class AccessTokenDetailsEnumerableExtensions
             TwitchIdentity.User identity
                 => tokens
                     .Where(t => t.Identity == identity)
-                    .Where(t => context.ValidScopes.Any(scope => t.Scopes.Contains(scope))),
+                    .Where(t => context.ValidScopes.Any() switch
+                    {
+                        true => context.ValidScopes.Any(scope => t.Scopes.Contains(scope)),
+                        false => true
+                    }),
             _ => []
         };
 
