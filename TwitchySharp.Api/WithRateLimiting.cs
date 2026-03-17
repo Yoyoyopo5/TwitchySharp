@@ -58,7 +58,7 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
     /// <param name="builder">The builder to apply rate limiting to.</param>
     /// <param name="options">The rate limiter options.</param>
     /// <returns>The <paramref name="builder"/> with rate limiting configured.</returns>
-    public static ITwitchClientBuilder WithRateLimitQueue(this ITwitchClientBuilder builder, TwitchRateLimitQueueOptions? options = null)
+    public static ITwitchClientBuilder WithRateLimiting(this ITwitchClientBuilder builder, TwitchRateLimitQueueOptions? options = null)
     {
         var queueOptions = (options ?? new()) switch
         {
