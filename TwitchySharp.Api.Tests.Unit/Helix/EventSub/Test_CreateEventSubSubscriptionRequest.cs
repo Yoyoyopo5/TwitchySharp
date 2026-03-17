@@ -37,7 +37,7 @@ public class Test_CreateEventSubSubscriptionRequest
         var identity = GetDefaultIdentity(request);
 
         // Assert
-        var userIdentity = Assert.IsType<UserIdentity>(identity);
+        var userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
         Assert.Equal(new UserId(MOCK_USER_ID), userIdentity.UserId);
     }
 
@@ -66,7 +66,7 @@ public class Test_CreateEventSubSubscriptionRequest
         var identity = GetDefaultIdentity(request);
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class Test_CreateEventSubSubscriptionRequest
         var identity = GetDefaultIdentity(request);
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class Test_CreateEventSubSubscriptionRequest
         var identity = GetDefaultIdentity(request);
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class Test_CreateEventSubSubscriptionRequest
         };
 
         // Act
-        var scopes = request.ValidScopes;
+        var scopes = request.AuthorizationContext.ValidScopes;
 
         // Assert
         Assert.Contains(Scope.ModeratorReadFollowers, scopes);
@@ -179,7 +179,7 @@ public class Test_CreateEventSubSubscriptionRequest
         };
 
         // Act
-        var scopes = request.ValidScopes;
+        var scopes = request.AuthorizationContext.ValidScopes;
 
         // Assert
         Assert.Empty(scopes);
@@ -188,11 +188,11 @@ public class Test_CreateEventSubSubscriptionRequest
     /// <summary>
     /// Helper to access the protected DefaultIdentity property through the public interface.
     /// </summary>
-    private static TwitchApiIdentity GetDefaultIdentity(CreateEventSubSubscriptionRequest request)
+    private static TwitchIdentity GetDefaultIdentity(CreateEventSubSubscriptionRequest request)
     {
         // The Identity property falls back to DefaultIdentity when not set
         // We can test this by not setting Identity and checking what Identity resolves to
-        return request.Identity;
+        return request.AuthorizationContext.Identity;
     }
 
     /// <summary>
