@@ -144,9 +144,14 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
                 var gate = lazily(async (context, ct) =>
                     await next(context, ct) switch
                     {
-                        AccessTokenDetailsResolutionResult.Unavailable
-                        or AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
-                            AccessTokenDetailsResolutionResult.FromDetails(await identityOptions.AcquireNewToken(context, ct)),
+                        AccessTokenDetailsResolutionResult invalid when invalid is // Have to get a little freaky here to combine the result types
+                            AccessTokenDetailsResolutionResult.Unavailable or
+                            AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
+                            await identityOptions.AcquireNewToken(context, ct) switch
+                            {
+                                { } newToken => new AccessTokenDetailsResolutionResult.New<TDetails>(newToken),
+                                _ => invalid
+                            },
                         AccessTokenDetailsResolutionResult other => other
                     });
 
