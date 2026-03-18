@@ -1,9 +1,6 @@
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Tests;
 
@@ -21,14 +18,14 @@ public class Test_AuthorizationCodeRequest : IClassFixture<TwitchApiTestFixture>
     public async Task SendAsync_ValidRequest_ReturnsTokens()
     {
         // Arrange
-        var client = _fixture.CreateTwitchClient(authorizer: null);
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AuthorizationCodeRequest
         {
-            Host = "localhost", // Use test server
-            ClientId = new ClientId(TwitchApiTestFixture.TestClientId),
-            ClientSecret = new ClientSecret(TwitchApiTestFixture.TestClientSecret),
-            Code = TwitchApiTestFixture.TestAuthorizationCode,
-            RedirectUri = new Uri(TwitchApiTestFixture.TestRedirectUri)
+            Host = "localhost",
+            ClientId = TwitchApiTestFixture.TestClientId,
+            ClientSecret = TwitchApiTestFixture.TestClientSecret,
+            Code = TwitchApiTestFixture.TEST_AUTHORIZATION_CODE,
+            RedirectUri = TwitchApiTestFixture.TestRedirectUri
         };
 
         // Act
@@ -37,8 +34,8 @@ public class Test_AuthorizationCodeRequest : IClassFixture<TwitchApiTestFixture>
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Content);
-        Assert.Equal(TwitchApiTestFixture.TestAccessToken, response.Content.AccessToken.Value);
-        Assert.Equal(TwitchApiTestFixture.TestRefreshToken, response.Content.RefreshToken.Value);
+        Assert.Equal(TwitchApiTestFixture.TEST_ACCESS_TOKEN, response.Content.AccessToken.Value);
+        Assert.Equal(TwitchApiTestFixture.TEST_REFRESH_TOKEN, response.Content.RefreshToken.Value);
         Assert.Equal("bearer", response.Content.TokenType);
         Assert.True(response.Content.ExpiresIn.TotalSeconds > 0);
         Assert.NotNull(response.Content.Scope);
@@ -49,14 +46,14 @@ public class Test_AuthorizationCodeRequest : IClassFixture<TwitchApiTestFixture>
     public async Task SendAsync_InvalidCode_ThrowsTwitchApiException()
     {
         // Arrange
-        var client = _fixture.CreateTwitchClient(authorizer: null);
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AuthorizationCodeRequest
         {
             Host = "localhost",
-            ClientId = new ClientId(TwitchApiTestFixture.TestClientId),
-            ClientSecret = new ClientSecret(TwitchApiTestFixture.TestClientSecret),
+            ClientId = TwitchApiTestFixture.TestClientId,
+            ClientSecret = TwitchApiTestFixture.TestClientSecret,
             Code = "invalid_code",
-            RedirectUri = new Uri(TwitchApiTestFixture.TestRedirectUri)
+            RedirectUri = TwitchApiTestFixture.TestRedirectUri
         };
 
         // Act & Assert

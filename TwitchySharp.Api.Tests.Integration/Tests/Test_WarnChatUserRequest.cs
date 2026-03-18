@@ -1,6 +1,4 @@
 using System.Net;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -21,12 +19,12 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
     public async Task SendAsync_ValidRequest_ReturnsWarningData()
     {
         // Arrange
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new WarnChatUserRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            ModeratorId = new UserId("654321"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
+            ModeratorId = TwitchApiTestFixture.TestUserId,
             Warning = new WarnChatUserRequestData
             {
                 Data = new ChatUserWarning
@@ -45,8 +43,8 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         Assert.NotNull(response.Content);
         Assert.NotNull(response.Content.Data);
         Assert.Single(response.Content.Data);
-        Assert.Equal("123456", response.Content.Data[0].BroadcasterId.Value);
-        Assert.Equal("654321", response.Content.Data[0].ModeratorId.Value);
+        Assert.Equal(TwitchApiTestFixture.TEST_USER_ID, response.Content.Data[0].BroadcasterId.Value);
+        Assert.Equal(TwitchApiTestFixture.TEST_USER_ID, response.Content.Data[0].ModeratorId.Value);
         Assert.Equal("111222", response.Content.Data[0].UserId.Value);
         Assert.Equal("Please follow the chat rules", response.Content.Data[0].Reason);
     }
@@ -58,12 +56,12 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.RateLimitLimit = 100;
         _fixture.ResponseConfig.RateLimitRemaining = 50;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new WarnChatUserRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            ModeratorId = new UserId("654321"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
+            ModeratorId = TwitchApiTestFixture.TestUserId,
             Warning = new WarnChatUserRequestData
             {
                 Data = new ChatUserWarning
@@ -87,10 +85,11 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
     [Fact]
     public async Task SendAsync_MissingClientIdHeader_ThrowsTwitchApiException()
     {
-        // Arrange - No authorizer means no Client-Id header
-        var client = _fixture.CreateTwitchClient(authorizer: null);
+        // Arrange
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new WarnChatUserRequest
         {
+            AuthorizationContext = new() { Identity = TwitchIdentity.None.Instance },
             Host = "localhost",
             BroadcasterId = new UserId("123456"),
             ModeratorId = new UserId("654321"),
@@ -116,12 +115,12 @@ public class Test_WarnChatUserRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.InternalServerError;
         _fixture.ResponseConfig.ForceErrorMessage = "Internal server error";
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new WarnChatUserRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
-            ModeratorId = new UserId("654321"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
+            ModeratorId = TwitchApiTestFixture.TestUserId,
             Warning = new WarnChatUserRequestData
             {
                 Data = new ChatUserWarning
