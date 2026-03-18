@@ -105,58 +105,53 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     {
         MiddlewarePipelineBuilder<AccessTokenDetailsResolver> identityPipelineBuilder = new();
 
-        if (identityOptions.OnNewToken is not null)
-            identityPipelineBuilder.Use(next => async (request, ct) => {
-                AccessTokenDetailsResolutionResult result = await next(request, ct);
-                if (result is AccessTokenDetailsResolutionResult.New<TDetails> newTokenResult)
-                    await identityOptions.OnNewToken(newTokenResult.AccessTokenDetails, ct);
-                return result;
-                });
-
         if (identityOptions.RefreshToken is not null)
         {
-            var lazily = ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
-                    request => (TIdentity)request.Identity); // We must construct here so the cache creation stays outside the pipeline.
-
-            identityPipelineBuilder.Use(next =>
-            {
-                // and we construct the full function once when the pipeline is built
-                var gate = lazily(async (context, ct) =>
-                    await next(context, ct) switch
+            // We must construct the lazy function here so the cache creation stays outside the pipeline.
+            var lazilyRefreshAndUpdate = ThreadSafety.Lazily<TDetails, TIdentity, AccessTokenDetailsResolutionResult>(
+                    request => (TIdentity)request.Identity)(async (details, ct) =>
                     {
-                        AccessTokenDetailsResolutionResult.Expired<TDetails> expiredTokenResult =>
-                            (await identityOptions.RefreshToken(expiredTokenResult.AccessTokenDetails, ct)).ToResolutionResult(),
-                        AccessTokenDetailsResolutionResult other => other
+                        AccessTokenDetailsResolutionResult result = (await identityOptions.RefreshToken(details, ct)).ToResolutionResult();
+                        if (identityOptions.OnNewToken is not null && result is AccessTokenDetailsResolutionResult.New<TDetails> newTokenResult)
+                            await identityOptions.OnNewToken(newTokenResult.AccessTokenDetails, ct);
+                        return result;
                     });
 
-                return (context, ct) => gate(context, ct);
-            });
+            identityPipelineBuilder.Use(next => async (context, ct) =>
+                await next(context, ct) switch
+                {
+                    AccessTokenDetailsResolutionResult.Expired<TDetails> expiredTokenResult =>
+                        (await lazilyRefreshAndUpdate(expiredTokenResult.AccessTokenDetails, ct)),
+                    AccessTokenDetailsResolutionResult other => other
+                });
         }
 
 
         if (identityOptions.AcquireNewToken is not null)
         {
-            var lazily = ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, AccessTokenDetailsResolutionResult>(
-                    request => (TIdentity)request.Identity);
-
-            identityPipelineBuilder.Use(next =>
-            {
-                var gate = lazily(async (context, ct) =>
-                    await next(context, ct) switch
+            // We must construct the lazy function here so the cache creation stays outside the pipeline.
+            var lazilyAcquireNewAndUpdate = ThreadSafety.Lazily<TwitchRequestAuthorizationContext, TIdentity, TDetails?>(
+                    request => (TIdentity)request.Identity)(async (context, ct) =>
                     {
-                        AccessTokenDetailsResolutionResult invalid when invalid is // Have to get a little freaky here to combine the result types
-                            AccessTokenDetailsResolutionResult.Unavailable or
-                            AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
-                            await identityOptions.AcquireNewToken(context, ct) switch
-                            {
-                                { } newToken => new AccessTokenDetailsResolutionResult.New<TDetails>(newToken),
-                                _ => invalid
-                            },
-                        AccessTokenDetailsResolutionResult other => other
+                        TDetails? newToken = await identityOptions.AcquireNewToken(context, ct);
+                        if (identityOptions.OnNewToken is not null && newToken is not null)
+                            await identityOptions.OnNewToken(newToken, ct);
+                        return newToken;
                     });
 
-                return (context, ct) => gate(context, ct);
-            });
+            identityPipelineBuilder.Use(next => async (context, ct) =>
+                await next(context, ct) switch
+                {
+                    AccessTokenDetailsResolutionResult invalid when invalid is // Have to get a little freaky here to combine the result types   
+                    AccessTokenDetailsResolutionResult.Unavailable or
+                        AccessTokenDetailsResolutionResult.Revoked<TDetails> =>
+                        await lazilyAcquireNewAndUpdate(context, ct) switch
+                        {
+                            { } newToken => new AccessTokenDetailsResolutionResult.New<TDetails>(newToken),
+                            _ => invalid
+                        },
+                    AccessTokenDetailsResolutionResult other => other
+                });
         }
             
         
