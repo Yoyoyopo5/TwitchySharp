@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using TwitchySharp.Api.Authorization;
+using System.Collections.Immutable;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix;
@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix;
 /// </summary>
 /// <typeparam name="TResponseContent">The response content type of the request.</typeparam>
 public abstract record TwitchHelixRequest<TResponseContent>
-    : TwitchRequest<TResponseContent>, IRequireAuthorization
+    : TwitchRequest<TResponseContent>, IAuthorizedTwitchRequest
 {
     /// <summary>
     /// The host for the Helix request.
@@ -36,27 +36,26 @@ public abstract record TwitchHelixRequest<TResponseContent>
     /// </remarks>
     protected abstract string Path { get; }
     /// <summary>
-    /// <inheritdoc/>
+    /// The authorization context for the request.
     /// </summary>
     /// <remarks>
-    /// Generally, this is set automatically by specific request types and does not need to be configured.
-    /// However, you can override the identity for setting a specific <see cref="ClientIdentity"/> or <see cref="UserIdentity"/> to make the request as.
-    /// This identity will always override any default identity set by the individual request type.
+    /// <para>
+    /// Contains request identity, required scopes, and an optional access token.
+    /// This context is used to set the required Twitch authorization request headers.
+    /// </para>
+    /// <para>
+    /// Typically, you do not need to set this, as it is configured automatically by the request itself.
+    /// You may set this to override a request's default context or assign a specific access token the request should use.
+    /// </para>
     /// </remarks>
-    public TwitchApiIdentity Identity
+    public TwitchRequestAuthorizationContext AuthorizationContext
     {
-        get => _configuredIdentity ?? DefaultIdentity; // Allow override of default identity.
-        init => _configuredIdentity = value;
+        get => _configuredAuthorizationContext ?? DefaultAuthorizationContext;
+        init => _configuredAuthorizationContext = value;
     }
-    private TwitchApiIdentity? _configuredIdentity;
-    /// <summary>
-    /// The default identity to use for the request.
-    /// </summary>
-    protected virtual TwitchApiIdentity DefaultIdentity { get; } = TwitchApiIdentity.Default;
-    /// <inheritdoc/>
-    public virtual IEnumerable<Scope> ValidScopes { get; } = [];
-    /// <inheritdoc/>
-    public virtual AccessToken? OverrideAccessToken { get; init; }
+    private TwitchRequestAuthorizationContext? _configuredAuthorizationContext = null;
+    protected virtual TwitchRequestAuthorizationContext DefaultAuthorizationContext { get; }
+        = new() { Identity = TwitchIdentity.Client.Default };
     /// <summary>
     /// Query parameters for the request.
     /// </summary>

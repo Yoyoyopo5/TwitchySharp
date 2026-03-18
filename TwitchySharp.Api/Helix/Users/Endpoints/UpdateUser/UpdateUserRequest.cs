@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -19,8 +17,11 @@ public record UpdateUserRequest
 {
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserEdit ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.UserEdit)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("description", Description);
@@ -28,7 +29,7 @@ public record UpdateUserRequest
     /// <summary>
     /// The user to update.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The string to update the channel's description to.

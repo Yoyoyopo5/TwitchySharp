@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -18,8 +22,11 @@ public record UpdateUserChatColorRequest
 {
     protected override string Path => "/chat/color";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageChatColor ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(UserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserManageChatColor)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)
@@ -38,4 +45,7 @@ public record UpdateUserChatColorRequest
     /// The color to use for the user's name in chat.
     /// </summary>
     public required ChatColor Color { get; init; }
+
+    protected override ValueTask<UpdateUserChatColorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateUserChatColorResponse());
 }

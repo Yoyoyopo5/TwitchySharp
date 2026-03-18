@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -21,8 +22,11 @@ public record GetCustomRewardRedemptionRequest
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

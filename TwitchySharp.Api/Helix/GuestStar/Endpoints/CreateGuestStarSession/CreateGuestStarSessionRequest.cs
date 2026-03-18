@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -20,8 +21,11 @@ public record CreateGuestStarSessionRequest
 {
     protected override string Path => "/guest_star/session";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

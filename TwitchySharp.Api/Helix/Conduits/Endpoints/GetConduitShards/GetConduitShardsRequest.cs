@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.Models;

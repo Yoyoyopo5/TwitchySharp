@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using TwitchySharp.Shared;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -11,7 +15,7 @@ namespace TwitchySharp.Api;
 /// <remarks>
 /// This can be used directly with an <see cref="ITwitchClient"/> or converted to an <see cref="HttpRequestMessage"/> for manually handling.
 /// </remarks>
-public abstract record TwitchRequest : ITwitchRequest
+public abstract record TwitchRequest
 {
     /// <summary>
     /// The HTTP method to send the request with.
@@ -41,13 +45,10 @@ public abstract record TwitchRequest : ITwitchRequest
     /// <summary>
     /// Create a new <see cref="HttpRequestMessage"/> for this request.
     /// </summary>
-    /// <remarks>
-    /// THe <see cref="HttpRequestMessage.Options"/> will contain this instance of <see cref="TwitchRequest"/> under <see cref="TwitchRequestOptionsKeys.TwitchRequest"/>.
-    /// </remarks>
-    /// <param name="serializerOptions">The JSON serializer options to use if <see cref="ContentObject"/> is serialized as <see cref="JsonContent"/>.</param>
     /// <returns>A new <see cref="HttpRequestMessage"/> that can be used to execute the Twitch API request.</returns>
-    public virtual HttpRequestMessage ToHttpRequestMessage(JsonSerializerOptions? serializerOptions = null)
+    public virtual HttpRequestMessage ToHttpRequestMessage()
     {
+        JsonSerializerOptions serializerOptions = JsonConfig.ApiOptions;
         HttpRequestMessage httpRequest = new()
         {
             Method = Method,
@@ -58,15 +59,46 @@ public abstract record TwitchRequest : ITwitchRequest
                 _ => null
             }
         };
-        httpRequest.Options.Set(TwitchRequestOptionsKeys.TwitchRequest, this);
         return httpRequest;
     }
+
+    internal virtual ValueTask<TwitchResponse> CreateResponse(HttpResponseMessage httpResponse, CancellationToken ct = default)
+        => ValueTask.FromResult(new TwitchResponse()
+        {
+            Request = this,
+            StatusCode = httpResponse.StatusCode,
+            RateLimitDetails = httpResponse.Headers.ToTwitchRateLimitDetails()
+        });
 }
 
 /// <inheritdoc cref="TwitchRequest"/>
 /// <typeparam name="TResponseContent">
 /// The type the the response content should be deserialized into.
-/// Note that this does nothing inside of this class on its own. 
-/// It is used to infer return response types in an <see cref="ITwitchClient"/>.
 /// </typeparam>
-public abstract record TwitchRequest<TResponseContent> : TwitchRequest, ITwitchRequest<TResponseContent>;
+public abstract record TwitchRequest<TResponseContent> : TwitchRequest
+{
+    internal sealed override async ValueTask<TwitchResponse> CreateResponse(HttpResponseMessage httpResponse, CancellationToken ct = default)
+        => new TwitchResponse<TResponseContent>()
+        {
+            Request = this,
+            StatusCode = httpResponse.StatusCode,
+            RateLimitDetails = httpResponse.Headers.ToTwitchRateLimitDetails(),
+            Content = await ConvertResponseContent(await httpResponse.Content.ReadAsStreamAsync(ct), ct)
+        };
+
+    // The define how the response content stream is converted into TResponseContent.
+    // We make them virtual because we want to define the "default" scheme of JSON deserialization (which covers most response types).
+    // The JsonSerializerOptions are kept private to prevent a vestigial dependency if ConvertResponseContent is overriden.
+    private JsonSerializerOptions ResponseContentSerializerOptions { get; init; } = JsonConfig.ApiOptions; // Somewhat problematic because some endpoints will override ConvertResponseContent with a method that does not require this dependency. Not a deal-breaker, but may be confusing.
+    /// <summary>
+    /// Defines how the HTTP response content stream is converted into <typeparamref name="TResponseContent"/>.
+    /// </summary>
+    /// <remarks>
+    /// The default virtual implementation is JSON deserialization using <see cref="JsonSerializer"/> and <see cref="JsonConfig.ApiOptions"/>.
+    /// Override this method to define a custom response content converter.
+    /// </remarks>
+    /// <param name="contentStream">The HTTP content stream.</param>
+    /// <returns>The converted <typeparamref name="TResponseContent"/>.</returns>
+    protected virtual ValueTask<TResponseContent> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => JsonSerializer.DeserializeAsync<TResponseContent>(contentStream, ResponseContentSerializerOptions, ct)!; // Might cause problems if Twitch decides to return "null", although if documented, we will make TResponseContent nullable.
+}

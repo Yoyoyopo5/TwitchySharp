@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -20,7 +21,7 @@ public sealed record ChannelSubscriptionGift(UserId BroadcasterUserId)
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSubscriptionGift;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadSubscriptions ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelReadSubscriptions);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

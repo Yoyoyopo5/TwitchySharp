@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +20,11 @@ public record SendGuestStarInviteRequest
 {
     protected override string Path => "/guest_star/invites";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -49,4 +54,7 @@ public record SendGuestStarInviteRequest
     /// The user id of the user to send the invite to.
     /// </summary>
     public required UserId GuestId { get; init; }
+
+    protected override ValueTask<SendGuestStarInviteResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendGuestStarInviteResponse());
 }

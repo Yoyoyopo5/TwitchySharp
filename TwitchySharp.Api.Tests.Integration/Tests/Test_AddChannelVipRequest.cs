@@ -1,6 +1,4 @@
 using System.Net;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -21,11 +19,11 @@ public class Test_AddChannelVipRequest : IClassFixture<TwitchApiTestFixture>
     public async Task SendAsync_ValidRequest_Returns204NoContent()
     {
         // Arrange
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
-        var request = new AddChannelVipRequest
+        ITwitchClient client = _fixture.CreateTwitchClientBuilder().Build();
+        AddChannelVipRequest request = new()
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -34,7 +32,7 @@ public class Test_AddChannelVipRequest : IClassFixture<TwitchApiTestFixture>
 
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        Assert.NotNull(response.Content); // EmptyResponseConverter returns empty object
+        Assert.NotNull(response.Content);
     }
 
     [Fact]
@@ -44,11 +42,11 @@ public class Test_AddChannelVipRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.RateLimitLimit = 800;
         _fixture.ResponseConfig.RateLimitRemaining = 799;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -64,12 +62,11 @@ public class Test_AddChannelVipRequest : IClassFixture<TwitchApiTestFixture>
     [Fact]
     public async Task SendAsync_MissingAuthorizationHeader_ThrowsTwitchApiException()
     {
-        // Arrange - No authorizer means no Authorization header
-        var client = _fixture.CreateTwitchClient(authorizer: null);
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = new UserId("123456"), // UserId we don't have cached token for.
             UserId = new UserId("654321")
         };
 
@@ -85,11 +82,11 @@ public class Test_AddChannelVipRequest : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.TooManyRequests;
         _fixture.ResponseConfig.ForceErrorMessage = "Rate limit exceeded";
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 

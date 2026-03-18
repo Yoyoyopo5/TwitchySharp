@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
@@ -19,8 +20,11 @@ public record GetVipsRequest
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadVips, Scope.ChannelManageVips ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadVips, Scope.ChannelManageVips)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

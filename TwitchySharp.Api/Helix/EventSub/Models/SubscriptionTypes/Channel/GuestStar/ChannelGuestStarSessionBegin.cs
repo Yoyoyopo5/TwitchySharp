@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -18,7 +19,7 @@ public sealed record ChannelGuestStarSessionBegin(UserId BroadcasterUserId, User
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelGuestStarSessionBegin;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

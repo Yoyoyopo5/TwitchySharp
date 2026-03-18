@@ -5,9 +5,13 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Immutable;
 using System.Net.Http;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
+using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;
@@ -28,12 +32,40 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     public MockResponseConfigurator ResponseConfig { get; } = new();
 
     // Test constants
-    public const string TestClientId = "test_client_id";
-    public const string TestClientSecret = "test_client_secret";
-    public const string TestAccessToken = "test_access_token";
-    public const string TestRefreshToken = "test_refresh_token";
-    public const string TestAuthorizationCode = "test_auth_code";
-    public const string TestRedirectUri = "http://localhost:3000";
+    public const string TEST_CLIENT_ID = "test_client_id";
+    public const string TEST_CLIENT_SECRET = "test_client_secret";
+    public const string TEST_ACCESS_TOKEN = "test_access_token";
+    public const string TEST_REFRESH_TOKEN = "test_refresh_token";
+    public const string TEST_AUTHORIZATION_CODE = "test_auth_code";
+    public const string TEST_REDIRECT_URI = "http://localhost:3000";
+    public const string TEST_USER_ID = "test_user_id";
+
+    public static ClientId TestClientId { get; } = new(TEST_CLIENT_ID);
+    public static ClientSecret TestClientSecret { get; } = new(TEST_CLIENT_SECRET);
+    public static AppAccessToken TestAppAccessToken { get; } = new(TEST_ACCESS_TOKEN);
+    public static UserAccessToken TestUserAccessToken { get; } = new(TEST_ACCESS_TOKEN);
+    public static Uri TestRedirectUri { get; } = new(TEST_REDIRECT_URI);
+    public static UserId TestUserId { get; } = new(TEST_USER_ID);
+
+    public static TwitchIdentity.Client TestClientIdentity { get; } = new(TestClientId);
+    public static TwitchIdentity.User TestUserIdentity { get; } = new(TestUserId, TestClientId);
+
+    private static IEnumerable<AccessTokenDetails> TestTokens { get; } =
+    [
+        new AccessTokenDetails.App()
+        {
+            AccessToken = TestAppAccessToken,
+            ExpiresAt = DateTimeOffset.MaxValue,
+            Identity = TestClientIdentity
+        },
+        new AccessTokenDetails.User()
+        {
+            AccessToken = TestUserAccessToken,
+            ExpiresAt = DateTimeOffset.MaxValue,
+            Identity = TestUserIdentity,
+            Scopes = ImmutableHashSet.Create(Scope.ChannelManageVips, Scope.ModeratorManageWarnings)
+        }
+    ];
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -55,19 +87,32 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
         Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webBuilder => webBuilder.UseTestServer());
 
-    public DefaultRequestAuthorizer CreateDefaultAuthorizer() =>
-        new(
-            new DefaultClientIdentityResolver(new ClientIdentity(new ClientId(TestClientId))),
-            new SingleAccessTokenResolver(new UserAccessToken(TestAccessToken))
-        );
-
-    /// <summary>
-    /// Creates a TwitchClient configured to use the test server.
-    /// </summary>
-    /// <param name="authorizer">Optional request authorizer. Pass null for authorization endpoints that don't need auth.</param>
-    /// <returns>A TwitchClient configured to use the mock server.</returns>
-    public TwitchClient CreateTwitchClient(IAuthorizeTwitchRequest? authorizer = null) =>
-        new(CreateClient(), authorizer);
+    public ITwitchClientBuilder CreateTwitchClientBuilder()
+    {
+        ITwitchClient authClient = new TwitchClientBuilder() { HttpClient = CreateClient() }.Build();
+        return new TwitchClientBuilder()
+        {
+            HttpClient = CreateClient()
+        }.WithAuthorizationResolution(
+            new TwitchAuthorizationResolutionOptions()
+            {
+                FallbackClientIdResolver = (_, _) => ValueTask.FromResult<ClientId?>(TestClientId)
+            }
+            .ConfigureIdentityTokenResolution(new AppAccessTokenResolutionOptions()
+            {
+                AuthenticationClient = authClient,
+                ClientSecretResolver = (_, _) => ValueTask.FromResult<ClientSecret?>(TestClientSecret),
+                GetCachedToken = (context, _) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.App>(context).FirstOrDefault())
+            })
+            .ConfigureIdentityTokenResolution(new UserAccessTokenResolutionOptions()
+            {
+                AuthenticationClient = authClient,
+                ClientSecretResolver = (_, _) => ValueTask.FromResult<ClientSecret?>(TestClientSecret),
+                GetCachedToken = (context, _) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.User>(context).FirstOrDefault()),
+                ResolveFallbackClientId = (_, _) => ValueTask.FromResult<ClientId?>(TestClientId)
+            })
+            );
+    }
 
     /// <summary>
     /// Creates an HttpClient configured to use the test server directly.

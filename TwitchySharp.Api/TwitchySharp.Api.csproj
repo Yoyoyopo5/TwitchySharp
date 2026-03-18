@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.Integration"/>
 	</ItemGroup>
 
   <ItemGroup>

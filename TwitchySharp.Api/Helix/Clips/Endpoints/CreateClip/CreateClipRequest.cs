@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -37,8 +36,11 @@ public record CreateClipRequest
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ClipsEdit ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.ClipsEdit)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -51,7 +53,7 @@ public record CreateClipRequest
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.

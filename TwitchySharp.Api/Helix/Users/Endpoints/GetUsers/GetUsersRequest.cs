@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// You may look up users using their user ID, login name, or both, but the sum total of the number of users you may look up is 100.
 /// If you don't specify ids or login names, the request returns information about the user in the access token (if using a user access token).
 /// <para>
-/// To include the <see cref="TwitchUser.Email"/> property in the response, use <see cref="IncludingEmail"/>
+/// To include the <see cref="TwitchUser.Email"/> property in the response, use <see cref="IncludingEmailFor"/>
 /// which requires a user access token with <see cref="Scope.UserReadEmail"/> created by the user being queried.
 /// </para>
 /// <br/>
@@ -26,8 +26,11 @@ public record GetUsersRequest
 {
     protected override string Path => "/users";
     public override HttpMethod Method => HttpMethod.Get;
-    private IEnumerable<Scope> ConfiguredScopes { get; init; } = [];
-    public override IEnumerable<Scope> ValidScopes => ConfiguredScopes;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = UserIdentity ?? TwitchIdentity.Client.Default,
+        ValidScopes = ConfiguredScopes
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", UserIds?.Select(x => x.Value))
@@ -59,6 +62,8 @@ public record GetUsersRequest
     /// </remarks>
     /// <param name="user">The user identity to fetch email for.</param>
     /// <returns>A new <see cref="GetUsersRequest"/> configured for email access.</returns>
-    public GetUsersRequest IncludingEmail(UserIdentity user)
-        => this with { Identity = user, ConfiguredScopes = [ Scope.UserReadEmail ] };
+    public GetUsersRequest IncludingEmailFor(TwitchIdentity.User user)
+        => this with { UserIdentity = user, ConfiguredScopes = ImmutableHashSet.Create(Scope.UserReadEmail) };
+    private TwitchIdentity.User? UserIdentity { get; init; }
+    private IReadOnlySet<Scope> ConfiguredScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 }

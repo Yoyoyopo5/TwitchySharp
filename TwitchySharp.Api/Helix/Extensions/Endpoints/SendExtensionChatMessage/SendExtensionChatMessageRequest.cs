@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -25,12 +28,15 @@ public record SendExtensionChatMessageRequest
 {
     protected override string Path => "/extensions/chat";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = ExtensionIdentity
+    };
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -45,6 +51,9 @@ public record SendExtensionChatMessageRequest
     /// The message data to send.
     /// </summary>
     public required SendExtensionChatMessageRequestData Message { get; init; }
+
+    protected override ValueTask<SendExtensionChatMessageResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendExtensionChatMessageResponse());
 }
 
 /// <summary>

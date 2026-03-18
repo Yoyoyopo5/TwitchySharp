@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +17,11 @@ public record GetHypeTrainStatusRequest
 {
     protected override string Path => "/hypetrain/status";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadHypeTrain ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

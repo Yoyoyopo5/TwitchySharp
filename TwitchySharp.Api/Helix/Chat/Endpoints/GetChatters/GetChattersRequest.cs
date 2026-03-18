@@ -1,8 +1,7 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Api.Helix.Channels;
+using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -27,8 +26,11 @@ public record GetChattersRequest
 {
     protected override string Path => "/chat/chatters";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadChatters ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadChatters)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

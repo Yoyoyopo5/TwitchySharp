@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -19,7 +20,7 @@ public sealed record AutomodMessageUpdateV2(UserId BroadcasterUserId, UserId Mod
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodMessageUpdateV2;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomod ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorManageAutomod);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

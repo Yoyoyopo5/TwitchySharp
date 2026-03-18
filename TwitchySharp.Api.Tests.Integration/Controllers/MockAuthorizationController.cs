@@ -81,9 +81,9 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
         // Success response matching Twitch format
         return Ok(new
         {
-            access_token = TwitchApiTestFixture.TestAccessToken,
+            access_token = TwitchApiTestFixture.TEST_ACCESS_TOKEN,
             expires_in = 14124,
-            refresh_token = TwitchApiTestFixture.TestRefreshToken,
+            refresh_token = TwitchApiTestFixture.TEST_REFRESH_TOKEN,
             scope = new[] { "channel:moderate", "chat:edit", "chat:read" },
             token_type = "bearer"
         });
@@ -100,7 +100,7 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
 
         return Ok(new
         {
-            access_token = TwitchApiTestFixture.TestAccessToken,
+            access_token = TwitchApiTestFixture.TEST_ACCESS_TOKEN,
             expires_in = 5011271,
             token_type = "bearer"
         });
@@ -126,9 +126,9 @@ public class MockAuthorizationController(MockResponseConfigurator config) : Cont
 
         return Ok(new
         {
-            access_token = "new_" + TwitchApiTestFixture.TestAccessToken,
+            access_token = "new_" + TwitchApiTestFixture.TEST_ACCESS_TOKEN,
             expires_in = 14124,
-            refresh_token = "new_" + TwitchApiTestFixture.TestRefreshToken,
+            refresh_token = "new_" + TwitchApiTestFixture.TEST_REFRESH_TOKEN,
             scope = new[] { "channel:moderate", "chat:edit", "chat:read" },
             token_type = "bearer"
         });

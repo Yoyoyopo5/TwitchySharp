@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Api\TwitchySharp.Api.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Api.AuthorizationResolution\TwitchySharp.Api.AuthorizationResolution.csproj" />
   </ItemGroup>
 
   <ItemGroup>

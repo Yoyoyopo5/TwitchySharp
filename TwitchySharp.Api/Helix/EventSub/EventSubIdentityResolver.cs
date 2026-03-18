@@ -39,13 +39,13 @@ public static class EventSubIdentityResolver
     /// This is resolved from the <see cref="EventSubSubscription.Condition"/> on a subscription type basis.
     /// </remarks>
     /// <param name="subscription">The subscription to get the authorizing user for.</param>
-    /// <returns>A <see cref="UserIdentity"/> indicating the Twitch user that authorized the subscription, if applicable.</returns>
-    public static UserIdentity? GetAuthorizingUser(this EventSubSubscription subscription)
+    /// <returns>A <see cref="TwitchIdentity.User"/> indicating the Twitch user that authorized the subscription, if applicable.</returns>
+    public static TwitchIdentity.User? GetAuthorizingUser(this EventSubSubscription subscription)
         => AuthorizingUserConditionKeys.TryGetValue(subscription.GetSubscriptionType(), out ConditionKey key) switch
         {
             true => subscription.Condition.TryGetValue(key, out string? userId) switch
             {
-                true => new UserIdentity(new UserId(userId)),
+                true => new TwitchIdentity.User(new UserId(userId)),
                 false => null
             },
             false => null

@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Models;
@@ -21,8 +20,11 @@ public record UpdateChatSettingsRequest
 {
     protected override string Path => "/chat/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageChatSettings ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageChatSettings)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -88,9 +90,9 @@ public record UpdateChatSettingsRequestData
     /// The amount of time, in seconds, that messages are delayed before appearing in chat.
     /// Set only if <see cref="NonModeratorChatDelay"/> is <see langword="true"/>. Possible values are:
     /// <list type="bullet">
-    /// <item><c>2</c> — 2 second delay (recommended)</item>
-    /// <item><c>4</c> — 4 second delay</item>
-    /// <item><c>6</c> — 6 second delay</item>
+    /// <item><c>2</c>  E2 second delay (recommended)</item>
+    /// <item><c>4</c>  E4 second delay</item>
+    /// <item><c>6</c>  E6 second delay</item>
     /// </list>
     /// </summary>
     public int? NonModeratorChatDelayDuration { get; init; }
