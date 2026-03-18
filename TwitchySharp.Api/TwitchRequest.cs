@@ -45,9 +45,6 @@ public abstract record TwitchRequest
     /// <summary>
     /// Create a new <see cref="HttpRequestMessage"/> for this request.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="HttpRequestMessage.Options"/> will contain this instance of <see cref="TwitchRequest"/> under <see cref="TwitchRequestOptionsKeys.TwitchRequest"/>.
-    /// </remarks>
     /// <returns>A new <see cref="HttpRequestMessage"/> that can be used to execute the Twitch API request.</returns>
     public virtual HttpRequestMessage ToHttpRequestMessage()
     {
