@@ -22,3 +22,29 @@ public abstract partial record AccessTokenDetails
     /// </summary>
     public DateTimeOffset ExpiresAt { get; init; }
 }
+
+public static partial class AccessTokenDetailsEnumerableExtensions
+{
+    public static IEnumerable<TDetails> WhereTokenMeetsRequirements<TDetails>(
+        this IEnumerable<AccessTokenDetails> tokens,
+        TwitchRequestAuthorizationContext context)
+        where TDetails : AccessTokenDetails
+        => tokens.WhereTokenMeetsRequirements(context).OfType<TDetails>();
+
+    public static IEnumerable<AccessTokenDetails> WhereTokenMeetsRequirements(
+        this IEnumerable<AccessTokenDetails> tokens,
+        TwitchRequestAuthorizationContext context)
+        => context.Identity switch
+        {
+            TwitchIdentity.Client => tokens
+                .OfType<AccessTokenDetails.App>()
+                .WhereTokenMeetsRequirements(context),
+            TwitchIdentity.User => tokens
+                .OfType<AccessTokenDetails.User>()
+                .WhereTokenMeetsRequirements(context),
+            TwitchIdentity.Extension => tokens
+                .OfType<AccessTokenDetails.App>()
+                .WhereTokenMeetsRequirements(context),
+            _ => tokens.Where(t => t.Identity == context.Identity)
+        };
+}

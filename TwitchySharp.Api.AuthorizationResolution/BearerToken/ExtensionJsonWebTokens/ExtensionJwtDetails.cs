@@ -16,3 +16,16 @@ public abstract partial record AccessTokenDetails
         protected override IAccessToken BaseAccessToken => AccessToken;
     }
 }
+
+public static partial class AccessTokenDetailsEnumerableExtensions
+{
+    public static IEnumerable<AccessTokenDetails.ExtensionJwt> WhereTokenMeetsRequirements(
+        this IEnumerable<AccessTokenDetails.ExtensionJwt> tokens,
+        TwitchRequestAuthorizationContext context)
+        => context.Identity switch
+        {
+            TwitchIdentity.Extension identity
+                => tokens.Where(t => t.Identity == identity),
+            _ => []
+        };
+}

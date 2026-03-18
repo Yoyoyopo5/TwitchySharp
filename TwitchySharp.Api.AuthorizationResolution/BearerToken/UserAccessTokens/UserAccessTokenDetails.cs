@@ -31,7 +31,7 @@ public abstract partial record AccessTokenDetails
     }
 }
 
-public static class UserAccessTokenDetailsExtensions
+public static partial class AccessTokenDetailsEnumerableExtensions
 {
     /// <summary>
     /// Filters user access token details by a specific <see cref="TwitchRequestAuthorizationContext"/>
@@ -43,14 +43,19 @@ public static class UserAccessTokenDetailsExtensions
     /// This must use a <see cref="TwitchIdentity.User"/> identity or the resulting <see cref="IEnumerable{T}"/> will be empty.
     /// </param>
     /// <returns>A filtered <see cref="IEnumerable{T}"/> with <see cref="AccessTokenDetails.User"/> that meet the authorization requirement.</returns>
-    public static IEnumerable<AccessTokenDetails.User> WhereTokenMeetsRequirement(
+    public static IEnumerable<AccessTokenDetails.User> WhereTokenMeetsRequirements(
         this IEnumerable<AccessTokenDetails.User> tokens,
         TwitchRequestAuthorizationContext context)
         => context.Identity switch
         {
-            TwitchIdentity.User identity => tokens
-                .Where(t => t.Identity == identity)
-                .Where(t => context.ValidScopes.Any(scope => t.Scopes.Contains(scope))),
-            _ => [],
+            TwitchIdentity.User identity
+                => tokens
+                    .Where(t => t.Identity == identity)
+                    .Where(t => context.ValidScopes.Any() switch
+                    {
+                        true => context.ValidScopes.Any(scope => t.Scopes.Contains(scope)),
+                        false => true
+                    }),
+            _ => []
         };
 }
