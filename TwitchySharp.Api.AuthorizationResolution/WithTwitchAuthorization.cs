@@ -6,10 +6,11 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 public static class TwitchClientBuilderExtensions
 {
     public static ITwitchClientBuilder UseAuthorizationResolution(this ITwitchClientBuilder builder,
-        TwitchAuthorizationResolutionOptions options
+        TwitchAuthorizationResolutionOptions? options = null
         )
     {
         // build resolver dependencies
+        options ??= new();
         (var resolveClientId, var resolveBearerToken) = (options.ClientIdResolver, options.BearerTokenResolver);
         return builder.Use(next => async (context, ct)
             => await next(context.Request switch
