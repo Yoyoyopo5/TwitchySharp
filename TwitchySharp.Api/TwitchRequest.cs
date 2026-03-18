@@ -62,7 +62,6 @@ public abstract record TwitchRequest
                 _ => null
             }
         };
-        httpRequest.Options.Set(TwitchRequestOptionsKeys.TwitchRequest, this);
         return httpRequest;
     }
 
