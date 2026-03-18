@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Models;
@@ -21,8 +20,11 @@ public record CreateChannelStreamScheduleSegmentRequest
 {
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

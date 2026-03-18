@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -19,8 +18,11 @@ public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
 {
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageBlockedTerms ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBlockedTerms)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -52,7 +54,7 @@ public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
 public record AddBlockedTermRequestData
 {
     /// <summary>
-    /// The word or phrase to block from being used in the broadcaster’s chat room.
+    /// The word or phrase to block from being used in the broadcaster�fs chat room.
     /// </summary>
     /// <remarks>
     /// <para>

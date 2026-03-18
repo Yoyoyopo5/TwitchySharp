@@ -1,8 +1,5 @@
-﻿using TwitchySharp.Api.ResponseConverters;
-
-namespace TwitchySharp.Api.Helix.Channels;
+﻿namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
-/// Empty response. Contains no data.
+/// Empty response.
 /// </summary>
-[ApiConverter(typeof(EmptyResponseConverter))]
 public record ModifyChannelInformationResponse { }

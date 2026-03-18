@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -21,7 +20,11 @@ public record GetUserActiveExtensionsRequest
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.UserEditBroadcast ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = UserIdentity ?? TwitchIdentity.Client.Default,
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.UserEditBroadcast)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId);
@@ -40,5 +43,7 @@ public record GetUserActiveExtensionsRequest
     /// </remarks>
     /// <returns>A new <see cref="GetUserActiveExtensionsRequest"/> with user identity set.</returns>
     public GetUserActiveExtensionsRequest IncludingUnderDevelopment()
-        => this with { Identity = new UserIdentity(UserId) };
+        => this with { UserIdentity = new TwitchIdentity.User(UserId) };
+
+    private TwitchIdentity.User? UserIdentity { get; init; }
 }

@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +20,11 @@ public record UpdateChannelGuestStarSettingsRequest
 {
     protected override string Path => "/guest_star/channel_settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -37,6 +42,9 @@ public record UpdateChannelGuestStarSettingsRequest
     /// The settings to update.
     /// </summary>
     public required UpdateChannelGuestStarSettingsRequestData Settings { get; init; }
+
+    protected override ValueTask<UpdateChannelGuestStarSettingsResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateChannelGuestStarSettingsResponse());
 }
 
 /// <summary>

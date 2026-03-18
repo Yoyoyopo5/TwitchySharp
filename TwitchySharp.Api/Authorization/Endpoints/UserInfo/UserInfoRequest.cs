@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 
 namespace TwitchySharp.Api.Authorization;
@@ -11,7 +12,7 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">getting claims information from an access token</see> for more information.
 /// </remarks>
 public record UserInfoRequest
-    : TwitchAuthorizationRequest<TwitchOidc>, IRequireAuthorization
+    : TwitchAuthorizationRequest<TwitchOidc>, IAuthorizedTwitchRequest
 {
     protected override string Path => "/userinfo";
     public override HttpMethod Method => HttpMethod.Get;
@@ -24,22 +25,10 @@ public record UserInfoRequest
     /// </remarks>
     public required UserAccessToken AccessToken { get; init; }
 
-    /// <summary>
-    /// The identity for this request.
-    /// </summary>
-    /// <remarks>
-    /// UserInfo does not require a specific identity context.
-    /// The <see cref="AccessToken"/> will be used in the Authorization header.
-    /// </remarks>
-    public TwitchApiIdentity Identity { get; init; } = TwitchApiIdentity.None;
-
-    /// <summary>
-    /// Requires <see cref="Scope.OpenId"/>.
-    /// </summary>
-    public IEnumerable<Scope> ValidScopes => [ Scope.OpenId ];
-
-    /// <summary>
-    /// The access token used for authorization. Returns the <see cref="AccessToken"/> property.
-    /// </summary>
-    public AccessToken? OverrideAccessToken => AccessToken;
+    public TwitchRequestAuthorizationContext AuthorizationContext => new()
+    {
+        Identity = TwitchIdentity.None.Instance,
+        ValidScopes = ImmutableHashSet.Create(Scope.OpenId),
+        AccessToken = AccessToken
+    };
 }

@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -21,8 +25,11 @@ public record RemoveChannelVipRequest
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageVips ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVips)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -44,4 +51,7 @@ public record RemoveChannelVipRequest
     /// If removing this user's VIP status on behalf of the user themselves, this user can have created the access token used in the request.
     /// </remarks>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<RemoveChannelVipResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new RemoveChannelVipResponse());
 }

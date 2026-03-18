@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -19,8 +20,11 @@ public record GetFollowedChannelsRequest
 {
     protected override string Path => "/channels/followed";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(UserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadFollows ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(UserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadFollows)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -21,7 +22,7 @@ public sealed record ChannelSuspiciousUserMessage(UserId BroadcasterUserId, User
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSuspiciousUserMessage;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("moderator_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ModeratorReadSuspiciousUsers ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ModeratorReadSuspiciousUsers);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

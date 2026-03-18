@@ -1,7 +1,5 @@
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Shared.Models;
@@ -27,11 +25,11 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -48,11 +46,11 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -70,11 +68,11 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -92,11 +90,11 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
         _fixture.ResponseConfig.ForceErrorMessage = "Test error message";
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 
@@ -118,11 +116,11 @@ public class Test_TwitchApiException : IClassFixture<TwitchApiTestFixture>
         // Arrange
         _fixture.ResponseConfig.ForceStatusCode = HttpStatusCode.BadRequest;
 
-        var client = _fixture.CreateTwitchClient(_fixture.CreateDefaultAuthorizer());
+        var client = _fixture.CreateTwitchClientBuilder().Build();
         var request = new AddChannelVipRequest
         {
             Host = "localhost",
-            BroadcasterId = new UserId("123456"),
+            BroadcasterId = TwitchApiTestFixture.TestUserId,
             UserId = new UserId("654321")
         };
 

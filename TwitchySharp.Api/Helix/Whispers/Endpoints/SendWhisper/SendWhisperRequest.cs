@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -30,8 +34,11 @@ public record SendWhisperRequest
 {
     protected override string Path => "/whispers";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(FromUserId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageWhispers ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(FromUserId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserManageWhispers)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_user_id", FromUserId)
@@ -53,6 +60,9 @@ public record SendWhisperRequest
     /// The whisper content to send.
     /// </summary>
     public required SendWhisperRequestData Whisper { get; init; }
+
+    protected override ValueTask<SendWhisperResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendWhisperResponse());
 }
 
 /// <summary>

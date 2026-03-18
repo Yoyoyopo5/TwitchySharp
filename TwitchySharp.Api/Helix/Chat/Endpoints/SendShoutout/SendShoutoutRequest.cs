@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -20,8 +22,11 @@ public record SendShoutoutRequest
 {
     protected override string Path => "/chat/shoutouts";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageShoutouts ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageShoutouts)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_broadcaster_id", FromBroadcasterId)
@@ -46,4 +51,7 @@ public record SendShoutoutRequest
     /// Requires <see cref="Scope.ModeratorManageShoutouts"/>.
     /// </remarks>
     public required UserId ModeratorId { get; init; }
+
+    protected override ValueTask<SendShoutoutResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendShoutoutResponse());
 }

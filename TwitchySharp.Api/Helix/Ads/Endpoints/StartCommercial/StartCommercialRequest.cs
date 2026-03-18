@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
@@ -20,8 +21,11 @@ public record StartCommercialRequest
 {
     protected override string Path => "/channels/commercial";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Commercial.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelEditCommercial ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Commercial.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelEditCommercial)
+    };
     public override object? ContentObject => Commercial;
     public required StartCommercialRequestData Commercial { get; init; }
 }

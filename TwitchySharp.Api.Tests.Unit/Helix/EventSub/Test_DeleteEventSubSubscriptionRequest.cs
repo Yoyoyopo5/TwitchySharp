@@ -28,10 +28,10 @@ public class Test_DeleteEventSubSubscriptionRequest
         var request = new DeleteEventSubSubscriptionRequest(subscription);
 
         // Act
-        var identity = request.Identity;
+        var identity = request.AuthorizationContext.Identity;
 
         // Assert
-        var userIdentity = Assert.IsType<UserIdentity>(identity);
+        var userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
         Assert.Equal(new UserId(MOCK_USER_ID), userIdentity.UserId);
     }
 
@@ -51,10 +51,10 @@ public class Test_DeleteEventSubSubscriptionRequest
         var request = new DeleteEventSubSubscriptionRequest(subscription);
 
         // Act
-        var identity = request.Identity;
+        var identity = request.AuthorizationContext.Identity;
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -72,10 +72,10 @@ public class Test_DeleteEventSubSubscriptionRequest
         var request = new DeleteEventSubSubscriptionRequest(subscription);
 
         // Act
-        var identity = request.Identity;
+        var identity = request.AuthorizationContext.Identity;
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -88,10 +88,10 @@ public class Test_DeleteEventSubSubscriptionRequest
         };
 
         // Act
-        var identity = request.Identity;
+        var identity = request.AuthorizationContext.Identity;
 
         // Assert
-        Assert.Equal(TwitchApiIdentity.Default, identity);
+        Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class Test_DeleteEventSubSubscriptionRequest
         var request = new DeleteEventSubSubscriptionRequest(subscription);
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => request.Identity);
+        Assert.Throws<InvalidOperationException>(() => request.AuthorizationContext.Identity);
     }
 
     [Fact]

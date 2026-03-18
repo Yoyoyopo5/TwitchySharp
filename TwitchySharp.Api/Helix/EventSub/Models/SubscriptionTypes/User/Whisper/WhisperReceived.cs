@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -17,7 +18,7 @@ public sealed record WhisperReceived(UserId UserId)
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.UserReadWhispers, Scope.UserManageWhispers ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.UserReadWhispers, Scope.UserManageWhispers);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

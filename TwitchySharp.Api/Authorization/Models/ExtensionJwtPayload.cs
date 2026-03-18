@@ -59,7 +59,7 @@ public record ExtensionJwtPayload(UserId UserId)
             )));
 }
 
-public record ExtensionPubSubPermissions
+public readonly record struct ExtensionPubSubPermissions
 {
     public string[]? Listen { get; init; }
     public string[]? Send { get; init; }
