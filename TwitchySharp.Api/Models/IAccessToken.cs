@@ -20,23 +20,6 @@ public interface IAccessToken
 }
 
 /// <summary>
-/// A Twitch API access token.
-/// </summary>
-/// <remarks>
-/// Use <see cref="AppAccessToken"/> or <see cref="UserAccessToken"/>, depending on the endpoint.
-/// </remarks>
-/// <param name="Value">The string value of the access token.</param>
-[JsonConverter(typeof(WrapperJsonConverter<AccessToken, string>))]
-[Obsolete("Use IAccessToken")]
-public abstract record AccessToken(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(AccessToken token)
-        => token.Value;
-    public sealed override string ToString()
-        => Value;
-}
-
-/// <summary>
 /// A Twitch app access token.
 /// </summary>
 /// <remarks>
