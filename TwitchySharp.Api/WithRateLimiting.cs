@@ -15,14 +15,15 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
         TimeSpan clockSkew,
         Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
     {
+        // Create the concurrency cache once when the handler is created.
         var concurrently = ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx.AuthorizationHeaders.ClientId!.Value, lockFactory);
-        return next => async (context, ct) =>
+        return next =>
         {
-            if (context.AuthorizationHeaders.ClientId is not ClientId clientId)
-                return await next(context, ct);
-
-            return await concurrently(async (context, ct) =>
+            // Create the concurrent execution function once when the client is built.
+            var concurrentlyRateLimitAndSend = concurrently(async (context, ct) =>
             {
+                ClientId clientId = context.AuthorizationHeaders.ClientId!.Value;
+
                 if (await getRateLimitDetails(clientId, ct) is TwitchRateLimitDetails cachedDetails
                     && cachedDetails is { Remaining: 0, Reset: not null }
                     && cachedDetails.Reset.Value > DateTimeOffset.UtcNow)
@@ -37,7 +38,15 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
                         );
 
                 return response;
-            })(context, ct);
+            });
+
+            // This runs every request.
+            return (context, ct) =>
+            {
+                if (context.AuthorizationHeaders.ClientId is null)
+                    return next(context, ct);
+                return concurrentlyRateLimitAndSend(context, ct);
+            };
         };
     }
 
