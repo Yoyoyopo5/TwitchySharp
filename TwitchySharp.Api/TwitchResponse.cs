@@ -1,13 +1,25 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Threading;
 
 namespace TwitchySharp.Api;
 /// <summary>
 /// A general Twitch API response with no content.
 /// </summary>
-public record TwitchResponse : ITwitchResponse
+public record TwitchResponse
 {
+    /// <summary>
+    /// The request resulting in this response.
+    /// </summary>
     public TwitchRateLimitDetails? RateLimitDetails { get; init; }
-    public required ITwitchRequest Request { get; init; }
+    /// <summary>
+    /// The request resulting in this response.
+    /// </summary>
+    public required TwitchRequest Request { get; init; }
+    /// <summary>
+    /// The HTTP status code of the response.
+    /// </summary>
     public required HttpStatusCode StatusCode { get; init; }
 }
 
@@ -15,7 +27,7 @@ public record TwitchResponse : ITwitchResponse
 /// A general Twitch API response with strongly-typed content.
 /// </summary>
 /// <typeparam name="TResponseContent">The response content type.</typeparam>
-public record TwitchResponse<TResponseContent> : TwitchResponse, ITwitchResponse<TResponseContent>
+public record TwitchResponse<TResponseContent> : TwitchResponse
 {
     public required TResponseContent Content { get; init; }
 }

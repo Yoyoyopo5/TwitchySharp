@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -20,8 +22,11 @@ public record UnblockUserRequest
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserManageBlockedUsers ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.UserManageBlockedUsers)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId);
@@ -29,7 +34,7 @@ public record UnblockUserRequest
     /// <summary>
     /// The user to unblock the target user as.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The id of the user to remove from the broadcaster's list of blocked users.
@@ -38,4 +43,7 @@ public record UnblockUserRequest
     /// The API ignores the request if the broadcaster hasn't blocked the user.
     /// </remarks>
     public required UserId TargetUserId { get; init; }
+
+    protected override ValueTask<UnblockUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UnblockUserResponse());
 }

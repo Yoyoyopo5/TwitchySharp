@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.Models;
@@ -21,8 +20,11 @@ public record UpdateAutoModSettingsRequest
 {
     protected override string Path => "/moderation/automod/settings";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageAutomodSettings ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageAutomodSettings)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

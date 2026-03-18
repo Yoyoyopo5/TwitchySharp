@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -21,7 +22,7 @@ public sealed record HypeTrainProgressV2(UserId BroadcasterUserId)
 {
     public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainProgressV2;
     public ConditionKey AuthorizingUserConditionKey => new ConditionKey("broadcaster_user_id");
-    public IEnumerable<Scope> ValidScopes => [ Scope.ChannelReadHypeTrain ];
+    public IReadOnlySet<Scope> ValidScopes => ImmutableHashSet.Create(Scope.ChannelReadHypeTrain);
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()

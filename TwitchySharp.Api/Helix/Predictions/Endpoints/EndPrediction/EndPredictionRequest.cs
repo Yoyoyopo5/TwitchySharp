@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Predictions;
@@ -17,8 +16,11 @@ public record EndPredictionRequest
 {
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Prediction.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePredictions ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Prediction.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePredictions)
+    };
     public override object? ContentObject => Prediction;
 
     /// <summary>

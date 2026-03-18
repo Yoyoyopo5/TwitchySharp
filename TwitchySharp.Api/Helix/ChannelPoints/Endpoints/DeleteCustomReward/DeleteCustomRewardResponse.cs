@@ -1,8 +1,5 @@
-﻿using TwitchySharp.Api.ResponseConverters;
-
-namespace TwitchySharp.Api.Helix.ChannelPoints;
+﻿namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
-/// Contains no data.
+/// Empty response.
 /// </summary>
-[ApiConverter(typeof(EmptyResponseConverter))]
 public record DeleteCustomRewardResponse { }

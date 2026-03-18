@@ -1,11 +1,13 @@
-Ôªøusing System;
-using System.Collections.Generic;
+using System;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
@@ -22,8 +24,11 @@ public record UpdateChannelStreamScheduleRequest
 {
     protected override string Path => "/schedule/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Settings.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageSchedule ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Settings.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", Settings.BroadcasterId)
@@ -36,6 +41,9 @@ public record UpdateChannelStreamScheduleRequest
     /// The request parameters.
     /// </summary>
     public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
+
+    protected override ValueTask<UpdateChannelStreamScheduleResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateChannelStreamScheduleResponse());
 }
 
 /// <summary>
@@ -84,11 +92,11 @@ public record UpdateChannelStreamScheduleRequestParameters
     /// </summary>
     public bool? IsVacationEnabled { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcaster‚Äôs vacation starts. 
+    /// The date and time of when the broadcasterÅfs vacation starts. 
     /// </summary>
     public DateTimeOffset? VacationStartTime { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcaster‚Äôs vacation ends.
+    /// The date and time of when the broadcasterÅfs vacation ends.
     /// </summary>
     public DateTimeOffset? VacationEndTime { get; private init; }
     /// <summary>

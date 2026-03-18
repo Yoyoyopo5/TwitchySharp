@@ -1,7 +1,11 @@
-Ôªøusing System;
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Helpers.JsonConverters;
@@ -21,8 +25,11 @@ public record ModifyChannelInformationRequest
 {
     protected override string Path => "/channels";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageBroadcast ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageBroadcast)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -40,6 +47,9 @@ public record ModifyChannelInformationRequest
     /// The channel information to be set on the broadcaster's channel.
     /// </summary>
     public required ModifyChannelInformationRequestData ChannelInformation { get; init; }
+
+    protected override ValueTask<ModifyChannelInformationResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+         => ValueTask.FromResult(new ModifyChannelInformationResponse());
 }
 
 /// <summary>
@@ -49,19 +59,19 @@ public record ModifyChannelInformationRequestData
 {
     /// <summary>
     /// The ID of the game that the user plays. 
-    /// The game is not updated if the ID isn‚Äôt a game ID that Twitch recognizes. 
+    /// The game is not updated if the ID isnÅft a game ID that Twitch recognizes. 
     /// To unset this field, use <c>"0"</c> or <see cref="string.Empty"/>.
     /// </summary>
     public GameId? GameId { get; init; }
     /// <summary>
-    /// The user‚Äôs preferred language. 
+    /// The userÅfs preferred language. 
     /// Set the value to an ISO 639-1 two-letter language code (for example, en for English). 
-    /// Set to "other" if the user‚Äôs preferred language is not a Twitch supported language. 
-    /// The language isn‚Äôt updated if the language code isn‚Äôt a Twitch supported language.
+    /// Set to "other" if the userÅfs preferred language is not a Twitch supported language. 
+    /// The language isnÅft updated if the language code isnÅft a Twitch supported language.
     /// </summary>
     public LanguageCode? BroadcasterLanguage { get; init; }
     /// <summary>
-    /// The title of the user‚Äôs stream. 
+    /// The title of the userÅfs stream. 
     /// You may not set this field to an empty string.
     /// </summary>
     public string? Title { get; init; }
@@ -85,7 +95,7 @@ public record ModifyChannelInformationRequestData
     /// </summary>
     public string[]? Tags { get; init; }
     /// <summary>
-    /// List of labels that should be set as the Channel‚Äôs CCLs.
+    /// List of labels that should be set as the ChannelÅfs CCLs.
     /// </summary>
     public ContentClassificationLabel[]? ContentClassificationLabels { get; init; }
     /// <summary>

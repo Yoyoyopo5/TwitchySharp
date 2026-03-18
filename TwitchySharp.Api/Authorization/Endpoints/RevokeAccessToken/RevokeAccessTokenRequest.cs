@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
@@ -18,15 +21,18 @@ public record RevokeAccessTokenRequest
         => new FormUrlEncodedContent(new Dictionary<string, string>()
         {
             { "client_id", ClientId },
-            { "token", AccessToken }
+            { "token", AccessToken.Value }
         });
 
     /// <summary>
-    /// The client id of the application that the <see cref="AccessToken"/> was created under.
+    /// The client id of the application that the <see cref="IAccessToken"/> was created under.
     /// </summary>
     public required ClientId ClientId { get; init; }
     /// <summary>
     /// The access token to revoke.
     /// </summary>
-    public required AccessToken AccessToken { get; init; }
+    public required IAccessToken AccessToken { get; init; }
+
+    protected override ValueTask<RevokeAccessTokenResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new RevokeAccessTokenResponse());
 }

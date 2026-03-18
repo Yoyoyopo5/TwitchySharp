@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -24,12 +25,15 @@ public record SetExtensionRequiredConfigurationRequest
 {
     protected override string Path => "/extensions/required_configuration";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = ExtensionIdentity
+    };
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -44,6 +48,9 @@ public record SetExtensionRequiredConfigurationRequest
     /// The data used to set the required configuration setting.
     /// </summary>
     public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
+
+    protected override ValueTask<SetExtensionRequiredConfigurationResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SetExtensionRequiredConfigurationResponse());
 }
 
 /// <summary>

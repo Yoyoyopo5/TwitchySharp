@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.EventSub.Enums;
 using TwitchySharp.Shared.Models;
@@ -11,8 +9,8 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// </summary>
 /// <remarks>
 /// <para>
-/// By default, this uses the <see cref="TwitchApiIdentity.Default"/> and will only get subscriptions using <see cref="WebhookSubscriptionTransport"/> and <see cref="ConduitSubscriptionTransport"/>.
-/// To get subscriptions using <see cref="WebsocketSubscriptionTransport"/>, call the <see cref="ForWebsocketSubscriptions(UserIdentity)"/> method with an explicit <see cref="UserIdentity"/>.
+/// By default, this uses the <see cref="TwitchIdentity.Client.Default"/> and will only get subscriptions using <see cref="WebhookSubscriptionTransport"/> and <see cref="ConduitSubscriptionTransport"/>.
+/// To get subscriptions using <see cref="WebsocketSubscriptionTransport"/>, call the <see cref="ForWebsocketSubscriptions(TwitchIdentity.User)"/> method with an explicit <see cref="TwitchIdentity.User"/>.
 /// </para>
 /// If using <see cref="WebhookSubscriptionTransport"/> or <see cref="ConduitSubscriptionTransport"/>, requires an app access token.
 /// If using <see cref="WebsocketSubscriptionTransport"/>, requires a user access token.
@@ -24,6 +22,10 @@ public record GetEventSubSubscriptionsRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = WebsocketIdentity ?? TwitchIdentity.Client.Default
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("status", Status?.Value)
@@ -36,12 +38,17 @@ public record GetEventSubSubscriptionsRequest
     /// Configures the request to query for subscriptions using the <see cref="EventSubTransportMethod.Websocket"/>.
     /// </summary>
     /// <remarks>
-    /// This requires a user access token, so you must pass a <see cref="UserIdentity"/> to use for the request.
+    /// This requires a user access token, so you must pass a <see cref="TwitchIdentity.User"/> to use for the request.
     /// </remarks>
-    /// <param name="user">The <see cref="UserIdentity"/> to make the request as.</param>
+    /// <param name="user">The <see cref="TwitchIdentity.User"/> to make the request as.</param>
     /// <returns>A new <see cref="GetEventSubSubscriptionsRequest"/> configured to get subscriptions using <see cref="EventSubTransportMethod.Websocket"/>.</returns>
-    public GetEventSubSubscriptionsRequest ForWebsocketSubscriptions(UserIdentity user)
-        => this with { Identity = user };
+    public GetEventSubSubscriptionsRequest ForWebsocketSubscriptions(TwitchIdentity.User user)
+        => this with { WebsocketIdentity = user };
+
+    /// <summary>
+    /// Optional explicit identity override used when forming the request authorization context.
+    /// </summary>
+    private TwitchIdentity.User? WebsocketIdentity { get; init; }
 
     /// <summary>
     /// Specify this parameter to filter the returned list by subscription status.

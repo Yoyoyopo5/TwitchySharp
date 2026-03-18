@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -19,11 +17,14 @@ public record GetUserExtensionsRequest
 {
     protected override string Path => "/users/extensions/list";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.UserReadBroadcast, Scope.UserEditBroadcast ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.UserEditBroadcast)
+    };
 
     /// <summary>
     /// The user to get extensions for.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 }

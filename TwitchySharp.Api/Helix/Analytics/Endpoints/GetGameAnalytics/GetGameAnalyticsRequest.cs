@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -21,8 +22,11 @@ public record GetGameAnalyticsRequest
 {
     protected override string Path => "/analytics/games";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchApiIdentity DefaultIdentity => User;
-    public override IEnumerable<Scope> ValidScopes => [ Scope.AnalyticsReadGames ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = User,
+        ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadGames)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("game_id", GameId?.Value)
@@ -35,7 +39,7 @@ public record GetGameAnalyticsRequest
     /// <summary>
     /// The user to get game analytics as.
     /// </summary>
-    public required UserIdentity User { get; init; }
+    public required TwitchIdentity.User User { get; init; }
 
     /// <summary>
     /// The game's client ID.

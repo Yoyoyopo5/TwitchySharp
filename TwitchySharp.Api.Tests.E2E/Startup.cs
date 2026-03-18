@@ -13,10 +13,10 @@ public class Startup
     {
         services.AddSingleton<IResolveTwitchRateLimits, DefaultTwitchRateLimitResolver>();
         services.AddTransient<TwitchRateLimitingHandler>();
-        services.AddHttpClient<TwitchClient>("TwitchApi")
+        services.AddHttpClient<ObsoleteTwitchClient>("TwitchApi")
             .AddHttpMessageHandler<TwitchRateLimitingHandler>();
 
-        services.AddTransient<TwitchClient>();
+        services.AddTransient<ObsoleteTwitchClient>();
     }
 }
 

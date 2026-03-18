@@ -8,7 +8,7 @@ namespace TwitchySharp.Helpers;
 /// <summary>
 /// Allows for simple creation of hardcoded sets of values that can be discovered via intellisense.
 /// </summary>
-public record ValueBackedEnum<T>
+public record ValueBackedEnum<T> // We really need to remove this, use IWrapValue instead. Not AOT-compatible.
 {
     public T Value { get; private set; }
     protected ValueBackedEnum(T value)

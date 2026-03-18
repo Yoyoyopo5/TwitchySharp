@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +20,11 @@ public record UnbanUserRequest
 {
     protected override string Path => "/moderation/bans";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ModeratorManageBannedUsers ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBannedUsers)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -43,4 +48,7 @@ public record UnbanUserRequest
     /// The user id of the user to unban or remove a time-out on.
     /// </summary>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<UnbanUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UnbanUserResponse());
 }

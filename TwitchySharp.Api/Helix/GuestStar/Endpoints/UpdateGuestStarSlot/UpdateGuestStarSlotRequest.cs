@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +20,11 @@ public record UpdateGuestStarSlotRequest
 {
     protected override string Path => "/guest_star/slot";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -58,4 +63,7 @@ public record UpdateGuestStarSlotRequest
     /// If the destination slot is occupied, the user assigned will be swapped into the source slot.
     /// </remarks>
     public GuestStarSlotId? DestinationSlotId { get; init; }
+
+    protected override ValueTask<UpdateGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new UpdateGuestStarSlotResponse());
 }

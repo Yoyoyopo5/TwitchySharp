@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
@@ -26,12 +29,15 @@ public record SendExtensionPubSubMessageRequest
 {
     protected override string Path => "/extensions/pubsub";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => ExtensionIdentity;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = ExtensionIdentity
+    };
 
     /// <summary>
     /// The extension identity used for JWT authentication.
     /// </summary>
-    public required ExtensionIdentity ExtensionIdentity { get; init; }
+    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     public override object? ContentObject => Message;
 
     /// <summary>
@@ -39,6 +45,9 @@ public record SendExtensionPubSubMessageRequest
     /// Use derived classes <see cref="BroadcastPubSubMessageData"/> and <see cref="GlobalPubSubMessageData"/>.
     /// </summary>
     public required SendExtensionPubSubMessageRequestData Message { get; init; }
+
+    protected override ValueTask<SendExtensionPubSubMessageResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new SendExtensionPubSubMessageResponse());
 }
 
 /// <summary>

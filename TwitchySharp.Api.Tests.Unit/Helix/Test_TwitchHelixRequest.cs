@@ -1,4 +1,3 @@
-using System.Net.Http;
 using TwitchySharp.Api.Helix;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
@@ -54,28 +53,28 @@ public class Test_TwitchHelixRequest
     [Fact]
     public void Identity_WhenNotSet_FallsBackToDefaultIdentity()
     {
-        var defaultIdentity = new UserIdentity(new UserId("default_user"));
+        var defaultIdentity = new TwitchIdentity.User(new UserId("default_user"));
         var request = new StubHelixRequest
         {
             StubDefaultIdentity = defaultIdentity
         };
 
-        Assert.Equal(defaultIdentity, request.Identity);
+        Assert.Equal(defaultIdentity, request.AuthorizationContext.Identity);
     }
 
     [Fact]
     public void Identity_WhenSet_OverridesDefaultIdentity()
     {
-        var defaultIdentity = new UserIdentity(new UserId("default_user"));
-        var overrideIdentity = new UserIdentity(new UserId("override_user"));
+        var defaultIdentity = new TwitchIdentity.User(new UserId("default_user"));
+        var overrideIdentity = new TwitchIdentity.User(new UserId("override_user"));
         var request = new StubHelixRequest
         {
             StubDefaultIdentity = defaultIdentity,
-            Identity = overrideIdentity
+            AuthorizationContext = new() { Identity = overrideIdentity }
         };
 
-        Assert.Equal(overrideIdentity, request.Identity);
-        Assert.NotEqual(defaultIdentity, request.Identity);
+        Assert.Equal(overrideIdentity, request.AuthorizationContext.Identity);
+        Assert.NotEqual(defaultIdentity, request.AuthorizationContext.Identity);
     }
 
     [Fact]
@@ -83,7 +82,7 @@ public class Test_TwitchHelixRequest
     {
         var request = new StubHelixRequest();
 
-        Assert.Equal(TwitchApiIdentity.Default, request.Identity);
+        Assert.Equal(TwitchIdentity.Client.Default, request.AuthorizationContext.Identity);
     }
 
     [Fact]
@@ -138,7 +137,7 @@ public class Test_TwitchHelixRequest
         {
             StubPath = "/test",
             StubQueryParameters = new HttpQueryParameters()
-                .Add("id", [ "123", "456", "789" ])
+                .Add("id", ["123", "456", "789"])
         };
 
         var uri = request.RequestUri;
@@ -151,12 +150,20 @@ public class Test_TwitchHelixRequest
     private record StubHelixRequest : TwitchHelixRequest<object>
     {
         public string StubPath { get; init; } = "/stub";
-        public TwitchApiIdentity? StubDefaultIdentity { get; init; }
+        public TwitchIdentity? StubDefaultIdentity { get; init; }
         public HttpQueryParameters? StubQueryParameters { get; init; }
 
         protected override string Path => StubPath;
         public override HttpMethod Method => HttpMethod.Get;
-        protected override TwitchApiIdentity DefaultIdentity => StubDefaultIdentity ?? base.DefaultIdentity;
+        protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
+            => StubDefaultIdentity switch
+            {
+                null => base.DefaultAuthorizationContext,
+                TwitchIdentity identity => new()
+                {
+                    Identity = identity
+                }
+            };
         protected override HttpQueryParameters? QueryParameters => StubQueryParameters;
     }
 }

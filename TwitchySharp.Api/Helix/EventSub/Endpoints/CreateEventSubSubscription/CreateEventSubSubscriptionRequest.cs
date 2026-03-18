@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.EventSub.Constants;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
@@ -31,23 +30,25 @@ public record CreateEventSubSubscriptionRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => Subscription.RequiresUserAccessToken() switch
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        true => Subscription.Type switch
+        Identity = Subscription.RequiresUserAccessToken() switch
         {
-            IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.GetAuthorizingUser()
-                ?? throw new InvalidOperationException(
-                    $"Failed to resolve required {nameof(UserIdentity)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
-                    $"Set the {nameof(Identity)} property manually to suppress this error. " +
+            true => Subscription.Type switch
+            {
+                IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.GetAuthorizingUser() ?? throw new InvalidOperationException(
+                    $"Failed to resolve required {nameof(TwitchIdentity.User)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
+                    $"Set the {nameof(AuthorizationContext)} property manually to suppress this error. " +
                     $"The condition for this subscription may be missing the expected key '{userAuthorized.AuthorizingUserConditionKey}'."),
-            _ => TwitchApiIdentity.Default
+                _ => TwitchIdentity.Client.Default
+            },
+            _ => TwitchIdentity.Client.Default
         },
-        _ => TwitchApiIdentity.Default
-    };
-    public override IEnumerable<Scope> ValidScopes => Subscription.Type switch
-    {
-        IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.ValidScopes,
-        _ => []
+        ValidScopes = Subscription.Type switch
+        {
+            IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.ValidScopes,
+            _ => ImmutableHashSet<Scope>.Empty
+        }
     };
     public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
 

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -20,8 +22,11 @@ public record RemoveChannelModeratorRequest
 {
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageModerators ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageModerators)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -39,4 +44,7 @@ public record RemoveChannelModeratorRequest
     /// The user id of the moderator to remove from the broadcaster's channel.
     /// </summary>
     public required UserId UserId { get; init; }
+
+    protected override ValueTask<RemoveChannelModeratorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new RemoveChannelModeratorResponse());
 }

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
@@ -19,8 +18,11 @@ public record EndPollRequest
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(Poll.BroadcasterId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManagePolls ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(Poll.BroadcasterId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePolls)
+    };
     public override object? ContentObject => Poll;
 
     /// <summary>

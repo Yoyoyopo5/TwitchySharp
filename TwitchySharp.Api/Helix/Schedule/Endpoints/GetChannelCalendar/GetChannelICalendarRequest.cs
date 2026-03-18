@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -19,7 +20,10 @@ public record GetChannelICalendarRequest
     protected override string Path => "/schedule/icalendar";
     public override HttpMethod Method => HttpMethod.Get;
     // This endpoint does not require any authentication
-    protected override TwitchApiIdentity DefaultIdentity => TwitchApiIdentity.None;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = TwitchIdentity.None.Instance
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -28,4 +32,10 @@ public record GetChannelICalendarRequest
     /// The user id of the broadcaster (channel) to get the streaming schedule for.
     /// </summary>
     public required UserId BroadcasterId { get; init; }
+
+    protected override async ValueTask<GetChannelICalendarResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+    {
+        using StreamReader sr = new(contentStream);
+        return new GetChannelICalendarResponse(await sr.ReadToEndAsync(ct));
+    }
 }

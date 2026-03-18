@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
@@ -18,8 +20,11 @@ public record AssignGuestStarSlotRequest
 {
     protected override string Path => "/guest_star/slot";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchApiIdentity DefaultIdentity => new UserIdentity(ModeratorId);
-    public override IEnumerable<Scope> ValidScopes => [ Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar ];
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.User(ModeratorId),
+        ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
+    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -62,4 +67,7 @@ public record AssignGuestStarSlotRequest
     /// The max number of slots allowed for the session is reported by a <see cref="GetChannelGuestStarSettingsResponse"/>.
     /// </remarks>
     public required GuestStarSlotId SlotId { get; init; }
+
+    protected override ValueTask<AssignGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new AssignGuestStarSlotResponse());
 }
