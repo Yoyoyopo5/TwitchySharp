@@ -73,7 +73,7 @@ public class TokenResolutionTestFixture
         Content = new() { RequestAuthorizationHeaders = context.AuthorizationHeaders }
     });
     public ITwitchClient CreateTestClient(TwitchAuthorizationResolutionOptions options)
-        => new TestClientBuilder(TestHandler).UseAuthorizationResolution(options).Build();
+        => new TestClientBuilder(TestHandler).WithAuthorizationResolution(options).Build();
 
     private record TestClient : ITwitchClient
     {

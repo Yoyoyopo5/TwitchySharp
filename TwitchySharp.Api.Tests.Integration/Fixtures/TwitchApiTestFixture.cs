@@ -93,7 +93,7 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
         return new TwitchClientBuilder()
         {
             HttpClient = CreateClient()
-        }.UseAuthorizationResolution(
+        }.WithAuthorizationResolution(
             new TwitchAuthorizationResolutionOptions()
             {
                 FallbackClientIdResolver = (_, _) => ValueTask.FromResult<ClientId?>(TestClientId)

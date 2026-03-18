@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 
 public static class TwitchClientBuilderExtensions
 {
-    public static ITwitchClientBuilder UseAuthorizationResolution(this ITwitchClientBuilder builder,
+    public static ITwitchClientBuilder WithAuthorizationResolution(this ITwitchClientBuilder builder,
         TwitchAuthorizationResolutionOptions? options = null
         )
     {
