@@ -26,7 +26,7 @@ public record AuthorizationCodeRequest
             { "client_secret", ClientSecret },
             { "code", Code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", RedirectUri.ToString() }
+            { "redirect_uri", RedirectUri.AbsoluteUri }
         });
 
     /// <summary>
