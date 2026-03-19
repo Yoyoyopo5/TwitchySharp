@@ -12,7 +12,7 @@ public class Test_OidcClaims
     [Fact]
     public void JsonEncode_IdTokenSingleClaim_ReturnsJsonString()
     {
-        OidcClaims stubClaims = new() { IdToken = [ OidcClaim.Email ] };
+        OidcClaims stubClaims = new() { IdToken = new HashSet<OidcClaim>() { OidcClaim.Email } };
         const string MOCK_JSON_STRING = """
             {
                 "id_token": {
@@ -34,10 +34,10 @@ public class Test_OidcClaims
     [Fact]
     public void JsonEncode_IdTokenUserInfoClaims_ReturnsJsonString()
     {
-        OidcClaims stubClaims = new() 
-        { 
-            IdToken = [ OidcClaim.Email, OidcClaim.EmailVerified, OidcClaim.Picture, OidcClaim.PreferredUsername, OidcClaim.UpdatedAt ],
-            Userinfo = [ OidcClaim.Email, OidcClaim.EmailVerified, OidcClaim.Picture, OidcClaim.PreferredUsername, OidcClaim.UpdatedAt ]
+        OidcClaims stubClaims = new()
+        {
+            IdToken = new HashSet<OidcClaim>() { OidcClaim.Email, OidcClaim.EmailVerified, OidcClaim.Picture, OidcClaim.PreferredUsername, OidcClaim.UpdatedAt },
+            Userinfo = new HashSet<OidcClaim>() { OidcClaim.Email, OidcClaim.EmailVerified, OidcClaim.Picture, OidcClaim.PreferredUsername, OidcClaim.UpdatedAt }
         };
         const string MOCK_JSON_STRING = """
             {
