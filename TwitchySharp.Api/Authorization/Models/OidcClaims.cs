@@ -13,11 +13,11 @@ public class OidcClaims
     /// <summary>
     /// Claims that will be included in the id token of the authorization response.
     /// </summary>
-    public HashSet<OidcClaim> IdToken { get; init; } = [];
+    public IReadOnlySet<OidcClaim> IdToken { get; init; } = new HashSet<OidcClaim>();
     /// <summary>
     /// Claims that will be included when getting a response from the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">UserInfo</see> endpoint.
     /// </summary>
-    public HashSet<OidcClaim> Userinfo { get; init; } = [];
+    public IReadOnlySet<OidcClaim> Userinfo { get; init; } = new HashSet<OidcClaim>();
 
     /// <summary>
     /// JSON encode the OIDC claims to be used in the claims query parameter of an authorization url.
