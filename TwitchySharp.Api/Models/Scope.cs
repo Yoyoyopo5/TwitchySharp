@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api;
@@ -9,12 +10,13 @@ namespace TwitchySharp.Api;
 /// You can use this constructor to create a <see cref="Scope"/> when a static definition is not provided.
 /// </summary>
 /// <param name="Value">The Twitch scope string (e.g. "bits:read")</param>
+[JsonConverter(typeof(ValueBackedEnumJsonConverter<Scope, string>))]
 public partial record Scope(string Value) : ValueBackedEnum<string>(Value);
 
 public static class ScopeExtensions
 {
     internal static string FormatScopes(this IEnumerable<Scope> scopes)
-        => string.Join("+", scopes.Select(s => s.Value));
+        => string.Join(' ', scopes.Select(s => s.Value)); // Spec says use "+", but does not accept URL encoded "%2B", it accepts "%20", however.
 
     /// <summary>
     /// Determines if the provided set of scopes contains at least one of the required scopes.
