@@ -93,7 +93,7 @@ public class Test_ImplicitGrantUrl
         Assert.Equal("token", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
         Assert.Equal(TestRedirectUri, query["redirect_uri"]);
-        Assert.Equal("channel:manage:polls+channel:read:polls", query["scope"]);
+        Assert.Equal("channel:manage:polls channel:read:polls", query["scope"]);
         Assert.Equal(TestState, query["state"]);
     }
 
@@ -126,7 +126,7 @@ public class Test_ImplicitGrantUrl
         Assert.Equal("id.twitch.tv", uri.Host);
         Assert.Equal(TestClientId, query["client_id"]);
         Assert.Equal(TestRedirectUri, query["redirect_uri"]);
-        Assert.Equal("channel:manage:polls+channel:read:polls+openid", query["scope"]);
+        Assert.Equal("channel:manage:polls channel:read:polls openid", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Equal(TestNonce, query["nonce"]);
 

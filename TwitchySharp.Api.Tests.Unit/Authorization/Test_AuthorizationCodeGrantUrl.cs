@@ -20,7 +20,7 @@ public class Test_AuthorizationCodeGrantUrl
         //     ?response_type=code
         //     &client_id=hof5gwx0su6owfnys0nyan9c87zr6t
         //     &redirect_uri=http://localhost:3000
-        //     &scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls
+        //     &scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls <-- we use space instead of "+" due to Uri.EscapeDataString behavior.
         //     &state=c3ab8aa609ea11e793ae92361f002671
 
         var url = new AuthorizationCodeGrantUrl
@@ -40,7 +40,7 @@ public class Test_AuthorizationCodeGrantUrl
         Assert.Equal("code", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
         Assert.Equal(TestRedirectUri, query["redirect_uri"]);
-        Assert.Equal("channel:manage:polls+channel:read:polls", query["scope"]);
+        Assert.Equal("channel:manage:polls channel:read:polls", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Null(query["force_verify"]);
         Assert.Null(query["nonce"]);
@@ -73,7 +73,7 @@ public class Test_AuthorizationCodeGrantUrl
         Assert.Equal("code", query["response_type"]);
         Assert.Equal(TestClientId, query["client_id"]);
         Assert.Equal(TestRedirectUri, query["redirect_uri"]);
-        Assert.Equal("channel:manage:polls+channel:read:polls+openid", query["scope"]);
+        Assert.Equal("channel:manage:polls channel:read:polls openid", query["scope"]);
         Assert.Equal(TestState, query["state"]);
         Assert.Equal(TestNonce, query["nonce"]);
     }
