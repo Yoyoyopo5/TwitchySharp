@@ -1,16 +1,17 @@
 ﻿using System;
+using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Contains information about a specific extension secret.
 /// </summary>
-public record ExtensionSecret
+public record ExtensionSecretDetails
 {
     /// <summary>
     /// The raw secret that you use with JWT encoding.
     /// </summary>
-    public required string Content { get; init; }
+    public required ExtensionSecret Content { get; init; }
     /// <summary>
     /// The date and time that you may begin using this secret to sign a JWT.
     /// </summary>
