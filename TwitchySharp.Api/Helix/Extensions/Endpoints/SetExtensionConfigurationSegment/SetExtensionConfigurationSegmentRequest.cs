@@ -28,13 +28,17 @@ public record SetExtensionConfigurationSegmentRequest
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = new TwitchIdentity.Extension(
+            ExtensionOwnerId,
+            Configuration.BroadcasterId,
+            Configuration.ExtensionId
+            )
     };
 
     /// <summary>
-    /// The extension identity used for JWT authentication.
+    /// The user id of the owner of the extension.
     /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
+    public required UserId ExtensionOwnerId { get; init; }
     public override object? ContentObject => Configuration;
 
     /// <summary>
