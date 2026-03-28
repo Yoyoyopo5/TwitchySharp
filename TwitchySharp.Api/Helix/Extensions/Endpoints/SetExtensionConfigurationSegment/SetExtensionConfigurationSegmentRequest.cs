@@ -93,7 +93,11 @@ public record SetExtensionConfigurationSegmentRequestData(ExtensionConfiguration
 /// Set configuration for the <see cref="ExtensionConfigurationSegmentType.Global"/> segment.
 /// </summary>
 public record SetExtensionConfigurationGlobalSegmentData()
-    : SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType.Global);
+    : SetExtensionConfigurationSegmentRequestData(ExtensionConfigurationSegmentType.Global)
+{
+    /// <inheritdoc cref="SetExtensionConfigurationSegmentRequestData.Segment"/>
+    public new ExtensionConfigurationSegmentType Segment => base.Segment;
+}
 
 /// <summary>
 /// Set configuration for the <see cref="ExtensionConfigurationSegmentType.Developer"/> segment.
@@ -105,6 +109,8 @@ public record SetExtensionConfigurationDeveloperSegmentData()
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
     public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
+    /// <inheritdoc cref="SetExtensionConfigurationSegmentRequestData.Segment"/>
+    public new ExtensionConfigurationSegmentType Segment => base.Segment;
 }
 
 /// <summary>
@@ -117,4 +123,6 @@ public record SetExtensionConfigurationBroadcasterSegmentData()
     /// The user id of the broadcaster to update extension configuration data for.
     /// </summary>
     public new required UserId BroadcasterId { get => base.BroadcasterId!.Value; init => base.BroadcasterId = value; }
+    /// <inheritdoc cref="SetExtensionConfigurationSegmentRequestData.Segment"/>
+    public new ExtensionConfigurationSegmentType Segment => base.Segment;
 }
