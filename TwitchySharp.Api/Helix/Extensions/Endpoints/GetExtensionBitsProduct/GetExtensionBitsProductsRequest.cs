@@ -1,5 +1,6 @@
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
@@ -21,6 +22,15 @@ public record GetExtensionBitsProductsRequest
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("should_include_all", ShouldIncludeAll?.ToString());
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.Client(ExtensionId)
+    };
+
+    /// <summary>
+    /// The client id of the extension to get bits products for.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// Determines whether to include disabled or expired Bits products in the response.

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <remarks>
 /// A transaction records the exchange of a currency (for example, Bits) for a digital product.
 /// <br/>
-/// Requires an app access token.
+/// Requires an app access token created by the extension client id.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-transactions">Get Extension Transactions</see> for more information.
 /// </remarks>
@@ -27,9 +27,17 @@ public record GetExtensionTransactionsRequest
             .Add("after", After?.ToString())
             .Add("id", TransactionIds?.Select(x => x.ToString()));
 
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.Client(ExtensionId)
+    };
+
     /// <summary>
     /// The id of the extension whose list of transactions you want to get.
     /// </summary>
+    /// <remarks>
+    /// This must be the same client id that created the app access token used in the request.
+    /// </remarks>
     public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
