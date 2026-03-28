@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
@@ -18,16 +18,25 @@ public record UserInfoRequest
     public override HttpMethod Method => HttpMethod.Get;
 
     /// <summary>
+    /// The id of the user to get claims information for.
+    /// </summary>
+    /// <remarks>
+    /// The user must have an access token with <see cref="Scope.OpenId"/>.
+    /// You may set this identity or manually configure the <see cref="AccessToken"/> to use.
+    /// </remarks>
+    public UserId? UserId { get; init; }
+
+    /// <summary>
     /// The user access token of the user to get claims information for.
     /// </summary>
     /// <remarks>
     /// Requires <see cref="Scope.OpenId"/>.
     /// </remarks>
-    public required UserAccessToken AccessToken { get; init; }
+    public UserAccessToken? AccessToken { get; init; }
 
     public TwitchRequestAuthorizationContext AuthorizationContext => new()
     {
-        Identity = TwitchIdentity.None.Instance,
+        Identity = UserId.HasValue ? new TwitchIdentity.User(UserId.Value) : TwitchIdentity.None.Instance,
         ValidScopes = ImmutableHashSet.Create(Scope.OpenId),
         AccessToken = AccessToken
     };
