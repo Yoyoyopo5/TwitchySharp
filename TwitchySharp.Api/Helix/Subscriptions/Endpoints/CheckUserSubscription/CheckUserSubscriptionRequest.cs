@@ -9,6 +9,10 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// </summary>
 /// <remarks>
 /// <para>
+/// Prefer using <see cref="GetBroadcasterSubscriptionsRequest"/> as this endpoint throws <see cref="TwitchApiException"/>
+/// with HTTP status code <c>404</c> if the user is not subscribed.
+/// </para>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserReadSubscriptions"/>.
 /// A Twitch extension may use an app access token if the broadcaster has granted <see cref="Scope.UserReadSubscriptions"/> from within the Twitch Extensions manager.
 /// </para>
