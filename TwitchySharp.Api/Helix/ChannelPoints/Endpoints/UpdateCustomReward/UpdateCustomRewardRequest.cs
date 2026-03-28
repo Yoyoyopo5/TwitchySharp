@@ -113,7 +113,7 @@ public record UpdateCustomRewardRequestData
     /// <summary>
     /// Determines whether to apply a cooldown period between redemptions.
     /// Set to <see langword="true"/> to apply a cooldown period.
-    /// The duration is specified by <see cref="GlobalCooldownSeconds"/>.
+    /// The duration is specified by <see cref="GlobalCooldown"/>.
     /// </summary>
     public bool? IsGlobalCooldownEnabled { get; init; }
     /// <summary>
@@ -122,7 +122,8 @@ public record UpdateCustomRewardRequestData
     /// The minimum value is 1 second; however, for it to be shown in the Twitch UI, the minimum value is 60 seconds.
     /// </summary>
     [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
-    public TimeSpan? GlobalCooldownSeconds { get; init; }
+    [JsonPropertyName("global_cooldown_seconds")]
+    public TimeSpan? GlobalCooldown { get; init; }
     /// <summary>
     /// Determines whether to pause the reward.
     /// Set to <see langword="true"/> to pause the reward. Viewers can't redeem paused rewards.
