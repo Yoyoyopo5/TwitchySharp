@@ -21,7 +21,7 @@ public record GetStreamMarkersRequest
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.ChannelManageBroadcast)
     };
     protected override HttpQueryParameters QueryParameters
@@ -33,9 +33,9 @@ public record GetStreamMarkersRequest
             .Add("after", After?.Value);
 
     /// <summary>
-    /// The user to get stream markers as (broadcaster or editor).
+    /// The id of the user to get stream markers as (broadcaster or editor).
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The query specifying which stream markers to retrieve.

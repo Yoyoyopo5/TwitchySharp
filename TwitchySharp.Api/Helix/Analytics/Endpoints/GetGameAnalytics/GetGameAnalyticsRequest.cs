@@ -24,7 +24,7 @@ public record GetGameAnalyticsRequest
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadGames)
     };
     protected override HttpQueryParameters QueryParameters
@@ -37,9 +37,9 @@ public record GetGameAnalyticsRequest
             .Add("after", After?.Value);
 
     /// <summary>
-    /// The user to get game analytics as.
+    /// The id of the user to get game analytics as.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The game's client ID.

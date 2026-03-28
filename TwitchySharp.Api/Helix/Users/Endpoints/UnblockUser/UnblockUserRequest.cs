@@ -24,7 +24,7 @@ public record UnblockUserRequest
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageBlockedUsers)
     };
     protected override HttpQueryParameters QueryParameters
@@ -32,9 +32,9 @@ public record UnblockUserRequest
             .Add("target_user_id", TargetUserId);
 
     /// <summary>
-    /// The user to unblock the target user as.
+    /// The id of the user to unblock the target user as.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The id of the user to remove from the broadcaster's list of blocked users.

@@ -24,7 +24,7 @@ public record GetExtensionAnalyticsRequest
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadExtensions)
     };
     protected override HttpQueryParameters QueryParameters
@@ -37,9 +37,9 @@ public record GetExtensionAnalyticsRequest
             .Add("after", After?.Value);
 
     /// <summary>
-    /// The user to get extension analytics as.
+    /// The id of the user to get extension analytics as.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The extension's client id.
