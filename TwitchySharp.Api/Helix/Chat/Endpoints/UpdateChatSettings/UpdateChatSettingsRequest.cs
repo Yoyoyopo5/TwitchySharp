@@ -90,12 +90,13 @@ public record UpdateChatSettingsRequestData
     /// The amount of time, in seconds, that messages are delayed before appearing in chat.
     /// Set only if <see cref="NonModeratorChatDelay"/> is <see langword="true"/>. Possible values are:
     /// <list type="bullet">
-    /// <item><c>2</c>  E2 second delay (recommended)</item>
-    /// <item><c>4</c>  E4 second delay</item>
-    /// <item><c>6</c>  E6 second delay</item>
+    /// <item><c>2</c> - 2 second delay (recommended)</item>
+    /// <item><c>4</c> - 4 second delay</item>
+    /// <item><c>6</c> - 6 second delay</item>
     /// </list>
     /// </summary>
-    public int? NonModeratorChatDelayDuration { get; init; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public TimeSpan? NonModeratorChatDelayDuration { get; init; }
 
     /// <summary>
     /// Determines whether the broadcaster limits how often users in the chat room are allowed to send messages.
