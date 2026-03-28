@@ -14,6 +14,8 @@ public abstract partial record AccessTokenDetails
         /// </summary>
         public new required ExtensionJsonWebToken AccessToken { get; init; }
         protected override IAccessToken BaseAccessToken => AccessToken;
+
+        protected override DateTimeOffset BaseExpiresAt => AccessToken.ToJsonWebToken().ValidTo;
     }
 }
 

@@ -20,7 +20,8 @@ public abstract partial record AccessTokenDetails
     /// <summary>
     /// The date and time when the access token expires.
     /// </summary>
-    public DateTimeOffset ExpiresAt { get; init; }
+    public DateTimeOffset ExpiresAt => BaseExpiresAt;
+    protected abstract DateTimeOffset BaseExpiresAt { get; }
 }
 
 public static partial class AccessTokenDetailsEnumerableExtensions
