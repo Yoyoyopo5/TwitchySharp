@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Net.Http;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -19,12 +20,15 @@ public record GetUserExtensionsRequest
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.UserEditBroadcast)
     };
 
     /// <summary>
-    /// The user to get extensions for.
+    /// The id of the user to get extensions for.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    /// <remarks>
+    /// This must be the same user that created the access token used in the request.
+    /// </remarks>
+    public required UserId UserId { get; init; }
 }

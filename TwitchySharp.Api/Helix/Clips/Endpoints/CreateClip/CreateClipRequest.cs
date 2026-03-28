@@ -38,7 +38,7 @@ public record CreateClipRequest
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ClipsEdit)
     };
     protected override HttpQueryParameters QueryParameters
@@ -48,12 +48,12 @@ public record CreateClipRequest
             .Add("duration", Duration?.TotalSeconds.ToString());
 
     /// <summary>
-    /// The user to create the clip as.
+    /// The id of the user to create the clip as.
     /// </summary>
     /// <remarks>
     /// This must be the same user that created the access token used in the request.
     /// </remarks>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to create a clip for.

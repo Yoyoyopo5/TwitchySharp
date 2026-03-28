@@ -23,7 +23,7 @@ public record BlockUserRequest
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageBlockedUsers)
     };
     protected override HttpQueryParameters QueryParameters
@@ -33,9 +33,9 @@ public record BlockUserRequest
             .Add("reason", Reason?.Value);
 
     /// <summary>
-    /// The user to block the target user as.
+    /// The id of the user to block the target user as.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The id of the user to block.

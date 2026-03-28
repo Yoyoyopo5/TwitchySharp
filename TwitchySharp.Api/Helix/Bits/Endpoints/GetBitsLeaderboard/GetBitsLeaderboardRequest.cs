@@ -22,7 +22,7 @@ public record GetBitsLeaderboardRequest
     public override HttpMethod Method => HttpMethod.Get;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.BitsRead)
     };
     protected override HttpQueryParameters QueryParameters
@@ -33,9 +33,9 @@ public record GetBitsLeaderboardRequest
             .Add("user_id", UserId);
 
     /// <summary>
-    /// The broadcaster to get the bits leaderboard for.
+    /// The user id of the broadcaster to get the bits leaderboard for.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId BroadcasterId { get; init; }
 
     /// <summary>
     /// The number of results (leaderboard entries) to return.
