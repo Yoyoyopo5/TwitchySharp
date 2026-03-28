@@ -26,13 +26,16 @@ public record CreateExtensionSecretRequest
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = new TwitchIdentity.Extension(
+            ExtensionOwnerId,
+            ExtensionId
+            )
     };
 
     /// <summary>
-    /// The extension identity used for JWT authentication.
+    /// The user id of the owner of the extension.
     /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
+    public required UserId ExtensionOwnerId { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)
