@@ -71,12 +71,12 @@ public record TwitchOidc
     public string? Nonce { get; init; }
     /// <summary>
     /// The email address of the user that authorized the app.
-    /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
+    /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.UserReadEmail"/> during authorization.
     /// </summary>
     public string? Email { get; init; }
     /// <summary>
     /// A Boolean value that indicates whether Twitch has verified the user’s email address. Is <see langword="true"/> if Twitch has verified the user’s email address.
-    /// Obtaining this requires <see cref="OidcClaim.EmailVerified"/> and <see cref="Scope.ReadUserEmail"/> during authorization.
+    /// Obtaining this requires <see cref="OidcClaim.EmailVerified"/> and <see cref="Scope.UserReadEmail"/> during authorization.
     /// </summary>
     public bool? EmailVerified { get; init; }
     /// <summary>
