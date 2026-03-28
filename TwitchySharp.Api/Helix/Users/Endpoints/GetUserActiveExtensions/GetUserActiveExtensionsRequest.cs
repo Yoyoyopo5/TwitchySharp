@@ -5,7 +5,7 @@ using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
-/// Gets the active extensions that the broadcaster has installed for each configuration.
+/// Gets the channel's extension slots, showing any currently active extensions.
 /// </summary>
 /// <remarks>
 /// <para>
