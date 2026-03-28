@@ -49,6 +49,9 @@ public record UpdateChannelStreamScheduleRequest
 /// <summary>
 /// Request parameters for a <see cref="UpdateChannelStreamScheduleRequest"/>.
 /// </summary>
+/// <remarks>
+/// Use <see cref="EnableVacationMode(DateTimeOffset, DateTimeOffset, TimeZoneInfo)"/> and <see cref="DisableVacationMode"/>.
+/// </remarks>
 public record UpdateChannelStreamScheduleRequestParameters
 {
     /// <summary>
