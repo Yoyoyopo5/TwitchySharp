@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -19,7 +20,7 @@ public record UpdateUserRequest
     public override HttpMethod Method => HttpMethod.Put;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserEdit)
     };
     protected override HttpQueryParameters QueryParameters
@@ -27,9 +28,12 @@ public record UpdateUserRequest
             .Add("description", Description);
 
     /// <summary>
-    /// The user to update.
+    /// The id of the user to update.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    /// <remarks>
+    /// This must be the same user that created the access token used for the request.
+    /// </remarks>
+    public required UserId UserId { get; init; }
 
     /// <summary>
     /// The string to update the channel's description to.

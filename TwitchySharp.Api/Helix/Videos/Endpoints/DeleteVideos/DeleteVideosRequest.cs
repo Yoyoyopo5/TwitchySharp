@@ -23,13 +23,13 @@ public record DeleteVideosRequest
     public override HttpMethod Method => HttpMethod.Delete;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = User,
+        Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVideos)
     };
     /// <summary>
-    /// The user identity of the broadcaster who owns the videos to delete.
+    /// The user id of the broadcaster who owns the videos to delete.
     /// </summary>
-    public required TwitchIdentity.User User { get; init; }
+    public required UserId UserId { get; init; }
 
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
