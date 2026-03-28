@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Authorization;
 /// <param name="UserId">
 /// The user id of the owner of the extension.
 /// </param>
-public record ExtensionJwtPayload(UserId UserId)
+public record ExtensionJwtPayload
 {
     /// <summary>
     /// When the JWT is set to expire. 
@@ -26,12 +26,12 @@ public record ExtensionJwtPayload(UserId UserId)
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    public UserId UserId { get; init; } = new(UserId);
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
     public string Role { get; } = "external";
-    public string? ChannelId { get; init; }
+    public UserId? ChannelId { get; init; }
     [JsonPropertyName("pubsub_perms")]
     public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
     {
@@ -47,13 +47,13 @@ public record ExtensionJwtPayload(UserId UserId)
     /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
-    public ExtensionJsonWebToken Sign(string extensionSecret, JsonSerializerOptions? serializerOptions = null)
+    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, JsonSerializerOptions? serializerOptions = null)
         => new(new JsonWebTokenHandler()
             .CreateToken(
                 JsonSerializer.Serialize(this, serializerOptions ?? JsonConfig.ApiOptions),
                 new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Convert.FromBase64String(extensionSecret)
+                        Convert.FromBase64String(extensionSecret.Value)
                     ),
                     "HS256"
             )));
