@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.JsonWebTokens;
+using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Helpers;
@@ -52,3 +53,17 @@ public readonly record struct UserAccessToken(string Value) : IAccessToken, IWra
 /// </remarks>
 [JsonConverter(typeof(WrapperJsonConverter<UserAccessToken, string>))]
 public readonly record struct ExtensionJsonWebToken(string Value) : IAccessToken, IWrapValue<string>;
+
+public static class ExtensionJsonWebTokenJwtExtension 
+{
+    /// <summary>
+    /// Read an <see cref="ExtensionJsonWebToken"/> as a <see cref="JsonWebToken"/>.
+    /// </summary>
+    /// <remarks>
+    /// Note that this does not validate the JWT or decrypt the payload if it is encrypted.
+    /// </remarks>
+    /// <param name="extensionJwt"></param>
+    /// <returns></returns>
+    public static JsonWebToken ToJsonWebToken(this ExtensionJsonWebToken extensionJwt)
+        => new JsonWebTokenHandler().ReadJsonWebToken(extensionJwt.Value);
+}
