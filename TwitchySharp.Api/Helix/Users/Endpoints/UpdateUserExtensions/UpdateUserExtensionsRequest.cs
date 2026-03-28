@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -38,6 +39,16 @@ public record UpdateUserExtensionsRequest
 
     // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
     // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
+    
+    // Okay, I've clarified the behavior:
+    // The dictionary format basically represents a channel's extension "slots".
+    // There are 3 slots for panel extensions, 1 for overlay, and 2 for component.
+    // You do not need to provide each one per request, only included slots are updated.
+    // You cannot new add slots, 200 OK is returned but the extension does not get activated.
+    // Responses include all slot configs and are the same as GetUserActiveExtensionsResponse.
+    // If you try to activate an extension that doesn't support the type, 200 OK is returned but config is not updated.
+    // This endpoint has a lot of "slient failures" where 200 OK is returned for requests that should be 400 Bad Request.
+    // Likewise, it acts more like a PATCH request than a PUT, where you can update individual slots without including the rest.
     public override object? ContentObject => new UpdateUserExtensionsRequestData(Extensions);
 
     /// <summary>
@@ -55,31 +66,20 @@ internal record UpdateUserExtensionsRequestData
     public UpdateUserExtensionsRequestData(ExtensionsConfiguration extensions)
         => Data = new UpdateUserExtensionsMaps()
         {
-            Panel = extensions.PanelExtensions?.Extensions
-                .Select(
-                (extension, index) => new KeyValuePair<string, UserExtensionUpdate>(
-                    (index + 1).ToString(),
-                    extension.ToExtensionUpdate()
-                    )
-                ).ToImmutableDictionary(),
-            Overlay = extensions.OverlayExtensions?.Extensions
-                .Select(
-                (extension, index) => new KeyValuePair<string, UserExtensionUpdate>(
-                    (index + 1).ToString(),
-                    extension.ToExtensionUpdate()
-                    )
-                ).ToImmutableDictionary(),
-            Component = extensions.ComponentExtensions?.Extensions
-                .Select(
-                (extension, index) => new KeyValuePair<string, UserComponentExtensionUpdate>(
-                    (index + 1).ToString(),
-                    extension.ToExtensionUpdate()
-                    )
-                ).ToImmutableDictionary()
+            Panel = ConvertToNumberedDict(extensions.PanelExtensions),
+            Overlay = ConvertToNumberedDict(extensions.OverlayExtensions),
+            Component = ConvertToNumberedDict(extensions.ComponentExtensions)
+        };
+
+    private static ImmutableDictionary<string, T>? ConvertToNumberedDict<T>(ImmutableArray<T?> array)
+        => new Dictionary<string, T>(array.OfType<T>().Select((data, index) => new KeyValuePair<string, T>(index.ToString(), data)))
+            .ToImmutableDictionary() switch
+        {
+            { Count: 0 } => null,
+            { } dict => dict 
         };
 }
 
-# region INTERNAL_USE
 /// <summary>
 /// Used to properly serialize a <see cref="UpdateUserExtensionsRequest"/>.
 /// </summary>
@@ -88,140 +88,49 @@ internal record UpdateUserExtensionsMaps
     /// <summary>
     /// The panel extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UserExtensionUpdate>? Panel { get; init; }
+    public IReadOnlyDictionary<string, UpdateExtensionParameters>? Panel { get; init; }
     /// <summary>
     /// The overlay extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UserExtensionUpdate>? Overlay { get; init; }
+    public IReadOnlyDictionary<string, UpdateExtensionParameters>? Overlay { get; init; }
     /// <summary>
     /// The component extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UserComponentExtensionUpdate>? Component { get; init; }
+    public IReadOnlyDictionary<string, UpdateComponentExtensionParameters>? Component { get; init; }
 }
 
 /// <summary>
-/// Used to get a unique signature for an extension.
-/// Includes both the extension id and version.
+/// Contains information used to update a broadcaster's active extensions.
 /// </summary>
-/// <param name="Id">The id of the extension.</param>
-/// <param name="Version">The version of the extension.</param>
-internal readonly record struct ExtensionIdentifier(ExtensionId Id, ExtensionVersion Version);
-
-/// <summary>
-/// Used to serialize an extension configuration.
-/// </summary>
-/// /// <param name="Id">The id of the extension.</param>
-/// <param name="Version">The version of the extension.</param>
-public record UserExtensionUpdate(ExtensionId Id, ExtensionVersion Version)
-    : UpdateExtensionParameters();
-
-/// <summary>
-/// Used to serialize an extension configuration.
-/// </summary>
-/// /// <param name="Id">The id of the extension.</param>
-/// <param name="Version">The version of the extension.</param>
-public record UserComponentExtensionUpdate(ExtensionId Id, ExtensionVersion Version)
-    : UpdateComponentExtensionParameters();
-
-internal static class InstalledExtensionExtensions
-{
-    /// <summary>
-    /// Creates an <see cref="ExtensionIdentifier"/> for an <see cref="InstalledExtension"/> as returned by <see cref="GetUserExtensionsRequest"/>.
-    /// </summary>
-    /// <param name="extension">The extension to create an indentifier for.</param>
-    public static ExtensionIdentifier ToIdentifier(this InstalledExtension extension)
-        => new(extension.Id, extension.Version);
-}
-
-internal static class KeyValuePairExtensions
-{
-    /// <summary>
-    /// Converts a consumer-created extension configuration into a the format Twitch API expects.
-    /// </summary>
-    public static UserExtensionUpdate ToExtensionUpdate(this KeyValuePair<ExtensionIdentifier, UpdateExtensionParameters> extensionConfig)
-        => new(extensionConfig.Key.Id, extensionConfig.Key.Version)
-        {
-            Active = extensionConfig.Value.Active
-        };
-
-    /// <summary>
-    /// Converts a consumer-created extension configuration into a the format Twitch API expects.
-    /// </summary>
-    public static UserComponentExtensionUpdate ToExtensionUpdate(this KeyValuePair<ExtensionIdentifier, UpdateComponentExtensionParameters> extensionConfig)
-        => new(extensionConfig.Key.Id, extensionConfig.Key.Version)
-        {
-            Active = extensionConfig.Value.Active,
-            X = extensionConfig.Value.X,
-            Y = extensionConfig.Value.Y
-        };
-}
-
-# endregion
-
-/// <summary>
-/// Contains information used to update a broadcaster's extensions.
-/// </summary>
+/// <remarks>
+/// Each extension type has a specific amount of slots.
+/// </remarks>
 public record ExtensionsConfiguration
 {
     /// <summary>
-    /// The panel extensions to update.
+    /// The panel extension slots to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? PanelExtensions { get; init; }
+    /// <remarks>
+    /// There are 3 panel extension slots.
+    /// </remarks>
+    public ImmutableArray<UpdateExtensionParameters?> PanelExtensions { get; init; }
+        = new UpdateExtensionParameters?[3].ToImmutableArray();
     /// <summary>
-    /// The overlay extensions to update.
+    /// The overlay extension slots to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateExtensionParameters>? OverlayExtensions { get; init; }
+    /// <remarks>
+    /// There is 1 overlay extension slot.
+    /// </remarks>
+    public ImmutableArray<UpdateExtensionParameters?> OverlayExtensions { get; init; }
+        = new UpdateExtensionParameters?[1].ToImmutableArray();
     /// <summary>
-    /// The component extensions to update.
+    /// The component extension slots to update.
     /// </summary>
-    public ExtensionsConfigurationType<UpdateComponentExtensionParameters>? ComponentExtensions { get; init; }
-}
-
-/// <summary>
-/// Immutable container for configurations of a specific type of extension.
-/// </summary>
-/// <typeparam name="T">The type of extension configuration.</typeparam>
-public record ExtensionsConfigurationType<T>
-    where T : UpdateExtensionParameters
-{
-    private readonly ImmutableDictionary<ExtensionIdentifier, T> _extensions;
-    /// <summary>
-    /// The extension identifiers and their associated configurations.
-    /// </summary>
-    internal IReadOnlyDictionary<ExtensionIdentifier, T> Extensions => _extensions;
-    /// <summary>
-    /// Creates an empty set of configurations.
-    /// </summary>
-    public ExtensionsConfigurationType()
-        => _extensions = ImmutableDictionary<ExtensionIdentifier, T>.Empty;
-    /// <summary>
-    /// For immutability.
-    /// </summary>
-    /// <param name="extensions">The new set of configurations to pass to the next instance.</param>
-    private ExtensionsConfigurationType(ImmutableDictionary<ExtensionIdentifier, T> extensions)
-        => _extensions = extensions;
-
-    /// <summary>
-    /// Sets the configuration for a specific extension.
-    /// </summary>
-    /// <param name="extensionId">The id of the extension.</param>
-    /// <param name="extensionVersion">The version of the extension.</param>
-    /// <param name="config">The configuration to update the extension to.</param>
-    /// <returns>A new instance that includes the updated configuration.</returns>
-    public ExtensionsConfigurationType<T> ConfigureExtension(ExtensionId extensionId, ExtensionVersion extensionVersion, T config)
-        => new(_extensions.SetItem(new ExtensionIdentifier(extensionId, extensionVersion), config));
-
-    /// <summary>
-    /// <inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)"/>
-    /// </summary>
-    /// <param name="installedExtension">
-    /// The extension to configure. 
-    /// This is returned from a <see cref="GetUserExtensionsRequest"/>.
-    /// </param>
-    /// <param name="config"><inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)" path="/param[@name='config']"/></param>
-    /// <returns><inheritdoc cref="ConfigureExtension(ExtensionId, ExtensionVersion, T)"/></returns>
-    public ExtensionsConfigurationType<T> ConfigureExtension(InstalledExtension installedExtension, T config)
-        => new(_extensions.SetItem(installedExtension.ToIdentifier(), config));
+    /// <remarks>
+    /// There are 2 component extension slots.
+    /// </remarks>
+    public ImmutableArray<UpdateComponentExtensionParameters?> ComponentExtensions { get; init; }
+        = new UpdateComponentExtensionParameters?[2].ToImmutableArray();
 }
 
 /// <summary>
@@ -230,9 +139,47 @@ public record ExtensionsConfigurationType<T>
 public record UpdateExtensionParameters
 {
     /// <summary>
-    /// Determines the extensionÅfs activation state
+    /// Determines the status to set the extension slot to.
     /// </summary>
-    public required bool Active { get; init; }
+    /// <remarks>
+    /// <para>
+    /// If <see langword="true"/>, activates an extension in the slot.
+    /// The <see cref="Id"/> and <see cref="Version"/> must also be set,
+    /// and the extension must be installed on the broadcaster's channel.
+    /// </para>
+    /// <para>
+    /// If <see langword="false"/>, deactivates any extension that is currently in the slot, freeing it.
+    /// The <see cref="Id"/> and <see cref="Version"/> do not need to be set.
+    /// </para>
+    /// </remarks>
+    public bool Active { get; init; } = false;
+    /// <summary>
+    /// The id of the extension to activate.
+    /// </summary>
+    public ExtensionId? Id { get; init; }
+    /// <summary>
+    /// The version of the extension to activate.
+    /// </summary>
+    public ExtensionVersion? Version { get; init; }
+
+    public static UpdateExtensionParameters ActivateSlot(ExtensionId extensionId, ExtensionVersion extensionVersion)
+        => new()
+        {
+            Active = true,
+            Id = extensionId,
+            Version = extensionVersion
+        };
+
+    public static UpdateExtensionParameters ActivateSlot(InstalledExtension extension)
+        => new()
+        {
+            Active = true,
+            Id = extension.Id,
+            Version = extension.Version
+        };
+
+    public static UpdateExtensionParameters DeactivateSlot()
+        => new();
 }
 
 /// <summary>
@@ -249,4 +196,30 @@ public record UpdateComponentExtensionParameters
     /// The y- coordinate of the extension.
     /// </summary>
     public int? Y { get; init; }
+
+    public new static UpdateComponentExtensionParameters ActivateSlot(ExtensionId extensionId, ExtensionVersion extensionVersion)
+        => new()
+        {
+            Active = true,
+            Id = extensionId,
+            Version = extensionVersion
+        };
+
+    public new static UpdateComponentExtensionParameters ActivateSlot(InstalledExtension extension)
+        => new()
+        {
+            Active = true,
+            Id = extension.Id,
+            Version = extension.Version
+        };
+
+    public new static UpdateComponentExtensionParameters DeactivateSlot()
+        => new();
+
+    public UpdateComponentExtensionParameters WithPosition(int x, int y)
+        => this with
+        {
+            X = x,
+            Y = y
+        };
 }

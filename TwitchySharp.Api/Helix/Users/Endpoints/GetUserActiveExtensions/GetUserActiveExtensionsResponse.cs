@@ -3,7 +3,7 @@
 public record GetUserActiveExtensionsResponse
 {
     /// <summary>
-    /// The active extensions that the broadcaster has installed.
+    /// The channel's extension slots.
     /// </summary>
     public required UserActiveExtensions Data { get; init; }
 }
