@@ -12,5 +12,5 @@ public record ExtensionSecretsVersion
     /// <summary>
     /// The list of secrets.
     /// </summary>
-    public required ExtensionSecret[] Secrets { get; init; }
+    public required ExtensionSecretDetails[] Secrets { get; init; }
 }
