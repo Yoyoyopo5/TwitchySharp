@@ -28,6 +28,10 @@ public abstract partial record AccessTokenDetails
         /// The scopes present on this access token.
         /// </summary>
         public IReadOnlySet<Scope> Scopes { get; init; } = ImmutableHashSet<Scope>.Empty;
+
+        /// <inheritdoc cref="AccessTokenDetails.ExpiresAt"/>
+        public new DateTimeOffset ExpiresAt { get; init; }
+        protected override DateTimeOffset BaseExpiresAt => ExpiresAt;
     }
 }
 
