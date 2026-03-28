@@ -21,6 +21,15 @@ public record UpdateExtensionBitsProductRequest
     protected override string Path => "/bits/extensions";
     public override HttpMethod Method => HttpMethod.Put;
     public override object? ContentObject => Product;
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    {
+        Identity = new TwitchIdentity.Client(ExtensionId)
+    };
+
+    /// <summary>
+    /// The client id of the extension to update bits products for.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// The product data to update.
