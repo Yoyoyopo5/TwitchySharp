@@ -1,4 +1,6 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using System;
+using System.Text.Json.Serialization;
+using TwitchySharp.Helpers.JsonConverters;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
@@ -27,7 +29,8 @@ public record ChatSettings
     /// The length of time, in <b>minutes</b>, that users must follow the broadcaster before being able to participate in the chat room. 
     /// Is <see langword="null"/> if <see cref="FollowerMode"/> is <see langword="false"/>.
     /// </summary>
-    public int? FollowerModeDuration { get; init; }
+    [JsonConverter(typeof(MinutesTimeSpanJsonConverter))]
+    public TimeSpan? FollowerModeDuration { get; init; }
     /// <summary>
     /// The moderator’s user id that was used in the request. 
     /// This property is <see langword="null"/> if the request specifies a user access token that includes <see cref="Scope.ModeratorReadChatSettings"/>.
@@ -42,12 +45,13 @@ public record ChatSettings
     /// </summary>
     public bool? NonModeratorChatDelay { get; init; }
     /// <summary>
-    /// The amount of time, in <b>seconds</b>, that messages are delayed before appearing in chat. 
+    /// The amount of time that messages are delayed before appearing in chat. 
     /// Is <see langword="null"/> if <see cref="NonModeratorChatDelay"/> is <see langword="false"/>.
     /// <br/>
     /// This property is <see langword="null"/> unless the request specifies a user access token that includes the <see cref="Scope.ModeratorReadChatSettings"/> scope and the user in the moderator_id query parameter is one of the broadcaster’s moderators.
     /// </summary>
-    public int? NonModeratorChatDelayDuration { get; init; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public TimeSpan? NonModeratorChatDelayDuration { get; init; }
     /// <summary>
     /// Determines whether the broadcaster limits how often users in the chat room are allowed to send messages.
     /// Is <see langword="true"/> if the broadcaster applies a delay; otherwise, <see langword="false"/>. 
@@ -55,10 +59,11 @@ public record ChatSettings
     /// </summary>
     public required bool SlowMode { get; init; }
     /// <summary>
-    /// The amount of time, in <b>seconds</b>, that users must wait between sending messages. 
+    /// The amount of time that users must wait between sending messages. 
     /// Is <see langword="null"/> if <see cref="SlowMode"/> is <see langword="false"/>.
     /// </summary>
-    public int? SlowModeWaitTime { get; init; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public TimeSpan? SlowModeWaitTime { get; init; }
     /// <summary>
     /// Determines whether only users that subscribe to the broadcaster’s channel may talk in the chat room.
     /// Is <see langword="true"/> if the broadcaster restricts the chat room to subscribers only; otherwise, <see langword="false"/>.
