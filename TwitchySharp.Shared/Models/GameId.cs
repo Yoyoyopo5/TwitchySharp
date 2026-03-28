@@ -15,6 +15,8 @@ namespace TwitchySharp.Shared.Models;
 [JsonConverter(typeof(WrapperJsonConverter<GameId, string>))]
 public readonly record struct GameId(string Value) : IWrapValue<string>
 {
+    public static GameId None { get; } = new(string.Empty);
+
     public static implicit operator string(GameId id)
         => id.Value;
     public override string ToString()
