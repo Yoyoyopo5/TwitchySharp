@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Api.Authorizat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken", "TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken\TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken.csproj", "{BFE2B3B8-DECC-4BE2-8E56-3A289DBCB0E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchySharp.Helpers.Generators", "TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj", "{4E7A450E-1835-4101-8E17-9239EE13C95C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -335,6 +337,18 @@ Global
 		{BFE2B3B8-DECC-4BE2-8E56-3A289DBCB0E8}.Release|x64.Build.0 = Release|Any CPU
 		{BFE2B3B8-DECC-4BE2-8E56-3A289DBCB0E8}.Release|x86.ActiveCfg = Release|Any CPU
 		{BFE2B3B8-DECC-4BE2-8E56-3A289DBCB0E8}.Release|x86.Build.0 = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|x64.Build.0 = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|x64.Build.0 = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E7A450E-1835-4101-8E17-9239EE13C95C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
