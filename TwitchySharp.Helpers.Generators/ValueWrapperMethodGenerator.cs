@@ -13,6 +13,14 @@ public static class ValueWrapperConstants
 {
     public const string FULLY_QUALIFIED_WRAPPER_INTERFACE_NAME = "TwitchySharp.Helpers.IWrapValue`1";
     public const string WRAPPER_INTERFACE_NAME = "IWrapValue";
+    public const string JSON_CONVERTER_ATTRIBUTE_NAME = "System.Text.Json.Serialization.JsonConverterAttribute";
+}
+
+internal record ValueWrapperGeneratorState
+{
+    public INamedTypeSymbol? WrapperTypeSymbol { get; init; }
+    public INamedTypeSymbol? InterfaceTypeSymbol { get; init; }
+    public INamedTypeSymbol? JsonConverterAttributeSymbol { get; init; }
 }
 
 [Generator]
@@ -34,12 +42,28 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
         IncrementalValueProvider<INamedTypeSymbol?> wrapperInterfaceProvider = context.CompilationProvider
             .Select(static (compilation, ct) => compilation.GetTypeByMetadataName(ValueWrapperConstants.FULLY_QUALIFIED_WRAPPER_INTERFACE_NAME));
 
+        IncrementalValueProvider<INamedTypeSymbol?> jsonConverterAttributeProvider = context.CompilationProvider
+            .Select(static (compilation, ct) => compilation.GetTypeByMetadataName(ValueWrapperConstants.JSON_CONVERTER_ATTRIBUTE_NAME));
+
         IncrementalValuesProvider<ValueWrapperDefinition?> provider = context.SyntaxProvider.CreateSyntaxProvider(
             predicate: GeneratorExtensions.IsLikelyWrapperDeclaration,
             transform: GeneratorExtensions.GetValueWrapperSymbolOrDefault
             )
             .Where(m => m is not null)
+            .Select(static (ctx, ct) => new ValueWrapperGeneratorState()
+            {
+                WrapperTypeSymbol = ctx
+            })
             .Combine(wrapperInterfaceProvider)
+            .Select(static (ctx, ct) => ctx.Left with
+            {
+                InterfaceTypeSymbol = ctx.Right
+            })
+            .Combine(jsonConverterAttributeProvider)
+            .Select(static (ctx, ct) => ctx.Left with
+            {
+                JsonConverterAttributeSymbol = ctx.Right
+            })
             .SelectValueWrapper();
 
         context.RegisterSourceOutput(provider, (ctx, w) =>
@@ -112,7 +136,7 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
     }
 }
 
-internal record ValueWrapperDefinition(INamedTypeSymbol TypeSymbol, ITypeSymbol WrappedType): ClassDefiniton(TypeSymbol)
+internal record ValueWrapperDefinition(INamedTypeSymbol TypeSymbol, ITypeSymbol WrappedType, INamedTypeSymbol? JsonConverterAttributeType): ClassDefiniton(TypeSymbol)
 {
     public string? WrappedValueParameterName => Syntax.FirstOrDefault().ParameterList switch
     {
@@ -136,6 +160,8 @@ internal record ValueWrapperDefinition(INamedTypeSymbol TypeSymbol, ITypeSymbol 
     public IMethodSymbol? ToStringOverride { get; } = TypeSymbol.GetMembers("ToString")
         .OfType<IMethodSymbol>()
         .FirstOrDefault(m => m.Parameters.Length == 0 && m.IsOverride);
+    public AttributeData? JsonConverterAttribute { get; } = TypeSymbol.GetAttributes()
+        .FirstOrDefault(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, JsonConverterAttributeType));
 }
 
 internal static class GeneratorExtensions
@@ -155,17 +181,16 @@ internal static class GeneratorExtensions
         return symbol;
     }
 
-    public static IncrementalValuesProvider<ValueWrapperDefinition?> SelectValueWrapper(this IncrementalValuesProvider<(INamedTypeSymbol?, INamedTypeSymbol?)> provider)
+    public static IncrementalValuesProvider<ValueWrapperDefinition?> SelectValueWrapper(this IncrementalValuesProvider<ValueWrapperGeneratorState> provider)
         => provider.Select((ctx, ct) =>
         {
-            var (wrapperDeclaration, interfaceDeclaration) = ctx;
-            if (wrapperDeclaration is null || interfaceDeclaration is null)
+            if (ctx.WrapperTypeSymbol is null || ctx.InterfaceTypeSymbol is null)
                 return null;
 
-            return wrapperDeclaration.ToValueWrapperOrDefault(interfaceDeclaration, ct);
+            return ctx.WrapperTypeSymbol.ToValueWrapperOrDefault(ctx.InterfaceTypeSymbol, ctx.JsonConverterAttributeSymbol, ct);
         });
 
-    private static ValueWrapperDefinition? ToValueWrapperOrDefault(this INamedTypeSymbol wrapperDeclaration, INamedTypeSymbol interfaceDeclaration, CancellationToken ct)
+    private static ValueWrapperDefinition? ToValueWrapperOrDefault(this INamedTypeSymbol wrapperDeclaration, INamedTypeSymbol interfaceDeclaration, INamedTypeSymbol? jsonConverterAttributeTypeSymbol, CancellationToken ct)
     {
         if (wrapperDeclaration.AllInterfaces.FirstOrDefault(i => SymbolEqualityComparer.Default.Equals(i.ConstructedFrom, interfaceDeclaration)) is not INamedTypeSymbol interfaceSymbol)
             return null;
@@ -180,7 +205,7 @@ internal static class GeneratorExtensions
                 .Select(r => r.GetSyntax(ct))
                 .OfType<TypeDeclarationSyntax>();
 
-        return new ValueWrapperDefinition(wrapperDeclaration, wrappedValueType);
+        return new ValueWrapperDefinition(wrapperDeclaration, wrappedValueType, jsonConverterAttributeTypeSymbol);
     }
 
     public static IReadOnlyList<INamedTypeSymbol> GetContainingTypes(this INamedTypeSymbol symbol)
