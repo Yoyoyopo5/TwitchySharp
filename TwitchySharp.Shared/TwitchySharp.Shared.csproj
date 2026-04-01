@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj" 
+					  OutputItemType="Analyzer"
+					  ReferenceOutputAssembly="false"
+					  />
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
   </ItemGroup>
 

@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+	<TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
+	<EditorConfigFiles Remove="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -17,18 +17,22 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <None Include="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
+	<None Include="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
+	<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
+	<PackageReference Include="System.Text.Json" Version="8.0.5" />
+	<PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
-    <ProjectReference Include="..\TwitchySharp.Shared\TwitchySharp.Shared.csproj" />
+	<ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
+	<ProjectReference Include="..\TwitchySharp.Shared\TwitchySharp.Shared.csproj" />
+	<ProjectReference Include="..\TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj"
+					OutputItemType="Analyzer"
+					ReferenceOutputAssembly="false"
+					/>
   </ItemGroup>
 
 </Project>
