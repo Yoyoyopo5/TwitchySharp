@@ -39,11 +39,12 @@ internal record ClassDefiniton(INamedTypeSymbol TypeSymbol)
         builder.Append(Accessibility.ToCodeString()).Append(" ");
         if (IsReadOnly) builder.Append("readonly ");
         if (IsAbstract && !IsStatic) builder.Append("abstract ");
-        if (IsSealed && !IsStatic) builder.Append("sealed ");
+        if (IsSealed && !IsStatic && TypeKind != TypeKind.Struct) builder.Append("sealed ");
         if (IsStatic) builder.Append("static ");
         builder.Append("partial ");
         if (IsRecord) builder.Append("record ");
         builder.Append(TypeKind.ToCodeString());
+        builder.Append(" ");
         builder.Append(TypeName);
         return builder.ToString();
     }
