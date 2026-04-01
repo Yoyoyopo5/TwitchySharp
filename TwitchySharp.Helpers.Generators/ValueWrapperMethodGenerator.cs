@@ -141,15 +141,15 @@ internal record ValueWrapperDefinition(INamedTypeSymbol TypeSymbol, ITypeSymbol 
 internal static class GeneratorExtensions
 {
     public static bool IsLikelyWrapperDeclaration(this SyntaxNode node, CancellationToken ct)
-        => node is StructDeclarationSyntax { BaseList: not null } declaration
+        => node is TypeDeclarationSyntax { BaseList: not null } declaration
             && declaration.BaseList.Types.Any(static t => t.ToString().Contains(ValueWrapperConstants.WRAPPER_INTERFACE_NAME));
 
     public static INamedTypeSymbol? GetValueWrapperSymbolOrDefault(this GeneratorSyntaxContext context, CancellationToken ct)
     {
-        if (context.Node is not StructDeclarationSyntax structDeclaration)
+        if (context.Node is not TypeDeclarationSyntax typeDeclaration)
             return null;
 
-        if (context.SemanticModel.GetDeclaredSymbol(structDeclaration, ct) is not INamedTypeSymbol symbol)
+        if (context.SemanticModel.GetDeclaredSymbol(typeDeclaration, ct) is not INamedTypeSymbol { TypeKind: TypeKind.Struct } symbol)
             return null;
 
         return symbol;
@@ -176,9 +176,9 @@ internal static class GeneratorExtensions
         if (interfaceSymbol.TypeArguments.FirstOrDefault() is not ITypeSymbol wrappedValueType)
             return null;
 
-        IEnumerable<StructDeclarationSyntax> wrapperDeclarationSyntaxNodes = wrapperDeclaration.DeclaringSyntaxReferences
+        IEnumerable<TypeDeclarationSyntax> wrapperDeclarationSyntaxNodes = wrapperDeclaration.DeclaringSyntaxReferences
                 .Select(r => r.GetSyntax(ct))
-                .OfType<StructDeclarationSyntax>();
+                .OfType<TypeDeclarationSyntax>();
 
         return new ValueWrapperDefinition(wrapperDeclaration, wrappedValueType);
     }
