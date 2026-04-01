@@ -108,7 +108,7 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
                 sourceWriter.WriteLine("}");
             }
 
-            ctx.AddSource($"{wrapper.TypeName}_ConversionMethods.g.cs", sourceWriter.ToString());
+            ctx.AddSource($"{wrapper.TypeName}_ConversionMethods.g.cs", sw.ToString());
         });
     }
 }
