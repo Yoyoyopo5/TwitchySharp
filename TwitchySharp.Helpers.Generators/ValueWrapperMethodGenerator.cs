@@ -49,7 +49,7 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
 
             if (wrapper.ImplicitConversionOperator is not null
                 && wrapper.ToStringOverride is not null
-                && wrapper.ValueProperty is not null)
+                && (wrapper.ValueProperty is not null || wrapper.WrappedValueParameterName == "Value"))
                 return;
 
             if (!wrapper.IsPartial)
