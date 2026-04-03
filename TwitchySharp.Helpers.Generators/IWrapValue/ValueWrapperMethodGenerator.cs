@@ -1,7 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.CodeDom.Compiler;
+using Scriban;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,13 +15,7 @@ public static class ValueWrapperConstants
     public const string FULLY_QUALIFIED_WRAPPER_INTERFACE_NAME = "TwitchySharp.Helpers.IWrapValue`1";
     public const string WRAPPER_INTERFACE_NAME = "IWrapValue";
     public const string JSON_CONVERTER_ATTRIBUTE_NAME = "System.Text.Json.Serialization.JsonConverterAttribute";
-}
-
-internal record ValueWrapperGeneratorState
-{
-    public INamedTypeSymbol? WrapperTypeSymbol { get; init; }
-    public INamedTypeSymbol? InterfaceTypeSymbol { get; init; }
-    public INamedTypeSymbol? JsonConverterAttributeSymbol { get; init; }
+    public const string SCRIBAN_TEMPLATE_FILENAME = "TwitchySharp.Helpers.Generators.IWrapValue.ValueWrapper.scriban";
 }
 
 [Generator]
@@ -29,13 +24,35 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
 # pragma warning disable RS2008 // We can work on this later if we want a shipped ruleset.
     private static readonly DiagnosticDescriptor PartialModifierRequiredWarning = new(
         id: "VWG001",
-        title: "The struct must be partial",
+        title: "The type must be partial",
         messageFormat: "Make '{0}' partial to enable generation of ToString and implicit operator methods",
         category: "Usage",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true
         );
+
+    private static readonly DiagnosticDescriptor JsonConstructionMethodMissingWarning = new(
+        id: "VWG002",
+        title: "A method of creating the type from the underlying value must be present",
+        messageFormat: "To enable a generated JsonConverter, '{0}' must have a public constructor taking a single parameter of the wrapped type or a Value property with an initializer setter",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true
+        );
 # pragma warning restore RS2008
+
+    private readonly static Lazy<Template> _template = new(() =>
+    {
+        if (typeof(ValueWrapperMethodGenerator).Assembly.GetManifestResourceStream(ValueWrapperConstants.SCRIBAN_TEMPLATE_FILENAME) is not Stream templateStream)
+            throw new FileNotFoundException($"Scriban template file for {nameof(ValueWrapperMethodGenerator)} was not found.");
+        string templateString;
+        using (StreamReader reader = new(templateStream))
+        {
+            templateString = reader.ReadToEnd();
+        }
+        return Template.Parse(templateString);
+    });
+    private static Template ValueWrapperTemplate => _template.Value;
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -64,16 +81,30 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
             {
                 JsonConverterAttributeSymbol = ctx.Right
             })
-            .SelectValueWrapper();
+            .SelectValueWrapper()
+            .Select((x, _) =>
+            {
+                return x;
+            });
 
         context.RegisterSourceOutput(provider, (ctx, w) =>
         {
             if (w is not ValueWrapperDefinition wrapper)
                 return;
 
-            if (wrapper.ImplicitConversionOperator is not null
-                && wrapper.ToStringOverride is not null
-                && (wrapper.ValueProperty is not null || wrapper.WrappedValueParameterName == "Value"))
+            bool addValueProperty = wrapper.ValueProperty is null && wrapper.WrappedValueParameterName != "Value";
+            bool addImplicitOperator = wrapper.ImplicitConversionOperator is null;
+            bool addToStringOverride = wrapper.ToStringOverride is null;
+            bool addJsonConverter = wrapper.JsonConverterAttribute is null && wrapper.JsonConverterAttributeType is not null;
+            ReadOnlySpan<bool> generateMembers = stackalloc bool[] { addValueProperty, addImplicitOperator, addToStringOverride, addJsonConverter };
+
+            static bool anyTrue(ReadOnlySpan<bool> flags)
+            {
+                foreach (bool flag in flags)
+                    if (flag) return true;
+                return false;
+            }
+            if (!anyTrue(generateMembers))
                 return;
 
             if (!wrapper.IsPartial)
@@ -90,78 +121,53 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
             foreach (ClassDefiniton parent in wrapper.Parents)
             {
                 if (!parent.IsPartial)
+                {
                     ctx.ReportDiagnostic(Diagnostic.Create(
                         PartialModifierRequiredWarning,
                         parent.Location,
                         parent.TypeName
                         ));
+                    return;
+                }
             }
 
-            using StringWriter sw = new();
-            using IndentedTextWriter sourceWriter = new(sw, "    ");
+            ValueWrapperDefinition.JsonConstructionMethod constructionMethod = wrapper.GetJsonConstructionMethod();
 
-            sourceWriter.WriteLine("// <auto-generated/>");
-            sourceWriter.WriteLine("#nullable enable");
-            sourceWriter.WriteLine();
-            sourceWriter.WriteLine($"namespace {wrapper.Namespace};");
-            foreach (ClassDefiniton parent in wrapper.Parents)
+            if (addJsonConverter && constructionMethod == ValueWrapperDefinition.JsonConstructionMethod.None)
             {
-                sourceWriter.WriteLine(parent.ExtendPartial());
-                sourceWriter.WriteLine("{");
-                sourceWriter.Indent++;
+                if (wrapper.Location.IsInSource)
+                    ctx.ReportDiagnostic(Diagnostic.Create(
+                        JsonConstructionMethodMissingWarning,
+                        wrapper.Location,
+                        wrapper.TypeName
+                        ));
+                addJsonConverter = false;
             }
-            sourceWriter.WriteLine(wrapper.ExtendPartial());
-            sourceWriter.WriteLine("{");
-            sourceWriter.Indent++;
-            if (wrapper.ValueProperty is null && wrapper.WrappedValueParameterName != "Value")
-                sourceWriter.WriteLine(wrapper.WrappedValueParameterName switch
+
+            string generatedSource = ValueWrapperTemplate.Render(new
+            {
+                wrapper.Namespace,
+                wrapper.TypeName,
+                IsStruct = wrapper.TypeKind == TypeKind.Struct || wrapper.TypeKind == TypeKind.Structure,
+                Parents = wrapper.Parents.Select(p => p.ExtendPartial()).ToArray(),
+                WrappedTypeName = wrapper.WrappedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                PartialDefinition = wrapper.ExtendPartial(),
+                AddJsonConverter = addJsonConverter,
+                AddValueProperty = wrapper.ValueProperty is null && wrapper.WrappedValueParameterName != "Value",
+                AddImplicitOperator = wrapper.ImplicitConversionOperator is null,
+                AddToStringOverride = wrapper.ToStringOverride is null,
+                JsonConstructorMethod = constructionMethod switch
                 {
-                    string parameterName when !string.IsNullOrEmpty(parameterName) => $$"""public {{wrapper.WrappedType.ToDisplayString()}} Value { get; init; } = {{parameterName}};""",
-                    _ => $$"""public required {{wrapper.WrappedType.ToDisplayString()}} Value { get; init; }"""
-                });
-            if (wrapper.ImplicitConversionOperator is null)
-                sourceWriter.WriteLine($"public static implicit operator {wrapper.WrappedType.ToDisplayString()}({wrapper.TypeName} wrapper) => wrapper.Value;");
-            if (wrapper.ToStringOverride is null)
-                sourceWriter.WriteLine("public override global::System.String ToString() => Value?.ToString() ?? global::System.String.Empty;");
-            sourceWriter.Indent--;
-            sourceWriter.WriteLine("}");
-            foreach (ClassDefiniton _ in wrapper.Parents)
-            {
-                sourceWriter.Indent--;
-                sourceWriter.WriteLine("}");
-            }
+                    ValueWrapperDefinition.JsonConstructionMethod.None => "none",
+                    ValueWrapperDefinition.JsonConstructionMethod.Constructor => "constructor",
+                    ValueWrapperDefinition.JsonConstructionMethod.Initializer => "initializer",
+                    _ => "invalid"
+                },
+            });
 
-            ctx.AddSource($"{wrapper.TypeName}_ConversionMethods.g.cs", sw.ToString());
+            ctx.AddSource($"{wrapper.TypeName}_ConversionMethods.g.cs", generatedSource);
         });
     }
-}
-
-internal record ValueWrapperDefinition(INamedTypeSymbol TypeSymbol, ITypeSymbol WrappedType, INamedTypeSymbol? JsonConverterAttributeType): ClassDefiniton(TypeSymbol)
-{
-    public string? WrappedValueParameterName => Syntax.FirstOrDefault().ParameterList switch
-    {
-        { } parameterList when parameterList.Parameters.Count > 0
-            => TypeSymbol.InstanceConstructors
-                .FirstOrDefault(c => c.Locations.Any(l => l.SourceSpan.Contains(parameterList.Span))) switch
-            {
-                IMethodSymbol primaryConstructor => primaryConstructor.Parameters.FirstOrDefault(p => SymbolEqualityComparer.Default.Equals(p.Type, WrappedType))?.Name,
-                _ => null
-            },
-        _ => null
-    };
-    public IPropertySymbol? ValueProperty { get; } = TypeSymbol.GetMembers("Value")
-        .OfType<IPropertySymbol>()
-        .FirstOrDefault(p => SymbolEqualityComparer.Default.Equals(p.Type, WrappedType));
-    public IMethodSymbol? ImplicitConversionOperator { get; } = TypeSymbol.GetMembers()
-        .OfType<IMethodSymbol>()
-        .FirstOrDefault(m => m.MethodKind == MethodKind.Conversion
-            && m.Name == "op_Implicit"
-            && SymbolEqualityComparer.Default.Equals(m.ReturnType, WrappedType));
-    public IMethodSymbol? ToStringOverride { get; } = TypeSymbol.GetMembers("ToString")
-        .OfType<IMethodSymbol>()
-        .FirstOrDefault(m => m.Parameters.Length == 0 && m.IsOverride);
-    public AttributeData? JsonConverterAttribute { get; } = TypeSymbol.GetAttributes()
-        .FirstOrDefault(attr => SymbolEqualityComparer.Default.Equals(attr.AttributeClass, JsonConverterAttributeType));
 }
 
 internal static class GeneratorExtensions
@@ -175,7 +181,7 @@ internal static class GeneratorExtensions
         if (context.Node is not TypeDeclarationSyntax typeDeclaration)
             return null;
 
-        if (context.SemanticModel.GetDeclaredSymbol(typeDeclaration, ct) is not INamedTypeSymbol { TypeKind: TypeKind.Struct } symbol)
+        if (context.SemanticModel.GetDeclaredSymbol(typeDeclaration, ct) is not INamedTypeSymbol symbol)
             return null;
 
         return symbol;
@@ -200,10 +206,6 @@ internal static class GeneratorExtensions
 
         if (interfaceSymbol.TypeArguments.FirstOrDefault() is not ITypeSymbol wrappedValueType)
             return null;
-
-        IEnumerable<TypeDeclarationSyntax> wrapperDeclarationSyntaxNodes = wrapperDeclaration.DeclaringSyntaxReferences
-                .Select(r => r.GetSyntax(ct))
-                .OfType<TypeDeclarationSyntax>();
 
         return new ValueWrapperDefinition(wrapperDeclaration, wrappedValueType, jsonConverterAttributeTypeSymbol);
     }
