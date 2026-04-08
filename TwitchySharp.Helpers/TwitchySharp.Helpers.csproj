@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-	  <LangVersion>latest</LangVersion>
-	  <Nullable>enable</Nullable>
+      <LangVersion>latest</LangVersion>
+      <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,5 +13,23 @@
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj" 
+					  OutputItemType="Analyzer"
+					  ReferenceOutputAssembly="false"
+					  />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToPkg</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="_AddAnalyzersToPkg">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\TwitchySharp.Helpers.Generators.dll"
+                              PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
 
 </Project>
