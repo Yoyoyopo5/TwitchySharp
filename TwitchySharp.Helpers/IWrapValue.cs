@@ -16,6 +16,7 @@ public interface IWrapValue<T>
 /// <summary>
 /// Used to serialize basic wrapper classes and structs that implement <see cref="IWrapValue{T}"/>.
 /// </summary>
+[Obsolete("Use IWrapValue<T> source generation.")]
 public class WrapperJsonConverter<TWrapper, TWrapped> : JsonConverter<TWrapper>
     where TWrapper : IWrapValue<TWrapped>
 {
