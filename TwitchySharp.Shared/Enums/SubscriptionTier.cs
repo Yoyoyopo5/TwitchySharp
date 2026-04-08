@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Shared.Enums;
 /// <summary>
 /// Contains static definitions for Twitch subscription tiers.
 /// </summary>
 /// <param name="Value">The string value of the subscription tier.</param>
-
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<SubscriptionTier, string>))]
-public record SubscriptionTier(string Value) : ValueBackedEnum<string>(Value)
+public readonly partial record struct SubscriptionTier(string Value)
+    : IWrapValue<string>
 {
     /// <summary>
     /// First level of paid or Prime subscription.

@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -10,11 +9,4 @@ namespace TwitchySharp.Shared.Models;
 /// This can be obtained from the welcome message when connecting to the Twitch websocket server.
 /// </remarks>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(WrapperJsonConverter<EventSubWebsocketSessionId, string>))]
-public readonly record struct EventSubWebsocketSessionId(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(EventSubWebsocketSessionId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
-}
+public readonly partial record struct EventSubWebsocketSessionId(string Value) : IWrapValue<string>;

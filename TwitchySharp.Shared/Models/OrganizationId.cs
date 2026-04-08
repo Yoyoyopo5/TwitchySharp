@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -10,11 +9,4 @@ namespace TwitchySharp.Shared.Models;
 /// See <see href="https://dev.twitch.tv/docs/companies/">Organizations</see> for more information.
 /// </remarks>
 /// <param name="Value">The string value of the id</param>
-[JsonConverter(typeof(WrapperJsonConverter<OrganizationId, string>))]
-public readonly record struct OrganizationId(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(OrganizationId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
-}
+public readonly partial record struct OrganizationId(string Value) : IWrapValue<string>;
