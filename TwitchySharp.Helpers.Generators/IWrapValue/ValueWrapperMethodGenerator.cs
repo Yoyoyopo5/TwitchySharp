@@ -149,7 +149,7 @@ public class ValueWrapperMethodGenerator : IIncrementalGenerator
                 wrapper.Namespace,
                 wrapper.TypeName,
                 IsStruct = wrapper.TypeKind == TypeKind.Struct || wrapper.TypeKind == TypeKind.Structure,
-                Parents = wrapper.Parents.Select(p => p.ExtendPartial()).ToArray(),
+                Parents = wrapper.Parents.Select(p => p.ExtendPartial()).Reverse().ToArray(),
                 WrappedTypeName = wrapper.WrappedType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 PartialDefinition = wrapper.ExtendPartial(),
                 AddJsonConverter = addJsonConverter,
