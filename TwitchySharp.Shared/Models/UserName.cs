@@ -11,4 +11,5 @@ namespace TwitchySharp.Shared.Models;
 /// See <see href="https://help.twitch.tv/s/article/display-names-on-twitch">Display Names on Twitch</see> for more information.
 /// </remarks>
 /// <param name="Value">The string value of the display name.</param>
-public readonly partial record struct UserName(string Value) : IWrapValue<string>;
+[Wrapper<string>]
+public readonly partial record struct UserName(string Value);

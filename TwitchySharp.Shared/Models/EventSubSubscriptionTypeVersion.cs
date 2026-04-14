@@ -6,5 +6,6 @@ namespace TwitchySharp.Shared.Models;
 /// An id representing a specific Twitch EventSub subscription type version.
 /// </summary>
 /// <param name="Value">The string value of the version.</param>
-public readonly partial record struct EventSubSubscriptionTypeVersion(string Value) : IWrapValue<string>;
+[Wrapper<string>]
+public readonly partial record struct EventSubSubscriptionTypeVersion(string Value);
 

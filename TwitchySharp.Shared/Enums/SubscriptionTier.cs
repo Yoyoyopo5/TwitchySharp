@@ -5,8 +5,8 @@ namespace TwitchySharp.Shared.Enums;
 /// Contains static definitions for Twitch subscription tiers.
 /// </summary>
 /// <param name="Value">The string value of the subscription tier.</param>
+[Wrapper<string>]
 public readonly partial record struct SubscriptionTier(string Value)
-    : IWrapValue<string>
 {
     /// <summary>
     /// First level of paid or Prime subscription.

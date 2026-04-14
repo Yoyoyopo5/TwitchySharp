@@ -9,7 +9,8 @@ namespace TwitchySharp.Shared.Models;
 /// This also functions as a <see cref="ClientId"/> and can be used to authenticate requests.
 /// </remarks>
 /// <param name="Value">The string value of the extension id.</param>
-public readonly partial record struct ExtensionId(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct ExtensionId(string Value)
 {
     public static implicit operator ClientId(ExtensionId id)
         => new(id.Value);

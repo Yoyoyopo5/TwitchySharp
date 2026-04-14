@@ -6,7 +6,8 @@ namespace TwitchySharp.Shared.Models;
 /// An id representing a specific Twitch game or category.
 /// </summary>
 /// <param name="Value">The string value of the game id.</param>
-public readonly partial record struct GameId(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct GameId(string Value)
 {
     public static GameId None { get; } = new(string.Empty);
 }

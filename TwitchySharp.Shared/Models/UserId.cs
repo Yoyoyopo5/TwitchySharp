@@ -8,4 +8,5 @@ namespace TwitchySharp.Shared.Models;
 /// Note that while users can change their logins and display names, the id will never change.
 /// </remarks>
 /// <param name="Value">The string value of the user id.</param>
-public readonly partial record struct UserId(string Value) : IWrapValue<string>;
+[Wrapper<string>]
+public readonly partial record struct UserId(string Value);

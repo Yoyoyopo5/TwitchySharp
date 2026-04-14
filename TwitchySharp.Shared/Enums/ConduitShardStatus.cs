@@ -5,7 +5,8 @@ namespace TwitchySharp.Shared.Enums;
 /// <summary>
 /// Contains static definitions that represent the status of a conduit shard.
 /// </summary>
-public readonly partial record struct ConduitShardStatus(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct ConduitShardStatus(string Value)
 {
     /// <summary>
     /// The shard is enabled and working.

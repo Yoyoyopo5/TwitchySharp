@@ -14,7 +14,8 @@ namespace TwitchySharp.Shared.Models;
 /// The string value of the user login. 
 /// This will be made lower case.
 /// </param>
-public readonly partial record struct UserLogin(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct UserLogin(string Value)
 {
     public string Value { get; } = Value.ToLower();
 }

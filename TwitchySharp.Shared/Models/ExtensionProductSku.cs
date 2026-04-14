@@ -6,4 +6,5 @@ namespace TwitchySharp.Shared.Models;
 /// An SKU representing a specific Twitch extension Bits product.
 /// </summary>
 /// <param name="Value">The string value of the SKU.</param>
-public readonly partial record struct ExtensionProductSku(string Value) : IWrapValue<string>;
+[Wrapper<string>]
+public readonly partial record struct ExtensionProductSku(string Value);

@@ -5,7 +5,8 @@ namespace TwitchySharp.Shared.EventSub.Enums;
 /// <summary>
 /// Possible EventSub transport methods.
 /// </summary>
-public readonly partial record struct EventSubTransportMethod(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct EventSubTransportMethod(string Value)
 {
     public static EventSubTransportMethod Webhook { get; } = new("webhook");
     public static EventSubTransportMethod Websocket { get; } = new("websocket");

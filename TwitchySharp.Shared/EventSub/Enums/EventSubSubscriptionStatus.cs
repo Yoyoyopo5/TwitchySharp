@@ -6,7 +6,8 @@ namespace TwitchySharp.Shared.EventSub.Enums;
 /// Contains static definitions for various EventSub subscription states.
 /// </summary>
 /// <param name="Value">The string value of the status.</param>
-public readonly partial record struct EventSubSubscriptionStatus(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct EventSubSubscriptionStatus(string Value)
 {
     /// <summary>
     /// The subscription is enabled.

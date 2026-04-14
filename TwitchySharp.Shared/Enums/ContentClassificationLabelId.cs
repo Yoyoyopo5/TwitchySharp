@@ -8,7 +8,8 @@ namespace TwitchySharp.Shared.Enums;
 /// You can use the <see href="https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels">Get Content Classification Labels</see> endpoint to get an up-to-date list.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-public readonly partial record struct ContentClassificationLabelId(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct ContentClassificationLabelId(string Value)
 {
     /// <summary>
     /// Politics and Sensitive Social Issues

@@ -20,41 +20,25 @@
 -}}
 
 {{- capture t -}}
-{{- if add_json_converter ~}}
-[global::System.Text.Json.Serialization.JsonConverter(typeof({{ type_name }}JsonConverter))]
+{{- if json_converter_type ~}}
+[global::System.Text.Json.Serialization.JsonConverter(typeof({{ json_converter_type }}))]
 {{ end ~}}
 {{ partial_definition }}
+{{- if wrapper_interface }}
+    : {{ wrapper_interface }}
+{{- end}}
 {
-    {{- if add_value_property }}
+    {{- if should_add_value_property }}
     public required {{ wrapped_type_name }} Value { get; init; }
     {{- end }}
-    {{- if add_implicit_operator }}
+    {{- if should_add_implicit_operator }}
     public static implicit operator {{ wrapped_type_name }}({{ type_name }} wrapper) => wrapper.Value;
     {{- end }}
-    {{- if add_to_string_override }}
-    public override global::System.String ToString() => Value?.ToString() ?? global::System.String.Empty;
+    {{- if should_add_to_string_override }}
+    public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
     {{- end }}
-    {{- if add_json_converter }}
-    private class {{ type_name }}JsonConverter : global::System.Text.Json.Serialization.JsonConverter<{{ type_name }}>
-    {
-        public override {{ type_name }}{{ is_struct ? "" : "?" }} Read(ref global::System.Text.Json.Utf8JsonReader reader, global::System.Type typeToConvert, global::System.Text.Json.JsonSerializerOptions options)
-        {
-            if (global::System.Text.Json.JsonSerializer.Deserialize<{{ wrapped_type_name }}>(ref reader, options) is not {{ wrapped_type_name }} value)
-                return default;
-            {{- case json_constructor_method }}
-            {{- when "constructor" }}
-            return new {{ type_name }}(value);
-            {{- when "initializer" }}
-            return new {{ type_name }} { Value = value };
-            {{- else }}
-            return new {{ type_name }}();
-            {{- end }}
-        }
-        public override void Write(global::System.Text.Json.Utf8JsonWriter writer, {{ type_name }} value, global::System.Text.Json.JsonSerializerOptions options)
-        {
-            global::System.Text.Json.JsonSerializer.Serialize(writer, value.Value, options);
-        }
-    }
+    {{- if wrapper_interface }}
+    static {{ type_name }} {{ wrapper_interface }}.Create({{ wrapped_type_name }} value) => {{ json_create_expression }}
     {{- end }}
 }
 {{- end -}}
