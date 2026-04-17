@@ -38,7 +38,7 @@
     public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
     {{- end }}
     {{- if wrapper_interface && json_create_expression }}
-    static {{ type_name }} {{ wrapper_interface }}.Create({{ wrapped_type_name }} value) => {{ json_create_expression }}
+    static {{ type_name }} {{ wrapper_interface }}.Create({{ wrapped_type_name }} value) => {{ json_create_expression }};
     {{- end }}
 }
 {{- end -}}

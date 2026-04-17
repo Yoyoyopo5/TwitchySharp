@@ -1,10 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Threading;
 using TwitchySharp.Generators.Shared;
 
 namespace TwitchySharp.Helpers.Generators;
+
 internal record ValueWrapperDefinition
 {
     public static ValueWrapperDefinition? FromAttributeContext(
@@ -44,7 +44,9 @@ internal record ValueWrapperDefinition
             ImplicitOperator = ImplicitOperatorInfo.FromTypeSymbol(typeSymbol, wrappedTypeSymbol, ct),
             ToStringOverride = ToStringOverrideInfo.FromTypeSymbol(typeSymbol, ct),
             HasJsonConverterAttribute = typeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, jsonConverterAttributeSymbol)),
-            StaticCreateMethod = StaticCreateMethodInfo.FromTypeSymbol(typeSymbol, wrappedTypeSymbol, ct)
+            StaticCreateMethod = StaticCreateMethodInfo.FromTypeSymbol(typeSymbol, wrappedTypeSymbol, ct),
+            HasEmptyConstructor = typeSymbol.InstanceConstructors.Any(c => c.Parameters.IsEmpty),
+            HasOtherRequiredProperties = typeSymbol.GetMembers().OfType<IPropertySymbol>().Where(p => p.IsRequired).Any(p => p.Name != "Value")
         };
 
     public readonly record struct WrappedTypeInfo
@@ -68,7 +70,7 @@ internal record ValueWrapperDefinition
     {
         public static ValueWrapperConstructorInfo? FromWrapperType(
             INamedTypeSymbol symbol,
-            INamedTypeSymbol wrappedTypeSymbol, 
+            INamedTypeSymbol wrappedTypeSymbol,
             CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
@@ -190,6 +192,8 @@ internal record ValueWrapperDefinition
     public ToStringOverrideInfo? ToStringOverride { get; init; }
     public ImplicitOperatorInfo? ImplicitOperator { get; init; }
     public StaticCreateMethodInfo? StaticCreateMethod { get; init; }
+    public required bool HasOtherRequiredProperties { get; init; }
+    public required bool HasEmptyConstructor { get; init; }
 }
 
 internal static class ValueWrapperDefinitionExtensions
@@ -203,14 +207,20 @@ internal static class ValueWrapperDefinitionExtensions
         };
 
         public bool ShouldRender => wrapper is not null
+            && (wrapper.WrapperValueProperty is null or { IsOfWrappedType: true })
             && wrapper.IsPartial
             && wrapper.ParentTypes.All(p => p.IsPartial);
+
+        public bool CanInitialize =>
+            !wrapper.HasOtherRequiredProperties
+            && wrapper.HasEmptyConstructor
+            && (wrapper.WrapperValueProperty is not null and { Initializable: true } || wrapper.ShouldAddValueProperty);
 
         public string? JsonCreateExpression => wrapper switch // We actually supply the expression to create from value.
         {
             { StaticCreateMethod: not null } => "Create(value)",
-            { WrapperConstructor: not null } => "new(value);",
-            { WrapperValueProperty: not null and { Initializable: true } } or { ShouldAddValueProperty: true } => $$"""new() { {{(wrapper.WrapperValueProperty.HasValue ? wrapper.WrapperValueProperty.Value.Name : "Value")}} = value };""",
+            { WrapperConstructor: not null } => "new(value)",
+            { CanInitialize: true } => $$"""new() { {{(wrapper.WrapperValueProperty.HasValue ? wrapper.WrapperValueProperty.Value.Name : "Value")}} = value }""",
             _ => null
         };
     }
