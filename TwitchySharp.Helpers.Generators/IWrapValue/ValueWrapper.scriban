@@ -20,11 +20,11 @@
 -}}
 
 {{- capture t -}}
-{{- if json_converter_type ~}}
+{{- if json_converter_type && json_create_expression ~}}
 [global::System.Text.Json.Serialization.JsonConverter(typeof({{ json_converter_type }}))]
 {{ end ~}}
 {{ partial_definition }}
-{{- if wrapper_interface }}
+{{- if wrapper_interface && json_create_expression }}
     : {{ wrapper_interface }}
 {{- end}}
 {
@@ -37,7 +37,7 @@
     {{- if should_add_to_string_override }}
     public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
     {{- end }}
-    {{- if wrapper_interface }}
+    {{- if wrapper_interface && json_create_expression }}
     static {{ type_name }} {{ wrapper_interface }}.Create({{ wrapped_type_name }} value) => {{ json_create_expression }}
     {{- end }}
 }

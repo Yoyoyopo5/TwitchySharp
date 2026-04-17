@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace TwitchySharp.Helpers.Generators;
+namespace TwitchySharp.Generators.Shared;
 
 /// <summary>
 /// Equal maps to SequenceEqual on the underlying <see cref="ImmutableArray"/>.
 /// </summary>
-internal class RecordImmutableArray<T>(ImmutableArray<T> array) : IEquatable<RecordImmutableArray<T>>, IReadOnlyList<T>
+public class RecordImmutableArray<T>(ImmutableArray<T> array) : IEquatable<RecordImmutableArray<T>>, IReadOnlyList<T>
 {
     public RecordImmutableArray() : this(ImmutableArray<T>.Empty) { }
     private readonly ImmutableArray<T> _array = array;
@@ -34,7 +34,7 @@ internal class RecordImmutableArray<T>(ImmutableArray<T> array) : IEquatable<Rec
     }
 }
 
-internal static class ImmutableArrayExtensions
+public static class ImmutableArrayExtensions
 {
     public static RecordImmutableArray<T> ToRecordImmutableArray<T>(this IEnumerable<T> source)
         => new(source.ToImmutableArray());

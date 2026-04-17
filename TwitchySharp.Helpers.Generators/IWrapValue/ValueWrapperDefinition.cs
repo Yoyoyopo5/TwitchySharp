@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Threading;
+using TwitchySharp.Generators.Shared;
 
 namespace TwitchySharp.Helpers.Generators;
 internal record ValueWrapperDefinition
@@ -72,15 +73,14 @@ internal record ValueWrapperDefinition
         {
             ct.ThrowIfCancellationRequested();
             if (symbol.InstanceConstructors
-                .Where(c => c.Parameters.Length == 1)
-                .Where(c => SymbolEqualityComparer.Default.Equals(c.Parameters.Single().Type, wrappedTypeSymbol))
-                .Select(c => (IMethodSymbol?)c)
+                .Where(c => c.HasExactParametersOfType(wrappedTypeSymbol))
+                .Select(static c => (IMethodSymbol?)c)
                 .FirstOrDefault() is not IMethodSymbol constructor)
                 return null;
             return new()
             {
                 WrappedValueParameterName = constructor.Parameters.Single().Name,
-                IsPrimaryConstructor = constructor.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(ct) is TypeDeclarationSyntax
+                IsPrimaryConstructor = constructor.IsPrimaryConstructor(ct)
             };
         }
         public required string WrappedValueParameterName { get; init; }
@@ -96,7 +96,7 @@ internal record ValueWrapperDefinition
             ct.ThrowIfCancellationRequested();
             if (symbol.GetMembers("Value")
                 .OfType<IPropertySymbol>()
-                .FirstOrDefault(p => SymbolEqualityComparer.Default.Equals(p.Type, wrappedTypeSymbol)) is not IPropertySymbol valueProperty)
+                .FirstOrDefault() is not IPropertySymbol valueProperty)
                 return null;
             ct.ThrowIfCancellationRequested();
             return new()
@@ -106,11 +106,13 @@ internal record ValueWrapperDefinition
                 {
                     { DeclaredAccessibility: Accessibility.Public or Accessibility.Internal } => true,
                     _ => false
-                }
+                },
+                IsOfWrappedType = SymbolEqualityComparer.Default.Equals(valueProperty.Type, wrappedTypeSymbol)
             };
         }
         public required string Name { get; init; }
         public required bool Initializable { get; init; }
+        public required bool IsOfWrappedType { get; init; }
     }
     public readonly record struct ToStringOverrideInfo
     {
@@ -151,13 +153,11 @@ internal record ValueWrapperDefinition
         {
             ct.ThrowIfCancellationRequested();
             if (symbol
-                .GetMembers()
+                .GetMembers("Create")
                 .OfType<IMethodSymbol>()
-                .FirstOrDefault(m => m.IsStatic
-                    && m.Name == "Create"
-                    && m.Parameters.Length == 1
-                    && SymbolEqualityComparer.Default.Equals(m.ReturnType, symbol)
-                    && SymbolEqualityComparer.Default.Equals(m.Parameters.Single(), wrappedTypeSymbol)) is null)
+                .Where(m => m.IsStatic)
+                .Where(m => m.HasExactParametersOfType(wrappedTypeSymbol))
+                .FirstOrDefault(m => SymbolEqualityComparer.Default.Equals(m.ReturnType, symbol)) is null)
                 return null;
             return new();
         }
@@ -190,9 +190,28 @@ internal record ValueWrapperDefinition
     public ToStringOverrideInfo? ToStringOverride { get; init; }
     public ImplicitOperatorInfo? ImplicitOperator { get; init; }
     public StaticCreateMethodInfo? StaticCreateMethod { get; init; }
-    public bool ShouldAddValueProperty => this switch
+}
+
+internal static class ValueWrapperDefinitionExtensions
+{
+    extension(ValueWrapperDefinition wrapper)
     {
-        { IsRecord: true, WrapperConstructor: not null } or { WrapperValueProperty: not null } => false,
-        _ => true
-    };
+        public bool ShouldAddValueProperty => wrapper switch
+        {
+            { IsRecord: true, WrapperConstructor: not null } or { WrapperValueProperty: not null } => false,
+            _ => true
+        };
+
+        public bool ShouldRender => wrapper is not null
+            && wrapper.IsPartial
+            && wrapper.ParentTypes.All(p => p.IsPartial);
+
+        public string? JsonCreateExpression => wrapper switch // We actually supply the expression to create from value.
+        {
+            { StaticCreateMethod: not null } => "Create(value)",
+            { WrapperConstructor: not null } => "new(value);",
+            { WrapperValueProperty: not null and { Initializable: true } } or { ShouldAddValueProperty: true } => $$"""new() { {{(wrapper.WrapperValueProperty.HasValue ? wrapper.WrapperValueProperty.Value.Name : "Value")}} = value };""",
+            _ => null
+        };
+    }
 }

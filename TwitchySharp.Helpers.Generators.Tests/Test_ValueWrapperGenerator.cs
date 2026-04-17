@@ -1,49 +1,9 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Testing;
-using Xunit.Sdk;
 
 namespace TwitchySharp.Helpers.Generators.Tests;
 
-public record ValueWrapperGeneratorTestCase : ITestData<ValueWrapperGeneratorTestCase>
-{
-    public required string Name { get; init; }
-    public required string Input { get; init; }
-    public required string? ExpectedOutput { get; init; }
-    public required string? ExpectedOutputFilePath { get; init; }
-
-    public CSharpSourceGeneratorTest<TSourceGenerator, TVerifier> Register<TSourceGenerator, TVerifier>(CSharpSourceGeneratorTest<TSourceGenerator, TVerifier> test)
-        where TSourceGenerator : new()
-        where TVerifier : IVerifier, new()
-    {
-        test.TestCode = Input;
-        if (ExpectedOutputFilePath is null || ExpectedOutput is null)
-            return test;
-        test.TestState.GeneratedSources.Add((typeof(ValueWrapperMethodGenerator), ExpectedOutputFilePath, ExpectedOutput));
-        return test;
-    }
-
-    public IXunitSerializationInfo Serialize(IXunitSerializationInfo info)
-    {
-        info.AddValue(nameof(Name), Name);
-        info.AddValue(nameof(Input), Input);
-        info.AddValue(nameof(ExpectedOutput), ExpectedOutput);
-        info.AddValue(nameof(ExpectedOutputFilePath), ExpectedOutputFilePath);
-        return info;
-    }
-
-    public static ValueWrapperGeneratorTestCase Deserialize(IXunitSerializationInfo info)
-    => new()
-    {
-        Name = info.GetValue<string>(nameof(Name)) ?? throw new ArgumentNullException(nameof(info), "Name cannot be null"),
-        Input = info.GetValue<string>(nameof(Input)) ?? throw new ArgumentNullException(nameof(info), "Input cannot be null"),
-        ExpectedOutput = info.GetValue<string>(nameof(ExpectedOutput)),
-        ExpectedOutputFilePath = info.GetValue<string>(nameof(ExpectedOutputFilePath))
-    };
-
-    public override string ToString() => Name;
-};
-
-public class Test_ValueWrapperMethodGenerator
+public class Test_ValueWrapperGenerator
 {
     private const string FAKE_CONVERTER = """
         using System;
@@ -66,9 +26,9 @@ public class Test_ValueWrapperMethodGenerator
         """;
 
     private const string EXPECTED_FILE_PATH_SUFFIX = "_Wrapper.g.cs";
-    private readonly static ValueWrapperGeneratorTestCase[] _testCases =
+    private readonly static SourceGeneratorTestCase[] _testCases =
     [
-        new ValueWrapperGeneratorTestCase()
+        new SourceGeneratorTestCase()
         {
             Name = "AddsAllMembersToEmptyType",
             Input = """
@@ -96,7 +56,7 @@ public class Test_ValueWrapperMethodGenerator
             """,
             ExpectedOutputFilePath = $"AddsAllMembersToEmptyType{EXPECTED_FILE_PATH_SUFFIX}"
         },
-        new ValueWrapperGeneratorTestCase()
+        new SourceGeneratorTestCase()
         {
             Name = "AddsCreateMethodToFullType",
             Input = """
@@ -127,7 +87,7 @@ public class Test_ValueWrapperMethodGenerator
             """,
             ExpectedOutputFilePath = $"AddsCreateMethodToFullType{EXPECTED_FILE_PATH_SUFFIX}"
         },
-        new ValueWrapperGeneratorTestCase()
+        new SourceGeneratorTestCase()
         {
             Name = "SkipsGeneratingNonPartialRecord",
             Input = """
@@ -139,7 +99,7 @@ public class Test_ValueWrapperMethodGenerator
             ExpectedOutput = null,
             ExpectedOutputFilePath = null
         },
-        new ValueWrapperGeneratorTestCase()
+        new SourceGeneratorTestCase()
         {
             Name = "GeneratesNestedWrapperType",
             Input = """
@@ -179,7 +139,7 @@ public class Test_ValueWrapperMethodGenerator
             """,
             ExpectedOutputFilePath = $"GeneratesNestedWrapperType{EXPECTED_FILE_PATH_SUFFIX}"
         },
-        new ValueWrapperGeneratorTestCase() 
+        new SourceGeneratorTestCase()
         {
             Name = "SkipsValuePropertyOnRecordWithPrimaryConstructor",
             Input = """
@@ -205,14 +165,123 @@ public class Test_ValueWrapperMethodGenerator
             
             """,
             ExpectedOutputFilePath = $"SkipsValuePropertyOnRecordWithPrimaryConstructor{EXPECTED_FILE_PATH_SUFFIX}"
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "SkipsGeneratingRecordWithWronglyTypedPrimaryConstructor",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            [Wrapper<string>]
+            public partial record SkipsGeneratingRecordWithWronglyTypedPrimaryConstructor(int Value);
+            """,
+            ExpectedOutput = null,
+            ExpectedOutputFilePath = null
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "SkipsGeneratingClassWithWronglyTypedValueProperty",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            [Wrapper<string>]
+            public partial class SkipsGeneratingClassWithWronglyTypedValueProperty
+            {
+                public int Value { get; init; }
+            }
+            """,
+            ExpectedOutput = null,
+            ExpectedOutputFilePath = null
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "SkipsAddingJsonConverterWithNonValueRequiredProps",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            [Wrapper<string>]
+            public partial record SkipsAddingJsonConverterWithNonValueRequiredProps
+            {
+                public required int Amount { get; init; }
+            }
+            """,
+            ExpectedOutput = """
+            // <auto-generated/>
+            #nullable enable
+            
+            namespace TestNamespace;
+            
+            public partial record class SkipsAddingJsonConverterWithNonValueRequiredProps // also skips interface
+            {
+                public required global::System.String Value { get; init; }
+                public static implicit operator global::System.String(SkipsAddingJsonConverterWithNonValueRequiredProps wrapper) => wrapper.Value;
+                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+            }
+            """,
+            ExpectedOutputFilePath = $"SkipsAddingJsonConverterWithNonValueRequiredProps{EXPECTED_FILE_PATH_SUFFIX}"
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "SkipsAddingJsonConverterOnRecordWithNonValuePrimaryConstructorArgs",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            [Wrapper<string>]
+            public partial record SkipsAddingJsonConverterOnRecordWithNonValuePrimaryConstructorArgs(int Amount);
+            """,
+            ExpectedOutput = """
+            // <auto-generated/>
+            #nullable enable
+            
+            namespace TestNamespace;
+            
+            public partial record class SkipsAddingJsonConverterWithNonValueRequiredProps // also skips interface
+            {
+                public required global::System.String Value { get; init; }
+                public static implicit operator global::System.String(SkipsAddingJsonConverterWithNonValueRequiredProps wrapper) => wrapper.Value;
+                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+            }
+            """,
+            ExpectedOutputFilePath = $"SkipsAddingJsonConverterWithNonValueRequiredProps{EXPECTED_FILE_PATH_SUFFIX}"
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            [Wrapper<string>]
+            public partial record AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod
+            {
+                public required int Amount { get; init; }
+                public static SkipsAddingJsonConverterWithNonValueRequiredProps Create(string amount)
+                    => new() { Amount = int.Parse(amount) }
+            }
+            """,
+            ExpectedOutput = """
+            // <auto-generated/>
+            #nullable enable
+            
+            namespace TestNamespace;
+            
+            public partial record class AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod
+                : IWrapValue<global::System.String, AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod>
+            {
+                public required global::System.String Value { get; init; }
+                public static implicit operator global::System.String(SkipsAddingJsonConverterWithNonValueRequiredProps wrapper) => wrapper.Value;
+                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                static IWrapValue<global::System.String, AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod>.Create(global::System.String value) => Create(value);
+            }
+            """,
+            ExpectedOutputFilePath = $"AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod{EXPECTED_FILE_PATH_SUFFIX}"
         }
     ];
-    public static TheoryData<TestCaseWrapper<ValueWrapperGeneratorTestCase>> TestCases
-        => [.. _testCases.Select(t => new TestCaseWrapper<ValueWrapperGeneratorTestCase>(t))];
+    public static TheoryData<TestCaseWrapper<SourceGeneratorTestCase>> TestCases
+        => [.. _testCases.Select(t => new TestCaseWrapper<SourceGeneratorTestCase>(t))];
 
-    private static CSharpSourceGeneratorTest<ValueWrapperMethodGenerator, DefaultVerifier> CreateGeneratorTest()
+    private static CSharpSourceGeneratorTest<ValueWrapperGenerator, DefaultVerifier> CreateGeneratorTest()
     {
-        CSharpSourceGeneratorTest<ValueWrapperMethodGenerator, DefaultVerifier> test = new()
+        CSharpSourceGeneratorTest<ValueWrapperGenerator, DefaultVerifier> test = new()
         {
             ReferenceAssemblies = ReferenceAssemblies.Net.Net80
         };
@@ -223,6 +292,6 @@ public class Test_ValueWrapperMethodGenerator
 
     [Theory]
     [MemberData(nameof(TestCases))]
-    public async Task Generator(TestCaseWrapper<ValueWrapperGeneratorTestCase> @case)
+    public async Task Generator(TestCaseWrapper<SourceGeneratorTestCase> @case)
         => await @case.TestCase.Register(CreateGeneratorTest()).RunAsync(TestContext.Current.CancellationToken);
 }
