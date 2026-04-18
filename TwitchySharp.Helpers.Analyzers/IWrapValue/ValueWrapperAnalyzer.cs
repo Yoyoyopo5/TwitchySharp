@@ -67,7 +67,8 @@ public sealed class ValueWrapperAnalyzer : DiagnosticAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
         ValueWrapperDiagnostics.PartialModifierRequiredWarning,
         ValueWrapperDiagnostics.PartialParentTypesRequiredWarning,
-        ValueWrapperDiagnostics.JsonConstructionMethodMissingWarning
+        ValueWrapperDiagnostics.JsonConstructionMethodMissingWarning,
+        ValueWrapperDiagnostics.WronglyTypedValueProperty
     );
 
     public override void Initialize(AnalysisContext context)
@@ -91,6 +92,7 @@ public sealed class ValueWrapperAnalyzer : DiagnosticAnalyzer
                 wrapper
                     .AnalyzePartial(context.ReportDiagnostic, ct)
                     .AnalyzePartialParents(context.ReportDiagnostic, ct)
+                    .AnalyzeValueProperty(context.ReportDiagnostic, ct)
                     .AnalyzeJsonConstruction(context.ReportDiagnostic, ct);
             },
             symbolKinds: ImmutableArray.Create(SymbolKind.NamedType)
@@ -125,14 +127,45 @@ internal static class ValueWrapperSymbolAnalyzerExtensions
         return wrapperSymbol;
     }
 
+    public static ValueWrapperSymbol AnalyzeValueProperty(this ValueWrapperSymbol wrapperSymbol, Action<Diagnostic> report, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (wrapperSymbol.GetWrapperValuePropertyOrDefault() is { IsOfWrappedType: false })
+            report(Diagnostic.Create(
+                ValueWrapperDiagnostics.WronglyTypedValueProperty,
+                wrapperSymbol.TypeSymbol.GetMembers("Value").First().Locations.FirstOrDefault(),
+                wrapperSymbol.TypeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
+                wrapperSymbol.WrappedTypeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+                ));
+        return wrapperSymbol;
+    }
+
+    public static ValueWrapperSymbol AnalyzeRecordConstructor(this ValueWrapperSymbol wrapperSymbol, Action<Diagnostic> report, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (!wrapperSymbol.TypeSymbol.IsRecord)
+            return wrapperSymbol;
+        if (wrapperSymbol.TypeSymbol.InstanceConstructors.FirstOrDefault(c => c.IsPrimaryConstructor()) is not IMethodSymbol primary)
+            return wrapperSymbol;
+        if (primary.Parameters.Length > 0 && !primary.HasExactParametersOfType(wrapperSymbol.WrappedTypeSymbol))
+            report(Diagnostic.Create(
+                ValueWrapperDiagnostics.WronglyTypedValueProperty,
+                primary.Locations.FirstOrDefault(),
+                wrapperSymbol.TypeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
+                wrapperSymbol.WrappedTypeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)
+                ));
+        return wrapperSymbol;
+    }
+
     public static ValueWrapperSymbol AnalyzeJsonConstruction(this ValueWrapperSymbol wrapperSymbol, Action<Diagnostic> report, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        if (wrapperSymbol.GetWrapperValuePropertyOrDefault() is not ValuePropertyInfo valueProperty)
-            return wrapperSymbol; // Source generator will add the value property.
-        if (wrapperSymbol.GetWrapperConstructorOrDefault() is null
-            && !valueProperty.Initializable
-            && wrapperSymbol.GetWrapperStaticCreateMethodOrDefault() is null)
+        if (wrapperSymbol.GetWrapperStaticCreateMethodOrDefault() is not null)
+            return wrapperSymbol;
+        if (wrapperSymbol.TypeSymbol.InstanceConstructors.Any(c => c.Parameters.Length == 0) 
+            && (wrapperSymbol.GetWrapperValuePropertyOrDefault() is not ValuePropertyInfo valueProperty || valueProperty.Initializable))
+            return wrapperSymbol; // initializable
+        if (wrapperSymbol.GetWrapperConstructorOrDefault() is null)
             report(Diagnostic.Create(
                 ValueWrapperDiagnostics.JsonConstructionMethodMissingWarning,
                 wrapperSymbol.TypeSymbol.Locations.FirstOrDefault(),

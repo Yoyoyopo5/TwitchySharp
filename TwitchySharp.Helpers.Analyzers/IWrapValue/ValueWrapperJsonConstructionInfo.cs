@@ -38,7 +38,7 @@ internal readonly record struct ValuePropertyInfo
     {
         if (wrapper.TypeSymbol.GetMembers("Value")
             .OfType<IPropertySymbol>()
-            .FirstOrDefault(p => SymbolEqualityComparer.Default.Equals(p.Type, wrapper.WrappedTypeSymbol)) is not IPropertySymbol valueProperty)
+            .FirstOrDefault() is not IPropertySymbol valueProperty)
             return null;
         return new()
         {
@@ -47,7 +47,9 @@ internal readonly record struct ValuePropertyInfo
                 { DeclaredAccessibility: Accessibility.Public or Accessibility.Internal } => true,
                 _ => false
             },
+            IsOfWrappedType = SymbolEqualityComparer.Default.Equals(valueProperty.Type, wrapper.WrappedTypeSymbol)
         };
     }
     public required bool Initializable { get; init; }
+    public required bool IsOfWrappedType { get; init; }
 }

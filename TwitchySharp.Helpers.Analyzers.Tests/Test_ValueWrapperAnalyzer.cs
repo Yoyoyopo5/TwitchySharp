@@ -51,7 +51,83 @@ public class Test_ValueWrapperAnalyzer
             using TwitchySharp.Helpers;
 
             [Wrapper<string>]
-            public partial record Warns_ForWrongTypeRecordConstructor(int Value);
+            public partial record Warns_ForWrongTypeRecordConstructor(int {|VWG0004:Value|})
+            {
+                public static Warns_ForWrongTypeRecordConstructor Create(string value)
+                    => new(int.Parse(value));
+            }
+            """
+        },
+        new AnalyzerTestCase()
+        {
+            Name = "Warns_ForWrongTypeValueProperty",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+
+            [Wrapper<string>]
+            public partial record Warns_ForWrongTypeValueProperty
+            {
+                public int {|VWG0004:Value|} { get; init; }
+            }
+            """
+        },
+        new AnalyzerTestCase()
+        {
+            Name = "Warns_ForNonInitializableValueProperty",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+
+            [Wrapper<string>]
+            public partial record {|VWG0003:Warns_ForNonInitializableValueProperty|}
+            {
+                public string Value { get; }
+            }
+            """
+        },
+        new AnalyzerTestCase()
+        {
+            Name = "Warns_ForConstructorWithMultipleParameters",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+
+            [Wrapper<string>]
+            public partial record {|VWG0003:Warns_ForConstructorWithMultipleParameters|}(string Value, int Amount);
+            """
+        },
+        new AnalyzerTestCase()
+        {
+            Name = "DoesNotWarn_ForNonInitializableValuePropertyWithValueConstructor",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+
+            [Wrapper<string>]
+            public partial record DoesNotWarn_ForNonInitializableValuePropertyWithValueConstructor
+            {
+                public DoesNotWarn_ForNonInitializableValuePropertyWithValueConstructor(string val)
+                    => Value = val;
+                public string Value { get; }
+            }
+            """
+        },
+        new AnalyzerTestCase()
+        {
+            Name = "DoesNotWarn_ForOtherRequiredPropertiesWithSuitableCreateMethod",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+
+            [Wrapper<string>]
+            public partial record DoesNotWarn_ForOtherRequiredPropertiesWithSuitableCreateMethod
+            {
+                public required string Value { get; init; }
+                public required int Amount { get; init; }
+                public static DoesNotWarn_ForOtherRequiredPropertiesWithSuitableCreateMethod Create(string value)
+                    => new() { Amount = int.Parse(value), Value = value };
+            }
             """
         }
     ];
