@@ -5,16 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TwitchySharp.Helpers.Tests.Unit;
-public class Test_ValueBackedEnum
+
+public partial class Test_Wrapper
 {
-    private record TestStringEnum(string Value) : ValueBackedEnum<string>(Value);
+    [Wrapper<string>]
+    private partial record TestStringWrapper(string Value);
 
     [Fact]
     public void StringImplicitCast_StringValue_ReturnStringValue()
     {
         const string MOCK_STRING = "mock";
 
-        TestStringEnum stubEnum = new(MOCK_STRING);
+        TestStringWrapper stubEnum = new(MOCK_STRING);
 
         string actual = stubEnum;
 
