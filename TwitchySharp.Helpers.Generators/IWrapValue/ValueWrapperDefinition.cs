@@ -171,10 +171,12 @@ internal record ValueWrapperDefinition
             ct.ThrowIfCancellationRequested();
             return new()
             {
+                Name = parentTypeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
                 PartialDeclaration = parentTypeSymbol.ToPartialTypeDeclarationString(),
                 IsPartial = parentTypeSymbol.IsPartial()
             };
         }
+        public required string Name { get; init; }
         public required string PartialDeclaration { get; init; }
         public required bool IsPartial { get; init; }
     }

@@ -54,7 +54,7 @@ public class Test_ValueWrapperGenerator
             }
 
             """,
-            ExpectedOutputFilePath = $"AddsAllMembersToEmptyType{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_AddsAllMembersToEmptyType{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -85,7 +85,7 @@ public class Test_ValueWrapperGenerator
             }
 
             """,
-            ExpectedOutputFilePath = $"AddsCreateMethodToFullType{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_AddsCreateMethodToFullType{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -110,7 +110,7 @@ public class Test_ValueWrapperGenerator
                 public partial class ContainerTwo
                 {
                     [Wrapper<int>]
-                    public partial class GeneratesNestedWrapperType { }
+                    private partial class GeneratesNestedWrapperType { }
                 }
             }
             """,
@@ -125,7 +125,7 @@ public class Test_ValueWrapperGenerator
                 public partial class ContainerTwo
                 {
                     [global::System.Text.Json.Serialization.JsonConverter(typeof(global::TwitchySharp.Helpers.WrapperJsonConverter<GeneratesNestedWrapperType, global::System.Int32>))]
-                    public partial class GeneratesNestedWrapperType
+                    private partial class GeneratesNestedWrapperType
                         : global::TwitchySharp.Helpers.IWrapValue<global::System.Int32, GeneratesNestedWrapperType>
                     {
                         public required global::System.Int32 Value { get; init; }
@@ -137,7 +137,7 @@ public class Test_ValueWrapperGenerator
             }
             
             """,
-            ExpectedOutputFilePath = $"GeneratesNestedWrapperType{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_ContainerOne_ContainerTwo_GeneratesNestedWrapperType{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -164,7 +164,7 @@ public class Test_ValueWrapperGenerator
             }
             
             """,
-            ExpectedOutputFilePath = $"SkipsValuePropertyOnRecordWithPrimaryConstructor{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_SkipsValuePropertyOnRecordWithPrimaryConstructor{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -219,7 +219,7 @@ public class Test_ValueWrapperGenerator
             }
 
             """,
-            ExpectedOutputFilePath = $"SkipsAddingJsonConverterWithNonValueRequiredProps{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_SkipsAddingJsonConverterWithNonValueRequiredProps{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -244,7 +244,7 @@ public class Test_ValueWrapperGenerator
             }
 
             """,
-            ExpectedOutputFilePath = $"SkipsAddingJsonConverterOnRecordWithNonValuePrimaryConstructorArgs{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_SkipsAddingJsonConverterOnRecordWithNonValuePrimaryConstructorArgs{EXPECTED_FILE_PATH_SUFFIX}"
         },
         new SourceGeneratorTestCase()
         {
@@ -278,7 +278,7 @@ public class Test_ValueWrapperGenerator
             }
 
             """,
-            ExpectedOutputFilePath = $"AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod{EXPECTED_FILE_PATH_SUFFIX}"
+            ExpectedOutputFilePath = $"TestNamespace_AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod{EXPECTED_FILE_PATH_SUFFIX}"
         }
     ];
     public static TheoryData<TestCaseWrapper<SourceGeneratorTestCase>> TestCases
