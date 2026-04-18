@@ -36,8 +36,6 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TwitchySharp.Generators.Shared\TwitchySharp.Generators.Shared.csproj" />
-  </ItemGroup>
+  <Import Project="..\TwitchySharp.Generators.Shared\TwitchySharp.Generators.Shared.projitems" Label="Shared" />
 
 </Project>

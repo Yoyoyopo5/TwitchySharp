@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj" 
-					  OutputItemType="Analyzer"
-					  ReferenceOutputAssembly="false"
-					  />
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      />
+    <ProjectReference Include="..\TwitchySharp.Helpers.Analyzers\TwitchySharp.Helpers.Analyzers.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      />
     <Analyzer Include="..\TwitchySharp.Helpers.Generators\bin\$(Configuration)\netstandard2.0\Scriban.dll" />
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
   </ItemGroup>
