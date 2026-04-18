@@ -29,13 +29,13 @@
 {{- end}}
 {
     {{- if should_add_value_property }}
-    public required {{ wrapped_type_name }} Value { get; init; }
+    public{{ wrapped_type_is_nullable ? "" : " required" }} {{ wrapped_type_name }} Value { get; init; }
     {{- end }}
     {{- if should_add_implicit_operator }}
     public static implicit operator {{ wrapped_type_name }}({{ type_name }} wrapper) => wrapper.Value;
     {{- end }}
     {{- if should_add_to_string_override }}
-    public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+    public override global::System.String ToString() => {{ wrapped_type_is_nullable ? "Value?.ToString() ?? global::System.String.Empty" : "Value.ToString()" }};
     {{- end }}
     {{- if wrapper_interface && json_create_expression }}
     static {{ type_name }} {{ wrapper_interface }}.Create({{ wrapped_type_name }} value) => {{ json_create_expression }};

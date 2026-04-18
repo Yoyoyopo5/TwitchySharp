@@ -61,10 +61,14 @@ internal record ValueWrapperDefinition
             ct.ThrowIfCancellationRequested();
             return new()
             {
-                FullyQualifiedName = symbol.ToDisplayString(RealFullyQualifiedFormat)
+                FullyQualifiedName = symbol.ToDisplayString(RealFullyQualifiedFormat) + ((!symbol.IsValueType && symbol.IsNullable()) ? "?" : string.Empty),
+                IsNullable = symbol.IsNullable(),
+                IsValueType = symbol.IsValueType
             };
         }
         public required string FullyQualifiedName { get; init; }
+        public required bool IsNullable { get; init; }
+        public required bool IsValueType { get; init; }
     }
     public readonly record struct ValueWrapperConstructorInfo
     {

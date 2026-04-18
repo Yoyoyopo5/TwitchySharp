@@ -49,7 +49,7 @@ public class Test_ValueWrapperGenerator
             {
                 public required global::System.String Value { get; init; }
                 public static implicit operator global::System.String(AddsAllMembersToEmptyType wrapper) => wrapper.Value;
-                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                public override global::System.String ToString() => Value.ToString();
                 static AddsAllMembersToEmptyType global::TwitchySharp.Helpers.IWrapValue<global::System.String, AddsAllMembersToEmptyType>.Create(global::System.String value) => new() { Value = value };
             }
 
@@ -130,7 +130,7 @@ public class Test_ValueWrapperGenerator
                     {
                         public required global::System.Int32 Value { get; init; }
                         public static implicit operator global::System.Int32(GeneratesNestedWrapperType wrapper) => wrapper.Value;
-                        public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                        public override global::System.String ToString() => Value.ToString();
                         static GeneratesNestedWrapperType global::TwitchySharp.Helpers.IWrapValue<global::System.Int32, GeneratesNestedWrapperType>.Create(global::System.Int32 value) => new() { Value = value };
                     }
                 }
@@ -159,7 +159,7 @@ public class Test_ValueWrapperGenerator
                 : global::TwitchySharp.Helpers.IWrapValue<global::System.Double, SkipsValuePropertyOnRecordWithPrimaryConstructor>
             {
                 public static implicit operator global::System.Double(SkipsValuePropertyOnRecordWithPrimaryConstructor wrapper) => wrapper.Value;
-                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                public override global::System.String ToString() => Value.ToString();
                 static SkipsValuePropertyOnRecordWithPrimaryConstructor global::TwitchySharp.Helpers.IWrapValue<global::System.Double, SkipsValuePropertyOnRecordWithPrimaryConstructor>.Create(global::System.Double value) => new(value);
             }
             
@@ -215,7 +215,7 @@ public class Test_ValueWrapperGenerator
             {
                 public required global::System.String Value { get; init; }
                 public static implicit operator global::System.String(SkipsAddingJsonConverterWithNonValueRequiredProps wrapper) => wrapper.Value;
-                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                public override global::System.String ToString() => Value.ToString();
             }
 
             """,
@@ -240,7 +240,7 @@ public class Test_ValueWrapperGenerator
             {
                 public required global::System.String Value { get; init; }
                 public static implicit operator global::System.String(SkipsAddingJsonConverterOnRecordWithNonValuePrimaryConstructorArgs wrapper) => wrapper.Value;
-                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                public override global::System.String ToString() => Value.ToString();
             }
 
             """,
@@ -273,12 +273,41 @@ public class Test_ValueWrapperGenerator
                 : global::TwitchySharp.Helpers.IWrapValue<global::System.String, AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod>
             {
                 public static implicit operator global::System.String(AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod wrapper) => wrapper.Value;
-                public override global::System.String ToString() => Value != null ? Value.ToString() : global::System.String.Empty;
+                public override global::System.String ToString() => Value.ToString();
                 static AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod global::TwitchySharp.Helpers.IWrapValue<global::System.String, AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod>.Create(global::System.String value) => Create(value);
             }
 
             """,
             ExpectedOutputFilePath = $"TestNamespace_AddsJsonConverterWithNonValueRequiredPropsAndSuitableStaticCreateMethod{EXPECTED_FILE_PATH_SUFFIX}"
+        },
+        new SourceGeneratorTestCase()
+        {
+            Name = "AddMembersToWrappedNullableValueType",
+            Input = """
+            namespace TestNamespace;
+            using TwitchySharp.Helpers;
+            using System.Text.Json.Serialization;
+            [Wrapper<int?>]
+            public readonly partial record struct AddMembersToWrappedNullableValueType;
+            """,
+            ExpectedOutput = """
+            // <auto-generated/>
+            #nullable enable
+            
+            namespace TestNamespace;
+            
+            [global::System.Text.Json.Serialization.JsonConverter(typeof(global::TwitchySharp.Helpers.WrapperJsonConverter<AddMembersToWrappedNullableValueType, global::System.Int32?>))]
+            public readonly partial record struct AddMembersToWrappedNullableValueType
+                : global::TwitchySharp.Helpers.IWrapValue<global::System.Int32?, AddMembersToWrappedNullableValueType>
+            {
+                public global::System.Int32? Value { get; init; }
+                public static implicit operator global::System.Int32?(AddMembersToWrappedNullableValueType wrapper) => wrapper.Value;
+                public override global::System.String ToString() => Value?.ToString() ?? global::System.String.Empty;
+                static AddMembersToWrappedNullableValueType global::TwitchySharp.Helpers.IWrapValue<global::System.Int32?, AddMembersToWrappedNullableValueType>.Create(global::System.Int32? value) => new() { Value = value };
+            }
+
+            """,
+            ExpectedOutputFilePath = $"TestNamespace_AddMembersToWrappedNullableValueType{EXPECTED_FILE_PATH_SUFFIX}"
         }
     ];
     public static TheoryData<TestCaseWrapper<SourceGeneratorTestCase>> TestCases
