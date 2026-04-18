@@ -5,7 +5,8 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// Contains static definitions for possible Guest Star group layouts.
 /// </summary>
 /// <param name="Value">The string value of the layout.</param>
-public record GuestStarGroupLayout(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct GuestStarGroupLayout(string Value)
 {
     /// <summary>
     /// All live guests are tiled within the browser source with the same size.

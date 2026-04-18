@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Entitlements;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// Contains static definitions for possible statuses of an entitlement update.
 /// </summary>
 /// <param name="Value">The string value of the entitlement update status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EntitlementUpdateStatus, string>))]
-public record EntitlementUpdateStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EntitlementUpdateStatus(string Value)
 {
     /// <summary>
     /// The entitlement ids in the request's ids field are not valid.

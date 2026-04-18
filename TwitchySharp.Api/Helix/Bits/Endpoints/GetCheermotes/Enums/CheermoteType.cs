@@ -7,8 +7,8 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// Contains static definitions for possible Cheermote types.
 /// </summary>
 /// <param name="Value">The string value of the Cheermote type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<CheermoteType, string>))]
-public record CheermoteType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct CheermoteType(string Value)
 {
     /// <summary>
     /// A Twitch-defined Cheermote that is shown in the Bits card.

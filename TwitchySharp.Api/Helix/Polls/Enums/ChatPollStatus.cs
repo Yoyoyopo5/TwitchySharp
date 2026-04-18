@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
 /// Contains static definitions for possible chat poll statuses.
 /// </summary>
 /// <param name="Value">The string value of the chat poll status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChatPollStatus, string>))]
-public record ChatPollStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChatPollStatus(string Value)
 {
     /// <summary>
     /// The poll is running.

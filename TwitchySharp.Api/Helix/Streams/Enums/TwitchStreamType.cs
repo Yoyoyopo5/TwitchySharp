@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Streams;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// Contains static definitions for possible Twitch stream types.
 /// </summary>
 /// <param name="Value">The string value of the stream type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<TwitchStreamType, string>))]
-public record TwitchStreamType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct TwitchStreamType(string Value)
 {
     public static TwitchStreamType Live { get; } = new("live");
 }

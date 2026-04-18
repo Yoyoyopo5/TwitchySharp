@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
 /// Contains static definitions for possible extension configuration locations.
 /// </summary>
 /// <param name="Value">The string value of the extension configuration location.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionConfigurationLocation, string>))]
-public record ExtensionConfigurationLocation(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ExtensionConfigurationLocation(string Value)
 {
     /// <summary>
     /// The Extensions Configuration Service hosts the configuration.

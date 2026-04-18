@@ -1,12 +1,11 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Represents additional OIDC claims that can be requested from a <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/">Twitch OIDC authorization flow</see> or the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">UserInfo</see> endpoint.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<OidcClaim, string>))]
-public record OidcClaim(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct OidcClaim(string Value)
 {
     /// <summary>
     /// The email address of the user that authorized the app. Requires <see cref="Scope.ReadUserEmail"/>.

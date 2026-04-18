@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 /// <summary>
 /// Contains static definitions for possible chat prediction statuses.
 /// </summary>
 /// <param name="Value">The string value of the chat prediction status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChatPredictionStatus, string>))]
-public record ChatPredictionStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChatPredictionStatus(string Value)
 {
     /// <summary>
     /// The Prediction is running and viewers can make predictions.

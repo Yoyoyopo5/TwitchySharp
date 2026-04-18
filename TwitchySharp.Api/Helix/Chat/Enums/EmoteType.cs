@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
 /// Contains static definitions for possible emote types.
 /// </summary>
 /// <param name="Value">The string value of the emote type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EmoteType, string>))]
-public record EmoteType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EmoteType(string Value)
 {
     /// <summary>
     /// No emote type was assigned to this emote.

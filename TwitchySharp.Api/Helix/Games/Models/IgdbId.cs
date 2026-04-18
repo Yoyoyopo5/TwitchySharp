@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Games;
 
@@ -7,11 +6,5 @@ namespace TwitchySharp.Api.Helix.Games;
 /// A game id from <see href="https://www.igdb.com/">IGDB</see>.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(WrapperJsonConverter<IgdbId, string>))]
-public readonly record struct IgdbId(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(IgdbId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
-}
+[Wrapper<string>]
+public readonly partial record struct IgdbId(string Value);

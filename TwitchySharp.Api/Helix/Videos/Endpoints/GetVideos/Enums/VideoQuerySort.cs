@@ -6,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// Contains static definitions for possible video sorting methods to order a <see cref="GetVideosRequest"/> response by.
 /// </summary>
 /// <param name="Value">Set a custom value (use only if a corresponding static definition does not exist).</param>
-public record VideoQuerySort(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct VideoQuerySort(string Value)
 {
     /// <summary>
     /// Sorts the returned list in descending order by when they were created (i.e., latest video first).

@@ -33,6 +33,11 @@
 					OutputItemType="Analyzer"
 					ReferenceOutputAssembly="false"
 					/>
+	<ProjectReference Include="..\TwitchySharp.Helpers.Analyzers\TwitchySharp.Helpers.Analyzers.csproj"
+					OutputItemType="Analyzer"
+					ReferenceOutputAssembly="false"
+					/>
+	<Analyzer Include="..\TwitchySharp.Helpers.Generators\bin\$(Configuration)\netstandard2.0\Scriban.dll" />
   </ItemGroup>
 
 </Project>

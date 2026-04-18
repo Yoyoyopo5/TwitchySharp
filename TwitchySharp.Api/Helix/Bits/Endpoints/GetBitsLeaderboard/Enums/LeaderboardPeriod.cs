@@ -5,7 +5,8 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// Contains static definitions for possible Bits leaderboard period types.
 /// </summary>
 /// <param name="Value">The string value of the Bits leaderboard period type.</param>
-public record LeaderboardPeriod(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct LeaderboardPeriod(string Value)
 {
     /// <summary>
     /// A day spans from 00:00:00 on the day specified in StartedAt and runs through 00:00:00 of the next day.

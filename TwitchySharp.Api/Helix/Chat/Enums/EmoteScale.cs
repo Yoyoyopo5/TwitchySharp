@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Chat;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Contains static definitions for possible emote scales.
 /// </summary>
 /// <param name="Value">The string value of the emote scale.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EmoteScale, string>))]
-public record EmoteScale(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EmoteScale(string Value)
 {
     /// <summary>
     /// 28px x 28px

@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Chat;
 
@@ -8,8 +7,8 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see cref="SendChatAnnouncementRequest"/>.
 /// </summary>
 /// <param name="Value">The string value of the chat announcement color.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChatAnnouncementColor, string>))]
-public record ChatAnnouncementColor(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChatAnnouncementColor(string Value)
 {
     /// <summary>
     /// Uses channel's accent color.
