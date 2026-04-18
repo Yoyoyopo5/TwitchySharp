@@ -8,7 +8,7 @@ namespace TwitchySharp.Helpers;
 /// <summary>
 /// Allows for simple creation of hardcoded sets of values that can be discovered via intellisense.
 /// </summary>
-[Obsolete("Use IWrapValue<T> source generation.")]
+[Obsolete("Use Wrapper<T> source generation.")]
 public record ValueBackedEnum<T> // We really need to remove this, use IWrapValue instead. Not AOT-compatible.
 {
     public T Value { get; private set; }
@@ -25,7 +25,7 @@ public record ValueBackedEnum<T> // We really need to remove this, use IWrapValu
 /// </summary>
 /// <typeparam name="TValueBackedEnum"></typeparam>
 /// <typeparam name="T"></typeparam>
-[Obsolete("Use IWrapValue<T> source generation.")]
+[Obsolete("Use Wrapper<T> source generation.")]
 public class ValueBackedEnumJsonConverter<TValueBackedEnum, T> : JsonConverter<TValueBackedEnum>
     where TValueBackedEnum : ValueBackedEnum<T>
 {
@@ -46,7 +46,7 @@ public class ValueBackedEnumJsonConverter<TValueBackedEnum, T> : JsonConverter<T
 /// <remarks>
 /// Register this factory in <see cref="JsonSerializerOptions"/> to support deserialization of <see cref="ValueBackedEnum{T}"/> derived types without attributes.
 /// </remarks>
-[Obsolete("Use IWrapValue<T> source generation.")]
+[Obsolete("Use Wrapper<T> source generation.")]
 public class ValueBackedEnumConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
