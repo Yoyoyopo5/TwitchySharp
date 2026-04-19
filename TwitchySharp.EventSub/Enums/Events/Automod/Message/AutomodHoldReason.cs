@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Automod.Message;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Automod.Message;
 /// Contains static definitions for possible reasons Automod holds a message.
 /// </summary>
 /// <param name="Value"></param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<AutomodHoldReason, string>))]
-public record AutomodHoldReason(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct AutomodHoldReason(string Value)
 {
     /// <summary>
     /// The Automod held the message due to its configuration.
