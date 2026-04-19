@@ -55,7 +55,7 @@ public class Test_FixedSecretTwitchWebhookMessageVerifier
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
             TwitchEventsubMessageTimestamp = FAKE_MESSAGE_TIMESTAMP,
             TwitchEventsubMessageSignature = "sha256=" + Convert.ToHexString(fakeSignature),
-            TwitchEventsubMessageType = string.Empty,
+            TwitchEventsubMessageType = new(string.Empty),
             TwitchEventsubSubscriptionType = string.Empty,
             TwitchEventsubSubscriptionVersion = string.Empty
         };
@@ -109,7 +109,7 @@ public class Test_FixedSecretTwitchWebhookMessageVerifier
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
             TwitchEventsubMessageTimestamp = FAKE_MESSAGE_TIMESTAMP,
             TwitchEventsubMessageSignature = FAKE_INVALID_SIGNATURE,
-            TwitchEventsubMessageType = string.Empty,
+            TwitchEventsubMessageType = new(string.Empty),
             TwitchEventsubSubscriptionType = string.Empty,
             TwitchEventsubSubscriptionVersion = string.Empty
         };
