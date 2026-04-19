@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.ChannelPoints;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.ChannelPoints;
 /// Contains static definitions for possible Channel Points Custom Reward Redemption statuses.
 /// </summary>
 /// <param name="Value">The string value of the redemption status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelPointsCustomRewardRedemptionStatus, string>))]
-public record ChannelPointsCustomRewardRedemptionStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelPointsCustomRewardRedemptionStatus(string Value)
 {
     public static ChannelPointsCustomRewardRedemptionStatus Unknown { get; } = new("unknown");
     /// <summary>

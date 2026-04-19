@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.EventSub.Enums.Events.Channel;
+﻿using TwitchySharp.EventSub.Enums.Events.Channel;
 using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel;
@@ -7,14 +6,14 @@ namespace TwitchySharp.EventSub.Models.Events.Channel;
 /// <summary>
 /// Contains information about a specific <see cref="ChannelModerateActionType.AddBlockedTerm"/>, <see cref="ChannelModerateActionType.AddPermittedTerm"/>, <see cref="ChannelModerateActionType.RemoveBlockedTerm"/>, or <see cref="ChannelModerateActionType.RemovePermittedTerm"/> action.
 /// </summary>
-public record ChannelModerateAutomodTermsAction
+public partial record ChannelModerateAutomodTermsAction
 {
     /// <summary>
     /// Contains static definitions for possible Automod terms action types.
     /// </summary>
     /// <param name="Value">The string value of the action type.</param>
-    [JsonConverter(typeof(ValueBackedEnumJsonConverter<ActionType, string>))]
-    public record ActionType(string Value) : ValueBackedEnum<string>(Value)
+    [Wrapper<string>]
+    public readonly partial record struct ActionType(string Value)
     {
         public static ActionType Add { get; } = new("add");
         public static ActionType Remove { get; } = new("remove");
@@ -23,8 +22,8 @@ public record ChannelModerateAutomodTermsAction
     /// Contains static definitions for possible Automod terms list types.
     /// </summary>
     /// <param name="Value">The string value of the list type.</param>
-    [JsonConverter(typeof(ValueBackedEnumJsonConverter<ListType, string>))]
-    public record ListType(string Value) : ValueBackedEnum<string>(Value)
+    [Wrapper<string>]
+    public readonly partial record struct ListType(string Value)
     {
         public static ListType BlockedTerms { get; } = new("blocked");
         public static ListType PermittedTerms { get; } = new("permitted");

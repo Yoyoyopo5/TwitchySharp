@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.GuestStar;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.GuestStar;
 /// Contains static definitions for possible Guest Star group layout types.
 /// </summary>
 /// <param name="Value">The string value of the layout type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<GuestStarGroupLayout, string>))]
-public record GuestStarGroupLayout(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct GuestStarGroupLayout(string Value)
 {
     /// <summary>
     /// All live guests are tiled within the browser source with the same size. 

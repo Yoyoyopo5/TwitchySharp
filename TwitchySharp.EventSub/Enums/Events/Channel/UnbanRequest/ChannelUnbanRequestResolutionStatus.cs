@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.UnbanRequest;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.UnbanRequest;
 /// Contains static definitions for possible statuses for channel unban requests.
 /// </summary>
 /// <param name="Value">The string value of the status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelUnbanRequestResolutionStatus, string>))]
-public record ChannelUnbanRequestResolutionStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelUnbanRequestResolutionStatus(string Value)
 {
     /// <summary>
     /// The unban request was approved by a moderator.

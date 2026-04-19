@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.HypeTrain;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.HypeTrain;
 /// Contains static definitions for possible Hype Train types.
 /// </summary>
 /// <param name="Value">The string value of the Hype Train type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<HypeTrainType, string>))]
-public record HypeTrainType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct HypeTrainType(string Value)
 {
     public static HypeTrainType Treasure { get; } = new("treasure");
     public static HypeTrainType GoldenKappa { get; } = new("golden_kappa");

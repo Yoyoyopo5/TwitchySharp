@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.HypeTrain;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.HypeTrain;
 /// Contains static definitions for possible Hype Train contribution types.
 /// </summary>
 /// <param name="Value">The string value of the contribution type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<HypeTrainContributionType, string>))]
-public record HypeTrainContributionType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct HypeTrainContributionType(string Value)
 {
     /// <summary>
     /// Bits contributions with Cheering, Power-ups, and Extensions. 

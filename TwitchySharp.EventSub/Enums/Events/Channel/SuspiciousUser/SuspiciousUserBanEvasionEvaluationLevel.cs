@@ -6,7 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 /// Contains static definitions for possible ban evasion likelihoods for suspicious chat users.
 /// </summary>
 /// <param name="Value">The string value for the ban evasion evaluation.</param>
-public record SuspiciousUserBanEvasionEvaluationLevel(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct SuspiciousUserBanEvasionEvaluationLevel(string Value)
 {
     public static SuspiciousUserBanEvasionEvaluationLevel Unknown { get; } = new("unknown");
     public static SuspiciousUserBanEvasionEvaluationLevel Possible { get; } = new("possible");

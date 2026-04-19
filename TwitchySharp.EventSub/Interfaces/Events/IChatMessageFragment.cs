@@ -14,7 +14,7 @@ public interface IChatMessageFragment
     /// <summary>
     /// The type of fragment.
     /// </summary>
-    ValueBackedEnum<string> Type { get; }
+    string Type { get; }
     /// <summary>
     /// The emote information.
     /// This is <see langword="null"/> unless <see cref="Type"/> is <c>emote</c>.

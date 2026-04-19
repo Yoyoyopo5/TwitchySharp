@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Automod.Message;
 
 /// <summary>
 /// Represents the status of an updated automod message.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<AutomodMessageUpdateStatus, string>))]
-public record AutomodMessageUpdateStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct AutomodMessageUpdateStatus(string Value)
 {
     public static AutomodMessageUpdateStatus Approved { get; } = new("approved");
     public static AutomodMessageUpdateStatus Denied { get; } = new("denied");

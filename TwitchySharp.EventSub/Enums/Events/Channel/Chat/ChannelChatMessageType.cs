@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.Chat;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.Chat;
 /// Contains static definitions for possible types of chat messages.
 /// </summary>
 /// <param name="Value"></param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelChatMessageType, string>))]
-public record ChannelChatMessageType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelChatMessageType(string Value)
 {
     /// <summary>
     /// A plain-text message.

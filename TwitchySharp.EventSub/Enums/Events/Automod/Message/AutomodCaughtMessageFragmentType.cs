@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Enums.Events.Automod.Message;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Automod.Message;
 /// Contains static definitions for potential Automod message fragment types.
 /// </summary>
 /// <param name="Value">The string value for the Automod message fragment type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<AutomodCaughtMessageFragmentType, string>))]
-public record AutomodCaughtMessageFragmentType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct AutomodCaughtMessageFragmentType(string Value)
 {
     /// <summary>
     /// A text fragment.
