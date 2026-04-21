@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -15,12 +14,8 @@ namespace TwitchySharp.Shared.Models;
 /// The string value of the user login. 
 /// This will be made lower case.
 /// </param>
-[JsonConverter(typeof(WrapperJsonConverter<UserLogin, string>))]
-public readonly record struct UserLogin(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct UserLogin(string Value)
 {
     public string Value { get; } = Value.ToLower();
-    public static implicit operator string(UserLogin login)
-        => login.Value;
-    public override string ToString()
-        => Value;
 }

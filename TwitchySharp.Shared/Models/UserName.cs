@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -12,11 +11,5 @@ namespace TwitchySharp.Shared.Models;
 /// See <see href="https://help.twitch.tv/s/article/display-names-on-twitch">Display Names on Twitch</see> for more information.
 /// </remarks>
 /// <param name="Value">The string value of the display name.</param>
-[JsonConverter(typeof(WrapperJsonConverter<UserName, string>))]
-public readonly record struct UserName(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(UserName name)
-        => name.Value;
-    public override string ToString()
-        => Value;
-}
+[Wrapper<string>]
+public readonly partial record struct UserName(string Value);

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Enums;
 
@@ -14,8 +8,8 @@ namespace TwitchySharp.Shared.Enums;
 /// You can use the <see href="https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels">Get Content Classification Labels</see> endpoint to get an up-to-date list.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ContentClassificationLabelId, string>))]
-public record ContentClassificationLabelId(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ContentClassificationLabelId(string Value)
 {
     /// <summary>
     /// Politics and Sensitive Social Issues

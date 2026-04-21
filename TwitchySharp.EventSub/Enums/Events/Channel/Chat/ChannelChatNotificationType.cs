@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.Chat;
 
@@ -6,7 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.Chat;
 /// Contains static definitions for chat notification types.
 /// </summary>
 /// <param name="Value">The string value of the notification type.</param>
-public record ChannelChatNotificationType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelChatNotificationType(string Value)
 {
     /// <summary>
     /// A user subscribed to the channel.

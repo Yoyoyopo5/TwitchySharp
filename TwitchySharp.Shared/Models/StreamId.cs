@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -7,13 +6,9 @@ namespace TwitchySharp.Shared.Models;
 /// An id representing a specific Twitch stream.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(WrapperJsonConverter<StreamId, string>))]
-public readonly record struct StreamId(string Value) : IWrapValue<string>
+[Wrapper<string>]
+public readonly partial record struct StreamId(string Value)
 {
     public static implicit operator VideoId(StreamId id)
         => new(id);
-    public static implicit operator string(StreamId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
 }

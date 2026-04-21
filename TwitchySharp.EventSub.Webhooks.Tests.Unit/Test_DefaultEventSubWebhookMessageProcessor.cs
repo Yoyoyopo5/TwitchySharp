@@ -19,10 +19,10 @@ public class Test_DefaultEventSubWebhookMessageProcessor
         public ValueTask OnCallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
             => ValueTask.CompletedTask;
 
-        ValueTask IWebhookEventSubHandler.OnNotified(IEventSubNotification notification, CancellationToken ct)
+        public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct)
             => ValueTask.CompletedTask;
 
-        ValueTask IWebhookEventSubHandler.OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct)
+        public ValueTask OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct)
             => ValueTask.CompletedTask;
     }
 
@@ -104,6 +104,7 @@ public class Test_DefaultEventSubWebhookMessageProcessor
               }
             }
             """;
+        MemoryStream bodyStream = new(Encoding.UTF8.GetBytes(fakeBody));
 
         using HMACSHA256 hmac = new(fakeSecretBytes);
         string fakeSignature = "sha256=" + Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(FAKE_MESSAGE_ID + FAKE_MESSAGE_TIMESTAMP + fakeBody)));
@@ -111,7 +112,7 @@ public class Test_DefaultEventSubWebhookMessageProcessor
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
             TwitchEventsubMessageTimestamp = FAKE_MESSAGE_TIMESTAMP,
-            TwitchEventsubMessageType = FAKE_MESSAGE_TYPE,
+            TwitchEventsubMessageType = new(FAKE_MESSAGE_TYPE),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubSubscriptionType = fakeSubscriptionType,
             TwitchEventsubSubscriptionVersion = fakeSubscriptionVersion
@@ -119,7 +120,7 @@ public class Test_DefaultEventSubWebhookMessageProcessor
 
         DefaultEventSubWebhookMessageProcessor processor = new(new StubWebhookHandler());
 
-        WebhookResponseData actualResponse = await processor.HandleRequest(fakeHeader, fakeBody);
+        WebhookResponseData actualResponse = await processor.HandleRequest(fakeHeader, bodyStream);
 
         Assert.Equal(200, actualResponse.StatusCode);
     }

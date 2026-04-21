@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -8,9 +7,8 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Used with <see cref="ManageHeldAutoModMessagesRequest"/>.
 /// </summary>
 /// <param name="Value">The name of the action to take.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<AutoModAction, string>))]
-public record AutoModAction(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct AutoModAction(string Value)
 {
     public static AutoModAction Allow { get; } = new("ALLOW");
     public static AutoModAction Deny { get; } = new("DENY");

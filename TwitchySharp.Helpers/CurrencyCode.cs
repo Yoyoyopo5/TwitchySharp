@@ -14,7 +14,7 @@ namespace TwitchySharp.Helpers;
 /// Can be created from a <see cref="RegionInfo"/>.
 /// </remarks>
 [JsonConverter(typeof(CurrencyCodeJsonConverter))]
-public readonly record struct CurrencyCode : IWrapValue<string>
+public readonly record struct CurrencyCode
 {
     private static readonly FrozenDictionary<string, RegionInfo> _currencyCodes = CultureInfo
         .GetCultures(CultureTypes.SpecificCultures)

@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -7,11 +6,5 @@ namespace TwitchySharp.Shared.Models;
 /// An id representing a specific Twitch chat unban request.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(WrapperJsonConverter<UnbanRequestId, string>))]
-public readonly record struct UnbanRequestId(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(UnbanRequestId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
-}
+[Wrapper<string>]
+public readonly partial record struct UnbanRequestId(string Value);

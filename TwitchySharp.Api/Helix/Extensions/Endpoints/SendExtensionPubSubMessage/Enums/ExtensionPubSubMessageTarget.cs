@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Contains static values for possible Extension PubSub message targets.
 /// </summary>
 /// <param name="Value">The string value of the message target.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionPubSubMessageTarget, string>))]
-public record ExtensionPubSubMessageTarget(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ExtensionPubSubMessageTarget(string Value)
 {
     /// <summary>
     /// Sends a message to a specific channel's chatroom.

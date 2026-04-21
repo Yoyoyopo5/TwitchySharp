@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.Goals;
 
@@ -6,7 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.Goals;
 /// Contains static definitions for channel goal types.
 /// </summary>
 /// <param name="Value">The string value of the goal type.</param>
-public record ChannelGoalType(string Value) : ValueBackedEnum<string>(Value) // Not sure if we should merge this with the one from Api lib, there seems to be subtle differences in the docs spec.
+[Wrapper<string>]
+public readonly partial record struct ChannelGoalType(string Value) // Not sure if we should merge this with the one from Api lib, there seems to be subtle differences in the docs spec.
 {
     /// <summary>
     /// The goal is to increase followers.

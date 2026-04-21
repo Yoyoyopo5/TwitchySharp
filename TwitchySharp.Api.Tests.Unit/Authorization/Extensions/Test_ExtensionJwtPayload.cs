@@ -15,10 +15,10 @@ public class Test_ExtensionJwtPayload
         const string FAKE_USER_ID = "123";
         const string FAKE_EXTENSION_SECRET = "iWLtPMsRJPfdZNdC/4Ug9gtZNdWlfFDvGweKuW4EVjk=";
         DateTimeOffset fakeExpiry = DateTimeOffset.FromUnixTimeSeconds(9001);
-        ExtensionJwtPayload stubPayload = new(new UserId(FAKE_USER_ID)) { ExpiresAt = fakeExpiry };
+        ExtensionJwtPayload stubPayload = new() { UserId = new(FAKE_USER_ID), ExpiresAt = fakeExpiry };
         const string MOCK_SIGNED_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjkwMDEsInVzZXJfaWQiOiIxMjMiLCJyb2xlIjoiZXh0ZXJuYWwiLCJwdWJzdWJfcGVybXMiOnsic2VuZCI6WyIqIl19fQ.BC9ojMsbXecZnIzJs2RR4dD-GFpr7aWDvR-iMbRaT3Q";
 
-        string actual = stubPayload.Sign(FAKE_EXTENSION_SECRET).Value;
+        string actual = stubPayload.Sign(new(FAKE_EXTENSION_SECRET)).Value;
 
         Assert.Equal(MOCK_SIGNED_JWT, actual);
     }

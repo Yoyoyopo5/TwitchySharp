@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.GuestStar;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.GuestStar;
 /// Contains static definitions for possible Guest Star guest states.
 /// </summary>
 /// <param name="Value">The string value of the state.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<GuestStarGuestState, string>))]
-public record GuestStarGuestState(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct GuestStarGuestState(string Value)
 {
     /// <summary>
     /// The guest has transitioned to the invite queue. 

@@ -1,14 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 
 /// <summary>
 /// Contains static definitions for possible statuses for API updated predictions.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<UpdateChatPredictionStatus, string>))]
-public record UpdateChatPredictionStatus(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct UpdateChatPredictionStatus(string Value)
 {
     /// <summary>
     /// The winning outcome is determined and the Channel Points are distributed to the viewers who predicted the correct outcome.

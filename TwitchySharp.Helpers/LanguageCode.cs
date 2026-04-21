@@ -14,7 +14,7 @@ namespace TwitchySharp.Helpers;
 /// Value can be "other" for languages that Twitch doesn't support.
 /// </remarks>
 [JsonConverter(typeof(LanguageCodeJsonConverter))]
-public readonly record struct LanguageCode : IWrapValue<string>
+public readonly record struct LanguageCode
 {
     private const string OTHER = "other"; // For languages Twitch "doesn't support".
     private static readonly FrozenDictionary<string, CultureInfo> _languages = CultureInfo

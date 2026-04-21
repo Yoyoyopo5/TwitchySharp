@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 
@@ -6,7 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 /// Contains static definitions for possible suspicious user statuses.
 /// </summary>
 /// <param name="Value">The string value of the suspicious user status.</param>
-public record SuspiciousUserStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct SuspiciousUserStatus(string Value)
 {
     public static SuspiciousUserStatus None { get; } = new("none");
     public static SuspiciousUserStatus ActiveMonitoring { get; } = new("active_monitoring");

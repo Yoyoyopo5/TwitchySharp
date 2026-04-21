@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -22,21 +21,15 @@ public readonly record struct Pagination
 /// A cursor used for pagination.
 /// </summary>
 /// <param name="Value">The cursor's string value.</param>
-[JsonConverter(typeof(WrapperJsonConverter<PaginationCursor, string>))]
-public readonly record struct PaginationCursor(string Value) : IWrapValue<string>;
+[Wrapper<string>]
+public readonly partial record struct PaginationCursor(string Value);
 
 /// <summary>
 /// Represents the amount of results per page to fetch.
 /// </summary>
 /// <param name="Value">The integer value of the amount.</param>
-[JsonConverter(typeof(WrapperJsonConverter<PaginationAmount, int>))]
-public readonly record struct PaginationAmount(int Value) : IWrapValue<int>
-{
-    public static implicit operator int(PaginationAmount value)
-        => value.Value;
-    public override string ToString()
-        => Value.ToString();
-}
+[Wrapper<int>]
+public readonly partial record struct PaginationAmount(int Value);
 
 public interface IPageableResponse
 {

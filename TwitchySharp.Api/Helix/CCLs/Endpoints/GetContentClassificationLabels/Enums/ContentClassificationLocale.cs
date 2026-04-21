@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.CCLs;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.Api.Helix.CCLs;
 /// Contains static definitions for CCL locales.
 /// </summary>
 /// <param name="Value">The string value of the CCL locale.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ContentClassificationLocale, string>))]
-public record ContentClassificationLocale(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ContentClassificationLocale(string Value)
 {
     public static ContentClassificationLocale Bulgarian { get; } = new("bg-BG");
     public static ContentClassificationLocale Czech { get; } = new("cs-CZ");

@@ -1,14 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Contains static definitions for types of extension configuration segments.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionConfigurationSegmentType, string>))]
-public record ExtensionConfigurationSegmentType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ExtensionConfigurationSegmentType(string Value)
 {
     /// <summary>
     /// Configuration segment is delivered to views of your extension on the associated channel and

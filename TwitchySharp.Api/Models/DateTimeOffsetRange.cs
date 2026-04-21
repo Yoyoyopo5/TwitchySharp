@@ -4,7 +4,7 @@ using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Api;
 
-public record struct DateTimeOffsetRange
+public readonly record struct DateTimeOffsetRange
 {
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
     public DateTimeOffset? StartedAt { get; private init; }
