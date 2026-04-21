@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Models;
 
@@ -7,11 +6,5 @@ namespace TwitchySharp.Shared.Models;
 /// An id representing a specific Twitch chat badge.
 /// </summary>
 /// <param name="Value">The string value of the id.</param>
-[JsonConverter(typeof(WrapperJsonConverter<ChatBadgeId, string>))]
-public readonly record struct ChatBadgeId(string Value) : IWrapValue<string>
-{
-    public static implicit operator string(ChatBadgeId id)
-        => id.Value;
-    public override string ToString()
-        => Value;
-}
+[Wrapper<string>]
+public readonly partial record struct ChatBadgeId(string Value);

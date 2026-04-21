@@ -1,9 +1,6 @@
 ﻿using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Shared.EventSub.Enums;
-
-// Note that this type may need to be moved into a higher scope or dependency as we develop the EventSub branch.
-
 /// <summary>
 /// Contains static definitions of Twitch <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types">EventSub subscription types</see>.
 /// You can also create your own subscription type using the public constructor (this may be useful if Twitch adds a new type that isn't available as a static definition yet).

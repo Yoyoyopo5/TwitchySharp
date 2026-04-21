@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -10,8 +8,8 @@ namespace TwitchySharp.Api;
 /// You can use this constructor to create a <see cref="Scope"/> when a static definition is not provided.
 /// </summary>
 /// <param name="Value">The Twitch scope string (e.g. "bits:read")</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<Scope, string>))]
-public partial record Scope(string Value) : ValueBackedEnum<string>(Value);
+[Wrapper<string>]
+public readonly partial record struct Scope(string Value);
 
 public static class ScopeExtensions
 {

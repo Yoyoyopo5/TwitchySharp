@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Streams;
 
@@ -13,8 +13,8 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// Don't use this unless you know what you're doing. 
 /// Prefer using the static definitions on this class instead.
 /// </param>
-public record StreamType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct StreamType(string Value)
 {
     public static StreamType All { get; } = new("all");
     public static StreamType Live { get; } = new("live");

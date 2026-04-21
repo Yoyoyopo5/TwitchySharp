@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Chat;
 
@@ -8,8 +9,8 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// To use a hex code, construct a new <see cref="ChatColor"/>.
 /// </summary>
 /// <param name="Value">The hex color code to use.</param>
-public record ChatColor(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChatColor(string Value)
 {
     public ChatColor(RgbColor color)
         : this(color.ToString()) { }

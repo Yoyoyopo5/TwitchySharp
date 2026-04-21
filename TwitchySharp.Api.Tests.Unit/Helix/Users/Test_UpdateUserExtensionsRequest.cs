@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Users;
 using TwitchySharp.Shared.Models;
 using TwitchySharp.Shared;
+using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Users;
 
@@ -15,11 +16,12 @@ public class Test_UpdateUserExtensionsRequest
     {
         var config = new ExtensionsConfiguration
         {
-            PanelExtensions = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"),
-                    new ExtensionVersion("1.1.0"),
-                    new UpdateExtensionParameters { Active = true })
+            PanelExtensions = [new UpdateExtensionParameters()
+            {
+                Id = new ExtensionId("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"),
+                Version = new ExtensionVersion("1.1.0"),
+                Active = true
+            }]
         };
         var requestData = new UpdateUserExtensionsRequestData(config);
 
@@ -39,15 +41,20 @@ public class Test_UpdateUserExtensionsRequest
     {
         var config = new ExtensionsConfiguration
         {
-            PanelExtensions = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("ext1"),
-                    new ExtensionVersion("1.0.0"),
-                    new UpdateExtensionParameters { Active = true })
-                .ConfigureExtension(
-                    new ExtensionId("ext2"),
-                    new ExtensionVersion("2.0.0"),
-                    new UpdateExtensionParameters { Active = false })
+            PanelExtensions = [
+                new UpdateExtensionParameters()
+                {
+                    Id = new ExtensionId("ext1"),
+                    Version = new ExtensionVersion("1.0.0"),
+                    Active = true
+                },
+                new UpdateExtensionParameters()
+                {
+                    Id = new ExtensionId("ext2"),
+                    Version = new ExtensionVersion("2.0.0"),
+                    Active = false
+                }
+            ]
         };
         var requestData = new UpdateUserExtensionsRequestData(config);
 
@@ -66,11 +73,12 @@ public class Test_UpdateUserExtensionsRequest
     {
         var config = new ExtensionsConfiguration
         {
-            OverlayExtensions = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("zfh2irvx2jb4s60f02jq0ajm8vwgka"),
-                    new ExtensionVersion("1.0.19"),
-                    new UpdateExtensionParameters { Active = true })
+            OverlayExtensions = [new UpdateExtensionParameters()
+                {
+                    Id = new ExtensionId("zfh2irvx2jb4s60f02jq0ajm8vwgka"),
+                    Version = new ExtensionVersion("1.0.19"),
+                    Active = true
+                }]
         };
         var requestData = new UpdateUserExtensionsRequestData(config);
 
@@ -90,11 +98,14 @@ public class Test_UpdateUserExtensionsRequest
     {
         var config = new ExtensionsConfiguration
         {
-            ComponentExtensions = new ExtensionsConfigurationType<UpdateComponentExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"),
-                    new ExtensionVersion("0.0.1"),
-                    new UpdateComponentExtensionParameters { Active = true, X = 0, Y = 0 })
+            ComponentExtensions = [new UpdateComponentExtensionParameters()
+            {
+                Id = new ExtensionId("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"),
+                Version = new ExtensionVersion("0.0.1"),
+                Active = true,
+                X = 0,
+                Y = 0
+            }]
         };
         var requestData = new UpdateUserExtensionsRequestData(config);
 
@@ -116,21 +127,26 @@ public class Test_UpdateUserExtensionsRequest
     {
         var config = new ExtensionsConfiguration
         {
-            PanelExtensions = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("panel_ext"),
-                    new ExtensionVersion("1.0.0"),
-                    new UpdateExtensionParameters { Active = true }),
-            OverlayExtensions = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("overlay_ext"),
-                    new ExtensionVersion("2.0.0"),
-                    new UpdateExtensionParameters { Active = true }),
-            ComponentExtensions = new ExtensionsConfigurationType<UpdateComponentExtensionParameters>()
-                .ConfigureExtension(
-                    new ExtensionId("component_ext"),
-                    new ExtensionVersion("3.0.0"),
-                    new UpdateComponentExtensionParameters { Active = true, X = 100, Y = 200 })
+            PanelExtensions = [new UpdateExtensionParameters()
+                {
+                    Id = new ExtensionId("panel_ext"),
+                    Version = new ExtensionVersion("1.0.0"),
+                    Active = true,
+                }],
+            OverlayExtensions = [new UpdateExtensionParameters()
+                {
+                    Id = new ExtensionId("overlay_ext"),
+                    Version = new ExtensionVersion("2.0.0"),
+                    Active = true
+                }],
+            ComponentExtensions = [new UpdateComponentExtensionParameters()
+                {
+                    Id = new ExtensionId("component_ext"),
+                    Version = new ExtensionVersion("3.0.0"),
+                    Active = true,
+                    X = 100,
+                    Y = 200,
+                }]
         };
         var requestData = new UpdateUserExtensionsRequestData(config);
 
@@ -163,19 +179,26 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void ExtensionsConfigurationType_ChainedConfigureExtension_AccumulatesExtensions()
     {
-        var config = new ExtensionsConfigurationType<UpdateExtensionParameters>()
-            .ConfigureExtension(
-                new ExtensionId("ext1"),
-                new ExtensionVersion("1.0.0"),
-                new UpdateExtensionParameters { Active = true })
-            .ConfigureExtension(
-                new ExtensionId("ext2"),
-                new ExtensionVersion("2.0.0"),
-                new UpdateExtensionParameters { Active = false })
-            .ConfigureExtension(
-                new ExtensionId("ext3"),
-                new ExtensionVersion("3.0.0"),
-                new UpdateExtensionParameters { Active = true });
+        ImmutableArray<UpdateExtensionParameters?> config = [
+            new UpdateExtensionParameters() 
+            {
+                Id = new ExtensionId("ext1"),
+                Version = new ExtensionVersion("1.0.0"),
+                Active = true
+            },
+            new UpdateExtensionParameters()
+            {
+                Id = new ExtensionId("ext2"),
+                Version = new ExtensionVersion("2.0.0"),
+                Active = false
+            },
+            new UpdateExtensionParameters()
+            {
+                Id = new ExtensionId("ext3"),
+                Version = new ExtensionVersion("3.0.0"),
+                Active = true
+            },
+        ];
 
         var fullConfig = new ExtensionsConfiguration { PanelExtensions = config };
         var requestData = new UpdateUserExtensionsRequestData(fullConfig);

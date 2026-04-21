@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Bits;
 /// <summary>
 /// Contains static definitions for possible Cheermote tier level ids.
 /// </summary>
 /// <param name="Value">The value of the Cheermote tier level.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<CheermoteTierLevel, string>))]
-public record CheermoteTierLevel(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct CheermoteTierLevel(string Value)
 {
     public static CheermoteTierLevel One { get; } = new("1");
     public static CheermoteTierLevel OneHundred { get; } = new("100");

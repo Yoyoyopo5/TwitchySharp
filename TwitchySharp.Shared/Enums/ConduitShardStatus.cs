@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.Enums;
 
 /// <summary>
 /// Contains static definitions that represent the status of a conduit shard.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ConduitShardStatus, string>))]
-public record ConduitShardStatus(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ConduitShardStatus(string Value)
 {
     /// <summary>
     /// The shard is enabled and working.

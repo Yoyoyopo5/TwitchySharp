@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Users;
 
@@ -8,9 +7,8 @@ namespace TwitchySharp.Api.Helix.Users;
 /// These are used to distinguish Twitch staff from regular users.
 /// </summary>
 /// <param name="Value">The string value of the user type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<TwitchUserType, string>))]
-public record TwitchUserType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct TwitchUserType(string Value)
 {
     public static TwitchUserType Admin { get; } = new("admin");
     public static TwitchUserType GlobalMod { get; } = new("global_mod");

@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Videos;
 
@@ -6,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// Contains static definitions for possible video periods to filter a <see cref="GetVideosRequest"/> query by.
 /// </summary>
 /// <param name="Value">Set a custom value (use only if a corresponding static definition does not exist).</param>
-public record VideoQueryPeriod(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct VideoQueryPeriod(string Value)
 {
     /// <summary>
     /// All published videos regardless of publishing time.

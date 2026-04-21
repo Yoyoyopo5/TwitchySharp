@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Polls;
 
@@ -7,9 +6,8 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// Contains static references for valid poll end statuses.
 /// </summary>
 /// <param name="Value">The string value of the status to end the poll with.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EndPollStatus, string>))]
-public record EndPollStatus(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EndPollStatus(string Value)
 {
     /// <summary>
     /// Ends the poll before the poll is scheduled to end. 

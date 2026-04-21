@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Contains static definitions for possible unban request statuses.
 /// </summary>
 /// <param name="Value">The string value of the unban request status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<UnbanRequestStatus, string>))]
-public record UnbanRequestStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct UnbanRequestStatus(string Value)
 {
     public static UnbanRequestStatus Pending { get; } = new("pending");
     public static UnbanRequestStatus Approved { get; } = new("approved");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TwitchySharp.Api;
 
-public partial record Scope
+public readonly partial record struct Scope
 {
     /// <summary>
     /// Obtain OpenID claims of the authorizing user.

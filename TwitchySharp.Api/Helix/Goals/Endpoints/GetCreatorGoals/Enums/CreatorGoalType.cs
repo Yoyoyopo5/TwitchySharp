@@ -1,14 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Goals;
 
 /// <summary>
 /// Possible goal types.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<CreatorGoalType, string>))]
-public record CreatorGoalType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct CreatorGoalType(string Value)
 {
     /// <summary>
     /// The goal is to increase followers.

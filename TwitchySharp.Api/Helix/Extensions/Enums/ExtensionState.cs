@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// Contains static definitions for possible extension states.
 /// </summary>
 /// <param name="Value">The string value of the extension state.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ExtensionState, string>))]
-public record ExtensionState(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ExtensionState(string Value)
 {
     public static ExtensionState Approved { get; } = new("Approved");
     public static ExtensionState AssetsUploaded { get; } = new("AssetsUploaded");

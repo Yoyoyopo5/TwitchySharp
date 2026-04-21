@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// Contains static definitions for possible Channel Points reward redemption statuses.
 /// </summary>
 /// <param name="Value">The string value of the redemption status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<RewardRedemptionStatus, string>))]
-public record RewardRedemptionStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct RewardRedemptionStatus(string Value)
 {
     public static RewardRedemptionStatus Canceled { get; } = new("CANCELED");
     public static RewardRedemptionStatus Fulfilled { get; } = new("FULFILLED");

@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
 
@@ -7,8 +6,8 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// Contains static definitions for possible guest star invite statuses.
 /// </summary>
 /// <param name="Value">The string value of the guest star invite status.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<GuestStarInviteStatus, string>))]
-public record GuestStarInviteStatus(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct GuestStarInviteStatus(string Value)
 {
     /// <summary>
     /// The user has been invited to the session but has not acknowledged it.

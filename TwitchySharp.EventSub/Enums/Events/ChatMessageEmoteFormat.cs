@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events;
 
@@ -7,9 +7,8 @@ namespace TwitchySharp.EventSub.Enums.Events;
 /// Contains static definitions of possible emote formats.
 /// </summary>
 /// <param name="Value"></param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChatMessageEmoteFormat, string>))]
-public record ChatMessageEmoteFormat(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChatMessageEmoteFormat(string Value)
 {
     /// <summary>
     /// An animated GIF.

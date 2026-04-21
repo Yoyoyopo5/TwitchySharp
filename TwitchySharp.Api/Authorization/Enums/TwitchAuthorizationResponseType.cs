@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Authorization;
 
@@ -11,7 +6,8 @@ namespace TwitchySharp.Api.Authorization;
 /// Contains static definitions for possible authorization response types.
 /// </summary>
 /// <param name="Value">The string value of the response type.</param>
-public record TwitchAuthorizationResponseType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct TwitchAuthorizationResponseType(string Value)
 {
     /// <summary>
     /// Get a OpenID Connect ID token directly in the fragment portion of the redirect URI.
