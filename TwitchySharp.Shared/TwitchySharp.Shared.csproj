@@ -7,15 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TwitchySharp.Helpers.Generators\TwitchySharp.Helpers.Generators.csproj" 
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"
-                      />
-    <ProjectReference Include="..\TwitchySharp.Helpers.Analyzers\TwitchySharp.Helpers.Analyzers.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"
-                      />
-    <Analyzer Include="..\TwitchySharp.Helpers.Generators\bin\$(Configuration)\netstandard2.0\Scriban.dll" />
+    <PackageReference Include="Yoyoyopo5.ValueWrapper" Version="1.0.0" />
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
   </ItemGroup>
 

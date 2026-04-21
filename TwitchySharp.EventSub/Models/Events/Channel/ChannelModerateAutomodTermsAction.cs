@@ -1,5 +1,5 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Channel;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel;
 

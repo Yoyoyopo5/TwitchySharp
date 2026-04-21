@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.UnbanRequest;
 

@@ -1,8 +1,6 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
-using System;
-using System.Text.Json.Serialization;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api;
 
@@ -54,7 +52,7 @@ public readonly partial record struct UserAccessToken(string Value) : IAccessTok
 [Wrapper<string>]
 public readonly partial record struct ExtensionJsonWebToken(string Value) : IAccessToken;
 
-public static class ExtensionJsonWebTokenJwtExtension 
+public static class ExtensionJsonWebTokenJwtExtension
 {
     /// <summary>
     /// Read an <see cref="ExtensionJsonWebToken"/> as a <see cref="JsonWebToken"/>.

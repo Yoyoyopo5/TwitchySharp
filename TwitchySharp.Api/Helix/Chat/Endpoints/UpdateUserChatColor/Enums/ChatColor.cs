@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
+using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Chat;
 

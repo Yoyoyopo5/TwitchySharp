@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api;
 /// <summary>

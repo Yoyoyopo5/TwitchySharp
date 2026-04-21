@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using TwitchySharp.Helpers;
+using Yoyoyopo5.ValueWrapper;
 using TwitchySharp.Helpers.JsonConverters;
 
 namespace TwitchySharp.Shared;
