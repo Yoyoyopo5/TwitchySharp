@@ -65,7 +65,7 @@ public class Test_SendExtensionPubSubMessageRequestData
             .WhisperTo(new UserId("user456"));
 
         var whisperTarget = data.Target.FirstOrDefault(t => t.Value.StartsWith("whisper-"));
-        Assert.NotNull(whisperTarget);
+
         Assert.Equal("whisper-user456", whisperTarget.Value);
     }
 

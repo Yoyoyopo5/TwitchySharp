@@ -18,7 +18,7 @@ public class Test_ImplicitGrantUrl
         var url = new ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [ Scope.ChannelManagePolls ],
             IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token ]
         };
@@ -34,7 +34,7 @@ public class Test_ImplicitGrantUrl
         var url = new ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [ Scope.OpenId ],
             IncludeResponseTypes = [ TwitchAuthorizationResponseType.IdToken ]
         };
@@ -50,7 +50,7 @@ public class Test_ImplicitGrantUrl
         var url = new ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [ Scope.OpenId ],
             IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token, TwitchAuthorizationResponseType.IdToken ]
         };
@@ -78,7 +78,7 @@ public class Test_ImplicitGrantUrl
         var url = new ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [ Scope.ChannelManagePolls, Scope.ChannelReadPolls ],
             State = TestState,
             IncludeResponseTypes = [ TwitchAuthorizationResponseType.Token ]
@@ -112,7 +112,7 @@ public class Test_ImplicitGrantUrl
         var url = new ImplicitGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [ Scope.ChannelManagePolls, Scope.ChannelReadPolls, Scope.OpenId ],
             State = TestState,
             Nonce = TestNonce,
