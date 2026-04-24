@@ -72,7 +72,7 @@ internal record UpdateUserExtensionsRequestData
         };
 
     private static ImmutableDictionary<string, T>? ConvertToNumberedDict<T>(ImmutableArray<T?> array)
-        => new Dictionary<string, T>(array.OfType<T>().Select((data, index) => new KeyValuePair<string, T>(index.ToString(), data)))
+        => new Dictionary<string, T>(array.OfType<T>().Select((data, index) => new KeyValuePair<string, T>((index + 1).ToString(), data))) // Twitch expects 1-indexed object here.
             .ToImmutableDictionary() switch
         {
             { Count: 0 } => null,
