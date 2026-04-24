@@ -18,7 +18,7 @@ IConfiguration config = new ConfigurationBuilder()
 Options options = config.GetRequiredSection("Twitch").Get<Options>()!;
 ClientId clientId = new(options.ClientId);
 ClientSecret clientSecret = new(options.ClientSecret);
-Uri redirectUri = new(options.RedirectUrl);
+RedirectUri redirectUri = new(options.RedirectUrl);
 
 JsonSerializerOptions serializerOptions = new()
 {

@@ -26,7 +26,7 @@ public record AuthorizationCodeRequest
             { "client_secret", ClientSecret },
             { "code", Code },
             { "grant_type", "authorization_code" },
-            { "redirect_uri", RedirectUri.AbsoluteUri }
+            { "redirect_uri", RedirectUri.Value }
         });
 
     /// <summary>
@@ -45,5 +45,5 @@ public record AuthorizationCodeRequest
     /// The redirect URI of the application (this is registered via the Twitch developer console).
     /// This should be the URI that the <see cref="AuthorizationCodeGrantUrl"/> redirected to.
     /// </summary>
-    public required Uri RedirectUri { get; init; }
+    public required RedirectUri RedirectUri { get; init; }
 }
