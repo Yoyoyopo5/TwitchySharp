@@ -4,7 +4,6 @@ using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.Models.Types;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
