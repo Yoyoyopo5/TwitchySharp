@@ -44,7 +44,7 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
     public static ClientSecret TestClientSecret { get; } = new(TEST_CLIENT_SECRET);
     public static AppAccessToken TestAppAccessToken { get; } = new(TEST_ACCESS_TOKEN);
     public static UserAccessToken TestUserAccessToken { get; } = new(TEST_ACCESS_TOKEN);
-    public static Uri TestRedirectUri { get; } = new(TEST_REDIRECT_URI);
+    public static RedirectUri TestRedirectUri { get; } = new(TEST_REDIRECT_URI);
     public static UserId TestUserId { get; } = new(TEST_USER_ID);
 
     public static TwitchIdentity.Client TestClientIdentity { get; } = new(TestClientId);
