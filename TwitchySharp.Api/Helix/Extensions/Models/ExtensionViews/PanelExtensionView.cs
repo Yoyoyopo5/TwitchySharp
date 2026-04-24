@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Extensions;
+﻿using System;
+
+namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Describes how an extension is rendered if activated as a panel extension.
@@ -8,7 +10,7 @@ public record PanelExtensionView
     /// <summary>
     /// The HTML file that is shown to viewers on the channel page when the extension is activated in a Panel slot.
     /// </summary>
-    public required string ViewerUrl { get; init; }
+    public required Uri ViewerUrl { get; init; }
     /// <summary>
     /// Determines whether the extension can link to non-Twitch domains.
     /// </summary>

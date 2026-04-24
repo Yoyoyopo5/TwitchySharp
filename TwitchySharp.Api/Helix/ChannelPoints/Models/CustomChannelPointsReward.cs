@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
+/// <summary>
+/// A custom Channel Points reward.
+/// </summary>
 public record CustomChannelPointsReward
 {
     /// <summary>
     /// The user id of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The display name of the broadcaster who has this reward.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// An id that uniquely indentifies this custom reward.
     /// </summary>
-    public required string Id { get; init; }
+    public required RewardId Id { get; init; }
     /// <summary>
     /// The title of the reward.
     /// </summary>
@@ -46,10 +46,9 @@ public record CustomChannelPointsReward
     /// </summary>
     public required RewardImage DefaultImage { get; init; }
     /// <summary>
-    /// The background color of the reward. 
-    /// The color is in Hex format (for example, #00E5CB).
+    /// The background color of the reward.
     /// </summary>
-    public required string BackgroundColor { get; init; }
+    public required RgbColor BackgroundColor { get; init; }
     /// <summary>
     /// Determines whether the reward is enabled. 
     /// Is <see langword="true"/> if enabled; otherwise, <see langword="false"/>. 
@@ -102,73 +101,4 @@ public record CustomChannelPointsReward
     /// </summary>
     public DateTimeOffset? CooldownExpiresAt { get; init; }
 
-}
-
-/// <summary>
-/// Contains image urls for channel point reward images.
-/// </summary>
-public record RewardImage
-{
-    /// <summary>
-    /// The URL to a small version of the image.
-    /// </summary>
-    [JsonPropertyName("url_1x")]
-    public required string Url1x { get; init; }
-    /// <summary>
-    /// The URL to a medium version of the image.
-    /// </summary>
-    [JsonPropertyName("url_2x")]
-    public required string Url2x { get; init; }
-    /// <summary>
-    /// The URL to a large version of the image.
-    /// </summary>
-    [JsonPropertyName("url_4x")]
-    public required string Url4x { get; init; }
-}
-
-/// <summary>
-/// Controls the settings for how many times per stream a channel point reward can be redeemed.
-/// </summary>
-public record MaxPerStreamSetting
-{
-    /// <summary>
-    /// Determines whether the reward applies a limit on the number of redemptions allowed per live stream. 
-    /// Is <see langword="true"/> if the reward applies a limit.
-    /// </summary>
-    public required bool IsEnabled { get; init; }
-    /// <summary>
-    /// The maximum number of redemptions allowed per live stream.
-    /// </summary>
-    public required long MaxPerStream { get; init; }
-}
-
-/// <summary>
-/// Controls the setting for how many time per stream an individual user can redeem a channel point reward.
-/// </summary>
-public record MaxPerUserPerStreamRewardSetting
-{
-    /// <summary>
-    /// Determines whether the reward applies a limit on the number of redemptions allowed per user per live stream. 
-    /// Is <see langword="true"/> if the reward applies a limit.
-    /// </summary>
-    public required bool IsEnabled { get; init; }
-    /// <summary>
-    /// The maximum number of redemptions allowed per user per live stream.
-    /// </summary>
-    public required long MaxPerUserPerStream { get; init; }
-}
-
-/// <summary>
-/// Controls the setting for cooldown on a channel point reward.
-/// </summary>
-public record GlobalCooldownSetting
-{
-    /// <summary>
-    /// Determines whether to apply a cooldown period. Is <see langword="true"/> if a cooldown period is enabled.
-    /// </summary>
-    public required bool IsEnabled { get; init; }
-    /// <summary>
-    /// The cooldown period, in seconds.
-    /// </summary>
-    public required long GlobalCooldownSeconds { get; init; }
 }

@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.Enums;
+﻿using TwitchySharp.Shared.Enums;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
@@ -13,7 +11,7 @@ public record ConduitShard
     /// <summary>
     /// The id of the shard.
     /// </summary>
-    public required string Id { get; init; }
+    public required ConduitShardId Id { get; init; }
     /// <summary>
     /// The shard status.
     /// The subscriber receives events only for <see cref="ConduitShardStatus.Enabled"/> shards. 

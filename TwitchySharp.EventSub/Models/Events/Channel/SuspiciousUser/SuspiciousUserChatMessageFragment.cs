@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 using TwitchySharp.EventSub.Interfaces.Events;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.SuspiciousUser;
 
@@ -11,7 +10,7 @@ public record SuspiciousUserChatMessageFragment : IChatMessageFragment
 {
     public required string Text { get; init; }
     public required SuspiciousUserChatMessageFragmentType Type { get; init; }
-    ValueBackedEnum<string> IChatMessageFragment.Type => Type;
+    string IChatMessageFragment.Type => Type;
 
     public SuspiciousUserChatMessageEmote? Emote { get; init; }
     IChatMessageEmote? IChatMessageFragment.Emote => Emote;

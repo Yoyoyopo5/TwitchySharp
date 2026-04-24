@@ -1,0 +1,14 @@
+﻿namespace TwitchySharp.Api.Helix.ChannelPoints;
+/// <summary>
+/// Contains a list of custom reward redemptions.
+/// </summary>
+public record GetCustomRewardRedemptionResponse
+    : IPageableResponse
+{
+    /// <summary>
+    /// The list of redemptions for the specified reward.
+    /// The list is empty if there are no redemptions that match the redemption criteria.
+    /// </summary>
+    public required CustomRewardRedemption[] Data { get; init; }
+    public Pagination Pagination { get; init; } = new Pagination(); // This property is not included in the API docs for a response, but it is alluded to in the request parameters. I'm giving it a default empty value in case the API doesn't return it.
+}

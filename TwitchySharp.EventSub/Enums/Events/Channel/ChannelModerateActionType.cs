@@ -1,6 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.EventSub.Models.Notifications.Channel;
-using TwitchySharp.Helpers;
+﻿using TwitchySharp.EventSub.Models.Notifications.Channel;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel;
 
@@ -8,8 +7,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel;
 /// Contains static definitions for possible moderation actions in a <see cref="ChannelModerateEvent"/>.
 /// </summary>
 /// <param name="Value">The string value of the action.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<ChannelModerateActionType, string>))]
-public record ChannelModerateActionType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelModerateActionType(string Value)
 {
     public static ChannelModerateActionType Ban { get; } = new("ban");
     public static ChannelModerateActionType Timeout { get; } = new("timeout");

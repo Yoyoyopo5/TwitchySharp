@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using TwitchySharp.Api;
+using TwitchySharp.Api.Core;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
@@ -16,14 +16,14 @@ public class WebsocketFixture : IDisposable
 {
     public TestHandler Handler { get; }
     public WebsocketClientEventSubWebsocketClient Client { get; }
-    public TwitchApi Api { get; }
+    public TwitchClient Api { get; }
     public WebsocketSecrets Secrets { get; }
 
     public WebsocketFixture()
     {
         Handler = new TestHandler();
         Client = new WebsocketClientEventSubWebsocketClient(Handler);
-        Api = new TwitchApi(new());
+        Api = new TwitchClient(new());
         Secrets = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build().GetRequiredSection("Secrets").Get<WebsocketSecrets>()!;
 
         CancellationTokenSource cts = new(2000);

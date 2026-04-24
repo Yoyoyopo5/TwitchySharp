@@ -53,7 +53,7 @@ public class Test_DefaultTwitchWebhookCrypto
         EventSubWebhookRequestHeader fakeHeader = new()
         {
             TwitchEventsubMessageId = FAKE_MESSAGE_ID,
-            TwitchEventsubMessageType = string.Empty,
+            TwitchEventsubMessageType = new(string.Empty),
             TwitchEventsubMessageSignature = fakeSignature,
             TwitchEventsubMessageTimestamp = FAKE_MESSAGE_TIMESTAMP,
             TwitchEventsubSubscriptionType = string.Empty,

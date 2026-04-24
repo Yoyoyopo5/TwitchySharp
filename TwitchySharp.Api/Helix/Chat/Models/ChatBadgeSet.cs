@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains a list of <see cref="ChatBadge"/> in a given set.
@@ -10,7 +12,7 @@ public record ChatBadgeSet
     /// An ID that identifies this set of chat badges. 
     /// For example, Bits or Subscriber.
     /// </summary>
-    public required string SetId { get; init; }
+    public required ChatBadgeSetId SetId { get; init; }
     /// <summary>
     /// The list of chat badges in this set.
     /// The list is sorted in ascending order by <see cref="ChatBadge.Id"/>.

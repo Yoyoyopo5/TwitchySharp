@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Users;
 /// <summary>
@@ -15,9 +9,8 @@ namespace TwitchySharp.Api.Helix.Users;
 /// A custom value for extension type. 
 /// Use this if a static definition is not available for the type you want.
 /// </param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<UserExtensionType, string>))] // Using this here so we can deserialize an array of them.
-public record UserExtensionType(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct UserExtensionType(string Value)
 {
     /// <summary>
     /// Displays as part of the video, taking up part of the screen. Component Extensions can be hidden by viewers.

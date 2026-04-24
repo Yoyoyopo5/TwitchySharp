@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwitchySharp.Api.Models;
+namespace TwitchySharp.Api;
 
 /// <summary>
 /// Contains information about current Twitch rate limit usage.
@@ -11,4 +11,4 @@ namespace TwitchySharp.Api.Models;
 /// <param name="Limit">The maximum amount of points that can be in your bucket.</param>
 /// <param name="Remaining">The number of points currently in your bucket (after the last request).</param>
 /// <param name="Reset">The date and time when your bucket is reset to full.</param>
-public readonly record struct TwitchRateLimitDetails(int Limit, int Remaining, DateTimeOffset Reset);
+public readonly record struct TwitchRateLimitDetails(int? Limit, int? Remaining, DateTimeOffset? Reset);

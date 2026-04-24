@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Channel.Bits;
 using TwitchySharp.EventSub.Interfaces.Events;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.Bits;
 
@@ -11,7 +10,7 @@ public record BitsChatMessageFragment : IChatMessageFragment
 {
     public required string Text { get; init; }
     public required BitsChatMessageFragmentType Type { get; init; }
-    ValueBackedEnum<string> IChatMessageFragment.Type => Type;
+    string IChatMessageFragment.Type => Type;
     public BitsChatMessageEmote? Emote { get; init; }
     IChatMessageEmote? IChatMessageFragment.Emote => Emote;
     public BitsChatMessageCheermote? Cheermote { get; init; }

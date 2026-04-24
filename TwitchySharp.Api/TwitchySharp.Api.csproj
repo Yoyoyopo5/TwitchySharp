@@ -1,27 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+	<TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
+	<EditorConfigFiles Remove="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
+		<InternalsVisibleTo Include="$(AssemblyName).Tests.E2E.AcquireUserAccessToken" />
 	</ItemGroup>
 
   <ItemGroup>
-    <None Include="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
+	<None Include="C:\Users\Tom\source\repos\TwitchySharp\TwitchySharp.Api\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
+	<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
+	<PackageReference Include="System.Text.Json" Version="8.0.5" />
+	<PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
+	<PackageReference Include="Yoyoyopo5.ValueWrapper" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

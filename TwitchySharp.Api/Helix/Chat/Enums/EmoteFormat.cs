@@ -1,13 +1,13 @@
-﻿using System.Text.Json.Serialization;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>
-/// Defines the format of the emote.
+/// Contains static definitions for possible emote formats.
 /// </summary>
-
-[JsonConverter(typeof(JsonStringEnumConverter))] // So we can use array of strings to enum array
-public enum EmoteFormat
+/// <param name="Value">The string value of the emote format.</param>
+[Wrapper<string>]
+public readonly partial record struct EmoteFormat(string Value)
 {
-    Animated,
-    Static
+    public static EmoteFormat Animated { get; } = new("animated");
+    public static EmoteFormat Static { get; } = new("static");
 }
