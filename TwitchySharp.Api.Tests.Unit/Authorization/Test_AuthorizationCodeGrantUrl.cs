@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Tests.Unit.Authorization;
 public class Test_AuthorizationCodeGrantUrl
 {
     private const string TestClientId = "hof5gwx0su6owfnys0nyan9c87zr6t";
-    private const string TestRedirectUri = "http://localhost:3000";
+    private const string TestRedirectUri = "http://localhost:3000/"; // System.Uri does not like to 
     private const string TestState = "c3ab8aa609ea11e793ae92361f002671";
     private const string TestNonce = "c3ab8aa609ea11e793ae92361f002671";
 
@@ -26,7 +26,7 @@ public class Test_AuthorizationCodeGrantUrl
         var url = new AuthorizationCodeGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [Scope.ChannelManagePolls, Scope.ChannelReadPolls],
             State = TestState
         };
@@ -61,7 +61,7 @@ public class Test_AuthorizationCodeGrantUrl
         var url = new AuthorizationCodeGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [Scope.ChannelManagePolls, Scope.ChannelReadPolls, Scope.OpenId],
             State = TestState,
             Nonce = TestNonce
@@ -84,7 +84,7 @@ public class Test_AuthorizationCodeGrantUrl
         var url = new AuthorizationCodeGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = []
         };
 
@@ -100,7 +100,7 @@ public class Test_AuthorizationCodeGrantUrl
         var url = new AuthorizationCodeGrantUrl
         {
             ClientId = new ClientId(TestClientId),
-            RedirectUri = new Uri(TestRedirectUri),
+            RedirectUri = new RedirectUri(TestRedirectUri),
             Scopes = [Scope.OpenId],
             Host = "test.example.com"
         };

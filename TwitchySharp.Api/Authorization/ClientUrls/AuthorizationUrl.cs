@@ -58,7 +58,7 @@ public abstract record AuthorizationUrl
     /// <remarks>
     /// This must be a redirect URI registered for your application (the <see cref="ClientId"/>) in the <see href="https://dev.twitch.tv/console">Twitch Developer Console</see>.
     /// </remarks>
-    public required Uri RedirectUri { get; init; }
+    public required RedirectUri RedirectUri { get; init; }
     protected abstract ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; }
     /// <summary>
     /// The user access token <see href="https://dev.twitch.tv/docs/authentication/scopes/">Scopes</see> to get authorization for.
@@ -117,7 +117,7 @@ public abstract record AuthorizationUrl
         Query = new HttpQueryParameters()
             .Add("response_type", string.Join("+", ResponseTypes.Select(x => x.Value)))
             .Add("client_id", ClientId)
-            .Add("redirect_uri", RedirectUri.AbsoluteUri)
+            .Add("redirect_uri", RedirectUri.Value)
             .Add("scope", Scopes.FormatScopes())
             .Add("force_verify", ForceVerify?.ToString())
             .Add("state", State)
