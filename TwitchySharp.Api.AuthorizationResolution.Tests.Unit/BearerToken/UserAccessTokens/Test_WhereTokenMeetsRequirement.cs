@@ -1,11 +1,13 @@
-﻿namespace TwitchySharp.Api.AuthorizationResolution.Tests.Unit;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.AuthorizationResolution.Tests.Unit;
 
 public class Test_WhereTokenMeetsRequirement
 {
     private readonly static AccessTokenDetails.App AppTokenDetails
         = new() { AccessToken = new(), Identity = new(new("")) };
     private readonly static AccessTokenDetails.ExtensionJwt ExtensionJwtDetails
-        = new() { AccessToken = new(), Identity = new(new("")) };
+        = new() { AccessToken = new(), Identity = new(new UserId(""), new ExtensionId("")) };
     private static AccessTokenDetails.User CreateUserTokenDetails(string value, IReadOnlySet<Scope> scopes)
         => new() { AccessToken = new(value), Identity = UserIdentity, Scopes = scopes };
 
