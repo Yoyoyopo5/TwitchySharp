@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -10,15 +11,15 @@ public record BlockedTerm
     /// <summary>
     /// The user id of the broadcaster (channel) that the blocked term belongs to.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user id of the moderator (or broadcaster) that created the blocked term.
     /// </summary>
-    public required string ModeratorId { get; init; }
+    public required UserId ModeratorId { get; init; }
     /// <summary>
     /// The id of the blocked term.
     /// </summary>
-    public required string Id { get; init; }
+    public required AutomodBlockedTermId Id { get; init; }
     /// <summary>
     /// The blocked word or phrase.
     /// </summary>

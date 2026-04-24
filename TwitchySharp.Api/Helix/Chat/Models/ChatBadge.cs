@@ -1,4 +1,7 @@
-﻿namespace TwitchySharp.Api.Helix.Chat;
+﻿using System;
+using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Chat;
 
 /// <summary>
 /// Contains information about a specific chat badge.
@@ -6,23 +9,25 @@
 public record ChatBadge
 {
     /// <summary>
-    /// An ID that identifies this version of the badge. 
-    /// The ID can be any value. 
-    /// For example, for Bits, the ID is the Bits tier level, but for World of Warcraft, it could be Alliance or Horde.
+    /// An id that identifies this version of the badge. 
     /// </summary>
-    public required string Id { get; init; }
+    /// <remarks>
+    /// The id can be any value. 
+    /// For example, for Bits, the id is the Bits tier level, but for World of Warcraft, it could be Alliance or Horde.
+    /// </remarks>
+    public required ChatBadgeId Id { get; init; }
     /// <summary>
     /// A URL to the small version (18px x 18px) of the badge.
     /// </summary>
-    public required string ImageUrl_1x { get; init; }
+    public required Uri ImageUrl_1x { get; init; }
     /// <summary>
     /// A URL to the medium version (36px x 36px) of the badge.
     /// </summary>
-    public required string ImageUrl_2x { get; init; }
+    public required Uri ImageUrl_2x { get; init; }
     /// <summary>
     /// A URL to the large version (72px x 72px) of the badge.
     /// </summary>
-    public required string ImageUrl_4x { get; init; }
+    public required Uri ImageUrl_4x { get; init; }
     /// <summary>
     /// The title of the badge.
     /// </summary>
@@ -40,5 +45,5 @@ public record ChatBadge
     /// The URL to navigate to when clicking on the badge. 
     /// Set to <see langword="null"/> if no URL is specified.
     /// </summary>
-    public string? ClickUrl { get; init; }
+    public Uri? ClickUrl { get; init; }
 }

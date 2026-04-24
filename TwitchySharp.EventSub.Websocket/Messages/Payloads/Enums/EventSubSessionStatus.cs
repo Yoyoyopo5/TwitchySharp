@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
 /// <summary>
@@ -7,9 +6,8 @@ namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
 /// </summary>
 /// <param name="Value"></param>
 
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubSessionStatus, string>))]
-public record EventSubSessionStatus(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EventSubSessionStatus(string Value)
 {
     /// <summary>
     /// The value used in a welcome message.

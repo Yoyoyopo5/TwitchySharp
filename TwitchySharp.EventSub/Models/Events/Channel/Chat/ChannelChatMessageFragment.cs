@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Channel.Chat;
 using TwitchySharp.EventSub.Interfaces.Events;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.EventSub.Models.Events.Channel.Chat;
 
@@ -13,7 +12,7 @@ public record ChannelChatMessageFragment : IChatMessageFragment
     /// The fragment type.
     /// </summary>
     public required ChannelChatMessageFragmentType Type { get; init; }
-    ValueBackedEnum<string> IChatMessageFragment.Type => Type;
+    string IChatMessageFragment.Type => Type;
     public required string Text { get; init; }
     /// <summary>
     /// The cheermote, if the <see cref="Type"/> is <see cref="ChannelChatMessageFragmentType.Cheermote"/>.

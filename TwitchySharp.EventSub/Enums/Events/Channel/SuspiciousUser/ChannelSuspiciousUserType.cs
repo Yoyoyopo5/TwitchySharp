@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 
@@ -6,7 +6,8 @@ namespace TwitchySharp.EventSub.Enums.Events.Channel.SuspiciousUser;
 /// Contains static definitions for possible suspicious user types.
 /// </summary>
 /// <param name="Value">The string value of the suspicious user type.</param>
-public record ChannelSuspiciousUserType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct ChannelSuspiciousUserType(string Value)
 {
     /// <summary>
     /// The suspicious user was manually tagged by a moderator.

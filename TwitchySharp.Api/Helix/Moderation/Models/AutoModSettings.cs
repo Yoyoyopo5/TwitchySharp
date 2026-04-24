@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Shared.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 
@@ -10,11 +11,11 @@ public record AutoModSettings
     /// <summary>
     /// The user id of the broadcaster (channel) that the settings belong to.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The user id of the moderator used in the request to get the settings.
     /// </summary>
-    public required string ModeratorId { get; init; }
+    public required UserId ModeratorId { get; init; }
     /// <summary>
     /// The default AutoMod level for the broadcaster. Ranges from 0 (no filtering) to 4 (maximum filtering).
     /// This field is <see langword="null"/> if the broadcaster has set one or more of the individual settings. 

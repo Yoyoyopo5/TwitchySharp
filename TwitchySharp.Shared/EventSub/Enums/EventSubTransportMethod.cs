@@ -1,14 +1,12 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.EventSub.Enums;
 
 /// <summary>
 /// Possible EventSub transport methods.
 /// </summary>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubTransportMethod, string>))]
-public record EventSubTransportMethod(string Value)
-    : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EventSubTransportMethod(string Value)
 {
     public static EventSubTransportMethod Webhook { get; } = new("webhook");
     public static EventSubTransportMethod Websocket { get; } = new("websocket");

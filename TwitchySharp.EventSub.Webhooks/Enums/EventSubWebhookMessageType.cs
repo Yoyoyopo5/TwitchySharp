@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Webhooks.Enums;
 
@@ -15,8 +9,8 @@ namespace TwitchySharp.EventSub.Webhooks.Enums;
 /// See more about EventSub webhook request header types at <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events/#list-of-request-headers">Handling Webhook Events</see>.
 /// </remarks>
 /// <param name="Value">The string value of the message type.</param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubWebhookMessageType, string>))]
-public record EventSubWebhookMessageType(string Value) : ValueBackedEnum<string>(Value)
+[Wrapper<string>]
+public readonly partial record struct EventSubWebhookMessageType(string Value)
 {
     /// <summary>
     /// This type of webhook contains a specific event's data.

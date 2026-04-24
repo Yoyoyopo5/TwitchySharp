@@ -1,15 +1,13 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Shared.EventSub.Enums;
 
 /// <summary>
 /// Contains static definitions for various EventSub subscription states.
 /// </summary>
-/// <param name="Value"></param>
-[JsonConverter(typeof(ValueBackedEnumJsonConverter<EventSubSubscriptionStatus, string>))]
-public record EventSubSubscriptionStatus(string Value)
-    : ValueBackedEnum<string>(Value)
+/// <param name="Value">The string value of the status.</param>
+[Wrapper<string>]
+public readonly partial record struct EventSubSubscriptionStatus(string Value)
 {
     /// <summary>
     /// The subscription is enabled.

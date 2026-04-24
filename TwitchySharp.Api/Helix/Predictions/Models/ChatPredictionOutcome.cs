@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
+﻿using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Predictions;
 
@@ -11,7 +10,7 @@ public record ChatPredictionOutcome
     /// <summary>
     /// The id of the outcome.
     /// </summary>
-    public required string Id { get; init; }
+    public required PredictionOutcomeId Id { get; init; }
     /// <summary>
     /// The outcome’s text as it is displayed to viewers.
     /// </summary>
@@ -34,6 +33,5 @@ public record ChatPredictionOutcome
     /// If there are only two outcomes, the color is <see cref="ChatPredictionOutcomeColor.Blue"/> for the first outcome and <see cref="ChatPredictionOutcomeColor.Pink"/> for the second outcome. 
     /// If there are more than two outcomes, the color is <see cref="ChatPredictionOutcomeColor.Blue"/> for all outcomes.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseUpperJsonStringEnumConverter<ChatPredictionOutcomeColor>))]
     public required ChatPredictionOutcomeColor Color { get; init; }
 }

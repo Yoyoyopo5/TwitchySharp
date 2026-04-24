@@ -1,12 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Helix.Chat;
+
 /// <summary>
-/// Defines the background theme of an emote.
+/// Contains static definitions for possible emote background themes.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))] // So we can use array of strings to enum array
-public enum EmoteTheme
+/// <param name="Value">The string value of the emote theme.</param>
+[Wrapper<string>]
+public readonly partial record struct EmoteTheme(string Value)
 {
-    Dark,
-    Light
+    public static EmoteTheme Dark { get; } = new("dark");
+    public static EmoteTheme Light { get; } = new("light");
 }
