@@ -1,51 +1,102 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Core;
+using TwitchySharp.Api;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
+using TwitchySharp.Api.AuthorizationResolution;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
-public class WebsocketFixture : IDisposable
+
+public sealed class WebsocketFixture : IAsyncLifetime
 {
     public TestHandler Handler { get; }
-    public WebsocketClientEventSubWebsocketClient Client { get; }
-    public TwitchClient Api { get; }
-    public WebsocketSecrets Secrets { get; }
+    public WebsocketClientEventSubWebsocketClient Websocket { get; }
+    public ITwitchClient Api { get; }
+    
+    public WebsocketConfig Config { get; }
+
+    public TwitchIdentity.Client Client { get; }
+    public TwitchIdentity.User AuthorizedBroadcaster { get; }
+    private readonly AccessTokenDetails.User _broadcasterAccessTokenDetails;
+    private readonly ITwitchClient _authClient = new TwitchClientBuilder().Build();
+
+    private static readonly IConfiguration _config 
+        = new ConfigurationBuilder()
+        .AddUserSecrets(Assembly.GetExecutingAssembly())
+        .Build();
 
     public WebsocketFixture()
     {
-        Handler = new TestHandler();
-        Client = new WebsocketClientEventSubWebsocketClient(Handler);
-        Api = new TwitchClient(new());
-        Secrets = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build().GetRequiredSection("Secrets").Get<WebsocketSecrets>()!;
+        Handler = new();
+        Websocket = new(Handler);
 
-        CancellationTokenSource cts = new(2000);
-        Client.StartAsync(cts.Token).GetAwaiter().GetResult();
+        Config = _config.GetRequiredSection("WebsocketFixture").Get<WebsocketConfig>() ?? throw new InvalidOperationException($"Could not bind configuration to {nameof(WebsocketConfig)}");
+
+        Client = new(Config.Client.Id);
+        AuthorizedBroadcaster = new(Config.AuthorizedBroadcaster.Id, Config.Client.Id);
+        _broadcasterAccessTokenDetails = Config.AuthorizedBroadcaster.AccessToken;
+
+        Api = new TwitchClientBuilder()
+            .WithAuthorizationResolution(new TwitchAuthorizationResolutionOptions()
+            {
+                FallbackClientIdResolver = (ctx, _) => ValueTask.FromResult(Client.ClientId),
+            }
+            .ConfigureIdentityTokenResolution(new AppAccessTokenResolutionOptions()
+            {
+                AuthenticationClient = _authClient,
+                ClientSecretResolver = (ctx, _) => ValueTask.FromResult<ClientSecret?>(Config.Client.Secret)
+            })
+            .ConfigureIdentityTokenResolution(new UserAccessTokenResolutionOptions()
+            {
+                GetCachedToken = (ctx, _) => ValueTask.FromResult<AccessTokenDetails.User?>(_broadcasterAccessTokenDetails),
+                AuthenticationClient = _authClient,
+                ClientSecretResolver = (ctx, _) => ValueTask.FromResult<ClientSecret?>(Config.Client.Secret)
+            }))
+            .Build();
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        CancellationTokenSource cts = new(1000);
-        Client.StopAsync(cts.Token).GetAwaiter().GetResult();
-        Client.Dispose();
+        await Websocket.StopAsync(TestContext.Current.CancellationToken);
+        Websocket.Dispose();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        using (TestContext.Current.CancellationToken.Register(() => Handler.Connected.TrySetCanceled(ct)))
+        {
+            await Websocket.StartAsync(ct);
+            await Handler.Connected.Task;
+        }
     }
 }
 
-public record WebsocketSecrets
+public record WebsocketConfig
 {
-    public required string ClientId { get; init; }
-    public required string UserAccessToken { get; init; }
+    public record ClientConfig
+    {
+        public required ClientId Id { get; set; }
+        public required ClientSecret Secret { get; set; }
+    }
+
+    public record AuthorizedBroadcasterConfig
+    {
+        public required UserId Id { get; set; }
+        public required AccessTokenDetails.User AccessToken { get; set; }
+    }
+
+    public required ClientConfig Client { get; set; }
+    public required AuthorizedBroadcasterConfig AuthorizedBroadcaster { get; set; }
 }
 
 public class TestHandler : IWebsocketEventSubHandler
 {
+    public TaskCompletionSource<EventSubWebsocketSession> Connected { get; } = new();
     public EventSubWebsocketSession? ReceivedConnected { get; private set; }
     public bool ReceivedKeepalive { get; private set; } = false;
     public IEventSubNotification? ReceivedNotification { get; private set; }
@@ -54,6 +105,7 @@ public class TestHandler : IWebsocketEventSubHandler
 
     public ValueTask OnConnected(EventSubWebsocketSession session, CancellationToken ct = default)
     {
+        Connected.TrySetResult(session);
         ReceivedConnected = session;
         return ValueTask.CompletedTask;
     }
