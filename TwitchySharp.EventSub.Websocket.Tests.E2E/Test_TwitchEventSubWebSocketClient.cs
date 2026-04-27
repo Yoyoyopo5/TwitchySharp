@@ -1,11 +1,7 @@
-using NuGet.Frameworks;
-using System.Diagnostics;
-using TwitchySharp.Api;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
+using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
-using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
 
@@ -14,48 +10,56 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
     private readonly WebsocketFixture _fixture = fixture;
 
     [Fact]
-    public async void WaitFor_WelcomeMessage_ReturnNotNull()
+    public async Task WaitFor_WelcomeMessage_ReturnNotNull()
     {
-        await Task.Delay(2000);
         Assert.Null(_fixture.Handler.ReceivedException);
         Assert.NotNull(_fixture.Handler.ReceivedConnected);
     }
 
     [Fact]
-    public async void WaitFor_ChannelChatMessageSubscriptionNotification_ReturnNotNull()
+    public async Task WaitFor_ChannelChatMessageSubscriptionNotification_ReturnNotNull()
     {
-        CancellationTokenSource cts = new(10000);
+        const string TEST_MESSAGE = "test message pls ignore";
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        EventSubSubscription? subscription = null;
 
-        string userId = (await _fixture.Api.SendRequestAsync(new ValidateAccessTokenRequest(_fixture.Secrets.UserAccessToken))).UserId;
-
-        await Task.Delay(1000);
-        if (_fixture.Handler.ReceivedConnected is null) throw new Exception("Welcome message not received.");
-
-        string subscriptionId = string.Empty;
+        Assert.NotNull(_fixture.Handler.ReceivedConnected);
 
         try
         {
-            subscriptionId = (await _fixture.Api.SendRequestAsync(new CreateEventSubSubscriptionRequest(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, new()
+            // Create subscription
+            subscription = (await _fixture.Api.SendAsync(new CreateEventSubSubscriptionRequest()
             {
-                Transport = new WebsocketSubscriptionTransport(_fixture.Handler.ReceivedConnected.Id),
-                Type = new TwitchySharp.Api.Helix.EventSub.Models.Types.Channel.Chat.ChannelChatMessage(userId, userId)
-            }), cts.Token)).Data.First().Id;
+                Subscription = new()
+                {
+                    Transport = new WebsocketSubscriptionTransport(_fixture.Handler.ReceivedConnected.Id),
+                    Type = new ChannelChatMessage(_fixture.AuthorizedBroadcaster.UserId, _fixture.AuthorizedBroadcaster.UserId)
+                }
+            }, ct)).Content.Data.First();
 
-            await _fixture.Api.SendRequestAsync(new SendChatMessageRequest(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, new SendChatMessageRequestData()
+            // Send chat message
+            await _fixture.Api.SendAsync(new SendChatMessageRequest()
             {
-                BroadcasterId = userId,
-                SenderId = userId,
-                Message = "test message pls ignore"
-            }));
+                Message = new()
+                {
+                    BroadcasterId = _fixture.AuthorizedBroadcaster.UserId,
+                    SenderId = _fixture.AuthorizedBroadcaster.UserId,
+                    Message = TEST_MESSAGE
+                }
+            }, ct);
 
-            await Task.Delay(1000);
+            await Task.Delay(1000, ct);
+
+            ChannelChatMessageNotification? notification = _fixture.Handler.ReceivedNotification as ChannelChatMessageNotification;
 
             Assert.Null(_fixture.Handler.ReceivedException);
-            Assert.NotNull(_fixture.Handler.ReceivedNotification as ChannelChatMessageNotification);
+            Assert.NotNull(notification);
+            Assert.Equal(TEST_MESSAGE, notification.Event.Message.Text);
         }
         finally
         {
-            await _fixture.Api.SendRequestAsync(new DeleteEventSubSubscriptionRequest(_fixture.Secrets.ClientId, _fixture.Secrets.UserAccessToken, subscriptionId));
+            if (subscription is not null)
+                await _fixture.Api.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
         }
     }
 }
