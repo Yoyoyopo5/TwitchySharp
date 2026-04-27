@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
 
@@ -17,7 +18,7 @@ public record EventSubWebsocketSession
     /// The id of the session.
     /// Use this to create and update EventSub subscriptions that you want to notify to this session.
     /// </summary>
-    public required string Id { get; init; }
+    public required EventSubWebsocketSessionId Id { get; init; }
     /// <summary>
     /// The status of the session.
     /// </summary>
