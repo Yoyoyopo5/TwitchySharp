@@ -1,34 +1,20 @@
-﻿using System.Text.Json.Serialization;
-using TwitchySharp.Api.Helix.Channels;
+﻿using TwitchySharp.Shared.Enums;
 
-namespace TwitchySharp.Api.Models;
+namespace TwitchySharp.Api;
 
 /// <summary>
 /// A label that indicates whether a specific CCL is enabled on a channel.
 /// </summary>
 /// <param name="Id">The id of the Content Classification Labels that should be added/removed from the channel.</param>
 /// <param name="IsEnabled">Boolean flag indicating whether the label should be enabled or disabled for the channel.</param>
-public readonly record struct ContentClassificationLabel(ContentClassificationLabelType Id, bool IsEnabled)
+public readonly record struct ContentClassificationLabel(ContentClassificationLabelId Id, bool IsEnabled)
 {
     /// <summary>
     /// The id of the Content Classification Labels that should be added/removed from the channel.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public ContentClassificationLabelType Id { get; } = Id;
+    public ContentClassificationLabelId Id { get; } = Id;
     /// <summary>
     /// Boolean flag indicating whether the label should be enabled or disabled for the channel.
     /// </summary>
     public bool IsEnabled { get; } = IsEnabled;
-}
-
-/// <summary>
-/// Types of Twitch CCLs.
-/// </summary>
-public enum ContentClassificationLabelType
-{
-    DrugsIntoxication,
-    SexualThemes,
-    ViolentGraphic,
-    Gambling,
-    ProfanityVulgarity
 }

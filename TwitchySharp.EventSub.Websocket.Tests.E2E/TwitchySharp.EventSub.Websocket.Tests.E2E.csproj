@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <UserSecretsId>f919df22-ff55-4c9a-b116-3e9e299a8a5a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="coverlet.collector" Version="8.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TwitchySharp.Api.AuthorizationResolution\TwitchySharp.Api.AuthorizationResolution.csproj" />
+    <ProjectReference Include="..\TwitchySharp.Api\TwitchySharp.Api.csproj" />
+    <ProjectReference Include="..\TwitchySharp.EventSub.Websocket.Clients.WebsocketClient\TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.csproj" />
+    <ProjectReference Include="..\TwitchySharp.EventSub.Websocket\TwitchySharp.EventSub.Websocket.csproj" />
+    <ProjectReference Include="..\TwitchySharp.EventSub\TwitchySharp.EventSub.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Schedule;
 
@@ -10,7 +11,7 @@ public record ChannelStreamScheduleSegment
     /// <summary>
     /// The id of this broadcast segment.
     /// </summary>
-    public required string Id { get; init; }
+    public required StreamScheduleSegmentId Id { get; init; }
     /// <summary>
     /// The date and time when the broadcast starts.
     /// </summary>

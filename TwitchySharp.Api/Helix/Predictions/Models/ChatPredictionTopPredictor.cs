@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Predictions;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Predictions;
 
 /// <summary>
 /// Contains information about a specific top predictor for a prediction.
@@ -8,15 +10,15 @@ public record ChatPredictionTopPredictor
     /// <summary>
     /// The user id of the top predictor.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The display name of the top predictor.
     /// </summary>
-    public required string UserName { get; init; }
+    public required UserName UserName { get; init; }
     /// <summary>
     /// The login (username) of the top predictor.
     /// </summary>
-    public required string UserLogin { get; init; }
+    public required UserLogin UserLogin { get; init; }
     /// <summary>
     /// The number of Channel Points this top predictor used.
     /// </summary>

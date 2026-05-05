@@ -1,13 +1,17 @@
-﻿namespace TwitchySharp.Api.Helix.Moderation;
+﻿using Yoyoyopo5.ValueWrapper;
+
+namespace TwitchySharp.Api.Helix.Moderation;
 
 /// <summary>
-/// Possible statuses of an unban request.
+/// Contains static definitions for possible unban request statuses.
 /// </summary>
-public enum UnbanRequestStatus
+/// <param name="Value">The string value of the unban request status.</param>
+[Wrapper<string>]
+public readonly partial record struct UnbanRequestStatus(string Value)
 {
-    Pending,
-    Approved,
-    Denied,
-    Acknowledged,
-    Canceled
+    public static UnbanRequestStatus Pending { get; } = new("pending");
+    public static UnbanRequestStatus Approved { get; } = new("approved");
+    public static UnbanRequestStatus Denied { get; } = new("denied");
+    public static UnbanRequestStatus Acknowledged { get; } = new("acknowledged");
+    public static UnbanRequestStatus Canceled { get; } = new("canceled");
 }

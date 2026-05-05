@@ -1,32 +1,35 @@
-﻿namespace TwitchySharp.Api.Helix.Polls;
+﻿using Yoyoyopo5.ValueWrapper;
 
+namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>
-/// Possible statuses of a chat poll.
+/// Contains static definitions for possible chat poll statuses.
 /// </summary>
-public enum ChatPollStatus
+/// <param name="Value">The string value of the chat poll status.</param>
+[Wrapper<string>]
+public readonly partial record struct ChatPollStatus(string Value)
 {
     /// <summary>
     /// The poll is running.
     /// </summary>
-    Active,
+    public static ChatPollStatus Active { get; } = new("ACTIVE");
     /// <summary>
     /// The poll ended on schedule.
     /// </summary>
-    Completed,
+    public static ChatPollStatus Completed { get; } = new("COMPLETED");
     /// <summary>
     /// The poll was terminated before its scheduled end.
     /// </summary>
-    Terminated,
+    public static ChatPollStatus Terminated { get; } = new("TERMINATED");
     /// <summary>
     /// The poll has been archived and is no longer visible on the channel.
     /// </summary>
-    Archived,
+    public static ChatPollStatus Archived { get; } = new("ARCHIVED");
     /// <summary>
     /// The poll was deleted.
     /// </summary>
-    Moderated,
+    public static ChatPollStatus Moderated { get; } = new("MODERATED");
     /// <summary>
     /// Something went wrong while determining the state.
     /// </summary>
-    Invalid
+    public static ChatPollStatus Invalid { get; } = new("INVALID");
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Polls;
 
@@ -12,19 +13,19 @@ public record ChatPoll
     /// <summary>
     /// The id of the poll.
     /// </summary>
-    public required string Id { get; init; }
+    public required PollId Id { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterId { get; init; }
+    public required UserId BroadcasterId { get; init; }
     /// <summary>
     /// The display name of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterName { get; init; }
+    public required UserName BroadcasterName { get; init; }
     /// <summary>
     /// The login (username) of the broadcaster (channel) that the poll was created for.
     /// </summary>
-    public required string BroadcasterLogin { get; init; }
+    public required UserLogin BroadcasterLogin { get; init; }
     /// <summary>
     /// The question that viewers are voting on.
     /// This may be up to 60 characters.
@@ -34,7 +35,7 @@ public record ChatPoll
     /// A list of choices that viewers can choose from. 
     /// The list will contain a minimum of two choices and up to a maximum of five choices.
     /// </summary>
-    public required ChatPollChoice[] Choices { get; init; } 
+    public required ChatPollChoice[] Choices { get; init; }
     /// <summary>
     /// Indicates whether viewers may cast additional votes using Channel Points.
     /// </summary>
@@ -47,12 +48,12 @@ public record ChatPoll
     /// <summary>
     /// The poll's status.
     /// </summary>
-    [JsonConverter(typeof(SnakeCaseUpperJsonStringEnumConverter<ChatPollStatus>))]
     public required ChatPollStatus Status { get; init; }
     /// <summary>
-    /// The length of time in <b>seconds</b> that the poll will run for.
+    /// The length of time that the poll will run for.
     /// </summary>
-    public required int Duration { get; init; }
+    [JsonConverter(typeof(SecondsTimeSpanJsonConverter))]
+    public required TimeSpan Duration { get; init; }
     /// <summary>
     /// The date and time when the poll began.
     /// </summary>
