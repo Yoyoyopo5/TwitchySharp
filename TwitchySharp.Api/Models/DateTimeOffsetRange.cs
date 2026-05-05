@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 using TwitchySharp.Helpers.JsonConverters;
 
-namespace TwitchySharp.Api.Models;
-public record struct DateTimeOffsetRange
+namespace TwitchySharp.Api;
+
+public readonly record struct DateTimeOffsetRange
 {
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
-    public DateTimeOffset? StartedAt { get; private set; }
+    public DateTimeOffset? StartedAt { get; private init; }
     [JsonInclude, JsonRequired, JsonConverter(typeof(EmptyDateTimeOffsetConverter))]
-    public DateTimeOffset? EndedAt { get; private set; }
+    public DateTimeOffset? EndedAt { get; private init; }
 }

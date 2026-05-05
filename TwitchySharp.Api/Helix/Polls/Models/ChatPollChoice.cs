@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Polls;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.Polls;
 
 /// <summary>
 /// Contains information about a specific choice in a chat poll.
@@ -8,7 +10,7 @@ public record ChatPollChoice
     /// <summary>
     /// The id of the choice.
     /// </summary>
-    public required string Id { get; init; }
+    public required PollChoiceId Id { get; init; }
     /// <summary>
     /// The title of the choice.
     /// This may be up to 25 characters.

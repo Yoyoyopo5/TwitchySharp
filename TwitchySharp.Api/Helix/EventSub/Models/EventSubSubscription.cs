@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Shared.EventSub;
+using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 
@@ -13,27 +14,35 @@ public record EventSubSubscription
     /// <summary>
     /// The id of the subscription.
     /// </summary>
-    public required string Id { get; init; }
+    public required EventSubSubscriptionId Id { get; init; }
     /// <summary>
     /// The subscription's status.
-    /// Note that the subscriber receives events only for <see cref="EventSubSubscriptionStatus.Enabled"/> subscriptions.
     /// </summary>
+    /// <remarks>
+    /// Note that the subscriber receives events only for <see cref="EventSubSubscriptionStatus.Enabled"/> subscriptions.
+    /// </remarks>
     public required EventSubSubscriptionStatus Status { get; init; }
     /// <summary>
     /// The subscription’s type name.
-    /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types#subscription-types">Subscription Types</see>.
     /// </summary>
-    public required string Type { get; init; }
+    /// <remarks>
+    /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types#subscription-types">Subscription Types</see>.
+    /// </remarks>
+    public required EventSubSubscriptionTypeName Type { get; init; }
     /// <summary>
     /// The version number that identifies this definition of the subscription type's data.
-    /// This in addition to the <see cref="Type"/> property identify exactly what notification will be sent through this subscription.
     /// </summary>
-    public required string Version { get; init; }
+    /// <remarks>
+    /// This in addition to the <see cref="Type"/> property identify exactly what notification will be sent through this subscription.
+    /// </remarks>
+    public required EventSubSubscriptionTypeVersion Version { get; init; }
     /// <summary>
     /// The subscription’s parameter values.
-    /// The exact keys depend on what the subscription type expects.
     /// </summary>
-    public required ImmutableDictionary<string, string> Condition { get; init; }
+    /// <remarks>
+    /// The exact keys depend on what the subscription type expects.
+    /// </remarks>
+    public required ImmutableDictionary<ConditionKey, string> Condition { get; init; }
     /// <summary>
     /// The date and time when the subscription was created.
     /// </summary>
@@ -44,7 +53,23 @@ public record EventSubSubscription
     public required EventSubSubscriptionTransport Transport { get; init; }
     /// <summary>
     /// The amount that the subscription counts against the application's limit.
-    /// See <see href="https://dev.twitch.tv/docs/eventsub/manage-subscriptions/#subscription-limits">subscription limits</see>.
     /// </summary>
+    /// <remarks>
+    /// See <see href="https://dev.twitch.tv/docs/eventsub/manage-subscriptions/#subscription-limits">subscription limits</see>.
+    /// </remarks>
     public required int Cost { get; init; }
+}
+
+public static class EventSubSubscriptionExtensions
+{
+    /// <summary>
+    /// Get a <see cref="EventSubSubscriptionType"/> based on the type name and version of the subscription.
+    /// </summary>
+    /// <param name="subscription">The subscription to get the subscription type of.</param>
+    /// <returns>The <see cref="EventSubSubscriptionType"/> of the subscription.</returns>
+    public static EventSubSubscriptionType GetSubscriptionType(this EventSubSubscription subscription)
+        => new(subscription.Type, subscription.Version);
+
+    internal static bool RequiresUserAccessToken(this EventSubSubscription subscription)
+        => subscription.Transport.Method == EventSubTransportMethod.Websocket;
 }

@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.GuestStar;
+﻿using TwitchySharp.Shared.Models;
+
+namespace TwitchySharp.Api.Helix.GuestStar;
 
 /// <summary>
 /// Contains data about a specific Guest Star session.
@@ -8,7 +10,7 @@ public record GuestStarSession
     /// <summary>
     /// The id of the session.
     /// </summary>
-    public required string Id { get; init; }
+    public required GuestStarSessionId Id { get; init; }
     /// <summary>
     /// A list of guests currently interacting with the Guest Star session.
     /// </summary>

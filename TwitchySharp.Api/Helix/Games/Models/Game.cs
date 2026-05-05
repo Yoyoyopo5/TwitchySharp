@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.Helpers;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Games;
 
@@ -10,7 +11,7 @@ public record Game
     /// <summary>
     /// An id that identifies the category or game.
     /// </summary>
-    public required string Id { get; init; }
+    public required GameId Id { get; init; }
     /// <summary>
     /// The category or game's name.
     /// </summary>
@@ -23,5 +24,5 @@ public record Game
     /// The ID that <see href="https://www.igdb.com/">IGDB</see> uses to identify this game. 
     /// If the IGDB ID is not available to Twitch, this is an empty string.
     /// </summary>
-    public required string IgdbId { get; init; }
+    public required IgdbId IgdbId { get; init; }
 }

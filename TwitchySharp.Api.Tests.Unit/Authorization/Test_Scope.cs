@@ -13,7 +13,7 @@ public class Test_Scope
     {
         const string MOCK_SCOPE_STRING = "analytics:read:extensions";
 
-        IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions];
+        IEnumerable<Scope> stubScopes = [ Scope.AnalyticsReadExtensions ];
 
         string actual = stubScopes.FormatScopes();
 
@@ -23,9 +23,9 @@ public class Test_Scope
     [Fact]
     public void FormatScopes_MultipleScopes_ReturnScopeString()
     {
-        const string MOCK_SCOPE_STRING = "analytics:read:extensions+analytics:read:games";
+        const string MOCK_SCOPE_STRING = "analytics:read:extensions analytics:read:games";
 
-        IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions, Scope.AnalyticsReadGames];
+        IEnumerable<Scope> stubScopes = [ Scope.AnalyticsReadExtensions, Scope.AnalyticsReadGames ];
 
         string actual = stubScopes.FormatScopes();
 

@@ -1,16 +1,20 @@
-﻿namespace TwitchySharp.Api.Helix.Extensions;
+﻿using Yoyoyopo5.ValueWrapper;
+
+namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
-/// Possible values for an extension's ability to view user subscription levels.
+/// Contains static definitions for possible extension subscriptions support levels.
 /// </summary>
-public enum ExtensionSubscriptionsSupportLevel
+/// <param name="Value">The string value of the extension subscriptions support level.</param>
+[Wrapper<string>]
+public readonly partial record struct ExtensionSubscriptionsSupportLevel(string Value)
 {
     /// <summary>
     /// The extension can't view the user’s subscription level.
     /// </summary>
-    None,
+    public static ExtensionSubscriptionsSupportLevel None { get; } = new("none");
     /// <summary>
     /// The extension can view the user’s subscription level.
     /// </summary>
-    Optional
+    public static ExtensionSubscriptionsSupportLevel Optional { get; } = new("optional");
 }
