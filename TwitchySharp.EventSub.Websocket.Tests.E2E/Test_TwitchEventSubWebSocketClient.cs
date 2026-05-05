@@ -1,13 +1,24 @@
+using TwitchySharp.Api;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
+using TwitchySharp.Api.Authorization;
+using System.Text;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
 
 public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
 {
     private readonly WebsocketFixture _fixture = fixture;
+
+    [Fact]
+    public async Task Send_ValidateAccessTokenRequest_ReturnSuccessResponseWithUserReadChatScope()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        var response = await _fixture.Api.SendAsync(new ValidateAccessTokenRequest() { UserId = _fixture.AuthorizedBroadcaster.UserId }, ct);
+        Assert.Contains(Scope.UserReadChat, response.Content.Scopes);
+    }
 
     [Fact]
     public async Task WaitFor_WelcomeMessage_ReturnNotNull()
@@ -55,6 +66,11 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
             Assert.Null(_fixture.Handler.ReceivedException);
             Assert.NotNull(notification);
             Assert.Equal(TEST_MESSAGE, notification.Event.Message.Text);
+        }
+        catch (TwitchApiException ex)
+        {
+            string content = Encoding.UTF8.GetString(ex.Content);
+            TestContext.Current.AddWarning("An API request failed with content: " + content);
         }
         finally
         {

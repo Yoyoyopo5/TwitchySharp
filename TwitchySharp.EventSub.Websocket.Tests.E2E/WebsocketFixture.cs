@@ -21,7 +21,7 @@ public sealed class WebsocketFixture : IAsyncLifetime
 
     public TwitchIdentity.Client Client { get; }
     public TwitchIdentity.User AuthorizedBroadcaster { get; }
-    private readonly AccessTokenDetails.User _broadcasterAccessTokenDetails;
+    private AccessTokenDetails.User _broadcasterAccessTokenDetails;
     private readonly ITwitchClient _authClient = new TwitchClientBuilder().Build();
 
     private static readonly IConfiguration _config 
@@ -37,8 +37,8 @@ public sealed class WebsocketFixture : IAsyncLifetime
         Config = _config.GetRequiredSection("WebsocketFixture").Get<WebsocketConfig>() ?? throw new InvalidOperationException($"Could not bind configuration to {nameof(WebsocketConfig)}");
 
         Client = new(Config.Client.Id);
-        AuthorizedBroadcaster = new(Config.AuthorizedBroadcaster.Id, Config.Client.Id);
-        _broadcasterAccessTokenDetails = Config.AuthorizedBroadcaster.AccessToken;
+        AuthorizedBroadcaster = Config.UserAccessTokenDetails.Identity;
+        _broadcasterAccessTokenDetails = Config.UserAccessTokenDetails;
 
         Api = new TwitchClientBuilder()
             .WithAuthorizationResolution(new TwitchAuthorizationResolutionOptions()
@@ -53,6 +53,11 @@ public sealed class WebsocketFixture : IAsyncLifetime
             .ConfigureIdentityTokenResolution(new UserAccessTokenResolutionOptions()
             {
                 GetCachedToken = (ctx, _) => ValueTask.FromResult<AccessTokenDetails.User?>(_broadcasterAccessTokenDetails),
+                OnNewToken = (token, _) =>
+                {
+                    _broadcasterAccessTokenDetails = token;
+                    return ValueTask.CompletedTask;
+                },
                 AuthenticationClient = _authClient,
                 ClientSecretResolver = (ctx, _) => ValueTask.FromResult<ClientSecret?>(Config.Client.Secret)
             }))
@@ -91,7 +96,7 @@ public record WebsocketConfig
     }
 
     public required ClientConfig Client { get; set; }
-    public required AuthorizedBroadcasterConfig AuthorizedBroadcaster { get; set; }
+    public required AccessTokenDetails.User UserAccessTokenDetails { get; set; }
 }
 
 public class TestHandler : IWebsocketEventSubHandler
