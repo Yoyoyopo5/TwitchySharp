@@ -38,7 +38,7 @@ public class WebsocketFixture : WebApplicationFactory<Program>
     public WebsocketFixture()
     {
         // We use kestrel here because Websocket library requires a WebSocketClient (cannot be used with TestServer as far as I know).
-        UseKestrel(TEST_PORT);
+        // UseKestrel(TEST_PORT); - need to disable this to get the project to build when migrating to xUnit v3, will revist later
     }
 
     public async Task SendTestMessageAsync(string message, CancellationToken ct = default)

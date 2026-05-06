@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0" />
-	  <PackageReference Include="Yoyoyopo5.ValueWrapper" Version="1.1.0" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="System.Threading.RateLimiting" />
+	<PackageReference Include="Yoyoyopo5.ValueWrapper" />
   </ItemGroup>
 	
   <ItemGroup>
