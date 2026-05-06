@@ -36,7 +36,7 @@
   </Folder>
   <Folder Name="/tests/Integration/EventSub/">
     <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Websocket.Tests.Integration/TwitchySharp.EventSub.Websocket.Tests.Integration.csproj" />
-    <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration.csproj" />
+    <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Integration/TwitchySharp.EventSub.Webhooks.Tests.Integration.csproj" />
     <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.Tests.Integration/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.Tests.Integration.csproj" />
   </Folder>
   <Folder Name="/tests/E2E/">
