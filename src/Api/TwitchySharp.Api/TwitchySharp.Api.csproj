@@ -24,7 +24,7 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
 		<InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
-		<InternalsVisibleTo Include="$(AssemblyName).Tests.E2E.AcquireUserAccessToken" />
+		<InternalsVisibleTo Include="AcquireUserAccessToken" />
 	</ItemGroup>
 
   <ItemGroup>
