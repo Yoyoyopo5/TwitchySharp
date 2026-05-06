@@ -40,7 +40,7 @@
   </Folder>
   <Folder Name="/tests/E2E/">
     <Project Path="tests/E2E/TwitchySharp.Api.Tests.E2E/TwitchySharp.Api.Tests.E2E.csproj" />
-    <Project Path="tests/E2E/TwitchySharp.EventSub.Websocket.Tests.E2E/TwitchySharp.EventSub.Websocket.Tests.E2E.csproj" />
+    <Project Path="tests/E2E/TwitchySharp.EventSub.Tests.E2E/TwitchySharp.EventSub.Tests.E2E.csproj" />
   </Folder>
 
   <!-- utils/ -->
