@@ -19,7 +19,7 @@
 
   <!-- tests/ -->
   <Folder Name="/tests/Unit/">
-    <Project Path="tests/Unit/TwitchySharp.Tests/TwitchySharp.Tests.csproj" />
+    <Project Path="tests/Unit/TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
     <Project Path="tests/Unit/TwitchySharp.Helpers.Tests.Unit/TwitchySharp.Helpers.Tests.Unit.csproj" />
   </Folder>
   <Folder Name="/tests/Unit/Api/">
