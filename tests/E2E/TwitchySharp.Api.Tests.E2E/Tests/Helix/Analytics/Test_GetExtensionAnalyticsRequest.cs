@@ -11,7 +11,7 @@ public class Test_GetExtensionAnalyticsRequest(TwitchClientFixture fixture)
     public async Task Send_GetExtensionAnalyticsRequest_ReturnSuccessResponse()
     {
         // We need an account with extension analytics to fully test this endpoint.
-        GetExtensionAnalyticsRequest request = new() 
+        GetExtensionAnalyticsRequest request = new()
         {
             UserId = _fixture.UserIdentity.UserId
         };

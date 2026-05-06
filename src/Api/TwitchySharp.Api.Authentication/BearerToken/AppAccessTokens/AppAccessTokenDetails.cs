@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Api.Helix.Moderation;
-
-namespace TwitchySharp.Api.AuthorizationResolution;
+﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
 public abstract partial record AccessTokenDetails
 {
@@ -36,7 +34,7 @@ public static partial class AccessTokenDetailsEnumerableExtensions
         TwitchRequestAuthorizationContext context)
         => context.Identity switch
         {
-            TwitchIdentity.Client identity 
+            TwitchIdentity.Client identity
                 => tokens.Where(t => t.Identity == identity),
             _ => []
         };

@@ -31,5 +31,5 @@ public record SuspiciousUser
     /// <summary>
     /// An array of suspicious user types that this user represents.
     /// </summary>
-    public required SuspiciousUserType[] Types { get; init; } 
+    public required SuspiciousUserType[] Types { get; init; }
 }

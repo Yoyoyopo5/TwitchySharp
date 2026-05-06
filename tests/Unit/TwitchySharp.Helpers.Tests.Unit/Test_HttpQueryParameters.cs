@@ -1,11 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TwitchySharp.Helpers.Tests.Unit;
 
-namespace TwitchySharp.Helpers.Tests.Unit;
 public class Test_HttpQueryParameters
 {
     [Theory]

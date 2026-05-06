@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Webhooks.Enums;
-using TwitchySharp.Shared.EventSub.Enums;
+﻿using TwitchySharp.EventSub.Webhooks.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks;
+
 public record EventSubWebhookRequestHeader
 {
     public required string TwitchEventsubMessageId { get; init; }

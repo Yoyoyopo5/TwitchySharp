@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Yoyoyopo5.ValueWrapper;
+﻿using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Enums.Events;
 

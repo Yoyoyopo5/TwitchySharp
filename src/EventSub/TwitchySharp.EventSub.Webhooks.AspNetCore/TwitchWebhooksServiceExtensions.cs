@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
@@ -20,7 +15,7 @@ namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 public static class TwitchEventSubWebhooksServiceExtensions
 {
     public static IServiceCollection AddTwitchEventSubWebhooksVerification(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         Action<TwitchEventSubWebhooksVerificationOptions>? configureOptions = null
         )
     {
@@ -32,14 +27,14 @@ public static class TwitchEventSubWebhooksServiceExtensions
             new FixedSecretTwitchWebhookSecretsResolver(sp.GetService<IOptions<TwitchEventSubWebhooksVerificationOptions>>()?.Value.Secret ?? throw new NotSupportedException($"The {nameof(TwitchEventSubWebhooksVerificationOptions.Secret)} must be configured in the {nameof(TwitchEventSubWebhooksVerificationOptions)}."))
             );
         services.TryAddScoped<IComputeTwitchWebhookSignature, DefaultTwitchWebhookCrypto>();
-        services.TryAddScoped<ITwitchWebhookMessageVerifier>(sp => 
+        services.TryAddScoped<ITwitchWebhookMessageVerifier>(sp =>
             new DefaultTwitchWebhookMessageVerifier(sp.GetRequiredService<ITwitchEventSubWebhookSecretsResolver>())
             );
         return services;
     }
 
     public static IServiceCollection AddTwitchEventSubWebhooks(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         Action<TwitchEventSubWebhooksOptions>? configureOptions = null
         )
     {
@@ -48,14 +43,14 @@ public static class TwitchEventSubWebhooksServiceExtensions
 
         services.TryAddScoped<ITwitchWebhooksHeaderConverter, DefaultTwitchWebhooksHeaderConverter>();
         services.TryAddScoped<IWebhookCallbackVerifier, DefaultWebhookCallbackVerifier>();
-        services.TryAddScoped<INotificationConverter>(sp => 
+        services.TryAddScoped<INotificationConverter>(sp =>
             new NotificationConverter(sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.NotificationTypes)
             );
         services.TryAddScoped<IWebhookRequestBodyDeserializer>(sp => new DefaultWebhookRequestDeserializer(
             sp.GetService<INotificationConverter>(),
             sp.GetService<IOptions<TwitchEventSubWebhooksOptions>>()?.Value.JsonSerializerOptions
             ));
-        services.TryAddScoped<IEventSubWebhookMessageProcessor>(sp => 
+        services.TryAddScoped<IEventSubWebhookMessageProcessor>(sp =>
             new DefaultEventSubWebhookMessageProcessor(
                 sp.GetRequiredService<IWebhookEventSubHandler>(), // You must register an IWebhookEventSubHandler implementation separately
                 sp.GetService<IWebhookCallbackVerifier>(),

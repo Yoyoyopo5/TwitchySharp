@@ -12,7 +12,7 @@ public class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLif
 {
     public EventSubWebsocketSessionId SessionId { get; private set; } = new();
     private readonly ClientWebSocket _ws = new();
-    
+
     private static async ValueTask<string> GetWebsocketSessionIdAync(ClientWebSocket ws)
     {
         const int TIMEOUT = 5000;
@@ -41,10 +41,10 @@ public class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLif
     private static string? GetIdOrDefault(JsonElement json)
         => json.EnumerateObject().First(property => property.NameEquals("payload")).Value
                 .EnumerateObject().FirstOrDefault(property => property.NameEquals("session")).Value switch
-                {
-                    { ValueKind: JsonValueKind.Object } session => session.EnumerateObject().First(property => property.NameEquals("id")).Value.GetString(),
-                    _ => null
-                };
+        {
+            { ValueKind: JsonValueKind.Object } session => session.EnumerateObject().First(property => property.NameEquals("id")).Value.GetString(),
+            _ => null
+        };
 
     public new void Dispose()
     {

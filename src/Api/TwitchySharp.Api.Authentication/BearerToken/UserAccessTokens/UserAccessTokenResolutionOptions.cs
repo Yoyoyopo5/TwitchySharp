@@ -1,5 +1,5 @@
-using TwitchySharp.Shared.Models;
 using Microsoft.Extensions.Logging;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 
@@ -16,7 +16,7 @@ public record UserAccessTokenResolutionOptions : ITokenResolutionOptions<AccessT
     /// <inheritdoc/>
     public Func<AccessTokenDetails.User, CancellationToken, ValueTask>? OnNewToken { get; init; }
     /// <inheritdoc/>
-    public AccessTokenDetailsResolver<AccessTokenDetails.User>? AcquireNewToken { get; init; } 
+    public AccessTokenDetailsResolver<AccessTokenDetails.User>? AcquireNewToken { get; init; }
 
     /// <summary>
     /// The client secret resolver function to use when refreshing an expired user access token.

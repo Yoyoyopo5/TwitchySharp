@@ -1,9 +1,9 @@
+using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Users;
-using TwitchySharp.Shared.Models;
 using TwitchySharp.Shared;
-using System.Collections.Immutable;
+using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Users;
 
@@ -180,7 +180,7 @@ public class Test_UpdateUserExtensionsRequest
     public void ExtensionsConfigurationType_ChainedConfigureExtension_AccumulatesExtensions()
     {
         ImmutableArray<UpdateExtensionParameters?> config = [
-            new UpdateExtensionParameters() 
+            new UpdateExtensionParameters()
             {
                 Id = new ExtensionId("ext1"),
                 Version = new ExtensionVersion("1.0.0"),

@@ -28,7 +28,7 @@ public class Test_WhereTokenMeetsRequirement
             Identity = UserIdentity,
             ValidScopes = scopes
         };
-        
+
         IEnumerable<AccessTokenDetails> matched = tokens.WhereTokenMeetsRequirements(context);
 
         Assert.Empty(matched);
@@ -56,7 +56,7 @@ public class Test_WhereTokenMeetsRequirement
     [Fact]
     public void FilterTokens_NoMatchingTokensWithScope_EmptyEnumerable()
     {
-        HashSet<Scope> scopes = [ Scope.ChannelManageAds ];
+        HashSet<Scope> scopes = [Scope.ChannelManageAds];
         List<AccessTokenDetails> tokens = [
             CreateUserTokenDetails("a", new HashSet<Scope>() { Scope.BitsRead })
             ];
@@ -74,7 +74,7 @@ public class Test_WhereTokenMeetsRequirement
     [Fact]
     public void FilterTokens_NoMatchingTokensWithIdentity_EmptyEnumerable()
     {
-        HashSet<Scope> scopes = [ Scope.ChannelManageAds ];
+        HashSet<Scope> scopes = [Scope.ChannelManageAds];
         List<AccessTokenDetails> tokens = [
             CreateUserTokenDetails("a", scopes)
             ];
@@ -93,8 +93,8 @@ public class Test_WhereTokenMeetsRequirement
     public void FilterTokens_ValidTokenWithExactScope_TokenInEnumerable()
     {
         const string FAKE_TOKEN_VALUE = "test_token";
-        HashSet<Scope> validScopes = [ Scope.BitsRead ];
-        HashSet<Scope> userScopes = [ Scope.BitsRead ];
+        HashSet<Scope> validScopes = [Scope.BitsRead];
+        HashSet<Scope> userScopes = [Scope.BitsRead];
         List<AccessTokenDetails> tokens = [
             CreateUserTokenDetails(FAKE_TOKEN_VALUE, userScopes)
             ];
@@ -113,8 +113,8 @@ public class Test_WhereTokenMeetsRequirement
     public void FilterTokens_ValidTokenWithOneScope_TokenInEnumerable()
     {
         const string FAKE_TOKEN_VALUE = "test_token";
-        HashSet<Scope> validScopes = [ Scope.BitsRead, Scope.ChannelManageAds ];
-        HashSet<Scope> userScopes = [ Scope.BitsRead ];
+        HashSet<Scope> validScopes = [Scope.BitsRead, Scope.ChannelManageAds];
+        HashSet<Scope> userScopes = [Scope.BitsRead];
         List<AccessTokenDetails> tokens = [
             CreateUserTokenDetails(FAKE_TOKEN_VALUE, userScopes)
             ];

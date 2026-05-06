@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
@@ -55,8 +51,8 @@ public static class TwitchWebhooksRouteExtensions
                             return Results.Unauthorized();
                         }
                         logger?.LogTrace("Verification success for webhook message.");
-                    }                    
-                } 
+                    }
+                }
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, "An error occurred during message verification.");

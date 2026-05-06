@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.Models;
+﻿using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization.Extensions;
+
 public class Test_ExtensionJwtPayload
 {
     [Fact]

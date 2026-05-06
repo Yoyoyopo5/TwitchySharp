@@ -1,21 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Channels;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
 using Websocket.Client;
 
@@ -29,11 +21,11 @@ public class WebsocketFixture : WebApplicationFactory<Program>
     public TestHandler Handler => Services.GetRequiredService<IWebsocketEventSubHandler>() as TestHandler ?? throw new InvalidOperationException("The IWebsocketEventSubHandler is not registered as TestHandler.");
     public WebsocketClientEventSubWebsocketClient Client => Services.GetRequiredService<WebsocketClientEventSubWebsocketClient>();
     public static Uri Path => new UriBuilder()
-        {
-            Host = "localhost",
-            Scheme = "ws",
-            Port = TEST_PORT
-        }.Uri;
+    {
+        Host = "localhost",
+        Scheme = "ws",
+        Port = TEST_PORT
+    }.Uri;
 
     public WebsocketFixture()
     {

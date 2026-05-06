@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Concurrent;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Shared.Models;

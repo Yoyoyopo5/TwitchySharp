@@ -17,7 +17,7 @@ public class Test_DeviceCodeRequest(TwitchClientFixture fixture)
             Scopes = scopes
         };
         ITwitchClient client = _fixture.CreateClient();
-        
+
         DeviceCodeResponse response = (await client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
 
         Assert.False(string.IsNullOrEmpty(response.DeviceCode.Value));

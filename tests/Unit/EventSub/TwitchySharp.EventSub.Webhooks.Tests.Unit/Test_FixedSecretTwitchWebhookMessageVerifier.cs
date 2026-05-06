@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 using TwitchySharp.EventSub.Webhooks.SecretResolvers;
 
@@ -20,7 +16,7 @@ public class Test_FixedSecretTwitchWebhookMessageVerifier
         const string FAKE_MESSAGE_ID = "12345";
         const string FAKE_MESSAGE_TIMESTAMP = "2024-01-01T12:00:00Z";
         using HMACSHA256 hmac = new(secretBytes);
-        
+
         string fakeNotificationData = """
             {
               "subscription": {

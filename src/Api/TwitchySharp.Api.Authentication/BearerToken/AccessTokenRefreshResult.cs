@@ -3,7 +3,7 @@ namespace TwitchySharp.Api.AuthorizationResolution;
 internal abstract record AccessTokenRefreshResult
 {
     internal abstract AccessTokenDetailsResolutionResult ToResolutionResult();
-    public record Refreshed<TDetails>(TDetails AccessTokenDetails) : AccessTokenRefreshResult 
+    public record Refreshed<TDetails>(TDetails AccessTokenDetails) : AccessTokenRefreshResult
         where TDetails : AccessTokenDetails
     {
         internal override AccessTokenDetailsResolutionResult ToResolutionResult()

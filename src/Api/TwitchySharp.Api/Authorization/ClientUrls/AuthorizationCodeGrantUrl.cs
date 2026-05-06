@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using TwitchySharp.Shared.Models;
+﻿using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Authorization.ClientUrls;
 /// <summary>
@@ -14,5 +11,5 @@ namespace TwitchySharp.Api.Authorization.ClientUrls;
 public record AuthorizationCodeGrantUrl
     : AuthorizationUrl
 {
-    protected override ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; } = [ TwitchAuthorizationResponseType.Code ];
+    protected override ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; } = [TwitchAuthorizationResponseType.Code];
 }

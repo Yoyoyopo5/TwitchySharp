@@ -1,6 +1,4 @@
-﻿using Yoyoyopo5.ValueWrapper;
-
-namespace TwitchySharp.EventSub.Interfaces.Events;
+﻿namespace TwitchySharp.EventSub.Interfaces.Events;
 
 /// <summary>
 /// A fragment of a Twitch chat message.

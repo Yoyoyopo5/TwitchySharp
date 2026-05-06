@@ -59,7 +59,7 @@ public readonly record struct LanguageCode
             value = new LanguageCode(culture.TwoLetterISOLanguageName);
             return true;
         }
-        if (string.Equals(OTHER, code, StringComparison.OrdinalIgnoreCase)) 
+        if (string.Equals(OTHER, code, StringComparison.OrdinalIgnoreCase))
         {
             value = new LanguageCode(OTHER);
             return true;

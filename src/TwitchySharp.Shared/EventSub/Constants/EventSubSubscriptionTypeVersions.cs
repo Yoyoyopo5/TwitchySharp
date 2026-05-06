@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Shared.EventSub.Constants;
+﻿namespace TwitchySharp.Shared.EventSub.Constants;
 /// <summary>
 /// Contains constant values for EventSub subscription type versions.
 /// </summary>

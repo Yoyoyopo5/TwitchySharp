@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using TwitchySharp.EventSub.Interfaces;
-using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Websocket.Messages;
 using TwitchySharp.EventSub.Websocket.Messages.Enums;

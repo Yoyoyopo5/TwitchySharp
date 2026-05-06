@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.EventSub.Webhooks.MessageVerifiers;
+﻿namespace TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 /// <summary>
 /// Determines if a Twitch EventSub webhook message is from Twitch by verifying its signature.
 /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events/#verifying-the-event-message">Verifying the Event Message</see> for more information.

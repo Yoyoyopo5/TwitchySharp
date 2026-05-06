@@ -16,10 +16,10 @@ internal static partial class AccessTokenDetailsResolverExtensions
     /// <returns>A <see cref="BearerTokenResolver"/> that returns the <see cref="IAccessToken"/> from the <paramref name="detailsResolver"/>.</returns>
     internal static BearerTokenResolver ExtractBearerToken<TDetails>(this AccessTokenDetailsResolver detailsResolver)
         where TDetails : AccessTokenDetails
-        => async (key, ct) => 
-        await detailsResolver(key, ct) switch 
+        => async (key, ct) =>
+        await detailsResolver(key, ct) switch
         {
             AccessTokenDetailsResolutionResult.Available<TDetails> hasToken => hasToken.AccessTokenDetails.AccessToken,
             _ => default
-        }; 
+        };
 }

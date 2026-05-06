@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.Api.Authorization;
+﻿namespace TwitchySharp.Api.Tests.Unit.Authorization;
 
-namespace TwitchySharp.Api.Tests.Unit.Authorization;
 public class Test_Scope
 {
     [Fact]
@@ -13,7 +7,7 @@ public class Test_Scope
     {
         const string MOCK_SCOPE_STRING = "analytics:read:extensions";
 
-        IEnumerable<Scope> stubScopes = [ Scope.AnalyticsReadExtensions ];
+        IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions];
 
         string actual = stubScopes.FormatScopes();
 
@@ -25,7 +19,7 @@ public class Test_Scope
     {
         const string MOCK_SCOPE_STRING = "analytics:read:extensions analytics:read:games";
 
-        IEnumerable<Scope> stubScopes = [ Scope.AnalyticsReadExtensions, Scope.AnalyticsReadGames ];
+        IEnumerable<Scope> stubScopes = [Scope.AnalyticsReadExtensions, Scope.AnalyticsReadGames];
 
         string actual = stubScopes.FormatScopes();
 
