@@ -24,7 +24,7 @@
   </Folder>
   <Folder Name="/tests/Unit/Api/">
     <Project Path="tests/Unit/Api/TwitchySharp.Api.Tests.Unit/TwitchySharp.Api.Tests.Unit.csproj" />
-    <Project Path="tests/Unit/Api/TwitchySharp.Api.AuthorizationResolution.Tests.Unit/TwitchySharp.Api.AuthorizationResolution.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/Api/TwitchySharp.Api.Authentication.Tests.Unit/TwitchySharp.Api.Authentication.Tests.Unit.csproj" />
   </Folder>
   <Folder Name="/tests/Unit/EventSub/">
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Tests.Unit/TwitchySharp.EventSub.Tests.Unit.csproj" />
