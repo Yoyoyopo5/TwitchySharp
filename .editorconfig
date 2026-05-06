@@ -239,3 +239,9 @@ dotnet_style_namespace_match_folder = true:suggestion
 
 # IDE0130: Namespace does not match folder structure
 dotnet_diagnostic.IDE0130.severity = silent
+
+[*.{csproj,props,targets,resx,slnx}]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
