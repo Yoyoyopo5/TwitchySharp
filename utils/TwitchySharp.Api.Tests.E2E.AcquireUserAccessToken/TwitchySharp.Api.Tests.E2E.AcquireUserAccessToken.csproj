@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>f149f191-1efc-42bb-86c5-43421459f445</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.5" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Api/TwitchySharp.Api.AuthorizationResolution/TwitchySharp.Api.AuthorizationResolution.csproj" />
+    <ProjectReference Include="../../src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
+  </ItemGroup>
+
+</Project>
