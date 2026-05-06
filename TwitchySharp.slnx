@@ -49,6 +49,7 @@
   </Folder>
 
   <File Path="Directory.Packages.props" />
+  <File Path="Directory.Build.props" />
   <File Path=".editorconfig" />
 
 </Solution>
