@@ -1,0 +1,25 @@
+<Solution>
+  <Project Path="TwitchySharp.Api.AuthorizationResolution.Tests.Integration/TwitchySharp.Api.AuthorizationResolution.Tests.Integration.csproj" />
+  <Project Path="TwitchySharp.Api.AuthorizationResolution.Tests.Unit/TwitchySharp.Api.AuthorizationResolution.Tests.Unit.csproj" />
+  <Project Path="TwitchySharp.Api.AuthorizationResolution/TwitchySharp.Api.AuthorizationResolution.csproj" />
+  <Project Path="TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken/TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken.csproj" />
+  <Project Path="TwitchySharp.Api.Tests.E2E/TwitchySharp.Api.Tests.E2E.csproj" />
+  <Project Path="TwitchySharp.Api.Tests.Integration/TwitchySharp.Api.Tests.Integration.csproj" />
+  <Project Path="TwitchySharp.Api.Tests.Unit/TwitchySharp.Api.Tests.Unit.csproj" />
+  <Project Path="TwitchySharp.Api/TwitchySharp.Api.csproj" />
+  <Project Path="TwitchySharp.EventSub.Tests.Unit/TwitchySharp.EventSub.Tests.Unit.csproj" />
+  <Project Path="TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration.csproj" />
+  <Project Path="TwitchySharp.EventSub.Webhooks.AspNetCore/TwitchySharp.EventSub.Webhooks.AspNetCore.csproj" />
+  <Project Path="TwitchySharp.EventSub.Webhooks.Tests.Unit/TwitchySharp.EventSub.Webhooks.Tests.Unit.csproj" />
+  <Project Path="TwitchySharp.EventSub.Webhooks/TwitchySharp.EventSub.Webhooks.csproj" />
+  <Project Path="TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.Tests.Integration/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.Tests.Integration.csproj" />
+  <Project Path="TwitchySharp.EventSub.Websocket.Clients.WebsocketClient/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.csproj" />
+  <Project Path="TwitchySharp.EventSub.Websocket.Tests.E2E/TwitchySharp.EventSub.Websocket.Tests.E2E.csproj" />
+  <Project Path="TwitchySharp.EventSub.Websocket.Tests.Integration/TwitchySharp.EventSub.Websocket.Tests.Integration.csproj" />
+  <Project Path="TwitchySharp.EventSub.Websocket/TwitchySharp.EventSub.Websocket.csproj" />
+  <Project Path="TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
+  <Project Path="TwitchySharp.Helpers.Tests.Unit/TwitchySharp.Helpers.Tests.Unit.csproj" />
+  <Project Path="TwitchySharp.Helpers/TwitchySharp.Helpers.csproj" />
+  <Project Path="TwitchySharp.Shared/TwitchySharp.Shared.csproj" />
+  <Project Path="TwitchySharp.Tests/TwitchySharp.Tests.csproj" />
+</Solution>
