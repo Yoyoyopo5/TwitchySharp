@@ -4,5 +4,5 @@ namespace TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
 
 public interface IWebhookCallbackVerifier
 {
-    public ValueTask<CallbackVerificationResponseData> VerifyCallback(string challenge, CancellationToken ct = default);
+    ValueTask<CallbackVerificationResponseData> VerifyCallback(string challenge, CancellationToken ct = default);
 }

@@ -40,7 +40,7 @@ public readonly record struct RgbColor
         ReadOnlySpan<char> span = hex.AsSpan();
         if (span[0] == '#') span = span[1..];
 
-        if (span.Length != 6 && span.Length != 8)
+        if (span.Length is not 6 and not 8)
             throw new FormatException("Hex string must be 6 or 8 characters long.");
 
         // Parse components

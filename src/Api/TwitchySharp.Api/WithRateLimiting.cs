@@ -41,12 +41,9 @@ public static class TwitchRateLimiting // Should consider putting this in anothe
             });
 
             // This runs every request.
-            return (context, ct) =>
-            {
-                if (context.AuthorizationHeaders.ClientId is null)
-                    return next(context, ct);
-                return concurrentlyRateLimitAndSend(context, ct);
-            };
+            return (context, ct) => context.AuthorizationHeaders.ClientId is null
+                ? next(context, ct)
+                : concurrentlyRateLimitAndSend(context, ct);
         };
     }
 

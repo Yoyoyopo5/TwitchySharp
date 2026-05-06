@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using TwitchySharp.Api.Tests.Integration.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Controllers;
@@ -18,25 +19,21 @@ public class MockHelixController(MockResponseConfigurator config) : ControllerBa
     /// </summary>
     /// <returns>An error result if validation fails, null if validation passes.</returns>
     private UnauthorizedObjectResult? ValidateAuthHeaders()
-    {
-        if (!Request.Headers.TryGetValue("Client-Id", out var clientId) || string.IsNullOrEmpty(clientId))
-            return Unauthorized(new TwitchErrorResponse
+        => !Request.Headers.TryGetValue("Client-Id", out StringValues clientId) || string.IsNullOrEmpty(clientId)
+            ? Unauthorized(new TwitchErrorResponse
             {
                 Error = "Unauthorized",
                 Status = 401,
                 Message = "Missing Client-Id header"
-            });
-
-        if (!Request.Headers.TryGetValue("Authorization", out var auth) || !auth.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            return Unauthorized(new TwitchErrorResponse
+            })
+            : !Request.Headers.TryGetValue("Authorization", out StringValues auth) || !auth.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+            ? Unauthorized(new TwitchErrorResponse
             {
                 Error = "Unauthorized",
                 Status = 401,
                 Message = "Missing or invalid Authorization header"
-            });
-
-        return null;
-    }
+            })
+            : null;
 
     /// <summary>
     /// Adds Twitch rate limit headers to the response.

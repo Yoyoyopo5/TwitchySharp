@@ -2,6 +2,6 @@
 
 public interface ITwitchEventSubWebhookSecretsResolver
 {
-    public ValueTask<string> GetSecret(EventSubWebhookRequestHeader requestHeaders, string body, CancellationToken ct = default);
-    public ValueTask<string> GetSecret(EventSubWebhookRequestHeader requestHeaders, Stream body, CancellationToken ct = default);
+    ValueTask<string> GetSecret(EventSubWebhookRequestHeader requestHeaders, string body, CancellationToken ct = default);
+    ValueTask<string> GetSecret(EventSubWebhookRequestHeader requestHeaders, Stream body, CancellationToken ct = default);
 }

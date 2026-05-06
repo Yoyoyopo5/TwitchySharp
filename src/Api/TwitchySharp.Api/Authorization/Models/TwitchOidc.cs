@@ -99,9 +99,5 @@ public record TwitchOidc
 internal static class JsonWebTokenExtensions
 {
     public static T? GetValueOrDefault<T>(this JsonWebToken jwt, string claim)
-    {
-        if (jwt.TryGetValue(claim, out T value))
-            return value;
-        return default;
-    }
+        => jwt.TryGetValue(claim, out T value) ? value : default;
 }

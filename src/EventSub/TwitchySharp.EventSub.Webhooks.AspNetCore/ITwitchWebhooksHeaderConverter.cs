@@ -4,5 +4,5 @@ namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
 internal interface ITwitchWebhooksHeaderConverter
 {
-    public TwitchWebhooksRequestHeaderConversionResult Convert(IHeaderDictionary headers);
+    TwitchWebhooksRequestHeaderConversionResult Convert(IHeaderDictionary headers);
 }
