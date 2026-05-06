@@ -1,17 +1,14 @@
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Immutable;
-using System.Net.Http;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
-using TwitchySharp.Helpers;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;

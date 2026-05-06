@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Api.Authorization;
-
-namespace TwitchySharp.Api.Helix.Channels;
+﻿namespace TwitchySharp.Api.Helix.Channels;
 
 public record GetChannelFollowersResponse
     : IPageableResponse

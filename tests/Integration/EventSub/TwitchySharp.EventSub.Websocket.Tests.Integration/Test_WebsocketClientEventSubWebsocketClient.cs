@@ -1,19 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Models.Notifications.Channel;
-using Websocket.Client;
-using Xunit;
+﻿using TwitchySharp.EventSub.Models.Notifications.Channel;
 
 namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client.Tests.Integration;
 
-public class Test_WebsocketClientEventSubWebsocketClient(WebsocketFixture fixture) : 
-    IClassFixture<WebsocketFixture>, 
+public class Test_WebsocketClientEventSubWebsocketClient(WebsocketFixture fixture) :
+    IClassFixture<WebsocketFixture>,
     IAsyncLifetime
 {
     private readonly WebsocketFixture _fixture = fixture;

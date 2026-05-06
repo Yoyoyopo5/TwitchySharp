@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Security.AccessControl;
-
-namespace TwitchySharp.Api.AuthorizationResolution;
+﻿namespace TwitchySharp.Api.AuthorizationResolution;
 /// <summary>
 /// Contains information about a specific access token and the context it belongs to.
 /// </summary>

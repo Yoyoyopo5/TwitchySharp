@@ -78,7 +78,8 @@ async Task<string> waitForCode(CancellationToken ct)
         context.Response.Close();
         codeListener.Stop();
     }
-};
+}
+;
 
 async ValueTask<AccessTokenDetails.User> acquireToken(string code, CancellationToken ct)
     => (await client.SendAsync(new AuthorizationCodeRequest()
@@ -95,8 +96,8 @@ async ValueTask<AccessTokenDetails.User> acquireToken(string code, CancellationT
             Scopes = response.Scope?.ToHashSet() ?? [],
             ExpiresAt = DateTimeOffset.UtcNow + response.ExpiresIn,
             Identity = new TwitchIdentity.User(
-                new(response.GetOidc()?.Sub 
-                    ?? throw new Exception("OIDC claims were not present, and the authorizing user could not be identified.")), 
+                new(response.GetOidc()?.Sub
+                    ?? throw new Exception("OIDC claims were not present, and the authorizing user could not be identified.")),
                 clientId
                 ),
             RefreshToken = response.RefreshToken
@@ -137,7 +138,7 @@ try
     clipboard(JsonSerializer.Serialize(tokenDetails, serializerOptions));
     Console.WriteLine("Access token details were copied to the clipboard.");
 }
-catch (OperationCanceledException cancelEx) {  Console.WriteLine(cancelEx.Message); }
+catch (OperationCanceledException cancelEx) { Console.WriteLine(cancelEx.Message); }
 catch (TwitchApiException apiEx) { Console.WriteLine($"An error occurred when requesting the token: {apiEx.StatusCode} {apiEx.Message} {Encoding.UTF8.GetString(apiEx.Content)} {((FormUrlEncodedContent)apiEx.Request.Content!).ReadAsStringAsync().Result}"); }
 catch (Exception ex) { Console.WriteLine($"An error occurred when waiting for the code: {ex.Message}"); }
 

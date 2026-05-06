@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Webhooks.Responses;

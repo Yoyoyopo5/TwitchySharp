@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Api.AuthorizationResolution;
+﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
 /// <summary>
 /// Resolves an <see cref="IAccessToken"/> for a specific Twitch request requiring authorization.

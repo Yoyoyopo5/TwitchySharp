@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration;
+﻿namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration;
 
 public record TestTwitchRequest : TwitchRequest
 {

@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
+﻿using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 
@@ -34,8 +33,8 @@ public static class TwitchClientBuilderExtensions
                             }, ct)
                         }
                     },
-                    _ => context with 
-                    { 
+                    _ => context with
+                    {
                         AuthorizationHeaders = context.AuthorizationHeaders with
                         {
                             BearerToken = await resolveBearerToken(request.AuthorizationContext, ct)

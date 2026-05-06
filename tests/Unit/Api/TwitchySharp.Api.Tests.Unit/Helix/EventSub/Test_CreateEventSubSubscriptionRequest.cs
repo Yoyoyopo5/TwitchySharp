@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
 using TwitchySharp.Shared.EventSub;

@@ -97,7 +97,7 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     /// <param name="options">The options to configure.</param>
     /// <param name="identityOptions">The identity-specific bearer token resolution options.</param>
     /// <returns>The configured <paramref name="options"/>.</returns>
-    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options, 
+    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
         TokenResolutionOptions<TDetails> identityOptions
         )
         where TIdentity : TwitchIdentity
@@ -153,12 +153,12 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
                     AccessTokenDetailsResolutionResult other => other
                 });
         }
-            
-        
-        AccessTokenDetailsResolver identityPipeline = identityPipelineBuilder.Finally(async (request, ct) => 
+
+
+        AccessTokenDetailsResolver identityPipeline = identityPipelineBuilder.Finally(async (request, ct) =>
                 AccessTokenDetailsResolutionResult.FromDetails( // This checks expiry.
-                    identityOptions.GetCachedToken is not null 
-                    ? await identityOptions.GetCachedToken(request, ct) 
+                    identityOptions.GetCachedToken is not null
+                    ? await identityOptions.GetCachedToken(request, ct)
                     : default));
 
         // Add the identity pipeline to run conditionally if request identity is TIdentity
@@ -170,7 +170,7 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
                 ? extractor(context, ct)
                 : next(context, ct);
         });
-       
+
         return options;
     }
 }

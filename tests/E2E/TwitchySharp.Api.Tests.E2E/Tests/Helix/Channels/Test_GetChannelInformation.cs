@@ -15,7 +15,7 @@ public class Test_GetChannelInformation(TwitchClientFixture fixture)
         UserId testBroadcasterId = new(TEST_BROADCASTER_ID);
         GetChannelInformationRequest request = new()
         {
-            BroadcasterIds = [ _fixture.UserIdentity.UserId, testBroadcasterId ]
+            BroadcasterIds = [_fixture.UserIdentity.UserId, testBroadcasterId]
         };
 
         await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);

@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
+using Microsoft.Extensions.Logging;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 

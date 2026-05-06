@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
+
 public class Test_OidcClaims
 {
     [Fact]
@@ -24,7 +20,7 @@ public class Test_OidcClaims
             """;
         JsonElement mockJson = JsonDocument.Parse(MOCK_JSON_STRING).RootElement;
         string mockJsonString = JsonSerializer.Serialize(mockJson);
-        
+
         JsonElement resultJson = JsonDocument.Parse(stubClaims.JsonEncode()).RootElement;
         string actual = JsonSerializer.Serialize(resultJson);
 

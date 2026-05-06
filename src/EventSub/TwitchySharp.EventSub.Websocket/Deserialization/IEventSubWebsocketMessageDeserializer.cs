@@ -1,7 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Websocket.Messages;
-using TwitchySharp.EventSub.Websocket.Messages.Payloads;
+﻿using TwitchySharp.EventSub.Websocket.Messages;
 
 namespace TwitchySharp.EventSub.Websocket.Deserialization;
 /// <summary>

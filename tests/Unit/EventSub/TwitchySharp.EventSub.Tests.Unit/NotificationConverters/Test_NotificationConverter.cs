@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.Models.Notifications.Automod.Message;
@@ -13,6 +7,7 @@ using TwitchySharp.Shared;
 using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Tests.Unit.NotificationConverters;
+
 public class Test_NotificationConverter
 {
     [Fact]
@@ -55,7 +50,7 @@ public class Test_NotificationConverter
                 {
                     Text = "test-text",
                     Fragments = [
-                        new() 
+                        new()
                         {
                             Type = AutomodCaughtMessageFragmentType.Text,
                             Text = "badtext"

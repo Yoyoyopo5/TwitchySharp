@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Webhooks.Requests;
-using TwitchySharp.EventSub.Webhooks.Responses;
+﻿using TwitchySharp.EventSub.Webhooks.Responses;
 
 namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 /// <summary>

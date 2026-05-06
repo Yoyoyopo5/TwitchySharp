@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Text;
+using Microsoft.Extensions.Hosting;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Deserialization;
 using TwitchySharp.EventSub.Websocket.Messages;

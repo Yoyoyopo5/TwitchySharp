@@ -26,7 +26,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
 
         // We can create a custom reward if the test award does not exist yet,
         // but the redemption must be created manually or via playwright.
-        if (reward is null) 
+        if (reward is null)
         {
             CreateCustomRewardsRequest createRewardRequest = new()
             {

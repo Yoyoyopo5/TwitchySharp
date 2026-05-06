@@ -37,11 +37,11 @@ public record ExtensionAccessTokenResolutionOptions : ITokenResolutionOptions<Ac
             OnNewToken = OnNewToken,
             AcquireNewToken = AcquireNewToken,
             RefreshToken = async (details, ct) // We use AcquireNewToken here because flow should be the same for both.
-                => AcquireNewToken is null 
+                => AcquireNewToken is null
                 ? new AccessTokenRefreshResult.Expired<AccessTokenDetails.ExtensionJwt>(details)
                 : await AcquireNewToken(new() { Identity = details.Identity }, ct) switch
                 {
-                    AccessTokenDetails.ExtensionJwt jwt 
+                    AccessTokenDetails.ExtensionJwt jwt
                         => new AccessTokenRefreshResult.Refreshed<AccessTokenDetails.ExtensionJwt>(jwt),
                     _ when details.ExpiresAt > DateTimeOffset.UtcNow
                         => new AccessTokenRefreshResult.Valid<AccessTokenDetails.ExtensionJwt>(details),

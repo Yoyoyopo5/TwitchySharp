@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TwitchySharp.EventSub.Websocket;
+﻿namespace TwitchySharp.EventSub.Websocket;
 
 /// <summary>
 /// Contains a constant value for the Twitch EventSub Websocket server address.

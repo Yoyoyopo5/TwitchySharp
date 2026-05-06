@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using TwitchySharp.Shared.Models;
+﻿using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Authorization.ClientUrls;
 /// <summary>

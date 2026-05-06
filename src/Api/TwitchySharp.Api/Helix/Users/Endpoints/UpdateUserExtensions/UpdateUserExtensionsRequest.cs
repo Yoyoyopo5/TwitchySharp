@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -39,7 +38,7 @@ public record UpdateUserExtensionsRequest
 
     // Note: Unsure of how this function actually behaves. I'm assuming only included extensions are updated, but if all extensions are updated, this could delete extensions.
     // Class may need to be re-written during testing because of how crap the docs are for this one. Very strange models as well.
-    
+
     // Okay, I've clarified the behavior:
     // The dictionary format basically represents a channel's extension "slots".
     // There are 3 slots for panel extensions, 1 for overlay, and 2 for component.
@@ -76,7 +75,7 @@ internal record UpdateUserExtensionsRequestData
             .ToImmutableDictionary() switch
         {
             { Count: 0 } => null,
-            { } dict => dict 
+            { } dict => dict
         };
 }
 

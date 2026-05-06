@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Websocket.Client;
+﻿using Websocket.Client;
 
 namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 

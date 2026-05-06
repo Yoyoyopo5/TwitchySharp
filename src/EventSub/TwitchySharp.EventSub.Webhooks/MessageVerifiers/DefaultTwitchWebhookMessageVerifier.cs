@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using TwitchySharp.EventSub.Webhooks.SecretResolvers;
 using TwitchySharp.EventSub.Webhooks.SignatureComputers;
 
@@ -16,8 +12,8 @@ namespace TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 /// <param name="secret">The fixed secret to use when computing signatures and verifying webhook requests.</param>
 /// <param name="signatureComputer">The signature computer to use. Defaults to <see cref="DefaultTwitchWebhookCrypto"/> if <see langword="null"/>.</param>
 public class DefaultTwitchWebhookMessageVerifier(
-    ITwitchEventSubWebhookSecretsResolver secretsResolver, 
-    IComputeTwitchWebhookSignature? signatureComputer = null) 
+    ITwitchEventSubWebhookSecretsResolver secretsResolver,
+    IComputeTwitchWebhookSignature? signatureComputer = null)
     : ITwitchWebhookMessageVerifier
 {
     private readonly ITwitchEventSubWebhookSecretsResolver _secrets = secretsResolver;

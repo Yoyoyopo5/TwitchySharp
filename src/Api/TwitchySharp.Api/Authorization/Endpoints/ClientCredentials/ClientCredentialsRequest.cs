@@ -14,7 +14,7 @@ public record ClientCredentialsRequest
 {
     public override HttpMethod Method => HttpMethod.Post;
     protected override string Path => "/token";
-    public override HttpContent? Content 
+    public override HttpContent? Content
         => new FormUrlEncodedContent(new Dictionary<string, string>
         {
             { "client_id", ClientId },

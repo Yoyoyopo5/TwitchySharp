@@ -57,7 +57,7 @@ public abstract record TwitchIdentity
     /// <param name="ExtensionId">The client id of the extension. Used as the <c>Client-Id</c> header of Helix API requests.</param>
     public sealed record Extension(UserId OwnerId, UserId? BroadcasterId = null, ExtensionId? ExtensionId = null) : TwitchIdentity(ExtensionId)
     {
-        public Extension(UserId OwnerId, ExtensionId? ExtensionId = null) 
+        public Extension(UserId OwnerId, ExtensionId? ExtensionId = null)
             : this(OwnerId, null, ExtensionId) { }
     }
 

@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Interfaces;
+﻿using System.Text.Json;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.CallbackVerifiers;
 using TwitchySharp.EventSub.Webhooks.Deserialization;
-using TwitchySharp.EventSub.Webhooks.Enums;
 using TwitchySharp.EventSub.Webhooks.Requests;
 using TwitchySharp.EventSub.Webhooks.Responses;
-using TwitchySharp.Shared;
 
 namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 /// <summary>

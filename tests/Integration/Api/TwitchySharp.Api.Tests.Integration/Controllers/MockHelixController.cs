@@ -1,7 +1,5 @@
-using System;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
-using TwitchySharp.Api.Tests.Integration.Fixtures;
 using TwitchySharp.Api.Tests.Integration.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Controllers;

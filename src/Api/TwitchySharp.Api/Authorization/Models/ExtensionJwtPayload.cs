@@ -1,8 +1,8 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using TwitchySharp.Helpers.JsonConverters.DateTime;
 using TwitchySharp.Shared;
 using TwitchySharp.Shared.Models;

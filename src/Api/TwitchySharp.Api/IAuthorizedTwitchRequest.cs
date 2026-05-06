@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using TwitchySharp.Api.Authorization;
 
 namespace TwitchySharp.Api;
 /// <summary>

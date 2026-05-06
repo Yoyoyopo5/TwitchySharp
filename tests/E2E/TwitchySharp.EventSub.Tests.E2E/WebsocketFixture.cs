@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Reflection;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using TwitchySharp.Api;
+using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
-using TwitchySharp.Api.AuthorizationResolution;
-using TwitchySharp.Api.Authorization;
 using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
@@ -16,7 +16,7 @@ public sealed class WebsocketFixture : IAsyncLifetime
     public TestHandler Handler { get; }
     public WebsocketClientEventSubWebsocketClient Websocket { get; }
     public ITwitchClient Api { get; }
-    
+
     public WebsocketConfig Config { get; }
 
     public TwitchIdentity.Client Client { get; }
@@ -24,7 +24,7 @@ public sealed class WebsocketFixture : IAsyncLifetime
     private AccessTokenDetails.User _broadcasterAccessTokenDetails;
     private readonly ITwitchClient _authClient = new TwitchClientBuilder().Build();
 
-    private static readonly IConfiguration _config 
+    private static readonly IConfiguration _config
         = new ConfigurationBuilder()
         .AddUserSecrets(Assembly.GetExecutingAssembly())
         .Build();
