@@ -48,4 +48,6 @@
     <Project Path="utils/AcquireUserAccessToken/AcquireUserAccessToken.csproj" />
   </Folder>
 
+  <File Path="Directory.Packages.props" />
+
 </Solution>

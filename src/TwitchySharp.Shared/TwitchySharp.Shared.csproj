@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Yoyoyopo5.ValueWrapper" Version="1.1.0" />
+    <PackageReference Include="Yoyoyopo5.ValueWrapper" />
     <ProjectReference Include="..\TwitchySharp.Helpers\TwitchySharp.Helpers.csproj" />
   </ItemGroup>
 

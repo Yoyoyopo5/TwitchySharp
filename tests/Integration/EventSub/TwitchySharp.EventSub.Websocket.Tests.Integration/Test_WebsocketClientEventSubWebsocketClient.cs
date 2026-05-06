@@ -19,7 +19,7 @@ public class Test_WebsocketClientEventSubWebsocketClient(WebsocketFixture fixtur
     private readonly WebsocketFixture _fixture = fixture;
     private WebsocketClientEventSubWebsocketClient _client = default!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         using CancellationTokenSource initTimeout = new(TimeSpan.FromSeconds(3));
         _fixture.Handler.Reset();
@@ -27,7 +27,7 @@ public class Test_WebsocketClientEventSubWebsocketClient(WebsocketFixture fixtur
         await _client.StartAsync(initTimeout.Token);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         using CancellationTokenSource disposeTimeout = new(TimeSpan.FromSeconds(3));
         await _client.StopAsync(disposeTimeout.Token);
