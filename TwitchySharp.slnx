@@ -46,7 +46,7 @@
 
   <!-- utils/ -->
   <Folder Name="/utils/">
-    <Project Path="utils/TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken/TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken.csproj" />
+    <Project Path="utils/AcquireUserAccessToken/AcquireUserAccessToken.csproj" />
   </Folder>
 
 </Solution>
