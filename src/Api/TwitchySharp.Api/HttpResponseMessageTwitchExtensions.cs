@@ -36,9 +36,5 @@ internal static class HttpResponseMessageTwitchExtensions
         };
 
     private static string? GetFirstValueOrDefault(this HttpHeaders headers, string name)
-    {
-        if (!headers.TryGetValues(name, out IEnumerable<string>? values))
-            return null;
-        return values.FirstOrDefault();
-    }
+        => headers.TryGetValues(name, out IEnumerable<string>? values) ? values.FirstOrDefault() : null;
 }

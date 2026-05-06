@@ -17,7 +17,7 @@ public interface IComputeTwitchWebhookSignature
     /// A <see langword="byte"/>[] representing the computed signature of the message in UTF8 encoded bytes. 
     /// This should match the value of the <c>Twitch-Eventsub-Message-Signature</c> header in the original webhook message.
     /// </returns>
-    public ValueTask<byte[]> ComputeSignature(byte[] secret, string messageId, string timestamp, string body, CancellationToken ct = default);
+    ValueTask<byte[]> ComputeSignature(byte[] secret, string messageId, string timestamp, string body, CancellationToken ct = default);
     /// <inheritdoc cref="ComputeSignature(byte[], string, string, string, CancellationToken)"/>
-    public ValueTask<byte[]> ComputeSignature(byte[] secret, string messageId, string timestamp, Stream body, CancellationToken ct = default);
+    ValueTask<byte[]> ComputeSignature(byte[] secret, string messageId, string timestamp, Stream body, CancellationToken ct = default);
 }

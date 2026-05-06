@@ -35,12 +35,7 @@ internal static class UserAuthorizedSubscriptionTypeExtensions
     /// if the condition key is not found in the subscription's condition.
     /// </returns>
     internal static TwitchIdentity.User? GetAuthorizingUser(this IUserAuthorizedSubscriptionType subscriptionType)
-    {
-        var conditionKey = subscriptionType.AuthorizingUserConditionKey;
-        if (!subscriptionType.Condition.TryGetValue(conditionKey, out object? value))
-            return null;
-        if (value is not UserId userId)
-            return null;
-        return new TwitchIdentity.User(userId);
-    }
+        => subscriptionType.Condition.TryGetValue(subscriptionType.AuthorizingUserConditionKey, out object? value)
+            ? value is not UserId userId ? null : new TwitchIdentity.User(userId)
+            : null;
 }

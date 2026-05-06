@@ -60,7 +60,7 @@ public class Test_ImplicitGrantUrl
 
         // ImmutableHashSet order may vary, so check both possibilities
         Assert.True(
-            responseType == "token+id_token" || responseType == "id_token+token",
+            responseType is "token+id_token" or "id_token+token",
             $"Expected 'token+id_token' or 'id_token+token', got '{responseType}'");
     }
 

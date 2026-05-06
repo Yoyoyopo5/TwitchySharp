@@ -13,9 +13,9 @@ public class EmptyDateTimeOffsetConverter : JsonConverter<DateTimeOffset?>
     public override DateTimeOffset? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         Debug.Assert(typeToConvert == typeof(DateTimeOffset?));
-        if (DateTimeOffset.TryParse(reader.GetString() ?? string.Empty, out DateTimeOffset result))
-            return result;
-        return null;
+        return DateTimeOffset.TryParse(reader.GetString() ?? string.Empty, out DateTimeOffset result)
+            ? result
+            : null;
     }
 
     public override void Write(Utf8JsonWriter writer, DateTimeOffset? value, JsonSerializerOptions options)

@@ -47,11 +47,11 @@ internal class EmoteImageTemplateStringJsonConverter : JsonConverter<EmoteImageT
     public override EmoteImageTemplateString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         Debug.Assert(typeToConvert == typeof(EmoteImageTemplateString));
-        if (reader.TokenType != JsonTokenType.String)
-            throw new JsonException($"Unexpected {reader.TokenType} when reading {typeof(EmoteImageTemplateString)}.");
-        if (reader.GetString() is not string value)
-            throw new JsonException($"Unexpected null string value when reading {typeof(EmoteImageTemplateString)}");
-        return new EmoteImageTemplateString() { TemplateString = value };
+        return reader.TokenType != JsonTokenType.String
+            ? throw new JsonException($"Unexpected {reader.TokenType} when reading {typeof(EmoteImageTemplateString)}.")
+            : reader.GetString() is not string value
+            ? throw new JsonException($"Unexpected null string value when reading {typeof(EmoteImageTemplateString)}")
+            : new EmoteImageTemplateString() { TemplateString = value };
     }
 
     public override void Write(Utf8JsonWriter writer, EmoteImageTemplateString value, JsonSerializerOptions options)
