@@ -7,7 +7,6 @@ using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Deserialization;
 using TwitchySharp.EventSub.Websocket.Messages;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
-using TwitchySharp.Helpers.Interfaces;
 using Websocket.Client;
 
 namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
@@ -16,13 +15,13 @@ public class WebsocketClientEventSubWebsocketClient(
     IWebsocketEventSubHandler eventSubHandler,
     IEventSubWebsocketMessageDeserializer? messageDeserializer = null,
     IWebsocketClientFactory? websocketClientFactory = null,
-    ICancellationTokenFactory? messageCancellationTokenFactory = null
+    Func<CancellationToken>? messageCancellationTokenFactory = null
     ) : IHostedService, IDisposable
 {
     private readonly IWebsocketEventSubHandler _handler = eventSubHandler;
     private readonly IWebsocketClientFactory _clientFactory = websocketClientFactory ?? new DefaultWebsocketClientFactory();
     private readonly IEventSubWebsocketMessageDeserializer _deserializer = messageDeserializer ?? new DefaultWebsocketMessageDeserializer();
-    private readonly ICancellationTokenFactory? _cancellationTokenFactory = messageCancellationTokenFactory;
+    private readonly Func<CancellationToken>? _cancellationTokenFactory = messageCancellationTokenFactory;
 
     private readonly ConcurrentBag<IWebsocketClient> _clients = [];
 
@@ -66,8 +65,8 @@ public class WebsocketClientEventSubWebsocketClient(
         => client.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text))
             .Subscribe(
-                async message => await HandleMessage(message, client, _cancellationTokenFactory?.CreateCancellationToken() ?? CancellationToken.None),
-                async exception => await _handler.OnException(exception, _cancellationTokenFactory?.CreateCancellationToken() ?? CancellationToken.None)
+                async message => await HandleMessage(message, client, _cancellationTokenFactory?.Invoke() ?? CancellationToken.None),
+                async exception => await _handler.OnException(exception, _cancellationTokenFactory?.Invoke() ?? CancellationToken.None)
                 );
 
     private async ValueTask StartNewClient(IWebsocketClient client, CancellationToken ct = default)
