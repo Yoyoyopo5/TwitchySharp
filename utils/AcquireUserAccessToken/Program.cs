@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using TwitchySharp;
 using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.Authorization.ClientUrls;
 using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken;
 
