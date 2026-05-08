@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using TwitchySharp.Api.Authorization.ClientUrls;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>

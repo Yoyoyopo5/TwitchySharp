@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-
-
-namespace TwitchySharp.Api.Authorization.ClientUrls;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// An abstract class used to format client-side authorization urls for users of your application.
 /// </summary>

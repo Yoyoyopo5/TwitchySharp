@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Authorization.ClientUrls;
+namespace TwitchySharp.Api.Authorization;
 /// <summary>
 /// Encodes a url used to authenticate a user via the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#implicit-grant-flow">implicit grant flow</see>.
 /// </summary>
