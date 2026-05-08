@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
+namespace TwitchySharp.Api.Helix.EventSub.Channel;
 /// <summary>
 /// A Bits transaction occurred for a specified Twitch Extension.
 /// </summary>
@@ -16,6 +16,6 @@ public sealed record ExtensionBitsTransactionCreate(ClientId ExtensionClientId)
 
     private readonly EventSubSubscriptionCondition _condition =
         new EventSubSubscriptionCondition()
-            .Set(new ConditionKey("extension_client_id"), ExtensionClientId);
+            .Set(new("extension_client_id"), ExtensionClientId);
     public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
 }
