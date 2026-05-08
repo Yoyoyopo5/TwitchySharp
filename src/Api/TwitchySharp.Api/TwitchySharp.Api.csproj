@@ -4,7 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
-	  <PackageId>TwitchySharp.Api</PackageId>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>TwitchySharp.Api</PackageId>
 	  <PackageVersion>1.0.0</PackageVersion>
 	  <Title>TwitchySharp.Api</Title>
 	  <Authors>Yoyoyopo5</Authors>
@@ -18,6 +22,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Authentication" />
+    <InternalsVisibleTo Include="$(AssemblyName).Helix" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
     <InternalsVisibleTo Include="AcquireUserAccessToken" />
@@ -25,8 +31,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="System.Text.Json" />
-    <PackageReference Include="System.Threading.RateLimiting" />
 	  <PackageReference Include="Yoyoyopo5.ValueWrapper" />
   </ItemGroup>
 	
