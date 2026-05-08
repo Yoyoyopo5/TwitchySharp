@@ -26,7 +26,6 @@
     <InternalsVisibleTo Include="$(AssemblyName).Helix" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
-    <InternalsVisibleTo Include="AcquireUserAccessToken" />
 	</ItemGroup>
 
   <ItemGroup>

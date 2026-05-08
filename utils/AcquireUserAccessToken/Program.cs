@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Text;
 using System.Text.Json;
+using AcquireUserAccessToken;
 using Microsoft.Extensions.Configuration;
 using TwitchySharp;
 using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken;
 
 IConfiguration config = new ConfigurationBuilder()
@@ -33,7 +33,7 @@ string nonce = Guid.NewGuid().ToString();
 AuthorizationCodeGrantUrl authUrl = new()
 {
     ClientId = clientId,
-    Scopes = Scope.All,
+    Scopes = AllScopes.All,
     RedirectUri = redirectUri,
     Claims = new(),
     State = state,
