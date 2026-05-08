@@ -2,7 +2,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>

@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.Games;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Games;
 

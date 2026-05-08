@@ -2,7 +2,6 @@ using System.Net;
 using System.Text;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Tests;
 

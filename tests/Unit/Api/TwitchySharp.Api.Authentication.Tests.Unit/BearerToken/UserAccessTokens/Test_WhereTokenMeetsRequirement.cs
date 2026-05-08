@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.Api.AuthorizationResolution.Tests.Unit;
 
 public class Test_WhereTokenMeetsRequirement

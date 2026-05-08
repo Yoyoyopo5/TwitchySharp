@@ -1,5 +1,3 @@
-using TwitchySharp.Shared.Models;
-
 namespace TwitchySharp.Api.AuthorizationResolution;
 
 /// <summary>

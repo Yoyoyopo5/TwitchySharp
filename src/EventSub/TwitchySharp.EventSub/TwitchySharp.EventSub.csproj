@@ -15,8 +15,7 @@
     </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../TwitchySharp.Helpers/TwitchySharp.Helpers.csproj" />
-    <ProjectReference Include="../../TwitchySharp.Shared/TwitchySharp.Shared.csproj" />
+    <ProjectReference Include="../../TwitchySharp.Core/TwitchySharp.Core.csproj" />
   </ItemGroup>
 
 </Project>

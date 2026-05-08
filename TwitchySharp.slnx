@@ -2,8 +2,6 @@
   <!-- src/ -->
   <Folder Name="/src/">
     <Project Path="src/TwitchySharp.Core/TwitchySharp.Core.csproj" />
-    <Project Path="src/TwitchySharp.Helpers/TwitchySharp.Helpers.csproj" />
-    <Project Path="src/TwitchySharp.Shared/TwitchySharp.Shared.csproj" />
   </Folder>
   <Folder Name="/src/Api/">
     <Project Path="src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
@@ -20,7 +18,7 @@
   <!-- tests/ -->
   <Folder Name="/tests/Unit/">
     <Project Path="tests/Unit/TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
-    <Project Path="tests/Unit/TwitchySharp.Helpers.Tests.Unit/TwitchySharp.Helpers.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/TwitchySharp.Core.Tests.Unit/TwitchySharp.Core.Tests.Unit.csproj" />
   </Folder>
   <Folder Name="/tests/Unit/Api/">
     <Project Path="tests/Unit/Api/TwitchySharp.Api.Tests.Unit/TwitchySharp.Api.Tests.Unit.csproj" />

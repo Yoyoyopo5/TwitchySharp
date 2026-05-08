@@ -3,7 +3,6 @@ using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.SuspiciousUser;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.SuspiciousUser;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.SuspiciousUser;
 /// <summary>

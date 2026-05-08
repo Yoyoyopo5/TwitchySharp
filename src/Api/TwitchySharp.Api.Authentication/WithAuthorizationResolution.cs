@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
-namespace TwitchySharp.Api.AuthorizationResolution;
+﻿namespace TwitchySharp.Api.AuthorizationResolution;
 
 public static class TwitchClientBuilderExtensions
 {

@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 

@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.EventSub.Enums;
-
+﻿
 namespace TwitchySharp.EventSub.Models;
 /// <summary>
 /// Contains information about how a specific EventSub subscription's notifications are delivered.

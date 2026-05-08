@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Streams;
 /// <summary>

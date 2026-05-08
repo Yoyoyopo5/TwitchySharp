@@ -2,8 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Helix.Polls;
 /// <summary>

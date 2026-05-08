@@ -4,7 +4,7 @@ using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Websocket.Messages;
 using TwitchySharp.EventSub.Websocket.Messages.Enums;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
-using TwitchySharp.Shared;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Websocket.Deserialization;
 

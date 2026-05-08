@@ -3,8 +3,7 @@ using TwitchySharp.EventSub.Enums.Events.Automod.Message;
 using TwitchySharp.EventSub.Interfaces;
 using TwitchySharp.EventSub.Models.Notifications.Automod.Message;
 using TwitchySharp.EventSub.NotificationConverters;
-using TwitchySharp.Shared;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Tests.Unit.NotificationConverters;
 

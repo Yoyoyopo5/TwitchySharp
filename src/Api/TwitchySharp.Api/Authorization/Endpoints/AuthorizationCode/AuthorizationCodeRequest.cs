@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using TwitchySharp.Api.Authorization.ClientUrls;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>

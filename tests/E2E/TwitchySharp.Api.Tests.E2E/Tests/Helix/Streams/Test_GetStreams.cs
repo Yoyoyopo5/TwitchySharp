@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using TwitchySharp.Api.Helix.Streams;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Streams;
 

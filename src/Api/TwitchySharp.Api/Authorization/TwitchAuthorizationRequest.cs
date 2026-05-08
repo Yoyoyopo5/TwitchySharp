@@ -1,5 +1,4 @@
 ﻿using System;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>

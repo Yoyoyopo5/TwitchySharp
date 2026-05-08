@@ -1,5 +1,4 @@
 using System;
-using TwitchySharp.Shared.Enums;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 

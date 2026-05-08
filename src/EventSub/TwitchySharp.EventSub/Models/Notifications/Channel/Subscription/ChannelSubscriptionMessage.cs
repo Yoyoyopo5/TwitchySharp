@@ -2,8 +2,6 @@
 using TwitchySharp.EventSub.Interfaces.Events.Channel.Subscription;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.Subscription;
-using TwitchySharp.Shared.Enums;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Subscription;
 /// <summary>

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Net.Http;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Helix.Analytics;
 /// <summary>

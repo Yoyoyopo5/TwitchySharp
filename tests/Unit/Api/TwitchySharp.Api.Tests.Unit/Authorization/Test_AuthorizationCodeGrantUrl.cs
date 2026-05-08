@@ -1,7 +1,6 @@
 using System.Web;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Authorization.ClientUrls;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 

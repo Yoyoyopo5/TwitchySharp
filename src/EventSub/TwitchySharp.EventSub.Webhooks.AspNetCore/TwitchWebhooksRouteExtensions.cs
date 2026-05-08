@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
-using TwitchySharp.Shared;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 

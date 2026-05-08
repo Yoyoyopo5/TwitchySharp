@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.User.Whisper;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.User.Whisper;
 /// <summary>

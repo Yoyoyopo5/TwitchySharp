@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Events.Extension;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Extension;
 /// <summary>

@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.GuestStar;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.GuestStar;
 

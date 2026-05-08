@@ -5,9 +5,7 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Helpers;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>

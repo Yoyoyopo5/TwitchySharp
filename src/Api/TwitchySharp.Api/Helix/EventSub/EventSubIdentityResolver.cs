@@ -4,9 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
-using TwitchySharp.Shared.EventSub;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 

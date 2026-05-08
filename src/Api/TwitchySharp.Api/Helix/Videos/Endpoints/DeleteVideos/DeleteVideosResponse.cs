@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.Api.Helix.Videos;
 /// <summary>
 /// Contains a list of deleted videos.

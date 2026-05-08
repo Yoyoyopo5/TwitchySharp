@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.EventSub.Enums;
-
+﻿
 namespace TwitchySharp.Api.Helix.EventSub;
 
 public record EventSubSubscriptionSpecification

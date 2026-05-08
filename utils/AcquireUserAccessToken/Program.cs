@@ -2,12 +2,12 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using TwitchySharp;
 using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Authorization.ClientUrls;
 using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken;
-using TwitchySharp.Shared.Models;
 
 IConfiguration config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())

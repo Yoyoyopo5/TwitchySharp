@@ -1,7 +1,6 @@
 using System.Net;
 using TwitchySharp.Api.Helix.Moderation;
 using TwitchySharp.Api.Tests.Integration.Fixtures;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Tests;
 

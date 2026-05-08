@@ -5,7 +5,6 @@ using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 using TwitchySharp.EventSub.Webhooks.SignatureComputers;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration;
 

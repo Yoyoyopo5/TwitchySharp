@@ -1,5 +1,5 @@
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Helpers;
+using TwitchySharp.Infrastructure.Http;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 

@@ -2,8 +2,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Users;
-using TwitchySharp.Shared;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Users;
 

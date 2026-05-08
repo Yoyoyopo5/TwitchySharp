@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.EventSub.Interfaces.Events.Channel.CharityCampaign;
 
 /// <summary>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Helpers.JsonConverters.DateTime;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Helix.Ads;
 

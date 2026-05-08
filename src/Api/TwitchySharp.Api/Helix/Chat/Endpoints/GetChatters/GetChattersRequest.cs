@@ -2,8 +2,6 @@ using System.Collections.Immutable;
 using System.Net.Http;
 using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Api.Helix.Moderation;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Chat;
 /// <summary>

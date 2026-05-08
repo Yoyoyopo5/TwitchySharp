@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,6 +8,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Yoyoyopo5.ValueWrapper" />
   </ItemGroup>
 
 </Project>

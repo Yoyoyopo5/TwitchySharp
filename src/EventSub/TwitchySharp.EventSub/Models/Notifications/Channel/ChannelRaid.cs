@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.EventSub.Enums;
-
+﻿
 namespace TwitchySharp.EventSub.Models.Notifications.Channel;
 /// <summary>
 /// <inheritdoc cref="EventSubSubscriptionType.ChannelRaid"/>

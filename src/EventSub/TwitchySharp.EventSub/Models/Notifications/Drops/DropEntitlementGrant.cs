@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.EventSub.Models.Events.Drops;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Drops;
 /// <summary>

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Entitlements;
 /// <summary>

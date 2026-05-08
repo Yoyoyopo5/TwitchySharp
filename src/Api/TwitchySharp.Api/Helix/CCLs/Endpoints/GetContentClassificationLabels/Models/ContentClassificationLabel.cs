@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Enums;
-
+﻿
 namespace TwitchySharp.Api.Helix.CCLs;
 
 /// <summary>

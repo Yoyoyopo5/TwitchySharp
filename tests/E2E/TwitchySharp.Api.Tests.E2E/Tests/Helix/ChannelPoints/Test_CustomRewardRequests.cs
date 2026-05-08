@@ -1,6 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.ChannelPoints;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.ChannelPoints;
 

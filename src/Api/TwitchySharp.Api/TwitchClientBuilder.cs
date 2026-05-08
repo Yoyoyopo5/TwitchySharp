@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net.Http;
-using TwitchySharp.Helpers;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api;
 

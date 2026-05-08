@@ -1,5 +1,4 @@
 using TwitchySharp.Api.Helix.Chat;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Chat;
 

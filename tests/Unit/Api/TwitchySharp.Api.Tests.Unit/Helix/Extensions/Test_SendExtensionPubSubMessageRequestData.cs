@@ -1,8 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using TwitchySharp.Api.Helix.Extensions;
-using TwitchySharp.Shared;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Extensions;
 

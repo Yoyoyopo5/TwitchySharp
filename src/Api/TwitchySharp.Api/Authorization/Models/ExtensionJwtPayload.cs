@@ -3,9 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using TwitchySharp.Helpers.JsonConverters.DateTime;
-using TwitchySharp.Shared;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>

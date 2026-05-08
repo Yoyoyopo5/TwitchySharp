@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Extensions;
 

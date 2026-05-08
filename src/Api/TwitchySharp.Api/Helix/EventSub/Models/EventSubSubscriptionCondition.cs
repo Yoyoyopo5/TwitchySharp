@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using TwitchySharp.Shared.EventSub;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 

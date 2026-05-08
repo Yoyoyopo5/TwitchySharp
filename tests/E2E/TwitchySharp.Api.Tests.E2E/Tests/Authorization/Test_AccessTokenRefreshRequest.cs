@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.AuthorizationResolution;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 

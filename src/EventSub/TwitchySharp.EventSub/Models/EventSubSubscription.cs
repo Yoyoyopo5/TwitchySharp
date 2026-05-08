@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models;
 /// <summary>

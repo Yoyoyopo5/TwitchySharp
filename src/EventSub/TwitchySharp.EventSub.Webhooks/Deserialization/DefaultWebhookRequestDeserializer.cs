@@ -4,7 +4,7 @@ using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.NotificationConverters;
 using TwitchySharp.EventSub.Webhooks.Enums;
 using TwitchySharp.EventSub.Webhooks.Requests;
-using TwitchySharp.Shared;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.Deserialization;
 

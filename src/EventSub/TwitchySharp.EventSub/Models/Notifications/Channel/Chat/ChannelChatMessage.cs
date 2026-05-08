@@ -3,7 +3,6 @@ using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.Chat;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.Chat;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 /// <summary>

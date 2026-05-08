@@ -3,8 +3,7 @@ using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.ChannelPoints;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.ChannelPoints;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.ChannelPoints;
 /// <summary>

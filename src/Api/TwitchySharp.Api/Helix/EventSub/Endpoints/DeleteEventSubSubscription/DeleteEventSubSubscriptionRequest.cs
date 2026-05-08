@@ -4,9 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>

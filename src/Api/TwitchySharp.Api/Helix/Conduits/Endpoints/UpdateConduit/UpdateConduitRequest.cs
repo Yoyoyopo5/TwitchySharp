@@ -1,5 +1,4 @@
 using System.Net.Http;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
