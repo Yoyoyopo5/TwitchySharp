@@ -6,6 +6,7 @@
   <Folder Name="/src/Api/">
     <Project Path="src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
     <Project Path="src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
+    <Project Path="src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
   </Folder>
   <Folder Name="/src/EventSub/">
     <Project Path="src/EventSub/TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
