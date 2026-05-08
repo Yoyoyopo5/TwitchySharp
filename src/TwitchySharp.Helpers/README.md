@@ -1,1 +1,0 @@
-Provides general-purpose helper classes and functions to various TwitchySharp packages.

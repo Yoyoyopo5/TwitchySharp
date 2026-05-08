@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.Api.Authorization;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E;
 

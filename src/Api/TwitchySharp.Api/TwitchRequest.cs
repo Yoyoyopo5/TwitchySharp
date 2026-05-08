@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Shared;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api;
 /// <summary>

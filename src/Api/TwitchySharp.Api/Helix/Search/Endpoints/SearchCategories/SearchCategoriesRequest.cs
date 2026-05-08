@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Search;
 /// <summary>

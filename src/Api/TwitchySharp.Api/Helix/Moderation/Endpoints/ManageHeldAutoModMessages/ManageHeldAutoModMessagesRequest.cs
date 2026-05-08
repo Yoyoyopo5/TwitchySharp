@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>

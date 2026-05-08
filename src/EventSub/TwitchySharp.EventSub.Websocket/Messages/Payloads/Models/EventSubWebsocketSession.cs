@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
 

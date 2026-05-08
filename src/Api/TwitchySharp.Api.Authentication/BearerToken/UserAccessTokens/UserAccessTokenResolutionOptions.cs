@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution;
 

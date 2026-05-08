@@ -1,6 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.Moderation;
-using TwitchySharp.Shared.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Moderation;
 

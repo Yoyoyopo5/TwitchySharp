@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Infrastructure.Functional;
+
 
 namespace TwitchySharp.Api;
 

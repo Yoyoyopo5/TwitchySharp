@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Analytics;
 

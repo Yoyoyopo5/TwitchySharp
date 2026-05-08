@@ -15,8 +15,8 @@ public class Test_VideoThumbnailUrlJsonConverter
         var result = _converter.Read(json);
 
         Assert.NotNull(result);
-        Assert.Contains("%{width}", result.TemplateUrl);
-        Assert.Contains("%{height}", result.TemplateUrl);
+        Assert.Contains("%{width}", result.Value);
+        Assert.Contains("%{height}", result.Value);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class Test_VideoThumbnailUrlJsonConverter
         var result = _converter.Read(json);
 
         Assert.NotNull(result);
-        Assert.Equal(original.TemplateUrl, result.TemplateUrl);
+        Assert.Equal(original.Value, result.Value);
     }
 
     [Fact]

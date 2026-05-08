@@ -1,7 +1,4 @@
 ﻿using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Shared.Enums;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Conduit;
 /// <summary>

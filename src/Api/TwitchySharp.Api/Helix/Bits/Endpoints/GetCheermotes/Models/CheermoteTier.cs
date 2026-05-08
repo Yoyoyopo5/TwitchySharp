@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Helpers;
-
+﻿
 namespace TwitchySharp.Api.Helix.Bits;
 
 /// <summary>

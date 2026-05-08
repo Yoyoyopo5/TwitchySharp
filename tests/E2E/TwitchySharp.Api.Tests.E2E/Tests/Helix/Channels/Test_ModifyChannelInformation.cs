@@ -1,7 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.Channels;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Shared.EventSub.Constants;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>

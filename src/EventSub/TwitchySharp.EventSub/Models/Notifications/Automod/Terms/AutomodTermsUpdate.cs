@@ -1,7 +1,6 @@
 ﻿using TwitchySharp.EventSub.Enums.Events.Automod.Terms;
 using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Automod.Terms;
 

@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.Api.Helix.Channels;
 
 /// <summary>

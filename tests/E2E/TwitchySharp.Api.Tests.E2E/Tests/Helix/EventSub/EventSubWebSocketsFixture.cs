@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text.Json;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 

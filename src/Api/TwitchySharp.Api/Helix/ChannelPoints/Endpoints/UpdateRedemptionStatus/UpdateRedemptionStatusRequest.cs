@@ -3,8 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>

@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.EventSub.Models.Events.Channel.Chat;
 
 /// <summary>

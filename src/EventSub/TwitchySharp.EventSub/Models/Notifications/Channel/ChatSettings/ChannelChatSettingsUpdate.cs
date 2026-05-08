@@ -1,8 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Helpers.JsonConverters;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.ChatSettings;
 

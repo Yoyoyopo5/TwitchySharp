@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 /// <summary>

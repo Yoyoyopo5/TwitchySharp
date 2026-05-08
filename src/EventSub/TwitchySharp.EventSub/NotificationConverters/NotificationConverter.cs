@@ -32,8 +32,7 @@ using TwitchySharp.EventSub.Models.Notifications.Stream;
 using TwitchySharp.EventSub.Models.Notifications.User;
 using TwitchySharp.EventSub.Models.Notifications.User.Authorization;
 using TwitchySharp.EventSub.Models.Notifications.User.Whisper;
-using TwitchySharp.Shared;
-using TwitchySharp.Shared.EventSub.Enums;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.NotificationConverters;
 

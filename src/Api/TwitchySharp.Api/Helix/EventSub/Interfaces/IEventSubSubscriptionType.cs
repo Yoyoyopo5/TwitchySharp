@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using TwitchySharp.Shared.EventSub;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>

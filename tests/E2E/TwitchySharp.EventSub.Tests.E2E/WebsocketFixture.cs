@@ -7,7 +7,6 @@ using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
 using TwitchySharp.EventSub.Websocket.Messages.Payloads;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
 

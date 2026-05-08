@@ -9,7 +9,6 @@ using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.Integration.Controllers;
 using TwitchySharp.Api.Tests.Integration.Models;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;
 

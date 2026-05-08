@@ -2,7 +2,6 @@
 using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.UnbanRequest;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.UnbanRequest;
 /// <summary>

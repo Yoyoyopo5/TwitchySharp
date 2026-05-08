@@ -1,5 +1,4 @@
 ﻿using System;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Charity;
 

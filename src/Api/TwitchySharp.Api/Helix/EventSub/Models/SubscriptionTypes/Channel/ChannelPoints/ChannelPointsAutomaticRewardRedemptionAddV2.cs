@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using TwitchySharp.Shared.EventSub;
-using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.EventSub.Models.SubscriptionTypes.Channel.ChannelPoints;
 

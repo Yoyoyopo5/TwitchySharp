@@ -4,7 +4,6 @@ using TwitchySharp.EventSub.Models;
 using TwitchySharp.EventSub.Models.Notifications;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
 

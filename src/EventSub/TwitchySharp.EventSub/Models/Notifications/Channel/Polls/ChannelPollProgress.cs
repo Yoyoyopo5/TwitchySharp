@@ -2,7 +2,6 @@
 using TwitchySharp.EventSub.Interfaces.Events.Channel.Polls;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.Polls;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Polls;
 /// <summary>

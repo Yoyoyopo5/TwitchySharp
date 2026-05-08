@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Moderator;
 /// <summary>

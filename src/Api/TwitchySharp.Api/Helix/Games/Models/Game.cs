@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.Api.Helix.Games;
 
 /// <summary>

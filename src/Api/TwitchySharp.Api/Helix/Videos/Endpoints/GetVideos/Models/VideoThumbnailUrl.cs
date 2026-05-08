@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TwitchySharp.Helpers;
 
 namespace TwitchySharp.Api.Helix.Videos;
 
@@ -26,5 +25,5 @@ internal class VideoThumbnailUrlJsonConverter : JsonConverter<VideoThumbnailUrl>
         };
 
     public override void Write(Utf8JsonWriter writer, VideoThumbnailUrl value, JsonSerializerOptions options)
-        => writer.WriteStringValue(value.TemplateUrl);
+        => writer.WriteStringValue(value.Value);
 }

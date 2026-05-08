@@ -1,4 +1,3 @@
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.AuthorizationResolution.Tests.Integration.Tests;
 

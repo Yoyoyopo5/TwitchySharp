@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 

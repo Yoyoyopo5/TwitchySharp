@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Interfaces;
 

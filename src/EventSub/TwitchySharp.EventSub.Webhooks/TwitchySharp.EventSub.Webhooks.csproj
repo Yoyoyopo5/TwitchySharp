@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
-    <ProjectReference Include="../../TwitchySharp.Shared/TwitchySharp.Shared.csproj" />
   </ItemGroup>
 
 </Project>

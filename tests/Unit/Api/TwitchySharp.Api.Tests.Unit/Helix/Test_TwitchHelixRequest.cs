@@ -1,6 +1,5 @@
 using TwitchySharp.Api.Helix;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
+using TwitchySharp.Infrastructure.Http;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix;
 

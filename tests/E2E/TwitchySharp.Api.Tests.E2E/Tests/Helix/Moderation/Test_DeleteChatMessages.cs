@@ -1,6 +1,5 @@
 ﻿using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.Moderation;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Moderation;
 

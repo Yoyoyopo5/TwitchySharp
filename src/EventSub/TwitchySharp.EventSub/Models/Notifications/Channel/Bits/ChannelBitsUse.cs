@@ -2,7 +2,6 @@
 using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Models.Conditions;
 using TwitchySharp.EventSub.Models.Events.Channel.Bits;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Bits;
 

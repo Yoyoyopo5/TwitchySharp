@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.JsonWebTokens;
-using TwitchySharp.Helpers.JsonConverters;
+using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Authorization;
 /// <summary>

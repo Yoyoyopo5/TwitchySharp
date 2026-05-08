@@ -1,5 +1,4 @@
-﻿using TwitchySharp.Shared.EventSub.Enums;
-
+﻿
 namespace TwitchySharp.EventSub.Models.Notifications;
 
 /// <summary>

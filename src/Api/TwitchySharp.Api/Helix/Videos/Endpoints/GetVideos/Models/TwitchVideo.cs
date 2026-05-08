@@ -2,8 +2,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
-using TwitchySharp.Helpers;
-using TwitchySharp.Shared.Models;
 
 namespace TwitchySharp.Api.Helix.Videos;
 

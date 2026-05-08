@@ -1,7 +1,6 @@
 ﻿using TwitchySharp.EventSub.Interfaces.Events;
 using TwitchySharp.EventSub.Interfaces.Events.Channel.Shoutout;
 using TwitchySharp.EventSub.Models.Conditions;
-using TwitchySharp.Shared.EventSub.Enums;
 
 namespace TwitchySharp.EventSub.Models.Notifications.Channel.Shoutout;
 /// <summary>

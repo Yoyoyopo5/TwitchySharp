@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Shared.EventSub.Enums;
-using TwitchySharp.Shared.Models;
-
+﻿
 namespace TwitchySharp.Api.Helix.EventSub;
 
 /// <summary>
