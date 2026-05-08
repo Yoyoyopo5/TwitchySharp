@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
-using TwitchySharp.Api.Authorization;
 using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api;

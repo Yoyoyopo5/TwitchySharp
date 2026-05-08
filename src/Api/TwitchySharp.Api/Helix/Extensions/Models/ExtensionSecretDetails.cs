@@ -1,7 +1,4 @@
-﻿using System;
-using TwitchySharp.Api.Authorization;
-
-namespace TwitchySharp.Api.Helix.Extensions;
+﻿namespace TwitchySharp.Api.Helix.Extensions;
 
 /// <summary>
 /// Contains information about a specific extension secret.
