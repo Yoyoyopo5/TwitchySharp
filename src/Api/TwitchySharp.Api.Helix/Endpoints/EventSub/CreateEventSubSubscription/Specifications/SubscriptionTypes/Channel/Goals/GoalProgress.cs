@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Get notified when progress (either positive or negative) is made towards a broadcaster's goal.
 /// Note that it is possible to receive this event before receiving a <see cref="GoalBegin"/> event.

@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Api.Helix.EventSub.Automod;
-using TwitchySharp.Api.Helix.EventSub.Channel;
-using TwitchySharp.Api.Helix.EventSub.User;
+﻿using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 

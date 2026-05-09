@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Automod;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 
 /// <summary>
 /// A user is notified if a message is caught by automod for review.

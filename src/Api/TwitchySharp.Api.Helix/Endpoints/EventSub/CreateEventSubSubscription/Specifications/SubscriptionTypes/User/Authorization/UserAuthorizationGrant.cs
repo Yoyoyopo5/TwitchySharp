@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.User;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user's authorization has been granted to your client id.
 /// </summary>

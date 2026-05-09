@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A broadcaster updates their channel properties e.g., category, title, content classification labels, broadcast, or language.
 /// </summary>

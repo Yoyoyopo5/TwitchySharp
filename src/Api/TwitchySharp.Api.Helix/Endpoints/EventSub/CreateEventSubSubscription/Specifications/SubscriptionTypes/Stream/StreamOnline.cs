@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Stream;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// The specified broadcaster starts a stream.
 /// </summary>
