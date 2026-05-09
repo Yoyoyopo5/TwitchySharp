@@ -26,21 +26,34 @@ public record DeleteEventSubSubscriptionRequest()
     {
         Identity = Subscription switch
         {
-            not null => Subscription.RequiresUserAccessToken() switch
-            {
-                true => Subscription.GetAuthorizingUser() ?? throw new InvalidOperationException(
+            { } when Subscription.Transport.Method == EventSubTransportMethod.Websocket
+                => new TwitchIdentity.User(GetAuthorizingUserOrNull(Subscription) ?? throw new InvalidOperationException(
                     $"Failed to resolve required {nameof(TwitchIdentity.User)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription. " +
                     $"Set the {nameof(AuthorizationContext)} property manually to suppress this error. " +
                     $"The {nameof(EventSubSubscription)} instance passed to this {nameof(DeleteEventSubSubscriptionRequest)} may be malformed, " +
-                    $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete."),
-                _ => TwitchIdentity.Client.Default
-            },
+                    $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete.")),
             _ => TwitchIdentity.Client.Default
         }
     };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", SubscriptionId);
+
+    /// <summary>
+    /// Function mapping <see cref="EventSubSubscriptionType"/> to the <see cref="ConditionKey"/> of the <see cref="EventSubSubscription.Condition"/>
+    /// that corresponds to the id of the user that must authorize delete subscription requests.
+    /// </summary>
+    /// <remarks>
+    /// This has a default value of <see cref="AuthorizingUserConditionKeys.GetAuthorizingUserKey"/> and does not need to be set unless you are adding new subscription types.
+    /// </remarks>
+    public Func<EventSubSubscriptionType, ConditionKey?> GetAuthorizingUserKey { get; init; } = AuthorizingUserConditionKeys.GetAuthorizingUserKey;
+
+    private UserId? GetAuthorizingUserOrNull(EventSubSubscription subscription)
+        => GetAuthorizingUserKey(new(subscription.Type, subscription.Version)) is not ConditionKey key
+            ? null
+            : subscription.Condition.TryGetValue(key, out string? value)
+            ? new UserId(value)
+            : null;
 
     /// <summary>
     /// The subscription to delete.
@@ -76,7 +89,4 @@ public record DeleteEventSubSubscriptionRequest()
     /// The id of the subscription to delete.
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
-
-    protected override ValueTask<DeleteEventSubSubscriptionResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteEventSubSubscriptionResponse());
 }
