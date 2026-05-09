@@ -12,10 +12,10 @@ public class Test_GetExtensionSecrets(TwitchClientFixture fixture)
     {
         GetExtensionSecretsRequest request = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             ExtensionIdentity = _fixture.ExtensionIdentity
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

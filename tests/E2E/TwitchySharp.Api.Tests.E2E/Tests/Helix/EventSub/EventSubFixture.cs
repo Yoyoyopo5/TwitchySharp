@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
+using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 /// <summary>
@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 /// </summary>
 public class EventSubFixture : TwitchClientFixture, IAsyncLifetime
 {
-    private IReadOnlyDictionary<string, IEventSubSubscriptionType> _subscriptionTypes = ImmutableDictionary<string, IEventSubSubscriptionType>.Empty;
+    private IReadOnlyDictionary<string, IEventSubSubscriptionTypeSpecification> _subscriptionTypes = ImmutableDictionary<string, IEventSubSubscriptionTypeSpecification>.Empty;
 
     public async ValueTask InitializeAsync()
         => _subscriptionTypes = await GenerateTypeMapAsync();
@@ -16,13 +16,13 @@ public class EventSubFixture : TwitchClientFixture, IAsyncLifetime
     public ValueTask DisposeAsync()
         => ValueTask.CompletedTask;
 
-    private async ValueTask<IReadOnlyDictionary<string, IEventSubSubscriptionType>> GenerateTypeMapAsync()
+    private async ValueTask<IReadOnlyDictionary<string, IEventSubSubscriptionTypeSpecification>> GenerateTypeMapAsync()
     {
         OrganizationId organizationId = new(string.Empty); // Don't have one of these to test with.
         UserId broadcasterId = UserIdentity.UserId;
-        ClientId clientId = Client.Id;
+        ClientId clientId = ClientConfig.ClientId;
 
-        return new Dictionary<string, IEventSubSubscriptionType>
+        return new Dictionary<string, IEventSubSubscriptionTypeSpecification>
         {
             { nameof(AutomodMessageHoldV2), new AutomodMessageHoldV2(broadcasterId, broadcasterId) },
             { nameof(AutomodMessageUpdateV2), new AutomodMessageUpdateV2(broadcasterId, broadcasterId) },
@@ -104,6 +104,6 @@ public class EventSubFixture : TwitchClientFixture, IAsyncLifetime
         };
     }
 
-    public IEventSubSubscriptionType GetSubscriptionType(string subscriptionTypeName)
+    public IEventSubSubscriptionTypeSpecification GetSubscriptionType(string subscriptionTypeName)
         => _subscriptionTypes[subscriptionTypeName];
 }

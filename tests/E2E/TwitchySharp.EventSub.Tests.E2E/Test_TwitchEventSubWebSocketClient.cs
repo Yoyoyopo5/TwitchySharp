@@ -3,7 +3,7 @@ using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
+using TwitchySharp.Api.Helix.EventSub.Channel;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;

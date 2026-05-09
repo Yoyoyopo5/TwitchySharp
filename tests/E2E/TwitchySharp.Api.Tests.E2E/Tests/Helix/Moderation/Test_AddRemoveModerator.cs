@@ -12,7 +12,7 @@ public class Test_AddRemoveModerator(TwitchClientFixture fixture)
     {
         const string TEST_MODERATOR_ID = "52137750";
         UserId moderatorId = new(TEST_MODERATOR_ID);
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await AddChannelModerator(client, _fixture.UserIdentity.UserId, moderatorId, ct);

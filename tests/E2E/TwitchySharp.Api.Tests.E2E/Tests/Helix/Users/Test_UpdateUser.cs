@@ -16,6 +16,6 @@ public class Test_UpdateUser(TwitchClientFixture fixture)
             Description = "On Vacation"
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

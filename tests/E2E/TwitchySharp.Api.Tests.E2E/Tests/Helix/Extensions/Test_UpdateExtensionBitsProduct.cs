@@ -10,24 +10,24 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_UpdateExtensionBitsProductRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetExtensionBitsProductsRequest getRequest = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             ShouldIncludeAll = true
         };
 
         var getResponse = await client.SendAsync(getRequest, ct);
-        var product = getResponse.Content.Data.Single(d => d.Sku == _fixture.Extension.BitsProduct.Sku);
+        var product = getResponse.Content.Data.Single(d => d.Sku == TwitchClientFixture.ExtensionConfig.BitsProduct.Sku);
 
         UpdateExtensionBitsProductRequest updateRequest = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             Product = new()
             {
-                Sku = _fixture.Extension.BitsProduct.Sku,
+                Sku = TwitchClientFixture.ExtensionConfig.BitsProduct.Sku,
                 Cost = new() { Type = ExtensionProductCostType.Bits, Amount = 100 },
                 DisplayName = "Super Cool Test Product",
                 InDevelopment = true,
@@ -41,10 +41,10 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
 
         UpdateExtensionBitsProductRequest restoreRequest = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             Product = new()
             {
-                Sku = _fixture.Extension.BitsProduct.Sku,
+                Sku = TwitchClientFixture.ExtensionConfig.BitsProduct.Sku,
                 Cost = product.Cost,
                 DisplayName = product.DisplayName,
                 InDevelopment = product.InDevelopment,

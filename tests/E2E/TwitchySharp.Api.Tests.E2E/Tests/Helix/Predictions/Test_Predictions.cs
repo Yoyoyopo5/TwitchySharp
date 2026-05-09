@@ -11,7 +11,7 @@ public class Test_Predictions(TwitchClientFixture fixture)
     public async Task Send_PredictionsRequests_ReturnSuccessResponses()
     {
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         var createRespone = await CreatePrediction(client, broadcasterId, ct);

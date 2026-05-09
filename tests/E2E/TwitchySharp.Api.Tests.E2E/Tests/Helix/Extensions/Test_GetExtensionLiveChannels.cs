@@ -14,10 +14,10 @@ public class Test_GetExtensionLiveChannels(TwitchClientFixture fixture)
 
         GetExtensionLiveChannelsRequest request = new()
         {
-            ExtensionId = _fixture.Extension.Id
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId
             // We may need a custom ClientIdentity here with the ExtensionId
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

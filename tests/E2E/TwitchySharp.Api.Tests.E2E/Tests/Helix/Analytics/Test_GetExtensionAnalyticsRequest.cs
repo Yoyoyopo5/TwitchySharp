@@ -16,6 +16,6 @@ public class Test_GetExtensionAnalyticsRequest(TwitchClientFixture fixture)
             UserId = _fixture.UserIdentity.UserId
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

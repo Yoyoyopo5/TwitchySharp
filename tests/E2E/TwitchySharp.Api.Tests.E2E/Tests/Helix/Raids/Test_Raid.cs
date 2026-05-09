@@ -13,7 +13,7 @@ public class Test_Raid(TwitchClientFixture fixture)
         const string TO_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
         UserId toBroadcasterId = new(TO_BROADCASTER_ID);
         UserId fromBroadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         StartRaidRequest startRaidRequest = new()

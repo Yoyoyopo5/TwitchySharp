@@ -12,7 +12,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
     {
         // Note that redemptions can only be updated from rewards created using the same client id.
         const string TEST_REWARD_NAME = "Test Reward";
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetCustomRewardRequest getRewardRequest = new()

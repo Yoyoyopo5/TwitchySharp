@@ -13,7 +13,7 @@ public class Test_BlockUnblockUser(TwitchClientFixture fixture)
         const string TEST_USER_ID = "12345";
         UserId userToBlock = new(TEST_USER_ID);
         UserId userId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await BlockUser(client, userId, userToBlock, ct);

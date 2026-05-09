@@ -10,7 +10,7 @@ public class Test_GetEmoteSets(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetEmoteSetsRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
         GetChannelEmotesRequest getEmotesRequest = new()
         {

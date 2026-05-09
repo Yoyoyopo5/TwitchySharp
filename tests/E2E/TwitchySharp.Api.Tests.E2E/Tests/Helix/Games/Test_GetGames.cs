@@ -21,6 +21,6 @@ public class Test_GetGames(TwitchClientFixture fixture)
             Games = [new GameNameQuery(GAME_NAME), new GameIdQuery(gameId), new GameIgdbQuery(igdbId)]
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

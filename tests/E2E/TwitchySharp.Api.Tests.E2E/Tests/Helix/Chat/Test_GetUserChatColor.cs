@@ -15,6 +15,6 @@ public class Test_GetUserChatColor(TwitchClientFixture fixture)
             UserIds = [_fixture.UserIdentity.UserId]
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

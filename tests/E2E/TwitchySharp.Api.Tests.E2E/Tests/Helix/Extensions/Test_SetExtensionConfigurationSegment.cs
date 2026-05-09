@@ -15,12 +15,12 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             ExtensionOwnerId = _fixture.UserIdentity.UserId,
             Configuration = new SetExtensionConfigurationGlobalSegmentData()
             {
-                ExtensionId = _fixture.Extension.Id,
+                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
                 Content = "Test Global Segment Content"
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -31,13 +31,13 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             ExtensionOwnerId = _fixture.UserIdentity.UserId,
             Configuration = new SetExtensionConfigurationDeveloperSegmentData()
             {
-                ExtensionId = _fixture.Extension.Id,
+                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
                 BroadcasterId = _fixture.UserIdentity.UserId,
                 Content = "Test Developer Segment Content"
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -48,12 +48,12 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             ExtensionOwnerId = _fixture.UserIdentity.UserId,
             Configuration = new SetExtensionConfigurationBroadcasterSegmentData()
             {
-                ExtensionId = _fixture.Extension.Id,
+                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
                 BroadcasterId = _fixture.UserIdentity.UserId,
                 Content = "Test Broadcaster Segment Content"
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

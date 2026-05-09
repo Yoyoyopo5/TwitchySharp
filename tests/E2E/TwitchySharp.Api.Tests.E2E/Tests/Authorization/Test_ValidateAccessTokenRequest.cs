@@ -15,7 +15,7 @@ public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
             UserId = _fixture.UserIdentity.UserId
         };
 
-        var response = await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        var response = await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
 
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);
         Assert.False(string.IsNullOrEmpty(response.Content.Login));

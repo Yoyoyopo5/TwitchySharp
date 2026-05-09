@@ -12,7 +12,7 @@ public class Test_BlockedTerms(TwitchClientFixture fixture)
     {
         const string TEST_BLOCKED_TERM = "test-term";
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         var addResponse = await AddBlockedTerm(client, broadcasterId, TEST_BLOCKED_TERM, ct);

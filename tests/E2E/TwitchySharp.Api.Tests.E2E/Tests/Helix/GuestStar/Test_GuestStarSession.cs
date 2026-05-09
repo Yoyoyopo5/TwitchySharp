@@ -12,7 +12,7 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
     {
         const string GUEST_USER_ID = "52137752"; // Yoyoyopo5
         UserId guestUserId = new(GUEST_USER_ID);
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         var createResponse = await CreateGuestStarSession(client, _fixture.UserIdentity.UserId, ct);

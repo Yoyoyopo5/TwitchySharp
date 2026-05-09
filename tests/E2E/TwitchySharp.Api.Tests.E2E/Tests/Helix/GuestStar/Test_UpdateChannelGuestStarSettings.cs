@@ -10,7 +10,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_UpdateChannelGuestStarSettingsRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelGuestStarSettingsRequest getRequest = new()

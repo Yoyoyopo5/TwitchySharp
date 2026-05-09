@@ -12,6 +12,6 @@ public class Test_GetContentClassificationLabelsRequest(TwitchClientFixture fixt
     {
         GetContentClassificationLabelsRequest request = new();
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

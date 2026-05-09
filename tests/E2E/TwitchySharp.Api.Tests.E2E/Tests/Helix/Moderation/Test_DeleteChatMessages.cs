@@ -12,7 +12,7 @@ public class Test_DeleteChatMessages(TwitchClientFixture fixture)
     public async Task Send_DeleteChatMessagesRequest_ReturnSuccessResponse()
     {
         const string TEST_MESSAGE = "test message pls delete";
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
         UserId broadcasterId = _fixture.UserIdentity.UserId;
 

@@ -16,12 +16,12 @@ public class Test_SetExtensionRequiredConfiguration(TwitchClientFixture fixture)
             ExtensionOwnerId = _fixture.UserIdentity.UserId,
             Configuration = new()
             {
-                ExtensionId = _fixture.Extension.Id,
-                ExtensionVersion = _fixture.Extension.Version,
+                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
+                ExtensionVersion = TwitchClientFixture.ExtensionConfig.Version,
                 RequiredConfiguration = "Test Required Configuration"
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

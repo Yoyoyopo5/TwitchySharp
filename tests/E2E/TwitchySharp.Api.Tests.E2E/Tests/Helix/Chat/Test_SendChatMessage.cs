@@ -20,7 +20,7 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -36,6 +36,6 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request.AsBot(_fixture.UserIdentity.ClientId), TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request.AsBot(_fixture.UserIdentity.ClientId), TestContext.Current.CancellationToken);
     }
 }

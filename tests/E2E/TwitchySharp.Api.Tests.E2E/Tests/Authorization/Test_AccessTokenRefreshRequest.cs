@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 
@@ -11,19 +10,19 @@ public class Test_AccessTokenRefreshRequest(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_AccessTokenRefreshRequest_ReturnSuccessResponse()
     {
-        using TokenStoreAcquisition tokens = await _fixture.AcquireTokenStore(TestContext.Current.CancellationToken);
+        using TokenStoreAcquisition tokens = await TwitchClientFixture.AcquireTokenStore(TestContext.Current.CancellationToken);
         AccessTokenDetails.User? userTokenDetails = tokens.Store.Values.OfType<AccessTokenDetails.User>().FirstOrDefault();
         Assert.NotNull(userTokenDetails);
         Assert.NotNull(userTokenDetails.RefreshToken);
 
         AccessTokenRefreshRequest request = new()
         {
-            ClientId = new ClientId(_fixture.Client.Id),
-            ClientSecret = new ClientSecret(_fixture.Client.Secret),
+            ClientId = new ClientId(TwitchClientFixture.ClientConfig.ClientId),
+            ClientSecret = new ClientSecret(TwitchClientFixture.ClientConfig.ClientSecret),
             RefreshToken = userTokenDetails.RefreshToken.Value
         };
 
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         var response = (await client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
         AccessTokenDetails.User refreshedTokenDetails = userTokenDetails with
         {

@@ -12,7 +12,7 @@ public class Test_ChannelVips(TwitchClientFixture fixture)
     {
         const string TEST_USER_ID = "12345";
         UserId testUserId = new(TEST_USER_ID);
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         AddChannelVipRequest addRequest = new()

@@ -12,7 +12,7 @@ public class Test_OidcJwkRequest(TwitchClientFixture fixture)
     {
         OidcJwkRequest request = new();
 
-        OidcJwkResponse response = (await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken)).Content;
+        OidcJwkResponse response = (await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
 
         Assert.NotEmpty(response.Keys);
     }
