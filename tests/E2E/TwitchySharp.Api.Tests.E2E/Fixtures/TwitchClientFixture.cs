@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TwitchySharp.Api.Authorization;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E;
 
@@ -137,115 +137,3 @@ public class TwitchClientFixture
 
 [CollectionDefinition("twitch")]
 public class TwitchClientCollection : ICollectionFixture<TwitchClientFixture> { }
-
-public static class ExtensionJwtExtensions
-{
-    public static ValueTask<AccessTokenDetails.ExtensionJwt> SignNewJwt(
-        this TwitchIdentity.Extension identity,
-        ExtensionSecret extensionSecret
-        )
-        => ValueTask.FromResult(new AccessTokenDetails.ExtensionJwt()
-        {
-            Identity = identity,
-            AccessToken = new ExtensionJwtPayload()
-            {
-                UserId = identity.OwnerId,
-                ChannelId = identity.BroadcasterId
-            }.Sign(new(extensionSecret))
-        });
-}
-
-public static class AppAccessTokenExtensions
-{
-    private static AccessTokenDetails.App ToAppAccessTokenDetails(
-        this TwitchResponse<ClientCredentialsResponse> response,
-        ClientId clientId
-        )
-        => new()
-        {
-            AccessToken = response.Content.AccessToken,
-            ExpiresAt = DateTimeOffset.UtcNow + response.Content.ExpiresIn,
-            Identity = new(clientId)
-        };
-
-    public static async ValueTask<AccessTokenDetails.App?> GetNewAppAccessToken(
-        this ITwitchClient client,
-        ClientId? clientId,
-        ClientSecret clientSecret,
-        CancellationToken ct
-        )
-    {
-        if (clientId is not ClientId)
-        {
-            TestContext.Current.AddWarning("Failed to get an app access token because the request context client id was null.");
-            return null;
-        }
-
-        try
-        {
-            return (await client.SendAsync(new ClientCredentialsRequest()
-            {
-                ClientId = clientId.Value,
-                ClientSecret = clientSecret
-            }, ct)).ToAppAccessTokenDetails(clientId.Value);
-        }
-        catch (TwitchApiException ex)
-        {
-            TestContext.Current.AddWarning($"""
-                Failed to acquire a new app access token.
-                {ex.StatusCode} response from Twitch:
-                {Encoding.UTF8.GetString(ex.Content)}
-                """);
-            return null;
-        }
-    }
-}
-
-public static class TokenRefreshExtensions
-{
-    private static AccessTokenRefreshResult.Refreshed<AccessTokenDetails.User> ToRefreshResult(
-        this TwitchResponse<AccessTokenRefreshResponse> refreshResponse,
-        UserId userId,
-        ClientId clientId
-        )
-        => new(new AccessTokenDetails.User()
-        {
-            Identity = new TwitchIdentity.User(userId, clientId),
-            AccessToken = new UserAccessToken(refreshResponse.Content.AccessToken),
-            RefreshToken = new RefreshToken(refreshResponse.Content.RefreshToken),
-            Scopes = refreshResponse.Content.Scope?.Select(s => new Scope(s)).ToHashSet() ?? []
-        });
-
-    public static async ValueTask<AccessTokenRefreshResult> RefreshUserAccessToken(
-        this ITwitchClient client,
-        AccessTokenDetails.User tokenDetails,
-        ClientSecret clientSecret,
-        CancellationToken ct
-        )
-    {
-        if (tokenDetails is not { Identity.ClientId: not null, RefreshToken: not null } validTokenDetails)
-        {
-            TestContext.Current.AddWarning("Failed to refresh a user access token because the token details are missing required information (client id or refresh token).");
-            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(tokenDetails);
-        }
-
-        try
-        {
-            return (await client.SendAsync(new AccessTokenRefreshRequest()
-            {
-                ClientId = tokenDetails.Identity.ClientId.Value,
-                ClientSecret = clientSecret,
-                RefreshToken = tokenDetails.RefreshToken.Value
-            }, ct)).ToRefreshResult(tokenDetails.Identity.UserId, tokenDetails.Identity.ClientId.Value);
-        }
-        catch (TwitchApiException ex)
-        {
-            TestContext.Current.AddWarning($"""
-                Failed to refresh a user access token.
-                {ex.StatusCode} response from Twitch:
-                {Encoding.UTF8.GetString(ex.Content)}
-                """);
-            return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(tokenDetails);
-        }
-    }
-}
