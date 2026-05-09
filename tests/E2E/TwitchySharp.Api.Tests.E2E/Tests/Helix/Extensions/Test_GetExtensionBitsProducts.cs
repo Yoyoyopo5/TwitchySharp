@@ -12,10 +12,10 @@ public class Test_GetExtensionBitsProducts(TwitchClientFixture fixture)
     {
         GetExtensionBitsProductsRequest request = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             ShouldIncludeAll = true
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

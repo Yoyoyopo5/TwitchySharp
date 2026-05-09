@@ -12,10 +12,10 @@ public class Test_ClientCredentialsRequest(TwitchClientFixture fixture)
     {
         ClientCredentialsRequest request = new()
         {
-            ClientId = new(_fixture.Client.Id),
-            ClientSecret = new(_fixture.Client.Secret)
+            ClientId = new(TwitchClientFixture.ClientConfig.ClientId),
+            ClientSecret = new(TwitchClientFixture.ClientConfig.ClientSecret)
         };
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         ClientCredentialsResponse response = (await client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
 
         Assert.False(string.IsNullOrEmpty(response.AccessToken.Value));

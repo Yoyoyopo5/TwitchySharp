@@ -18,6 +18,6 @@ public class Test_GetAuthorizationByUser(TwitchClientFixture fixture)
             UserIds = [userId]
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

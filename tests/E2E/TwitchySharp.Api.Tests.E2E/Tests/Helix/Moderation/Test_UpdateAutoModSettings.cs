@@ -10,13 +10,13 @@ public class Test_UpdateAutoModSettings(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_UpdateAutoModSettingsOverallRequest_ReturnSuccessResponse()
     {
-        await UpdateAutoModSettings(_fixture.CreateClient(), _fixture.UserIdentity.UserId, new UpdateAutoModOverallLevelData(AutomodFilteringLevel.Less), TestContext.Current.CancellationToken);
+        await UpdateAutoModSettings(TwitchClientFixture.Client, _fixture.UserIdentity.UserId, new UpdateAutoModOverallLevelData(AutomodFilteringLevel.Less), TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Send_UpdateAutoModSettingsCustomRequest_ReturnSuccessResponse()
     {
-        await UpdateAutoModSettings(_fixture.CreateClient(), _fixture.UserIdentity.UserId, new UpdateAutoModCustomLevelsData()
+        await UpdateAutoModSettings(TwitchClientFixture.Client, _fixture.UserIdentity.UserId, new UpdateAutoModCustomLevelsData()
         {
             Aggression = AutomodFilteringLevel.Less,
             Swearing = AutomodFilteringLevel.None

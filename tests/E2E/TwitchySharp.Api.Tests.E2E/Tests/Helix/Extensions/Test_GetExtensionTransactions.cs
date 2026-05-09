@@ -12,9 +12,9 @@ public class Test_GetExtensionTransactions(TwitchClientFixture fixture)
     {
         GetExtensionTransactionsRequest request = new()
         {
-            ExtensionId = _fixture.Extension.Id
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

@@ -10,7 +10,7 @@ public class Test_GetChannelFollowers(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetChannelFollowersRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
         GetChannelFollowersRequest request = new()
         {

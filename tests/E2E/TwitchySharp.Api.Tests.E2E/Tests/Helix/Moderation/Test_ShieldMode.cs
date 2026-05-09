@@ -11,7 +11,7 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
     public async Task Send_UpdateShieldModeStatusRequest_ReturnSuccessResponses()
     {
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await UpdateShieldModeStatus(client, broadcasterId, true, ct);
@@ -22,7 +22,7 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetShieldModeStatusRequest_ReturnSuccessResponse()
     {
-        await GetShieldModeStatus(_fixture.CreateClient(), _fixture.UserIdentity.UserId, TestContext.Current.CancellationToken);
+        await GetShieldModeStatus(TwitchClientFixture.Client, _fixture.UserIdentity.UserId, TestContext.Current.CancellationToken);
     }
 
     private static ValueTask<TwitchResponse<UpdateShieldModeStatusResponse>> UpdateShieldModeStatus(ITwitchClient client, UserId broadcasterId, bool isActive, CancellationToken ct)

@@ -18,7 +18,7 @@ public class Test_GetClips(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class Test_GetClips(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -50,6 +50,6 @@ public class Test_GetClips(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

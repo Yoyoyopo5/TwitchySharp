@@ -13,7 +13,7 @@ public class Test_BanUser(TwitchClientFixture fixture)
         const string TEST_BANNED_USER_ID = "52137750";
         UserId bannedUserId = new(TEST_BANNED_USER_ID);
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await BanUser(client, broadcasterId, bannedUserId, ct);

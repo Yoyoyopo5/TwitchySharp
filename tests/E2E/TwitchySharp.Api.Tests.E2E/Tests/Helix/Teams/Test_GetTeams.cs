@@ -18,6 +18,6 @@ public class Test_GetTeams(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

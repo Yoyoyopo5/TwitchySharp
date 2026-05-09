@@ -10,7 +10,7 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_DropsEntitlementRequests_ReturnSuccessResponses()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
         GetDropsEntitlementsRequest getRequest = new();
 

@@ -12,7 +12,7 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
     {
         // Note this has side effect of deleting most recent video on test channel. oof
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetVideosRequest getRequest = new()

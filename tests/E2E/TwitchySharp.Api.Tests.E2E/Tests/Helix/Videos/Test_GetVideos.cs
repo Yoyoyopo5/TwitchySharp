@@ -16,7 +16,7 @@ public class Test_GetVideos(TwitchClientFixture fixture)
         GameId gameId = new(TEST_GAME_ID);
         UserId userId = new(TEST_USER_ID);
 
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetVideosRequest byGame = new()

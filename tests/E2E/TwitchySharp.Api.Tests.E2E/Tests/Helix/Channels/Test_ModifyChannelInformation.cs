@@ -10,7 +10,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_ModifyChannelInformationRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelInformationRequest getInfoRequest = new()

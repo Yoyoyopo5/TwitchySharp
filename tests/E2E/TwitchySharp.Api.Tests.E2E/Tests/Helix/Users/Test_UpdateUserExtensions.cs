@@ -11,7 +11,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
     public async Task Send_UpdateUserExtensionsRequest_ReturnSuccessResponse()
     {
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetUserExtensionsRequest getRequest = new()

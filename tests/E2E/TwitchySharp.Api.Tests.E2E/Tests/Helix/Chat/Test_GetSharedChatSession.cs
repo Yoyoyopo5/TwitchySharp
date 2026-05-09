@@ -16,6 +16,6 @@ public class Test_GetSharedChatSession(TwitchClientFixture fixture)
             BroadcasterId = _fixture.UserIdentity.UserId
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 /// <summary>
 /// Creates a websocket connection to Twitch EventSub servers and holds it open for the duration of the test.
 /// </summary>
-public class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLifetime
+public sealed class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLifetime
 {
     public EventSubWebsocketSessionId SessionId { get; private set; } = new();
     private readonly ClientWebSocket _ws = new();
@@ -45,11 +45,7 @@ public class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLif
             _ => null
         };
 
-    public new void Dispose()
-    {
-        _ws.Dispose();
-        base.Dispose();
-    }
+    public void Dispose() => _ws.Dispose();
 
     public new async ValueTask InitializeAsync()
     {

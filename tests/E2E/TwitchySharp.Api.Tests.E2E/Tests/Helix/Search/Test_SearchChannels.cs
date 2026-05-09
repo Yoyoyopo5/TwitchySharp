@@ -12,6 +12,6 @@ public class Test_SearchChannels(TwitchClientFixture fixture)
     {
         SearchChannelsRequest request = new() { Query = "yoyoyopo5" };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

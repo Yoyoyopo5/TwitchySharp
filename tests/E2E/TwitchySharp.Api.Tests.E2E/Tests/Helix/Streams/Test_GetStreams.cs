@@ -20,6 +20,6 @@ public class Test_GetStreams(TwitchClientFixture fixture)
             Type = StreamType.All
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

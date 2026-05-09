@@ -16,6 +16,6 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
             BroadcasterId = _fixture.UserIdentity.UserId
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

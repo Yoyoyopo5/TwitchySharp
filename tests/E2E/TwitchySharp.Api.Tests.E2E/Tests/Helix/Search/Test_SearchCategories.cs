@@ -15,6 +15,6 @@ public class Test_SearchCategories(TwitchClientFixture fixture)
             Query = "Fortnite"
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

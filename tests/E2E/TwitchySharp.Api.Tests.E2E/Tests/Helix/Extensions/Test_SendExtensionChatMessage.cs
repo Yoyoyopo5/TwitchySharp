@@ -18,12 +18,12 @@ public class Test_SendExtensionChatMessage(TwitchClientFixture fixture)
             ExtensionOwnerId = _fixture.UserIdentity.UserId,
             Message = new()
             {
-                ExtensionId = _fixture.Extension.Id,
+                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
                 ExtensionVersion = testExtensionVersion,
                 Text = "Test Extension Message"
             }
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

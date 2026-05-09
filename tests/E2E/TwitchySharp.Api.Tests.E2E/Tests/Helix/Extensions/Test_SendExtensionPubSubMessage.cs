@@ -16,7 +16,7 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
             Message = new GlobalPubSubMessageData() { Message = "Test global message." }
         };
 
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await client.SendAsync(globalRequest, ct);
@@ -30,7 +30,7 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
             ExtensionIdentity = _fixture.ExtensionIdentity,
             Message = new BroadcastPubSubMessageData() { Message = "Test broadcast message." }.To(_fixture.UserIdentity.UserId)
         };
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await client.SendAsync(broadcastRequest, ct);
@@ -44,7 +44,7 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
             ExtensionIdentity = _fixture.ExtensionIdentity,
             Message = new BroadcastPubSubMessageData() { Message = "Test whisper message." }.WhisperTo(_fixture.UserIdentity.UserId)
         };
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await client.SendAsync(whisperRequest, ct);

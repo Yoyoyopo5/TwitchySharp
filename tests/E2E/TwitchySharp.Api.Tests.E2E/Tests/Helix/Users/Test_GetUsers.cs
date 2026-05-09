@@ -16,6 +16,6 @@ public class Test_GetUsers(TwitchClientFixture fixture)
             UserLogins = [new UserLogin("yoyoyopo5")]
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

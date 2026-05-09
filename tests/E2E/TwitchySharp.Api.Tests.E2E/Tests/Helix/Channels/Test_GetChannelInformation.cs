@@ -17,6 +17,6 @@ public class Test_GetChannelInformation(TwitchClientFixture fixture)
             BroadcasterIds = [_fixture.UserIdentity.UserId, testBroadcasterId]
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

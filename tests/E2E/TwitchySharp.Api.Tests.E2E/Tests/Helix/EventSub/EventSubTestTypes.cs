@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Api.Helix.EventSub.SubscriptionTypes;
+﻿using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 

@@ -13,7 +13,7 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
     {
         const string CALLBACK_URI = "https://fake-callback.xyz";
 
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         EventSubSubscriptionTransportSpecification transport = transportMethod switch
@@ -37,7 +37,8 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
         var createResponse = await client.SendAsync(createRequest, ct);
         EventSubSubscription subscription = createResponse.Content.Data.Single();
 
-        Assert.Equal(createRequest.Subscription.Type.Type, subscription.GetSubscriptionType());
+        Assert.Equal(createRequest.Subscription.Type.Type.Type, (string)subscription.Type);
+        Assert.Equal(createRequest.Subscription.Type.Type.Version, (string)subscription.Version);
         Assert.True(createRequest.Subscription.Type.Condition.All(kvp => subscription.Condition.GetValueOrDefault(kvp.Key) == (string)kvp.Value));
         Assert.Equal(createRequest.Subscription.Transport.Method, subscription.Transport.Method);
         if (subscription.Transport.Method == EventSubTransportMethod.Websocket)

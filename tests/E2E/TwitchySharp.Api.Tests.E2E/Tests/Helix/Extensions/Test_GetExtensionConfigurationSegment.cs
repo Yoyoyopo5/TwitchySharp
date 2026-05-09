@@ -12,13 +12,13 @@ public class Test_GetExtensionConfigurationSegment(TwitchClientFixture fixture)
     {
         GetExtensionConfigurationSegmentRequest request = new GetExtensionConfigurationSegmentRequest()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             ExtensionIdentity = _fixture.ExtensionIdentity with { BroadcasterId = _fixture.UserIdentity.UserId }
         }
             .WithGlobal()
             .WithDeveloper(_fixture.UserIdentity.UserId)
             .WithBroadcaster(_fixture.UserIdentity.UserId);
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

@@ -24,6 +24,6 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
             UserId = testUserId,
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

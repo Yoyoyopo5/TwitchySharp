@@ -13,10 +13,10 @@ public class Test_DeviceCodeRequest(TwitchClientFixture fixture)
         HashSet<Scope> scopes = [];
         DeviceCodeRequest request = new()
         {
-            ClientId = new(_fixture.Client.Id),
+            ClientId = new(TwitchClientFixture.ClientConfig.ClientId),
             Scopes = scopes
         };
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
 
         DeviceCodeResponse response = (await client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
 

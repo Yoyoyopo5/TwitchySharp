@@ -15,7 +15,7 @@ public class Test_UserInfoRequest(TwitchClientFixture fixture)
             UserId = _fixture.UserIdentity.UserId
         };
 
-        var response = await _fixture.CreateClient().SendAsync(stubRequest, TestContext.Current.CancellationToken);
+        var response = await TwitchClientFixture.Client.SendAsync(stubRequest, TestContext.Current.CancellationToken);
 
         Assert.False(string.IsNullOrEmpty(response.Content.Sub));
         Assert.False(string.IsNullOrEmpty(response.Content.Iss));

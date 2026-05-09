@@ -14,11 +14,11 @@ public class Test_GetExtensions(TwitchClientFixture fixture)
         ExtensionVersion testExtensionVersion = new(TEST_EXTENSION_VERSION);
         GetExtensionsRequest request = new()
         {
-            ExtensionId = _fixture.Extension.Id,
+            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
             ExtensionIdentity = _fixture.ExtensionIdentity,
             ExtensionVersion = testExtensionVersion // must specify because its unreleased
         };
 
-        await _fixture.CreateClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

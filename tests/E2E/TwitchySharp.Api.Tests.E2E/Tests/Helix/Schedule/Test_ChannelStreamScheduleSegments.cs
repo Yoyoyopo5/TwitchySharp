@@ -13,7 +13,7 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
         const string TEST_SEGMENT_TITLE = "Test Stream";
 
         UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = _fixture.CreateClient();
+        ITwitchClient client = TwitchClientFixture.Client;
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         var createResponse = await CreateSegment(client, broadcasterId, TEST_SEGMENT_TITLE, ct);

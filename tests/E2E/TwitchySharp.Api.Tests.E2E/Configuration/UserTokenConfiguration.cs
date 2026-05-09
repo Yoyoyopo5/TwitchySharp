@@ -1,6 +1,4 @@
-﻿using TwitchySharp.Api.AuthorizationResolution;
-
-namespace TwitchySharp.Api.Tests.E2E;
+﻿namespace TwitchySharp.Api.Tests.E2E;
 
 public class UserTokenConfiguration
 {
