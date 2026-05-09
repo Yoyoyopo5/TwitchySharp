@@ -1,6 +1,9 @@
-﻿
-namespace TwitchySharp.Api.Helix.EventSub;
+﻿namespace TwitchySharp.Api.Helix.EventSub;
 
+/// <summary>
+/// Represents the specification for creating a new Twitch EventSub subscription,
+/// including the subscription type and transport details.
+/// </summary>
 public record EventSubSubscriptionSpecification
 {
     /// <summary>
