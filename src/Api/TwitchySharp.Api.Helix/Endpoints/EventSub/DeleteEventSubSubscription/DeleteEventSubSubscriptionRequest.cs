@@ -49,7 +49,7 @@ public record DeleteEventSubSubscriptionRequest()
     public Func<EventSubSubscriptionType, ConditionKey?> GetAuthorizingUserKey { get; init; } = AuthorizingUserConditionKeys.GetAuthorizingUserKey;
 
     private UserId? GetAuthorizingUserOrNull(EventSubSubscription subscription)
-        => GetAuthorizingUserKey(new(subscription.Type, subscription.Version)) is not ConditionKey key
+        => GetAuthorizingUserKey(subscription.GetSubscriptionType()) is not ConditionKey key
             ? null
             : subscription.Condition.TryGetValue(key, out string? value)
             ? new UserId(value)
