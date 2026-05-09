@@ -3,7 +3,7 @@ using TwitchySharp.Api;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.Chat;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.Channel;
+using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
@@ -16,7 +16,7 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
     public async Task Send_ValidateAccessTokenRequest_ReturnSuccessResponseWithUserReadChatScope()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        var response = await _fixture.Api.SendAsync(new ValidateAccessTokenRequest() { UserId = _fixture.AuthorizedBroadcaster.UserId }, ct);
+        var response = await _fixture.Client.SendAsync(new ValidateAccessTokenRequest() { UserId = _fixture.AuthorizedBroadcaster.UserId }, ct);
         Assert.Contains(Scope.UserReadChat, response.Content.Scopes);
     }
 
@@ -39,7 +39,7 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
         try
         {
             // Create subscription
-            subscription = (await _fixture.Api.SendAsync(new CreateEventSubSubscriptionRequest()
+            subscription = (await _fixture.Client.SendAsync(new CreateEventSubSubscriptionRequest()
             {
                 Subscription = new()
                 {
@@ -49,7 +49,7 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
             }, ct)).Content.Data.First();
 
             // Send chat message
-            await _fixture.Api.SendAsync(new SendChatMessageRequest()
+            await _fixture.Client.SendAsync(new SendChatMessageRequest()
             {
                 Message = new()
                 {
@@ -75,7 +75,7 @@ public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : ICla
         finally
         {
             if (subscription is not null)
-                await _fixture.Api.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
+                await _fixture.Client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
         }
     }
 }
