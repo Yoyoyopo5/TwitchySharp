@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Sends an event notification when progress is made towards the campaign's goal or when the broadcaster changes the fundraising goal.
 /// </summary>

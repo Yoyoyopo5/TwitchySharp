@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Automod;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A notification is sent when a broadcaster's automod terms are updated. Changes to private terms are not sent.
 /// </summary>

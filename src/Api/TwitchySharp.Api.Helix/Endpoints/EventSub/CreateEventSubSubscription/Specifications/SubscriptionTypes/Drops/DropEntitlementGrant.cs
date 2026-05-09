@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Drops;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// An entitlement for a Drop is granted to a user.
 /// </summary>

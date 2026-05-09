@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user creates an unban request.
 /// </summary>

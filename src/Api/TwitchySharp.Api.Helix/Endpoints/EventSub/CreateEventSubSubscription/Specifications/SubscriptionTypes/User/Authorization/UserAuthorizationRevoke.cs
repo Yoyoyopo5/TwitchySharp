@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.User;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user's authorization has been revoked for your client id.
 /// Use this webhook to meet government requirements for handling user data, such as GDPR, LGPD, or CCPA.

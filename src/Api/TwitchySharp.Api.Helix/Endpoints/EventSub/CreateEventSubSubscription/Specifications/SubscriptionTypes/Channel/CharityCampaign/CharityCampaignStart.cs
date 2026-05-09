@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Sends an event notification when the broadcaster starts a charity campaign.
 /// </summary>

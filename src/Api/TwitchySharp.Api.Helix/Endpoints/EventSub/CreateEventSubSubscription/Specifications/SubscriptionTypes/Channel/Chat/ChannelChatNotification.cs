@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A notification for when an event that appears in chat has occurred, such as someone subscribing to the channel or a subscription is gifted.
 /// </summary>

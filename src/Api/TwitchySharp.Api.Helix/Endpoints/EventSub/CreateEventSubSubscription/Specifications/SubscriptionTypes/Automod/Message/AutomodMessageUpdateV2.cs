@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Automod;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A message in the automod queue had its status changed. Only public blocked terms trigger notifications, not private ones.
 /// </summary>

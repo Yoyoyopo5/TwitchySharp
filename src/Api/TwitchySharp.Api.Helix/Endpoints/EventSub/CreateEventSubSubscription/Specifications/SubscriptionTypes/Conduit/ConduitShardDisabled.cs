@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Conduit;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Sends a notification when EventSub disables a shard due to the status of the underlying transport changing.
 /// </summary>

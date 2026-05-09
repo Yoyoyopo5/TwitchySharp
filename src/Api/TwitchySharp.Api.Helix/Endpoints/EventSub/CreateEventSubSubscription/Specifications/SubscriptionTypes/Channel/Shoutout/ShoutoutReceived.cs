@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Sends a notification when the specified broadcaster receives a Shoutout.
 /// <b>Note: </b> Sent only if Twitch posts the Shoutout to the broadcaster's activity feed.

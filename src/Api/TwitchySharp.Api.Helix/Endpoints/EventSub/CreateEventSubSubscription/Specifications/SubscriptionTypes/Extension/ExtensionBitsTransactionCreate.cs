@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Extension;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A Bits transaction occurred for a specified Twitch Extension.
 /// </summary>

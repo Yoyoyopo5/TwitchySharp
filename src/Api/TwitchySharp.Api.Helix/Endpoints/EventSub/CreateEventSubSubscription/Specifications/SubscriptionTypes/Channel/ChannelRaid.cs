@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A broadcaster raids another broadcaster's channel.
 /// </summary>

@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Helix.EventSub.Channel;
+namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A notification when a channel leaves a shared chat session or the session ends.
 /// </summary>
