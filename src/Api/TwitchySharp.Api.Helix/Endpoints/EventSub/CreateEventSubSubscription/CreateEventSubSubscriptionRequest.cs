@@ -27,21 +27,15 @@ public record CreateEventSubSubscriptionRequest
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = Subscription.RequiresUserAccessToken() switch
+        Identity = Subscription.Type switch
         {
-            true => Subscription.Type switch
-            {
-                IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.GetAuthorizingUser() ?? throw new InvalidOperationException(
-                    $"Failed to resolve required {nameof(TwitchIdentity.User)} from subscription type {Subscription.Type.Type} when attempting to create the subscription. " +
-                    $"Set the {nameof(AuthorizationContext)} property manually to suppress this error. " +
-                    $"The condition for this subscription may be missing the expected key '{userAuthorized.AuthorizingUserConditionKey}'."),
-                _ => TwitchIdentity.Client.Default
-            },
+            IUserAuthorizedSubscriptionTypeSpecification userAuthorizedSubscription when Subscription.Transport.Method == EventSubTransportMethod.Websocket
+                => new TwitchIdentity.User(userAuthorizedSubscription.AuthorizingUser),
             _ => TwitchIdentity.Client.Default
         },
         ValidScopes = Subscription.Type switch
         {
-            IUserAuthorizedSubscriptionType userAuthorized => userAuthorized.ValidScopes,
+            IUserAuthorizedSubscriptionTypeSpecification userAuthorized => userAuthorized.ValidScopes,
             _ => ImmutableHashSet<Scope>.Empty
         }
     };
