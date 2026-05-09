@@ -1,12 +1,6 @@
 namespace TwitchySharp.Api;
 
-internal interface ITokenResolutionOptions<TDetails>
-    where TDetails : AccessTokenDetails
-{
-    TokenResolutionOptions<TDetails> ToTokenResolutionOptions();
-}
-
-internal record TokenResolutionOptions<TDetails>
+public record TokenResolutionOptions<TDetails>
     where TDetails : AccessTokenDetails
 {
     /// <summary>

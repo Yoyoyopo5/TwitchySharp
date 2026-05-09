@@ -46,12 +46,6 @@ public record TwitchAuthorizationResolutionOptions
 
 public static partial class TwitchAuthorizationResolutionOptionsExtensions
 {
-    internal static TwitchAuthorizationResolutionOptions ConfigureIdentityTokenResolution<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
-        ITokenResolutionOptions<TDetails> identityOptions)
-        where TIdentity : TwitchIdentity
-        where TDetails : AccessTokenDetails
-        => options.ConfigureIdentity<TIdentity, TDetails>(identityOptions.ToTokenResolutionOptions());
-
     /// <summary>
     /// Configure bearer token resolution for a specific <see cref="TwitchIdentity"/>.
     /// </summary>
@@ -63,7 +57,7 @@ public static partial class TwitchAuthorizationResolutionOptionsExtensions
     /// <param name="options">The options to configure.</param>
     /// <param name="identityOptions">The identity-specific bearer token resolution options.</param>
     /// <returns>The configured <paramref name="options"/>.</returns>
-    internal static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
+    public static TwitchAuthorizationResolutionOptions ConfigureIdentity<TIdentity, TDetails>(this TwitchAuthorizationResolutionOptions options,
         TokenResolutionOptions<TDetails> identityOptions
         )
         where TIdentity : TwitchIdentity

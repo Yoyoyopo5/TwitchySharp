@@ -1,6 +1,6 @@
 namespace TwitchySharp.Api;
 
-internal abstract record AccessTokenRefreshResult
+public abstract record AccessTokenRefreshResult
 {
     internal abstract AccessTokenDetailsResolutionResult ToResolutionResult();
     public record Refreshed<TDetails>(TDetails AccessTokenDetails) : AccessTokenRefreshResult
