@@ -22,10 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
-    <ProjectReference Include="../../../src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
+    <ProjectReference Include="../../../src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
     <ProjectReference Include="../../../src/EventSub/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.csproj" />
-    <ProjectReference Include="../../../src/EventSub/TwitchySharp.EventSub.Websocket/TwitchySharp.EventSub.Websocket.csproj" />
-    <ProjectReference Include="../../../src/EventSub/TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
+    <ProjectReference Include="../TwitchySharp.Tests.E2E.Toolkit/TwitchySharp.Tests.E2E.Toolkit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
