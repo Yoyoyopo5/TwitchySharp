@@ -15,13 +15,13 @@ public readonly partial record struct EventSubWebhookMessageType(string Value)
     /// <summary>
     /// This type of webhook contains a specific event's data.
     /// </summary>
-    public static EventSubWebhookMessageType Notification { get; } = new("notification");
+    public static EventSubWebhookMessageType Notification { get; } = new(EventSubWebhookMessageTypes.NOTIFICATION);
     /// <summary>
     /// This type of webhook contains the challenge used to verify that you own the event handler.
     /// </summary>
-    public static EventSubWebhookMessageType WebhookCallbackVerification { get; } = new("webhook_callback_verification");
+    public static EventSubWebhookMessageType WebhookCallbackVerification { get; } = new(EventSubWebhookMessageTypes.WEBHOOK_CALLBACK_VERIFICATION);
     /// <summary>
     /// This type of webhook contains the reason why Twitch revoked your subscription.
     /// </summary>
-    public static EventSubWebhookMessageType Revocation { get; } = new("revocation");
+    public static EventSubWebhookMessageType Revocation { get; } = new(EventSubWebhookMessageTypes.REVOCATION);
 }
