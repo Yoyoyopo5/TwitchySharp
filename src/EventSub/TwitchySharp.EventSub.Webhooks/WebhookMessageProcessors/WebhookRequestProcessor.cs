@@ -4,6 +4,7 @@ using TwitchySharp.EventSub.Webhooks.Deserialization;
 using TwitchySharp.EventSub.Webhooks.Requests;
 using TwitchySharp.EventSub.Webhooks.Responses;
 using TwitchySharp.Infrastructure.Functional;
+using Microsoft.IO;
 
 namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 
@@ -18,13 +19,15 @@ namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 /// <param name="body">The webhook request body.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing the response for the request.</returns>
-public delegate ValueTask<WebhookResponseData> ProcessWebhookRequest(EventSubWebhookRequestHeader header, NotificationPayloadStream body, CancellationToken ct);
+public delegate ValueTask<WebhookResponseData> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Contains methods for creating an EventSub webhook message processor.
 /// </summary>
 public static class WebhookRequestProcessor
 {
+    private static readonly RecyclableMemoryStreamManager _memoryManager = new();
+
     /// <summary>
     /// Create a webhook message processor.
     /// </summary>
@@ -35,29 +38,45 @@ public static class WebhookRequestProcessor
     /// <returns>A webhook message processor using the provided <paramref name="handler"/> and <paramref name="deserializeRequest"/>.</returns>
     public static ProcessWebhookRequest Create(
         IWebhookEventSubHandler handler,
+        VerifyWebhookHash? verifyHash = null,
         DeserializeWebhookRequest? deserializeRequest = null
         )
     {
         deserializeRequest ??= WebhookRequestDeserializer.Create();
-        return (header, body, ct) => HandleRequest(handler, deserializeRequest, header, body, ct);
+        return (request, ct) =>
+        {
+            // We duplicate the request stream here because we need to:
+            // 1. Read the stream to deserialize and obtain the subscription
+            // 2. Use the subscription to resolve the secret and read the stream again to get the hash with the secret
+            // So we tee the stream and use the RecyclableMemoryStream for the copy stream
+            using RecyclableMemoryStream cryptoStream = _memoryManager.GetStream();
+            using TeeStream teeStream = new(request.Content, cryptoStream);
+
+            EventSubWebhookRequest toDeserialize = request with { Content = new(teeStream) };
+            EventSubWebhookRequest toVerify = request with { Content = new(cryptoStream) };
+
+            return deserializeRequest(toDeserialize, ct)
+                .BindAsync((deserialized, ct) => verifyHash is null
+                    ? ValueTask.FromResult(new Validation<IWebhookRequestData>(deserialized))
+                    : verifyHash(deserialized.Subscription, toVerify, ct).MapAsync(_ => deserialized), ct)
+                .NotifyHandler(handler, ct);
+        };
     }
 
-    private static async ValueTask<WebhookResponseData> HandleRequest(
+    private static ValueTask<WebhookResponseData> NotifyHandler(
+        this ValueTask<Validation<IWebhookRequestData>> message,
         IWebhookEventSubHandler handler,
-        DeserializeWebhookRequest deserializeRequest,
-        EventSubWebhookRequestHeader header,
-        NotificationPayloadStream body,
-        CancellationToken ct = default
+        CancellationToken ct
         )
-        => await (await deserializeRequest(header.TwitchEventsubMessageType, body, ct)).Match(
-            onError: e => handler.Error(e, ct),
-            onValid: data => data switch
+        => message.MatchAsync(
+            onError: handler.Error,
+            onValid: (data, ct) => data switch
             {
                 NotificationRequestData notification => handler.Notification(notification, ct),
                 CallbackVerificationRequestData callback => handler.CallbackVerification(callback.Subscription, callback.Challenge, ct),
                 RevocationRequestData revocation => handler.Revocation(revocation.Subscription, ct),
                 _ => throw new NotSupportedException("Unsupported webhook request type.")
-            });
+            }, ct);
 
     private static async ValueTask<WebhookResponseData> Error(this IWebhookEventSubHandler handler, Error e, CancellationToken ct)
     {

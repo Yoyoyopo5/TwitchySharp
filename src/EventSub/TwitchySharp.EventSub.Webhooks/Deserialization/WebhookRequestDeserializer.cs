@@ -9,8 +9,7 @@ namespace TwitchySharp.EventSub.Webhooks.Deserialization;
 /// <summary>
 /// Deserializes EventSub webhook bodies.
 /// </summary>
-/// <param name="messageType">The message type. This is determined by request headers.</param>
-/// <param name="payload">The message payload. This is the request body.</param>
+/// <param name="request">The webhook request.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>
 /// A <see cref="ValueTask"/> containing a <see cref="Validation{T}"/> of <see cref="IWebhookRequestData"/>.
@@ -20,7 +19,7 @@ namespace TwitchySharp.EventSub.Webhooks.Deserialization;
 /// <see cref="NotificationRequestData"/>,
 /// or <see cref="RevocationRequestData"/>.
 /// </returns>
-public delegate ValueTask<Validation<IWebhookRequestData>> DeserializeWebhookRequest(EventSubWebhookMessageType messageType, NotificationPayloadStream payload, CancellationToken ct);
+public delegate ValueTask<Validation<IWebhookRequestData>> DeserializeWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Provides converter factories for EventSub webhook messages.
@@ -64,11 +63,11 @@ public static class WebhookRequestDeserializer
         Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> notification,
         Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> revocation
         )
-        => (messageType, payload, ct) => messageType.Value switch
+        => (request, ct) => request.Header.TwitchEventsubMessageType.Value switch
         {
-            EventSubWebhookMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => callback(payload, ct),
-            EventSubWebhookMessageTypes.NOTIFICATION => notification(payload, ct),
-            EventSubWebhookMessageTypes.REVOCATION => revocation(payload, ct),
+            EventSubWebhookMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => callback(request.Content, ct),
+            EventSubWebhookMessageTypes.NOTIFICATION => notification(request.Content, ct),
+            EventSubWebhookMessageTypes.REVOCATION => revocation(request.Content, ct),
             _ => throw new InvalidOperationException()
         };
 
