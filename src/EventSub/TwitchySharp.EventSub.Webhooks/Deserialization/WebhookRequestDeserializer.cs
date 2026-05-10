@@ -44,7 +44,7 @@ public static class WebhookRequestDeserializer
     /// The serializer options to use. Defaults to <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A function that deserializes individual webhook requests using the given <paramref name="deserializeNotification"/> and <paramref name="serializerOptions"/>.</returns>
-    public static DeserializeWebhookRequest CreateDeserializer(
+    public static DeserializeWebhookRequest Create(
         DeserializeNotification? deserializeNotification = null,
         JsonSerializerOptions? serializerOptions = null
         )
