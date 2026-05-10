@@ -12,9 +12,3 @@ public record EventSubWebhookRequestHeader
     public required string TwitchEventsubSubscriptionType { get; init; }
     public required string TwitchEventsubSubscriptionVersion { get; init; }
 }
-
-public record EventSubWebhookRequest
-{
-    public required EventSubWebhookRequestHeader Header { get; init; }
-    public required NotificationPayloadStream Content { get; init; }
-}

@@ -32,6 +32,10 @@ public static class WebhookRequestProcessor
     /// Create a webhook message processor.
     /// </summary>
     /// <param name="handler">The message side effect handler to use.</param>
+    /// <param name="verifyHash">
+    /// The request verifier to use. This ensures the requests were signed by Twitch using the secret sent when creating the subscription.
+    /// Use <see cref="WebhookHashVerifier.Create(ResolveWebhookSecret)"/> with a <see cref="ResolveWebhookSecret"/> implementation (e.g. <see cref="SecretResolvers.CreateFixedSecretResolver(WebhookSecret)"/>).
+    /// </param>
     /// <param name="deserializeRequest">
     /// The request deserializer to use.
     /// Defaults to the output of <see cref="WebhookRequestDeserializer.Create(DeserializeNotification?, System.Text.Json.JsonSerializerOptions?)"/>.</param>
