@@ -22,7 +22,7 @@ public abstract record EventSubSubscriptionTransportSpecification
     /// <remarks>
     /// For information about how the secret is used, see <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events#verifying-the-event-message">Verifying the event message</see>.
     /// </remarks>
-    public string? Secret { get; protected init; }
+    public WebhookSecret? Secret { get; protected init; }
     /// <summary>
     /// The id of the EventSub WebSocket session that notifications will be sent to.
     /// </summary>

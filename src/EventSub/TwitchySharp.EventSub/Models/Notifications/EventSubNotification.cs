@@ -1,5 +1,4 @@
-﻿
-namespace TwitchySharp.EventSub.Models.Notifications;
+﻿namespace TwitchySharp.EventSub.Models.Notifications;
 /// <summary>
 /// Base class for EventSub notifications.
 /// Create derived record classes that set the type parameters to add new notification types.
@@ -23,10 +22,3 @@ public record EventSubNotification<TEvent, TCondition> : IEventSubNotification
     /// </summary>
     public required TEvent Event { get; init; }
 }
-
-/// <summary>
-/// Internal use to make it easier to determine types of untyped notifications.
-/// Deserialize initial notification JSON into this type to get the subscription type.
-/// </summary>
-/// <param name="Subscription">Contains information about the type of the notification.</param>
-internal record EventSubNotification(EventSubSubscriptionType Subscription);

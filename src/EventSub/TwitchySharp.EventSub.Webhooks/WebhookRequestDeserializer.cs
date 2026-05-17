@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using TwitchySharp.EventSub.Webhooks.Enums;
-using TwitchySharp.EventSub.Webhooks.Requests;
+using TwitchySharp.EventSub.Webhooks.Http;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
@@ -14,12 +14,12 @@ namespace TwitchySharp.EventSub.Webhooks.Deserialization;
 /// <returns>
 /// A <see cref="ValueTask"/> containing a <see cref="Validation{T}"/> of <see cref="IWebhookRequestData"/>.
 /// The validation can contain a <see cref="WebhookRequestDeserializer.DeserializationError"/>.
-/// The <see cref="IWebhookRequestData"/> can be one of
-/// <see cref="CallbackVerificationRequestData"/>,
-/// <see cref="NotificationRequestData"/>,
-/// or <see cref="RevocationRequestData"/>.
+/// The <see cref="WebhookRequestContent"/> can be one of
+/// <see cref="CallbackVerificationRequestContent"/>,
+/// <see cref="NotificationRequestContent"/>,
+/// or <see cref="RevocationRequestContent"/>.
 /// </returns>
-public delegate ValueTask<Validation<IWebhookRequestData>> DeserializeWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
+public delegate ValueTask<Validation<WebhookRequestContent>> DeserializeWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Provides converter factories for EventSub webhook messages.
@@ -59,9 +59,9 @@ public static class WebhookRequestDeserializer
     }
 
     private static DeserializeWebhookRequest CreateDeserializer(
-        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> callback,
-        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> notification,
-        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> revocation
+        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> callback,
+        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> notification,
+        Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> revocation
         )
         => (request, ct) => request.Header.TwitchEventsubMessageType.Value switch
         {
@@ -71,19 +71,19 @@ public static class WebhookRequestDeserializer
             _ => throw new InvalidOperationException()
         };
 
-    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> CreateCallbackVerificationDeserializer(JsonSerializerOptions options)
-        => async (payload, ct) => await JsonSerializer.DeserializeAsync<CallbackVerificationRequestData>(payload, options, ct) is not { } data
+    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> CreateCallbackVerificationDeserializer(JsonSerializerOptions options)
+        => async (payload, ct) => await JsonSerializer.DeserializeAsync<CallbackVerificationRequestContent>(payload, options, ct) is not { } data
             ? new DeserializationError("Callback verification request had a null payload.")
             : data;
 
-    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> CreateRevocationDeserializer(JsonSerializerOptions options)
-        => async (payload, ct) => await JsonSerializer.DeserializeAsync<RevocationRequestData>(payload, options, ct) is not { } data
+    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> CreateRevocationDeserializer(JsonSerializerOptions options)
+        => async (payload, ct) => await JsonSerializer.DeserializeAsync<RevocationRequestContent>(payload, options, ct) is not { } data
             ? new DeserializationError("Revocation webhook request had a null payload.")
             : data;
 
-    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<IWebhookRequestData>>> CreateNotificationDeserializer(DeserializeNotification deserialize)
-        => async (payload, ct) => (await deserialize(payload, ct)).Match<Validation<IWebhookRequestData>>(
+    private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> CreateNotificationDeserializer(DeserializeNotification deserialize)
+        => async (payload, ct) => (await deserialize(payload, ct)).Match<Validation<WebhookRequestContent>>(
             onError: e => new DeserializationError("An error occurred during notification deserialization. See the inner error for details.") { InnerError = e },
-            onValid: notification => new NotificationRequestData() { Subscription = notification.Subscription, Notification = notification }
+            onValid: notification => new NotificationRequestContent() { Subscription = notification.Subscription, Notification = notification }
             );
 }

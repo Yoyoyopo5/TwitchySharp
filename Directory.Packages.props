@@ -8,6 +8,7 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
     <PackageVersion Include="System.Threading.RateLimiting" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" Condition="'$(TargetFramework)' == 'net10.0'" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />

@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp;
 
 /// <summary>
 /// An EventSub webhook secret.
