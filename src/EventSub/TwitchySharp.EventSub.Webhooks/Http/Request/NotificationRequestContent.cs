@@ -1,8 +1,8 @@
 ﻿using TwitchySharp.EventSub.Models.Notifications;
 
-namespace TwitchySharp.EventSub.Webhooks.Requests;
+namespace TwitchySharp.EventSub.Webhooks.Http;
 
-internal record NotificationRequestData : WebhookRequestData
+internal record NotificationRequestContent : WebhookRequestContent
 {
     public required IEventSubNotification Notification { get; init; }
 }
