@@ -48,7 +48,7 @@ public static class NotificationDeserializer
     /// </summary>
     /// <param name="Message">The error message.</param>
     /// <param name="Exception">The exception associated with the error, if any</param>
-    public record NotificationDeserializerError(string Message, Exception? Exception = null) : Error;
+    public record NotificationDeserializerError(string Message, Exception? Exception = null) : Error(Message);
 
     /// <summary>
     /// Create an EventSub notification deserializer function with the given <paramref name="map"/> and <paramref name="serializerOptions"/>.
