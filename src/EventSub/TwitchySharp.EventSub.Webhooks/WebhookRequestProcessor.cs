@@ -18,7 +18,7 @@ namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 /// <param name="body">The webhook request body.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing the response for the request.</returns>
-public delegate ValueTask<WebhookResponse> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
+public delegate ValueTask<WebhookRequestResult> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Contains methods for creating an EventSub webhook message processing pipeline.
@@ -66,7 +66,7 @@ public static class WebhookRequestProcessor
         };
     }
 
-    private static ValueTask<WebhookResponse> NotifyHandler(
+    private static ValueTask<WebhookRequestResult> NotifyHandler(
         this ValueTask<Validation<WebhookRequestContent>> message,
         IWebhookEventSubHandler handler,
         CancellationToken ct
@@ -81,27 +81,27 @@ public static class WebhookRequestProcessor
                 _ => throw new NotSupportedException("Unsupported webhook request type.")
             }, ct);
 
-    private static async ValueTask<WebhookResponse> Error(this IWebhookEventSubHandler handler, Error e, CancellationToken ct)
+    private static async ValueTask<WebhookRequestResult> Error(this IWebhookEventSubHandler handler, Error e, CancellationToken ct)
     {
         await handler.OnError(e, ct);
-        return new InternalErrorResponse();
+        return new WebhookRequestResult.InternalError();
     }
 
-    private static async ValueTask<WebhookResponse> CallbackVerification(this IWebhookEventSubHandler handler, EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
+    private static async ValueTask<WebhookRequestResult> CallbackVerification(this IWebhookEventSubHandler handler, EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
     {
         await handler.OnCallbackVerification(newSubscription, challenge, ct);
-        return new CallbackVerificationResponse { Challenge = challenge };
+        return new WebhookRequestResult.CallbackVerification { Challenge = challenge };
     }
 
-    private static async ValueTask<WebhookResponse> Notification(this IWebhookEventSubHandler handler, IEventSubNotification notification, CancellationToken ct = default)
+    private static async ValueTask<WebhookRequestResult> Notification(this IWebhookEventSubHandler handler, IEventSubNotification notification, CancellationToken ct = default)
     {
         await handler.OnNotified(notification, ct);
-        return new NotificationResponse();
+        return new WebhookRequestResult.Notification();
     }
 
-    private static async ValueTask<WebhookResponse> Revocation(this IWebhookEventSubHandler handler, EventSubSubscription revokedSubscription, CancellationToken ct = default)
+    private static async ValueTask<WebhookRequestResult> Revocation(this IWebhookEventSubHandler handler, EventSubSubscription revokedSubscription, CancellationToken ct = default)
     {
         await handler.OnSubscriptionRevoked(revokedSubscription, ct);
-        return new RevocationResponse();
+        return new WebhookRequestResult.Revocation();
     }
 }
