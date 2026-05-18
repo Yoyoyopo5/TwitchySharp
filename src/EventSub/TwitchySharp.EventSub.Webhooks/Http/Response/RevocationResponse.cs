@@ -1,6 +1,6 @@
 ﻿namespace TwitchySharp.EventSub.Webhooks.Http;
 
-public record RevocationResponse : WebhookResponse
+public sealed record RevocationResponse : WebhookResponse
 {
     public RevocationResponse()
     {

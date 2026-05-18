@@ -1,6 +1,6 @@
 ﻿namespace TwitchySharp.EventSub.Webhooks.Http;
 
-public record InternalErrorResponse : WebhookResponse
+public sealed record InternalErrorResponse : WebhookResponse
 {
     public InternalErrorResponse()
     {
