@@ -1,19 +1,28 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TwitchySharp.EventSub.Webhooks.MessageVerifiers;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
-internal class TwitchWebhooksConfigurationValidator(IServiceProvider serviceProvider, ILogger<TwitchWebhooksConfigurationValidator>? logger = null) : IHostedService
+internal readonly record struct WebhooksConfigValidationContext
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    public required bool HasHandler { get; init; }
+    public required bool HasVerifier { get; init; }
+}
+
+internal class TwitchWebhooksConfigurationValidator(WebhooksConfigValidationContext context, ILoggerFactory? loggerFactory = null) : IHostedService
+{
+    private readonly WebhooksConfigValidationContext _context = context;
 
     public Task StartAsync(CancellationToken ct)
     {
-        using var scope = _serviceProvider.CreateScope();
-        if (scope.ServiceProvider.GetService<ITwitchWebhookMessageVerifier>() is null)
-            logger?.LogWarning("Security Warning: Twitch webhook requests will not be validated with secrets. Please use the AddTwitchEventSubWebhooksVerification IServiceCollection extension method, register an {VerifierType} in the service provider for improved security, or disable this warning by registering a stub verifier.", nameof(ITwitchWebhookMessageVerifier));
+        ILogger? logger = loggerFactory?.CreateLogger(LoggingConfig.LOGGER_CATEGORY + ".EventSub.Webhooks.AspNetCore");
+
+        if (!_context.HasHandler)
+            logger?.LogWarning("Twitch EventSub Webhooks does not have a message handler and will default to an empty handler (i.e. no side effects will be run on events received). Use the `configure` parameter of `AddTwitchEventSubWebhooks` to configure a message handler.");
+
+        if (!_context.HasVerifier)
+            logger?.LogWarning("Security Warning: Twitch EventSub Webhooks does not have a hash verifier and will default to not verifying the hashes of incoming webhook requests (i.e. verifying that the requests actually came from Twitch). Use the `configure` parameter of `AddTwitchEventSubWebhooks` to configure a webhook secret resolver.");
+
         return Task.CompletedTask;
     }
 
