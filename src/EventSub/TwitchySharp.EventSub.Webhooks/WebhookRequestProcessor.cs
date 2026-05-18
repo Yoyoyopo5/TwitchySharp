@@ -84,7 +84,7 @@ public static class WebhookRequestProcessor
     private static async ValueTask<WebhookRequestResult> Error(this IWebhookEventSubHandler handler, Error e, CancellationToken ct)
     {
         await handler.OnError(e, ct);
-        return new WebhookRequestResult.InternalError();
+        return new WebhookRequestResult.Error() { InnerError = e };
     }
 
     private static async ValueTask<WebhookRequestResult> CallbackVerification(this IWebhookEventSubHandler handler, EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
