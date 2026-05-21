@@ -1,9 +1,8 @@
-﻿using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
+﻿using Microsoft.IO;
+using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.Deserialization;
-using TwitchySharp.Infrastructure.Functional;
-using Microsoft.IO;
 using TwitchySharp.EventSub.Webhooks.Http;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 

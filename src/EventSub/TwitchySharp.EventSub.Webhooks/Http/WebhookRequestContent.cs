@@ -1,6 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-
-namespace TwitchySharp.EventSub.Webhooks.Http;
+﻿namespace TwitchySharp.EventSub.Webhooks.Http;
 
 public abstract record WebhookRequestContent
 {

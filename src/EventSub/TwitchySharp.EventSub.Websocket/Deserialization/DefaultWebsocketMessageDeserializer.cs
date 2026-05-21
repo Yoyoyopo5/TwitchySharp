@@ -14,7 +14,7 @@ namespace TwitchySharp.EventSub.Websocket.Deserialization;
 /// </summary>
 /// <param name="notificationConverter">
 /// The notification converter to use when deserializing notifications.
-/// Defaults to <see cref="NotificationConverter"/> if left <see langword="null"/>.
+/// Defaults to <see cref="NotificationDeserializer"/> if left <see langword="null"/>.
 /// </param>
 /// <param name="jsonSerializerOptions">
 /// The JSON serializer options to use when deserializing messages.
@@ -26,7 +26,7 @@ public class DefaultWebsocketMessageDeserializer(
     )
     : IEventSubWebsocketMessageDeserializer
 {
-    private readonly INotificationConverter _converter = notificationConverter ?? new NotificationConverter();
+    private readonly INotificationConverter _converter = notificationConverter ?? new NotificationDeserializer();
     private readonly JsonSerializerOptions _serializerOptions = jsonSerializerOptions ?? JsonConfig.ApiOptions;
 
     public async ValueTask<IEventSubWebsocketMessage> DeserializeMessage(Stream message, CancellationToken ct = default)

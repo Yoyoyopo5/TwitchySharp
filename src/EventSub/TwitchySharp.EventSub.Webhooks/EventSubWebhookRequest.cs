@@ -1,4 +1,5 @@
-﻿using TwitchySharp.EventSub.Webhooks.Http;
+﻿using TwitchySharp.EventSub.Serialization;
+using TwitchySharp.EventSub.Webhooks.Http;
 
 namespace TwitchySharp.EventSub.Webhooks;
 
