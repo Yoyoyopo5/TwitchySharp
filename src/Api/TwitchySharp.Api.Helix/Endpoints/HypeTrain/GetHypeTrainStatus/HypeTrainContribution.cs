@@ -25,5 +25,5 @@ public record HypeTrainContribution
     /// <summary>
     /// The total number of points contributed.
     /// </summary>
-    public required int Total { get; init; }
+    public required HypeTrainPointCount Total { get; init; }
 }

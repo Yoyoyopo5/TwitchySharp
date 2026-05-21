@@ -101,9 +101,9 @@ public static class AuthorizingUserConditionKeys
             EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SETTINGS_UPDATE => Get<ChannelGuestStarSettingsUpdate>(),
 
             // HypeTrain
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN => Get<HypeTrainBeginV2>(),
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_END => Get<HypeTrainEndV2>(),
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_PROGRESS => Get<HypeTrainProgressV2>(),
+            EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN => Get<HypeTrainBegin>(),
+            EventSubSubscriptionTypeNames.HYPE_TRAIN_END => Get<HypeTrainEnd>(),
+            EventSubSubscriptionTypeNames.HYPE_TRAIN_PROGRESS => Get<HypeTrainProgress>(),
 
             // Moderator
             EventSubSubscriptionTypeNames.CHANNEL_MODERATOR_ADD => Get<ChannelModeratorAdd>(),

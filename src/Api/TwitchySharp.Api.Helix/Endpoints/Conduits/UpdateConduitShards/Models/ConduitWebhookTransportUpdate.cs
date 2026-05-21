@@ -15,7 +15,7 @@ public record ConduitWebhookTransportUpdate
     /// <summary>
     /// <inheritdoc cref="ConduitTransportUpdate.Callback/"/>
     /// </summary>
-    public new Uri? Callback
+    public new EventSubCallbackUrl? Callback
     {
         get => base.Callback;
         init => base.Callback = value;
@@ -24,7 +24,7 @@ public record ConduitWebhookTransportUpdate
     /// <summary>
     /// <inheritdoc cref="ConduitTransportUpdate.Secret"/>
     /// </summary>
-    public new string? Secret
+    public new WebhookSecret? Secret
     {
         get => base.Secret;
         init => base.Secret = value;

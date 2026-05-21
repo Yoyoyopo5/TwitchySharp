@@ -11,7 +11,7 @@ public record Cheermote
     /// For example, if the prefix is “Cheer” and you want to cheer 100 Bits, the full Cheermote string is Cheer100. 
     /// When the Cheermote string is entered in chat, Twitch converts it to the image associated with the Bits tier that was cheered.
     /// </summary>
-    public required string Prefix { get; init; }
+    public required CheermotePrefix Prefix { get; init; }
     /// <summary>
     /// A list of tier levels that the Cheermote supports. 
     /// Each tier identifies the range of Bits that you can cheer at that tier level and an image that graphically identifies the tier level.

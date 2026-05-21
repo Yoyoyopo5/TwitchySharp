@@ -36,7 +36,7 @@ public record GuestStarSessionGuest
     /// <summary>
     /// Value from 0 to 100 representing the host’s volume setting for this guest.
     /// </summary>
-    public required int Volume { get; init; }
+    public required GuestStarVolume Volume { get; init; }
     /// <summary>
     /// The time when this guest was assigned a slot in the session.
     /// </summary>

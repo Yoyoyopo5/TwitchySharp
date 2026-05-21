@@ -15,7 +15,7 @@ public abstract record EventSubSubscriptionTransportSpecification
     /// <summary>
     /// The url that webhook subscription notifications will be sent to.
     /// </summary>
-    public Uri? Callback { get; protected init; }
+    public EventSubCallbackUrl? Callback { get; protected init; }
     /// <summary>
     /// The secret used to verify the signature of the webhook notification.
     /// </summary>

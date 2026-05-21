@@ -14,7 +14,7 @@ public record UserEmote
     /// The name of the emote. 
     /// This is the name that viewers type in the chat window to get the emote to appear.
     /// </summary>
-    public required string Name { get; init; }
+    public required EmoteName Name { get; init; }
     /// <summary>
     /// The type of emote.
     /// </summary>

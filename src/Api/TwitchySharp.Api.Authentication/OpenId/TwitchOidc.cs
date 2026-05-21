@@ -26,7 +26,7 @@ public record TwitchOidc
             Iss = jwt.Issuer,
             Sub = jwt.Subject,
             Nonce = jwt.GetValueOrDefault<string>("nonce"),
-            Email = jwt.GetValueOrDefault<string>("email"),
+            Email = jwt.GetValueOrDefault<string>("email") is string email ? new(email) : null,
             EmailVerified = jwt.GetValueOrDefault<bool>("email_verified"),
             Picture = jwt.GetValueOrDefault<string>("picture"),
             PreferredUsername = jwt.GetValueOrDefault<string>("preferred_username"),
@@ -71,7 +71,7 @@ public record TwitchOidc
     /// The email address of the user that authorized the app.
     /// Obtaining this requires <see cref="OidcClaim.Email"/> and <see cref="Scope.UserReadEmail"/> during authorization.
     /// </summary>
-    public string? Email { get; init; }
+    public UserEmail? Email { get; init; }
     /// <summary>
     /// A Boolean value that indicates whether Twitch has verified the user’s email address. Is <see langword="true"/> if Twitch has verified the user’s email address.
     /// Obtaining this requires <see cref="OidcClaim.EmailVerified"/> and <see cref="Scope.UserReadEmail"/> during authorization.

@@ -9,7 +9,7 @@ public record CharityDonation
     /// <summary>
     /// The unique id of the specific donation.
     /// </summary>
-    public required CharityId Id { get; init; }
+    public required CharityDonationId Id { get; init; }
     /// <summary>
     /// The id of the charity campaign this donation belongs to.
     /// </summary>

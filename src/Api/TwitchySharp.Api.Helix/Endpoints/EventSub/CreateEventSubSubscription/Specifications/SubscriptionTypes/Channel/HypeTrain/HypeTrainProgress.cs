@@ -12,10 +12,10 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// The user id of the broadcaster (channel) that you want to get Hype Train progress notifications for.
 /// This user must have also created a user access token including <see cref="Scope.ChannelReadHypeTrain"/> for your application.
 /// </param>
-public sealed record HypeTrainProgressV2(UserId BroadcasterUserId)
+public sealed record HypeTrainProgress(UserId BroadcasterUserId)
     : IUserAuthorizedSubscriptionTypeSpecification
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainProgressV2;
+    public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainProgress;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
     public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain);
     public UserId AuthorizingUser => BroadcasterUserId;

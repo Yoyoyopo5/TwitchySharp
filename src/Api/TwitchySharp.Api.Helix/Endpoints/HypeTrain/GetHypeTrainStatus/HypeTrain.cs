@@ -24,19 +24,19 @@ public record HypeTrain
     /// <summary>
     /// The current level of the Hype Train.
     /// </summary>
-    public required int Level { get; init; }
+    public required HypeTrainLevel Level { get; init; }
     /// <summary>
     /// The total points contributed to the Hype Train.
     /// </summary>
-    public required int Total { get; init; }
+    public required HypeTrainPointCount Total { get; init; }
     /// <summary>
     /// The number of points contributed to the current level.
     /// </summary>
-    public required int Progress { get; init; }
+    public required HypeTrainPointCount Progress { get; init; }
     /// <summary>
     /// The number of points required to reach the next level.
     /// </summary>
-    public required int Goal { get; init; }
+    public required HypeTrainPointCount Goal { get; init; }
     /// <summary>
     /// An array of the top Hype Train contributions.
     /// </summary>

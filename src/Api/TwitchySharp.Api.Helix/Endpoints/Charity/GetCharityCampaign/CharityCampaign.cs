@@ -24,7 +24,7 @@ public record CharityCampaign
     /// <summary>
     /// The charity's name.
     /// </summary>
-    public required string CharityName { get; init; }
+    public required CharityName CharityName { get; init; }
     /// <summary>
     /// A description of the charity.
     /// </summary>

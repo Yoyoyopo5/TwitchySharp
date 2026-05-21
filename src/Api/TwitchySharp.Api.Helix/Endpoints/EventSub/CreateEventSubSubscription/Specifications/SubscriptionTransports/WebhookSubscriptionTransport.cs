@@ -15,6 +15,6 @@ public sealed record WebhookSubscriptionTransport
     /// The secret must be an ASCII string that’s a minimum of 10 characters long and a maximum of 100 characters long. 
     /// For information about how the secret is used, see <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events#verifying-the-event-message">Verifying the event message</see>.
     /// </param>
-    public WebhookSubscriptionTransport(Uri callback, WebhookSecret secret)
+    public WebhookSubscriptionTransport(EventSubCallbackUrl callback, WebhookSecret secret)
         => (Method, Callback, Secret) = (EventSubTransportMethod.Webhook, callback, secret);
 }
