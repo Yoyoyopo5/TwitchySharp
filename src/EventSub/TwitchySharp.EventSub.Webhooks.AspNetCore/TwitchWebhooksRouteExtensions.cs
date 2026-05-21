@@ -8,7 +8,7 @@ namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
 public static class TwitchWebhooksRouteExtensions
 {
-    private const string LOGGER_CATEGORY = LoggingConfig.LOGGER_CATEGORY + ".EventSub.Webhooks.AspNetCore";
+    private const string LOGGER_CATEGORY = "TwitchySharp.EventSub.Webhooks.AspNetCore";
     public static IEndpointConventionBuilder MapTwitchWebhooks(this IEndpointRouteBuilder endpoints, string pattern)
         => endpoints.MapPost(
             pattern,

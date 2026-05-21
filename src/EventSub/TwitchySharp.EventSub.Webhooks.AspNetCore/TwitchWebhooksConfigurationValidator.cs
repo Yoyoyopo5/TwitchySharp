@@ -15,7 +15,7 @@ internal class TwitchWebhooksConfigurationValidator(WebhooksConfigValidationCont
 
     public Task StartAsync(CancellationToken ct)
     {
-        ILogger? logger = loggerFactory?.CreateLogger(LoggingConfig.LOGGER_CATEGORY + ".EventSub.Webhooks.AspNetCore");
+        ILogger? logger = loggerFactory?.CreateLogger("TwitchySharp.EventSub.Webhooks.AspNetCore");
 
         if (!_context.HasHandler)
             logger?.LogWarning("Twitch EventSub Webhooks does not have a message handler and will default to an empty handler (i.e. no side effects will be run on events received). Use the `configure` parameter of `AddTwitchEventSubWebhooks` to configure a message handler.");
