@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Enums;
 using TwitchySharp.EventSub.Webhooks.Http;
 using TwitchySharp.Infrastructure.Functional;

@@ -1,5 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
+﻿using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
 
 namespace TwitchySharp.EventSub.Webhooks;
 /// <summary>

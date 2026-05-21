@@ -1,5 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
+﻿using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub;

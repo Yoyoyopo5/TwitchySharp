@@ -1,7 +1,4 @@
-﻿using TwitchySharp.EventSub.Models;
-using Yoyoyopo5.ValueWrapper;
-
-namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks;
 
 /// <summary>
 /// A function resolving a specific webhook secret for an EventSub subscription.

@@ -1,4 +1,4 @@
-﻿using TwitchySharp.EventSub.Models.Notifications;
+﻿using TwitchySharp.EventSub.Notifications;
 
 namespace TwitchySharp.EventSub.Webhooks.Http;
 

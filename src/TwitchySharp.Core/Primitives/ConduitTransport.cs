@@ -18,7 +18,7 @@ public record ConduitTransport
     /// The callback URL where the notifications are sent. 
     /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Webhook"/>.
     /// </summary>
-    public string? Callback { get; init; }
+    public EventSubCallbackUrl? Callback { get; init; }
     /// <summary>
     /// An ID that identifies the WebSocket that notifications are sent to.
     /// Included only if <see cref="Method"/> is set to <see cref="ConduitTransportMethod.Websocket"/>.
