@@ -46,7 +46,7 @@ public record TwitchUser
     /// The user’s verified email address. 
     /// The object includes this field only if the user access token includes <see cref="Scope.UserReadEmail"/> and the token was created by this specific user.
     /// </summary>
-    public string? Email { get; init; }
+    public UserEmail? Email { get; init; }
     /// <summary>
     /// The date and time the user's account was created.
     /// </summary>

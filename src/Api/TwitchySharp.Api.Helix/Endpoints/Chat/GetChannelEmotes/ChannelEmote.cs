@@ -13,7 +13,7 @@ public record ChannelEmote
     /// The name of the emote. 
     /// This is the name that viewers type in the chat window to get the emote to appear.
     /// </summary>
-    public required string Name { get; init; }
+    public required EmoteName Name { get; init; }
     /// <summary>
     /// The image URLs for the emote. 
     /// These image URLs always provide a static, non-animated emote image with a light background.

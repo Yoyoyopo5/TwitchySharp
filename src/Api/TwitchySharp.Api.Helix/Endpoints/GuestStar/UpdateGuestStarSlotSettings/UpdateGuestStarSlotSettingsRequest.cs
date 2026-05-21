@@ -88,5 +88,5 @@ public record GuestStarSlotSettings
     /// <summary>
     /// Value from 0-100 that controls the audio volume for shared views containing the slot.
     /// </summary>
-    public int? Volume { get; init; }
+    public GuestStarVolume? Volume { get; init; }
 }

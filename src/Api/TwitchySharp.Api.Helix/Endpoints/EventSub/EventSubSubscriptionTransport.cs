@@ -13,7 +13,7 @@ public record EventSubSubscriptionTransport
     /// The callback URL where the notifications are sent. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Webhook"/>.
     /// </summary>
-    public Uri? Callback { get; init; }
+    public EventSubCallbackUrl? Callback { get; init; }
     /// <summary>
     /// An id that identifies the WebSocket that notifications are sent to. 
     /// Included only if method is set to <see cref="EventSubTransportMethod.Websocket"/>.
