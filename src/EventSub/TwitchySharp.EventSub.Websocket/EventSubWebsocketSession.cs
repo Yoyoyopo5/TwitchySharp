@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
+namespace TwitchySharp.EventSub.Websocket;
 
 /// <summary>
 /// Contains details about an EventSub websocket session.

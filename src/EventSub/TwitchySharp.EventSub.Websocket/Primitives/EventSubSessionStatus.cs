@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Websocket.Messages.Payloads;
+namespace TwitchySharp.EventSub.Websocket;
 /// <summary>
 /// Contains static definitions for possible EventSub session statuses.
 /// </summary>
