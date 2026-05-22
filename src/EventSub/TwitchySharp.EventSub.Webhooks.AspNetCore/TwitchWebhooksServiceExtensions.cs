@@ -2,8 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using TwitchySharp.EventSub.Webhooks.Deserialization;
-using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
+using TwitchySharp.EventSub.Webhooks.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 

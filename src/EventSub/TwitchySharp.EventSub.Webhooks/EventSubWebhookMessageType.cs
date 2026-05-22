@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks.Enums;
+namespace TwitchySharp.EventSub.Webhooks;
 
 /// <summary>
 /// Contains static definitions for possible Twitch EventSub webhook message types.
