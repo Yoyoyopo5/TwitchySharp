@@ -30,6 +30,10 @@ public static class TwitchEventSubWebhooksServiceExtensions
 
         services.AddSingleton<ReadWebhookHeader>(_ => EventSubWebhookHeaderReader.Read);
 
+        // TODO:
+        // This needs to be more fluently configurable.
+        // We should return something from this function that allows consumers to compose a pipeline,
+        // similar to delegating handlers with .AddHttpClient.
         services.TryAddScoped(sp =>
         {
             ProcessWebhookRequest pipeline = WebhookRequestDeserializer.Create(options.NotificationDeserializer?.Invoke(sp), options.MessageDeserializerOptions);
