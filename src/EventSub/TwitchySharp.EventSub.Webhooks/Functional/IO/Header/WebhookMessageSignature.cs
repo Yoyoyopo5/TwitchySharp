@@ -7,4 +7,4 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// </summary>
 /// <param name="Value">The string value of the signature.</param>
 [Wrapper<string>]
-public readonly partial record struct EventSubMessageSignature(string Value);
+public readonly partial record struct WebhookMessageSignature(string Value);

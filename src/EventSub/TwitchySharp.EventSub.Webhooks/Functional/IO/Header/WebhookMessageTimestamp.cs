@@ -8,4 +8,4 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// <param name="Value">The timestamp value in RFC3339 string format.</param>
 // I'm leaving this as a string value since its main use is validating the request hash.
 [Wrapper<string>]
-public readonly partial record struct EventSubMessageTimestamp(string Value);
+public readonly partial record struct WebhookMessageTimestamp(string Value);

@@ -8,8 +8,8 @@
 /// </remarks>
 public record EventSubWebhookRequestHeader
 {
-    /// <inheritdoc cref="EventSubMessageId"/>
-    public required EventSubMessageId TwitchEventsubMessageId { get; init; }
+    /// <inheritdoc cref="WebhookMessageId"/>
+    public required WebhookMessageId TwitchEventsubMessageId { get; init; }
     /// <summary>
     /// 
     /// </summary>
@@ -22,10 +22,10 @@ public record EventSubWebhookRequestHeader
     /// The type of notification.
     /// </summary>
     public required EventSubWebhookMessageType TwitchEventsubMessageType { get; init; }
-    /// <inheritdoc cref="EventSubMessageSignature"/>
-    public required EventSubMessageSignature TwitchEventsubMessageSignature { get; init; }
-    /// <inheritdoc cref="EventSubMessageTimestamp"/>
-    public required EventSubMessageTimestamp TwitchEventsubMessageTimestamp { get; init; }
+    /// <inheritdoc cref="WebhookMessageSignature"/>
+    public required WebhookMessageSignature TwitchEventsubMessageSignature { get; init; }
+    /// <inheritdoc cref="WebhookMessageTimestamp"/>
+    public required WebhookMessageTimestamp TwitchEventsubMessageTimestamp { get; init; }
     /// <summary>
     /// The subscription type you subscribed to. For example, <c>channel.follow</c>.
     /// </summary>
