@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// Constant definitions for webhook message types for switching.

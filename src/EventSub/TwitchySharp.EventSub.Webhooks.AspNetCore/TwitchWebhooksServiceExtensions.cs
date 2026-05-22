@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using TwitchySharp.EventSub.Webhooks.Crypto;
+using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.EventSub.Webhooks.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
@@ -28,12 +30,18 @@ public static class TwitchEventSubWebhooksServiceExtensions
 
         services.AddSingleton<ReadWebhookHeader>(_ => EventSubWebhookHeaderReader.Read);
 
-        // Add the processor service, using config first, fallback to registered services, then defaults.
-        services.TryAddScoped(sp => WebhookRequestProcessor.Create(
-            handler: options.MessageHandler?.Invoke(sp) ?? sp.GetService<IWebhookEventSubHandler>() ?? EmptyHandler.Instance,
-            verifyHash: (options.SecretResolver is not null ? WebhookHashVerifier.Create(options.SecretResolver(sp)) : null) ?? sp.GetService<VerifyWebhookHash>(),
-            deserializeRequest: sp.GetService<DeserializeWebhookRequest>()
-            ));
+        services.TryAddScoped(sp =>
+        {
+            ProcessWebhookRequest pipeline = WebhookRequestDeserializer.Create(options.NotificationDeserializer?.Invoke(sp), options.MessageDeserializerOptions);
+            VerifyWebhookHash? verify = (options.SecretResolver is not null ? WebhookHashVerifier.Create(options.SecretResolver(sp)) : null) ?? sp.GetService<VerifyWebhookHash>();
+            IWebhookEventSubHandler? handler = options.MessageHandler?.Invoke(sp) ?? sp.GetService<IWebhookEventSubHandler>();
+
+            // Pipeline builds from inner to outer.
+            pipeline = verify is not null ? pipeline.WithHashValidation(verify) : pipeline;
+            pipeline = handler is not null ? pipeline.WithHandler(handler) : pipeline;
+
+            return pipeline;
+        });
 
         services.AddConfigValidation(options);
 

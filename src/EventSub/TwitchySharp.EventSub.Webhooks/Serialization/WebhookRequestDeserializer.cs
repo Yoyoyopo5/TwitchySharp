@@ -1,25 +1,10 @@
 ﻿using System.Text.Json;
 using TwitchySharp.EventSub.Serialization;
-using TwitchySharp.EventSub.Webhooks.Http;
+using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.Serialization;
-
-/// <summary>
-/// Deserializes EventSub webhook bodies.
-/// </summary>
-/// <param name="request">The webhook request.</param>
-/// <param name="ct">Cancellation token.</param>
-/// <returns>
-/// A <see cref="ValueTask"/> containing a <see cref="Validation{T}"/> of <see cref="IWebhookRequestData"/>.
-/// The validation can contain a <see cref="WebhookRequestDeserializer.DeserializationError"/>.
-/// The <see cref="WebhookRequestContent"/> can be one of
-/// <see cref="CallbackVerificationRequestContent"/>,
-/// <see cref="NotificationRequestContent"/>,
-/// or <see cref="RevocationRequestContent"/>.
-/// </returns>
-public delegate ValueTask<Validation<WebhookRequestContent>> DeserializeWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Provides converter factories for EventSub webhook messages.
@@ -43,7 +28,7 @@ public static class WebhookRequestDeserializer
     /// The serializer options to use. Defaults to <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A function that deserializes individual webhook requests using the given <paramref name="deserializeNotification"/> and <paramref name="serializerOptions"/>.</returns>
-    public static DeserializeWebhookRequest Create(
+    public static ProcessWebhookRequest Create(
         DeserializeNotification? deserializeNotification = null,
         JsonSerializerOptions? serializerOptions = null
         )
@@ -58,7 +43,7 @@ public static class WebhookRequestDeserializer
             );
     }
 
-    private static DeserializeWebhookRequest CreateDeserializer(
+    private static ProcessWebhookRequest CreateDeserializer(
         Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> callback,
         Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> notification,
         Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> revocation

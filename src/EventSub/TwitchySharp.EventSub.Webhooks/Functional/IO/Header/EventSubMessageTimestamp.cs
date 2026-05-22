@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks.Http;
+namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// The UTC date and time (in RFC3339 format) that Twitch sent the notification.

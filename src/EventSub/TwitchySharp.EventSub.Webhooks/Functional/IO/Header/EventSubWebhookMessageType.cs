@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// Contains static definitions for possible Twitch EventSub webhook message types.

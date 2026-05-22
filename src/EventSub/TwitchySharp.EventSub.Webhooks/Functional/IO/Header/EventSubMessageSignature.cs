@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks.Http;
+namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// The HMAC signature that you use to verify that Twitch sent the message.

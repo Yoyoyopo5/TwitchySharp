@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks.Http;
+﻿namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// Represents the HTTP header for an EventSub webhook request.

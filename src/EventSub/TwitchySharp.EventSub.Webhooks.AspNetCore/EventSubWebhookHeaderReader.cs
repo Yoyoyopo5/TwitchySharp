@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using TwitchySharp.EventSub.Webhooks.Http;
+using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
