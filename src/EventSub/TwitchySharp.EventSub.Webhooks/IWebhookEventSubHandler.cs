@@ -1,6 +1,4 @@
-﻿using TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
-
-namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks;
 /// <summary>
 /// Implement this interface to define behavior for EventSub webhook messages.
 /// </summary>

@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks.Http;
+﻿namespace TwitchySharp.EventSub.Webhooks;
 
 public abstract record WebhookRequestResult
 {

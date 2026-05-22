@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using TwitchySharp.EventSub.Serialization;
-using TwitchySharp.EventSub.Webhooks.Enums;
 using TwitchySharp.EventSub.Webhooks.Http;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.EventSub.Webhooks.Deserialization;
+namespace TwitchySharp.EventSub.Webhooks.Serialization;
 
 /// <summary>
 /// Deserializes EventSub webhook bodies.

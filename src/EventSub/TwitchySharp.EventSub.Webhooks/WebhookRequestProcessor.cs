@@ -1,10 +1,10 @@
 ﻿using Microsoft.IO;
 using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Webhooks.Deserialization;
+using TwitchySharp.EventSub.Webhooks.Serialization;
 using TwitchySharp.EventSub.Webhooks.Http;
 using TwitchySharp.Infrastructure.Functional;
 
-namespace TwitchySharp.EventSub.Webhooks.WebhookMessageProcessors;
+namespace TwitchySharp.EventSub.Webhooks;
 
 /// <summary>
 /// A function processing EventSub webhook requests.

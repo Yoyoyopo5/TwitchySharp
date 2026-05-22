@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Http;
-using TwitchySharp.EventSub.Webhooks.Deserialization;
-using TwitchySharp.EventSub.Webhooks.Http;
+using TwitchySharp.EventSub.Webhooks.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 

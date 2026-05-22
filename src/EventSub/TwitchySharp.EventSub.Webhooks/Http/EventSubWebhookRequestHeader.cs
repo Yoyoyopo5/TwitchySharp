@@ -1,6 +1,4 @@
-﻿using TwitchySharp.EventSub.Webhooks.Enums;
-
-namespace TwitchySharp.EventSub.Webhooks.Http;
+﻿namespace TwitchySharp.EventSub.Webhooks.Http;
 
 /// <summary>
 /// Represents the HTTP header for an EventSub webhook request.
