@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using TwitchySharp.EventSub.Webhooks.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 

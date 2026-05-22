@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Webhooks.Http;
+namespace TwitchySharp.EventSub.Webhooks.Functional;
 
 /// <summary>
 /// An ID that uniquely identifies this message.

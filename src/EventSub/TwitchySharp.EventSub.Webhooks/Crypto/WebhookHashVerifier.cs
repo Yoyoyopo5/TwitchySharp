@@ -1,8 +1,9 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
 public delegate ValueTask<Validation<Unit>> VerifyWebhookHash(EventSubSubscription subscription, EventSubWebhookRequest request, CancellationToken ct);
 
