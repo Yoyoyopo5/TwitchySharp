@@ -6,8 +6,6 @@
 /// <typeparam name="TEvent">Type of the event property of the notification.</typeparam>
 /// <typeparam name="TCondition">Type of the condition property of the subscription property of the notification.</typeparam>
 public record EventSubNotification<TEvent, TCondition> : IEventSubNotification
-    where TEvent : class
-    where TCondition : class
 {
     /// <summary>
     /// Contains information about the subscription that the notification is for.

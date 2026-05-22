@@ -6,7 +6,6 @@ namespace TwitchySharp.EventSub;
 /// </summary>
 /// <typeparam name="TCondition">The type of the subscription's condition.</typeparam>
 public record EventSubSubscription<TCondition> : EventSubSubscription
-    where TCondition : class
 {
     /// <summary>
     /// <inheritdoc cref="EventSubSubscription.Condition"/>
