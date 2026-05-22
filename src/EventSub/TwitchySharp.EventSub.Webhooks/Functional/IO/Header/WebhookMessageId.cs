@@ -9,4 +9,4 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// This is an opaque ID, and is not required to be in any particular format.
 /// </remarks>
 [Wrapper<string>]
-public readonly partial record struct EventSubMessageId(string Value);
+public readonly partial record struct WebhookMessageId(string Value);
