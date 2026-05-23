@@ -7,7 +7,7 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
-internal static class WebhookRequestResultExtensions
+internal static class WebhookRequestContentExtensions
 {
     public static IResult ToResult(this Validation<WebhookRequestContent> result)
         => result.Match(

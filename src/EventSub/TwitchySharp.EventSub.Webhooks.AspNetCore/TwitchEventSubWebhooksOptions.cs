@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using TwitchySharp.EventSub.Serialization;
+using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
@@ -44,4 +45,13 @@ public class TwitchEventSubWebhooksOptions
     /// Don't set this unless you know what you're doing.
     /// </remarks>
     public JsonSerializerOptions? MessageDeserializerOptions { get; set; }
+
+    /// <summary>
+    /// The function to use to determine if a webhook message id was repeated.
+    /// </summary>
+    /// <remarks>
+    /// If configured, the function returned by this will be called for each incoming webhook request.
+    /// If the function returns <see langword="true"/>, the request will be considered repeated, and will notify the handler of the error.
+    /// </remarks>
+    public Func<IServiceProvider, Func<WebhookMessageId, CancellationToken, ValueTask<bool>>>? IdempotencyCache { get; set; }
 }
