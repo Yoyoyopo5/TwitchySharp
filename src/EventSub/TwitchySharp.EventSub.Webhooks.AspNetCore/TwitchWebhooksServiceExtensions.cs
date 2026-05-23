@@ -1,17 +1,40 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using TwitchySharp.EventSub.Webhooks.Crypto;
 using TwitchySharp.EventSub.Webhooks.Functional;
+using TwitchySharp.EventSub.Webhooks.Idempotency;
 using TwitchySharp.EventSub.Webhooks.Serialization;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
-internal delegate ValueTask<IResult> HandleAspNetWebhookRequest(HttpContext context, CancellationToken ct);
-
 public static class TwitchEventSubWebhooksServiceExtensions
 {
+    /// <summary>
+    /// Add and configure the Twitch EventSub webhook message processing pipeline.
+    /// </summary>
+    /// <remarks>
+    /// This is the overload for defining a custom processing pipeline.
+    /// For easier first-time setup, consider using <see cref="AddTwitchEventSubWebhooks(IServiceCollection, Action{TwitchEventSubWebhooksOptions})"/>.
+    /// </remarks>
+    /// <param name="services">The service collection to add the service to.</param>
+    /// <param name="configurePipeline">Configure the processing pipeline with middleware.</param>
+    /// <param name="createPipeline">Create the processing pipeline (e.g. via <see cref="WebhookRequestDeserializer"/>)</param>
+    /// <returns></returns>
+    public static IServiceCollection AddTwitchEventSubWebhooks(
+        this IServiceCollection services,
+        Func<IServiceProvider, Func<ProcessWebhookRequest, ProcessWebhookRequest>> configurePipeline,
+        Func<IServiceProvider, ProcessWebhookRequest>? createPipeline
+        )
+    {
+        services.TryAddScoped(sp => AspNetWebhookRequestHandler.Create(
+            EventSubWebhookHeaderReader.Read,
+            configurePipeline(sp)(createPipeline?.Invoke(sp) ?? WebhookRequestDeserializer.Create()),
+            sp.GetService<ILoggerFactory>()
+            ));
+        return services;
+    }
+
     /// <summary>
     /// Add and configure the Twitch EventSub webhook message processing pipeline.
     /// </summary>
@@ -28,24 +51,24 @@ public static class TwitchEventSubWebhooksServiceExtensions
         TwitchEventSubWebhooksOptions options = new();
         configure(options);
 
-        services.AddSingleton<ReadWebhookHeader>(_ => EventSubWebhookHeaderReader.Read);
+        services.AddTwitchEventSubWebhooks(
+            configurePipeline: sp =>
+            {
+                VerifyWebhookHash? verify = (options.SecretResolver is not null ? WebhookHashVerifier.Create(options.SecretResolver(sp)) : null) ?? sp.GetService<VerifyWebhookHash>();
+                IWebhookEventSubHandler? handler = options.MessageHandler?.Invoke(sp) ?? sp.GetService<IWebhookEventSubHandler>();
+                Func<WebhookMessageId, CancellationToken, ValueTask<bool>>? idempotency = options.IdempotencyCache?.Invoke(sp) ?? sp.GetService<Func<WebhookMessageId, CancellationToken, ValueTask<bool>>>();
 
-        // TODO:
-        // This needs to be more fluently configurable.
-        // We should return something from this function that allows consumers to compose a pipeline,
-        // similar to delegating handlers with .AddHttpClient.
-        services.TryAddScoped(sp =>
-        {
-            ProcessWebhookRequest pipeline = WebhookRequestDeserializer.Create(options.NotificationDeserializer?.Invoke(sp), options.MessageDeserializerOptions);
-            VerifyWebhookHash? verify = (options.SecretResolver is not null ? WebhookHashVerifier.Create(options.SecretResolver(sp)) : null) ?? sp.GetService<VerifyWebhookHash>();
-            IWebhookEventSubHandler? handler = options.MessageHandler?.Invoke(sp) ?? sp.GetService<IWebhookEventSubHandler>();
+                return pipeline =>
+                {
+                    pipeline = verify is not null ? pipeline.WithHashValidation(verify) : pipeline;
+                    pipeline = idempotency is not null ? pipeline.WithIdempotentRequests(idempotency) : pipeline;
+                    pipeline = handler is not null ? pipeline.WithHandler(handler) : pipeline;
 
-            // Pipeline builds from inner to outer.
-            pipeline = verify is not null ? pipeline.WithHashValidation(verify) : pipeline;
-            pipeline = handler is not null ? pipeline.WithHandler(handler) : pipeline;
-
-            return pipeline;
-        });
+                    return pipeline;
+                };
+            },
+            createPipeline: sp => WebhookRequestDeserializer.Create(options.NotificationDeserializer?.Invoke(sp), options.MessageDeserializerOptions)
+            );
 
         services.AddConfigValidation(options);
 
@@ -57,7 +80,8 @@ public static class TwitchEventSubWebhooksServiceExtensions
         WebhooksConfigValidationContext validationContext = new()
         {
             HasHandler = services.Any(d => d.ServiceType == typeof(IWebhookEventSubHandler)) || options.MessageHandler is not null,
-            HasVerifier = services.Any(d => d.ServiceType == typeof(VerifyWebhookHash)) || options.SecretResolver is not null
+            HasVerifier = services.Any(d => d.ServiceType == typeof(VerifyWebhookHash)) || options.SecretResolver is not null,
+            HasIdempotency = services.Any(d => d.ServiceType == typeof(Func<WebhookMessageId, CancellationToken, ValueTask<bool>>)) || options.IdempotencyCache is not null
         };
 
         services.AddHostedService(sp => new TwitchWebhooksConfigurationValidator(
