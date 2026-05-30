@@ -4,7 +4,7 @@
 /// An EventSub Websocket message with a typed payload.
 /// </summary>
 /// <typeparam name="TPayload">The payload type.</typeparam>
-internal record EventSubWebsocketMessage<TPayload> : EventSubWebsocketMessage
+public record EventSubWebsocketMessage<TPayload> : EventSubWebsocketMessage
 {
     /// <summary>
     /// The Websocket message payload.

@@ -3,126 +3,99 @@ using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Text;
 using Microsoft.Extensions.Hosting;
-using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Websocket.Deserialization;
-using TwitchySharp.EventSub.Websocket.Messages;
-using TwitchySharp.EventSub.Websocket.Messages.Payloads;
+using Microsoft.Extensions.Logging;
+using Microsoft.IO;
+using TwitchySharp.EventSub.Websocket.Functional;
+using TwitchySharp.Infrastructure.Functional;
 using Websocket.Client;
 
-namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client;
+namespace TwitchySharp.EventSub.Websocket.Clients.WebsocketDotClient;
 
-public class WebsocketClientEventSubWebsocketClient(
-    IWebsocketEventSubHandler eventSubHandler,
-    IEventSubWebsocketMessageDeserializer? messageDeserializer = null,
-    IWebsocketClientFactory? websocketClientFactory = null,
-    Func<CancellationToken>? messageCancellationTokenFactory = null
-    ) : IHostedService, IDisposable
+internal interface IEventSubWebsocketClient
 {
-    private readonly IWebsocketEventSubHandler _handler = eventSubHandler;
-    private readonly IWebsocketClientFactory _clientFactory = websocketClientFactory ?? new DefaultWebsocketClientFactory();
-    private readonly IEventSubWebsocketMessageDeserializer _deserializer = messageDeserializer ?? new DefaultWebsocketMessageDeserializer();
-    private readonly Func<CancellationToken>? _cancellationTokenFactory = messageCancellationTokenFactory;
+    static abstract IEventSubWebsocketClient Create();
+    Task<Validation<IRunningEventSubWebsocketClient>> Start(CancellationToken ct);
+}
 
-    private readonly ConcurrentBag<IWebsocketClient> _clients = [];
+internal interface IRunningEventSubWebsocketClient
+{
+    Task<Validation> Stop(CancellationToken ct);
+}
 
-    private async ValueTask HandleMessage(ResponseMessage message, IWebsocketClient client, CancellationToken ct = default)
-    {
-        if (message.MessageType != WebSocketMessageType.Text)
+internal interface IStoppedEventSubWebsocketClient
+{
+
+}
+
+internal static class EventSubWebsocketClient
+{
+    public record WebsocketClientError(string Message, Exception Exception) : Error(Message);
+
+    public static ListenToEventSubWebsocketClient Create(
+        Func<WebsocketClient> clientFactory,
+        ProcessWebsocketMessage pipeline,
+        Func<CancellationToken> messageCancellationTokenFactory
+        )
+        => async ct =>
         {
-            await _handler.OnException(new NotSupportedException("Binary messages are not supported."), ct);
-            return;
-        }
-        if (message.Text is null)
-        {
-            await _handler.OnException(new NotSupportedException("Message cannot be null."), ct);
-            return;
-        }
-
-        // Jank because Websocket.Client does not expose string message types as Stream.
-        Stream messageAsStream = new MemoryStream(Encoding.UTF8.GetBytes(message.Text));
-
-        try
-        {
-            IEventSubWebsocketMessage deserializedMessage = await _deserializer.DeserializeMessage(messageAsStream, ct);
-            ValueTask handlerTask = (deserializedMessage as EventSubWebsocketMessage<object>)?.Payload switch
+            WebsocketClient client = clientFactory();
+            IDisposable subscription = client.ConfigureWithPipeline(pipeline, messageCancellationTokenFactory);
+            try
             {
-                WelcomeMessagePayload welcomePayload => WelcomeReceived(client, welcomePayload.Session, ct),
-                KeepaliveMessagePayload keepalivePayload => _handler.OnKeepalive(ct),
-                IEventSubNotification notificationPayload => _handler.OnNotified(notificationPayload, ct),
-                ReconnectMessagePayload reconnectPayload => Reconnect(reconnectPayload.Session, ct),
-                RevocationMessagePayload revocationPayload => _handler.OnSubscriptionRevoked(revocationPayload.Subscription, ct),
-                _ => throw new NotSupportedException("Unsupported deserialized message type.")
-            };
-            await handlerTask;
-        }
-        catch (Exception ex)
-        {
-            await _handler.OnException(ex, ct);
-        }
-    }
-
-    private void ConfigureClient(IWebsocketClient client)
-        => client.MessageReceived
-            .Where(message => !string.IsNullOrEmpty(message.Text))
-            .Subscribe(
-                async message => await HandleMessage(message, client, _cancellationTokenFactory?.Invoke() ?? CancellationToken.None),
-                async exception => await _handler.OnException(exception, _cancellationTokenFactory?.Invoke() ?? CancellationToken.None)
-                );
-
-    private async ValueTask StartNewClient(IWebsocketClient client, CancellationToken ct = default)
-    {
-        ConfigureClient(client);
-        await client.StartOrFail();
-        _clients.Add(client);
-    }
-
-    private async ValueTask Reconnect(EventSubReconnectSession reconnectSession, CancellationToken ct = default)
-    {
-        IWebsocketClient newClient = _clientFactory.CreateWebsocketClient();
-        newClient.Url = new Uri(reconnectSession.ReconnectUrl);
-        await StartNewClient(newClient, ct);
-        await _handler.OnReconnected(reconnectSession, ct);
-    }
-
-    private async ValueTask WelcomeReceived(IWebsocketClient client, EventSubWebsocketSession session, CancellationToken ct = default)
-    {
-        try
-        {
-            foreach (IWebsocketClient existingClient in _clients.Where(c => c != client))
-            {
-                existingClient.Dispose();
+                await client.StartOrFail(); // does not take cancellation token.
             }
-            _clients.Clear();
-        }
-        finally
-        {
-            _clients.Add(client);
-            await _handler.OnConnected(session, ct);
-        }
-    }
+            catch (Exception ex)
+            {
+                return new WebsocketClientError("Websocket client threw exception on start.", ex);
+            }
+            return (StopEventSubWebsocketClient)(async ct =>
+            {
+                try
+                {
+                    bool stopResult = await client.StopOrFail(WebSocketCloseStatus.NormalClosure, "Connection closed");
+                    subscription.Dispose();
+                    client.Dispose();
+                    return stopResult;
+                }
+                catch (Exception ex)
+                {
+                    return new WebsocketClientError("Websocket client threw exception on stop.", ex);
+                }
+            });
+        };
 
-    public async Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        if (!_clients.IsEmpty)
-            return;
-        await StartNewClient(_clientFactory.CreateWebsocketClient(), cancellationToken);
-    }
+    public static Validation<Func<WebsocketClient>> CreateFactory(
+        EventSubWebsocketUrl url,
+        ILogger<WebsocketClient>? logger = null,
+        Func<Uri, CancellationToken, Task<WebSocket>>? connectionFactory = null,
+        RecyclableMemoryStreamManager? memoryStreamManager = null
+        )
+        => url.ToUri()
+            .Map<Func<WebsocketClient>>(uri => () => new WebsocketClient(uri, logger, connectionFactory, memoryStreamManager));
 
-    public async Task StopAsync(CancellationToken cancellationToken = default)
+    private static IDisposable ConfigureWithPipeline(
+        this WebsocketClient client,
+        ProcessWebsocketMessage pipeline,
+        Func<CancellationToken> messageCancellationTokenFactory
+        )
     {
-        foreach (IWebsocketClient existingClient in _clients)
-        {
-            await existingClient.StopOrFail(WebSocketCloseStatus.NormalClosure, string.Empty);
-            existingClient.Dispose();
-        }
+        client.IsTextMessageConversionEnabled = false; // Disable text conversion, gives us raw stream access
+        client.IsStreamDisposedAutomatically = false; // Disable disposing the receive stream, we will handle that
+        IDisposable subscription = client.MessageReceived.Subscribe(onNext: CreateMessageProcessor(pipeline, messageCancellationTokenFactory));
+        return subscription;
     }
+    
+    private static Action<ResponseMessage> CreateMessageProcessor(
+        ProcessWebsocketMessage pipeline,
+        Func<CancellationToken> cancellationTokenFactory
+        )
+        => async message =>
+        {
+            if (message.Stream is not Stream stream)
+                return;
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        foreach (IWebsocketClient existingClient in _clients)
-        {
-            existingClient.Dispose();
-        }
-    }
+            CancellationToken ct = cancellationTokenFactory();
+            await pipeline(new(stream), ct);
+            await stream.DisposeAsync();
+        };
 }

@@ -16,7 +16,7 @@ public record EventSubReconnectSession
     /// <summary>
     /// The URL that Twitch is requesting a reconnect to.
     /// </summary>
-    public required WebsocketReconnectUrl ReconnectUrl { get; init; }
+    public required EventSubWebsocketUrl ReconnectUrl { get; init; }
     /// <summary>
     /// <inheritdoc cref="EventSubWebsocketSession.ConnectedAt"/>
     /// </summary>

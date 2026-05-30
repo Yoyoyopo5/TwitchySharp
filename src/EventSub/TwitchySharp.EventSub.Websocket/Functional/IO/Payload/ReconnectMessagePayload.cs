@@ -5,7 +5,7 @@
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#reconnect-message">Reconnect Message</see> for more information.
 /// </remarks>
-internal readonly record struct ReconnectMessagePayload
+public readonly record struct ReconnectMessagePayload
 {
     /// <summary>
     /// The reconnection session details.

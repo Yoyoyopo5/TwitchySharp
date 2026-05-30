@@ -5,7 +5,7 @@
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#revocation-message">Recovation Message</see> for more information.
 /// </remarks>
-internal readonly record struct RevocationMessagePayload
+public readonly record struct RevocationMessagePayload
 {
     /// <summary>
     /// The subscription being revoked.
