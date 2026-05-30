@@ -8,7 +8,7 @@ namespace TwitchySharp.EventSub.Websocket.Functional;
 /// <remarks>
 /// /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#notification-message">Notification Message</see> for more information.
 /// </remarks>
-internal readonly record struct NotificationMessagePayload
+public readonly record struct NotificationMessagePayload
 {
     public required IEventSubNotification Notification { get; init; }
 }

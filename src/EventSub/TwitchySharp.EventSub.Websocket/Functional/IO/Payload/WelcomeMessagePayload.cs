@@ -6,7 +6,7 @@
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#welcome-message">Welcome Message</see> for more information.
 /// </remarks>
-internal readonly record struct WelcomeMessagePayload
+public readonly record struct WelcomeMessagePayload
 {
     /// <summary>
     /// The EventSub session you are connected to.

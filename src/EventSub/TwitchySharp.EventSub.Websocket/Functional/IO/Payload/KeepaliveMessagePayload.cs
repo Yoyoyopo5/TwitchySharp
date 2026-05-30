@@ -5,4 +5,4 @@
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#keepalive-message">Keepalive Message</see> for more information.
 /// </remarks>
-internal readonly record struct KeepaliveMessagePayload;
+public readonly record struct KeepaliveMessagePayload;
