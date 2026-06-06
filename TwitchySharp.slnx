@@ -13,7 +13,6 @@
     <Project Path="src/EventSub/TwitchySharp.EventSub.Webhooks/TwitchySharp.EventSub.Webhooks.csproj" />
     <Project Path="src/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore/TwitchySharp.EventSub.Webhooks.AspNetCore.csproj" />
     <Project Path="src/EventSub/TwitchySharp.EventSub.Websocket/TwitchySharp.EventSub.Websocket.csproj" />
-    <Project Path="src/EventSub/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient/TwitchySharp.EventSub.Websocket.Clients.WebsocketClient.csproj" />
   </Folder>
 
   <!-- tests/ -->
