@@ -59,6 +59,18 @@ public static class AsyncValidationExtensions
             onValid: valid => func(valid, ct)
             );
 
+    public static async ValueTask<Validation> BindAsync(this ValueTask<Validation> val, Func<CancellationToken, ValueTask<Validation>> func, CancellationToken ct)
+        => await (await val).Match(
+            onError: e => ValueTask.FromResult<Validation>(e),
+            onValid: () => func(ct)
+            );
+
+    public static async Task<Validation> BindAsync(this Task<Validation> val, Func<CancellationToken, Task<Validation>> func, CancellationToken ct)
+        => await (await val).Match(
+            onError: e => Task.FromResult<Validation>(e),
+            onValid: () => func(ct)
+            );
+
     public static async ValueTask<Validation<TNext>> MapAsync<T, TNext>(this ValueTask<Validation<T>> val, Func<T, TNext> func)
         => (await val).Match<Validation<TNext>>(
             onError: e => e,
