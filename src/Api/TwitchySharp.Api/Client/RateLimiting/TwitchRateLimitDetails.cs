@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwitchySharp.Api;
+﻿namespace TwitchySharp.Api;
 
 /// <summary>
 /// Contains information about current Twitch rate limit usage.
