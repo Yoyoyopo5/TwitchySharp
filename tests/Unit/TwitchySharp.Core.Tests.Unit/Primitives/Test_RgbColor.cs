@@ -1,11 +1,11 @@
-namespace TwitchySharp.Core.Tests.Unit;
+namespace TwitchySharp.Core.Tests.Unit.Primitives;
 
 public class Test_RgbColor
 {
     [Fact]
     public void Constructor_SetsRgbValues()
     {
-        var color = new RgbColor(255, 87, 51);
+        RgbColor color = new(255, 87, 51);
 
         Assert.Equal(255, color.R);
         Assert.Equal(87, color.G);
@@ -15,7 +15,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_WithHash_ParsesCorrectly()
     {
-        var color = RgbColor.FromHex("#FF5733");
+        RgbColor color = RgbColor.FromHex("#FF5733");
 
         Assert.Equal(255, color.R);
         Assert.Equal(87, color.G);
@@ -25,7 +25,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_WithoutHash_ParsesCorrectly()
     {
-        var color = RgbColor.FromHex("FF5733");
+        RgbColor color = RgbColor.FromHex("FF5733");
 
         Assert.Equal(255, color.R);
         Assert.Equal(87, color.G);
@@ -35,7 +35,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_EmptyString_ReturnsBlack()
     {
-        var color = RgbColor.FromHex("");
+        RgbColor color = RgbColor.FromHex("");
 
         Assert.Equal(0, color.R);
         Assert.Equal(0, color.G);
@@ -45,7 +45,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_NullString_ReturnsBlack()
     {
-        var color = RgbColor.FromHex(null);
+        RgbColor color = RgbColor.FromHex(null);
 
         Assert.Equal(0, color.R);
         Assert.Equal(0, color.G);
@@ -55,7 +55,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_WhitespaceString_ReturnsBlack()
     {
-        var color = RgbColor.FromHex("   ");
+        RgbColor color = RgbColor.FromHex("   ");
 
         Assert.Equal(0, color.R);
         Assert.Equal(0, color.G);
@@ -64,14 +64,12 @@ public class Test_RgbColor
 
     [Fact]
     public void FromHex_InvalidLength_ThrowsFormatException()
-    {
-        Assert.Throws<FormatException>(() => RgbColor.FromHex("FFF"));
-    }
+        => Assert.Throws<FormatException>(() => RgbColor.FromHex("FFF"));
 
     [Fact]
     public void FromHex_8CharHex_ParsesRgbPortion()
     {
-        var color = RgbColor.FromHex("FF5733AA");
+        RgbColor color = RgbColor.FromHex("FF5733AA");
 
         Assert.Equal(255, color.R);
         Assert.Equal(87, color.G);
@@ -81,7 +79,7 @@ public class Test_RgbColor
     [Fact]
     public void FromHex_LowercaseHex_ParsesCorrectly()
     {
-        var color = RgbColor.FromHex("#ff5733");
+        RgbColor color = RgbColor.FromHex("#ff5733");
 
         Assert.Equal(255, color.R);
         Assert.Equal(87, color.G);
@@ -91,9 +89,9 @@ public class Test_RgbColor
     [Fact]
     public void ToString_ReturnsHexWithHash()
     {
-        var color = new RgbColor(255, 87, 51);
+        RgbColor color = new(255, 87, 51);
 
-        var result = color.ToString();
+        string result = color.ToString();
 
         Assert.Equal("#FF5733", result);
     }
@@ -123,9 +121,20 @@ public class Test_RgbColor
     {
         const string originalHex = "#AABBCC";
 
-        var color = RgbColor.FromHex(originalHex);
-        var result = color.ToString();
+        RgbColor color = RgbColor.FromHex(originalHex);
+        string result = color.ToString();
 
         Assert.Equal(originalHex, result);
+    }
+
+    [Fact]
+    public void RoundTrip_FromRgbColor_PreservesValue()
+    {
+        RgbColor color = new(100, 100, 100);
+
+        string hex = color.ToString();
+        RgbColor result = RgbColor.FromHex(hex);
+
+        Assert.Equal(color, result);
     }
 }

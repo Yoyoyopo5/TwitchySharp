@@ -1,14 +1,17 @@
-﻿using TwitchySharp.Infrastructure.Http;
+﻿using System.Net;
+using TwitchySharp.Infrastructure.Http;
 
-namespace TwitchySharp.Core.Tests.Unit;
+namespace TwitchySharp.Core.Tests.Unit.Infrastructure;
 
 public class Test_HttpQueryParameters
 {
     [Theory]
     [InlineData("key", "value")]
+    [InlineData("gas and cigarettes", "every night")]
+    [InlineData("somevalue&anotherone", "not#a%%problematic$&value")]
     public void Add_SingleStringParameter_ReturnParametersString(string key, string value)
     {
-        string mockParametersString = $"?{key}={value}";
+        string mockParametersString = $"?{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value)}";
 
         string actual = new HttpQueryParameters()
             .Add(key, value)
