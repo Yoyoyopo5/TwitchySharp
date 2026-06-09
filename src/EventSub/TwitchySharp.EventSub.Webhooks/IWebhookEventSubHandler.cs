@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.EventSub.Webhooks;
+﻿using TwitchySharp.EventSub.Webhooks.Functional;
+
+namespace TwitchySharp.EventSub.Webhooks;
 /// <summary>
 /// Implement this interface to define behavior for EventSub webhook messages.
 /// </summary>
@@ -9,7 +11,7 @@ public interface IWebhookEventSubHandler : IEventSubHandler
     /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-webhook-events/#responding-to-a-challenge-request">Responding to a Challenge Request</see> for more information.
     /// </summary>
     /// <remarks>
-    /// The <see cref="WebhookRequestProcessor"/> should handle the actual callback verification process.
+    /// The <see cref="ProcessWebhookRequest"/> pipeline should handle the actual callback verification process.
     /// This method is simply to notify you that a new subscription is being verified.
     /// </remarks>
     /// <param name="newSubscription">The new subscription that is being verified.</param>
