@@ -53,7 +53,7 @@ public static class WebhookRequestDeserializer
             EventSubWebhookMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => callback(request.Content, ct),
             EventSubWebhookMessageTypes.NOTIFICATION => notification(request.Content, ct),
             EventSubWebhookMessageTypes.REVOCATION => revocation(request.Content, ct),
-            _ => throw new InvalidOperationException()
+            _ => ValueTask.FromResult<Validation<WebhookRequestContent>>(new DeserializationError("Unsupported webhook message type."))
         };
 
     private static Func<NotificationPayloadStream, CancellationToken, ValueTask<Validation<WebhookRequestContent>>> CreateCallbackVerificationDeserializer(JsonSerializerOptions options)
