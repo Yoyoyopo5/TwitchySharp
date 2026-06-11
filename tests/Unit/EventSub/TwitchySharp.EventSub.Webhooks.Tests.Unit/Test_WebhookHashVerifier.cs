@@ -95,7 +95,7 @@ public class Test_WebhookHashVerifier
     public async Task VerifyMessage_InvalidMessageSignature_ReturnsError()
     {
         const string FAKE_SERVER_SECRET = "super_secure_secret";
-        const string FAKE_CLIENT_SECRET = "super_secure_secret";
+        const string FAKE_CLIENT_SECRET = "wrong_secret";
         WebhookSecret serverSecret = new(FAKE_SERVER_SECRET);
         WebhookSecret clientSecret = new(FAKE_CLIENT_SECRET);
 
