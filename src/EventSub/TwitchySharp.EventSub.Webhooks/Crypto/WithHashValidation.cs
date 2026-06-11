@@ -24,7 +24,7 @@ public static partial class ProcessWebhookRequestExtensions
                     .BindAsync((result, ct) => verifyHash(result.Subscription, toVerify, ct).MatchAsync(
                         // We have to wrap the unit validation from the verifier back into a WebhookRequestResult validation.
                         onError: (e, _) => ValueTask.FromResult(new Validation<WebhookRequestContent>(e)),
-                        onValid: (_, _) => ValueTask.FromResult<Validation<WebhookRequestContent>>(result),
+                        onValid: _ => ValueTask.FromResult<Validation<WebhookRequestContent>>(result),
                         ct
                         ), ct);
             };
