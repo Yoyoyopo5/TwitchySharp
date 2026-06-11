@@ -65,6 +65,12 @@ public static class AsyncValidationExtensions
             onValid: () => func(ct)
             );
 
+    public static async ValueTask<Validation<TNext>> BindAsync<TNext>(this ValueTask<Validation> val, Func<CancellationToken, ValueTask<Validation<TNext>>> func, CancellationToken ct)
+        => await (await val).Match(
+            onError: e => ValueTask.FromResult<Validation<TNext>>(e),
+            onValid: () => func(ct)
+            );
+
     public static async Task<Validation> BindAsync(this Task<Validation> val, Func<CancellationToken, Task<Validation>> func, CancellationToken ct)
         => await (await val).Match(
             onError: e => Task.FromResult<Validation>(e),
@@ -114,6 +120,12 @@ public static class AsyncValidationExtensions
             );
 
     public static async ValueTask MatchAsync(this ValueTask<Validation> val, Func<Error, CancellationToken, Task> onError, Func<CancellationToken, Task> onValid, CancellationToken ct)
+        => await (await val).Match(
+            onError: e => onError(e, ct),
+            onValid: () => onValid(ct)
+            );
+
+    public static async ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Validation> val, Func<Error, CancellationToken, ValueTask<TOut>> onError, Func<CancellationToken, ValueTask<TOut>> onValid, CancellationToken ct)
         => await (await val).Match(
             onError: e => onError(e, ct),
             onValid: () => onValid(ct)
