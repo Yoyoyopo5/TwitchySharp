@@ -22,7 +22,7 @@ public record TwitchAuthorizationResolutionOptions
         = (context, ct) => ValueTask.FromResult((ClientId?)null);
 
     /// <summary>
-    /// The fallback bearer token resolver to use when no other configured resolver match.
+    /// The fallback bearer token resolver to use when no other configured resolvers match.
     /// </summary>
     /// <remarks>
     /// Defaults to return a <see langword="null"/> token.
