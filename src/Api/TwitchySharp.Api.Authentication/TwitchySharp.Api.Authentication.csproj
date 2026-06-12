@@ -15,4 +15,9 @@
     <Using Include="TwitchySharp.Infrastructure.Http" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
+	</ItemGroup>
+
 </Project>
