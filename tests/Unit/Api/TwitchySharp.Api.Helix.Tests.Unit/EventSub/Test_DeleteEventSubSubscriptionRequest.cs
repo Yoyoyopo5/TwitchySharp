@@ -12,127 +12,110 @@ public class Test_DeleteEventSubSubscriptionRequest
     [Fact]
     public void DefaultIdentity_WithWebsocketUserAuthorizedSubscription_ReturnsUserIdentity()
     {
-        // Arrange - ChannelFollow with websocket transport
-        var subscription = CreateSubscription(
+        EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
-            new Dictionary<string, string>
+            new Dictionary<ConditionKey, string>
             {
-                ["broadcaster_user_id"] = MOCK_BROADCASTER_ID,
-                ["moderator_user_id"] = MOCK_USER_ID
+                [new("broadcaster_user_id")] = MOCK_BROADCASTER_ID,
+                [new("moderator_user_id")] = MOCK_USER_ID
             },
             EventSubTransportMethod.Websocket
         );
-        var request = new DeleteEventSubSubscriptionRequest(subscription);
+        DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        // Act
-        var identity = request.AuthorizationContext.Identity;
+        TwitchIdentity identity = request.AuthorizationContext.Identity;
 
-        // Assert
-        var userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
+        TwitchIdentity.User userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
         Assert.Equal(new UserId(MOCK_USER_ID), userIdentity.UserId);
     }
 
     [Fact]
     public void DefaultIdentity_WithWebhookSubscription_ReturnsDefault()
     {
-        // Arrange - Webhook transport should use app identity
-        var subscription = CreateSubscription(
+        EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
-            new Dictionary<string, string>
+            new Dictionary<ConditionKey, string>
             {
-                ["broadcaster_user_id"] = MOCK_BROADCASTER_ID,
-                ["moderator_user_id"] = MOCK_USER_ID
+                [new("broadcaster_user_id")] = MOCK_BROADCASTER_ID,
+                [new("moderator_user_id")] = MOCK_USER_ID
             },
             EventSubTransportMethod.Webhook
         );
-        var request = new DeleteEventSubSubscriptionRequest(subscription);
+        DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        // Act
-        var identity = request.AuthorizationContext.Identity;
+        TwitchIdentity identity = request.AuthorizationContext.Identity;
 
-        // Assert
         Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
     public void DefaultIdentity_WithConduitSubscription_ReturnsDefault()
     {
-        // Arrange - Conduit transport should use app identity
-        var subscription = CreateSubscription(
+        EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.StreamOnline,
-            new Dictionary<string, string>
+            new Dictionary<ConditionKey, string>
             {
-                ["broadcaster_user_id"] = MOCK_BROADCASTER_ID
+                [new("broadcaster_user_id")] = MOCK_BROADCASTER_ID
             },
             EventSubTransportMethod.Conduit
         );
-        var request = new DeleteEventSubSubscriptionRequest(subscription);
+        DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        // Act
-        var identity = request.AuthorizationContext.Identity;
+        TwitchIdentity identity = request.AuthorizationContext.Identity;
 
-        // Assert
         Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
     public void DefaultIdentity_WithSubscriptionIdOnly_ReturnsDefault()
     {
-        // Arrange - No subscription provided, only ID
-        var request = new DeleteEventSubSubscriptionRequest
+        DeleteEventSubSubscriptionRequest request = new()
         {
             SubscriptionId = new EventSubSubscriptionId(MOCK_SUBSCRIPTION_ID)
         };
 
-        // Act
-        var identity = request.AuthorizationContext.Identity;
+        TwitchIdentity identity = request.AuthorizationContext.Identity;
 
-        // Assert
         Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
 
     [Fact]
     public void DefaultIdentity_WithWebsocketUserAuthorizedMissingCondition_ThrowsInvalidOperationException()
     {
-        // Arrange - User authorized type with websocket but missing the authorizing user condition
-        var subscription = CreateSubscription(
+        EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
-            new Dictionary<string, string>
+            new Dictionary<ConditionKey, string>
             {
-                ["broadcaster_user_id"] = MOCK_BROADCASTER_ID
+                [new("broadcaster_user_id")] = MOCK_BROADCASTER_ID
                 // moderator_user_id is missing
             },
             EventSubTransportMethod.Websocket
         );
-        var request = new DeleteEventSubSubscriptionRequest(subscription);
+        DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        // Act & Assert
         Assert.Throws<InvalidOperationException>(() => request.AuthorizationContext.Identity);
     }
 
     [Fact]
     public void Constructor_WithSubscription_SetsSubscriptionId()
     {
-        // Arrange
-        var subscription = CreateSubscription(
+        EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.StreamOnline,
-            new Dictionary<string, string>
+            new Dictionary<ConditionKey, string>
             {
-                ["broadcaster_user_id"] = MOCK_BROADCASTER_ID
+                [new("broadcaster_user_id")] = MOCK_BROADCASTER_ID
             },
             EventSubTransportMethod.Webhook
         );
 
-        // Act
-        var request = new DeleteEventSubSubscriptionRequest(subscription);
+        DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        // Assert
         Assert.Equal(subscription.Id, request.SubscriptionId);
     }
 
     private static EventSubSubscription CreateSubscription(
         EventSubSubscriptionType type,
-        Dictionary<string, string> condition,
+        Dictionary<ConditionKey, string> condition,
         EventSubTransportMethod transportMethod)
     {
         return new EventSubSubscription
@@ -141,9 +124,7 @@ public class Test_DeleteEventSubSubscriptionRequest
             Status = EventSubSubscriptionStatus.Enabled,
             Type = new EventSubSubscriptionTypeName(type.Type),
             Version = new EventSubSubscriptionTypeVersion(type.Version),
-            Condition = condition.ToImmutableDictionary(
-                kvp => new ConditionKey(kvp.Key),
-                kvp => kvp.Value),
+            Condition = condition.ToImmutableDictionary(),
             CreatedAt = DateTimeOffset.UtcNow,
             Transport = new EventSubSubscriptionTransport
             {
