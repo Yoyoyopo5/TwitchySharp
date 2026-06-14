@@ -1,7 +1,21 @@
 using TwitchySharp.Api.Helix.Videos;
-using TwitchySharp.Tests;
+using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.Api.Tests.Unit.Helix.Videos;
+
+public class Iso8601TimeSpanJsonConverterTestDataset
+    : IJsonConverterTestDataset<TimeSpan>
+{
+    public static IEnumerable<JsonConverterTestData<TimeSpan>> ValidData
+        => [
+
+            ];
+
+    public static IEnumerable<string> InvalidJson
+        => [
+
+            ];
+}
 
 public class Test_Iso8601TimeSpanJsonConverter
 {
@@ -12,7 +26,7 @@ public class Test_Iso8601TimeSpanJsonConverter
     {
         const string json = "\"3m21s\"";
 
-        var result = _converter.Read(json);
+        TimeSpan result = _converter.Read(json);
 
         Assert.Equal(TimeSpan.FromMinutes(3) + TimeSpan.FromSeconds(21), result);
     }

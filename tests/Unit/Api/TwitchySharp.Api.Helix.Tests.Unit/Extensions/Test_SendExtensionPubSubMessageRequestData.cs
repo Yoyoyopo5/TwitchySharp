@@ -12,7 +12,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void GlobalPubSubMessageData_IsGlobalBroadcast_IsTrue()
     {
-        var data = new GlobalPubSubMessageData { Message = "test message" };
+        GlobalPubSubMessageData data = new() { Message = "test message" };
 
         Assert.True(data.IsGlobalBroadcast);
     }
@@ -20,7 +20,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void GlobalPubSubMessageData_Target_ContainsGlobal()
     {
-        var data = new GlobalPubSubMessageData { Message = "test message" };
+        GlobalPubSubMessageData data = new() { Message = "test message" };
 
         Assert.Contains(ExtensionPubSubMessageTarget.Global, data.Target);
     }
@@ -28,10 +28,10 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void GlobalPubSubMessageData_Serialize_HasCorrectStructure()
     {
-        var data = new GlobalPubSubMessageData { Message = "test message" };
+        GlobalPubSubMessageData data = new() { Message = "test message" };
 
-        var json = JsonSerializer.Serialize(data, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(data, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
         Assert.True(jsonNode["is_global_broadcast"]?.GetValue<bool>());
@@ -42,7 +42,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void BroadcastPubSubMessageData_IsGlobalBroadcast_IsFalse()
     {
-        var data = new BroadcastPubSubMessageData { Message = "test message" };
+        BroadcastPubSubMessageData data = new() { Message = "test message" };
 
         Assert.False(data.IsGlobalBroadcast);
     }
@@ -50,7 +50,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void BroadcastPubSubMessageData_To_AddsBroadcastTarget()
     {
-        var data = new BroadcastPubSubMessageData { Message = "test message" }
+        BroadcastPubSubMessageData data = new BroadcastPubSubMessageData() { Message = "test message" }
             .To(new UserId("broadcaster123"));
 
         Assert.Contains(ExtensionPubSubMessageTarget.Broadcast, data.Target);
@@ -60,10 +60,10 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void BroadcastPubSubMessageData_WhisperTo_AddsWhisperTarget()
     {
-        var data = new BroadcastPubSubMessageData { Message = "test message" }
+        BroadcastPubSubMessageData data = new BroadcastPubSubMessageData { Message = "test message" }
             .WhisperTo(new UserId("user456"));
 
-        var whisperTarget = data.Target.FirstOrDefault(t => t.Value.StartsWith("whisper-"));
+        ExtensionPubSubMessageTarget whisperTarget = data.Target.FirstOrDefault(t => t.Value.StartsWith("whisper-"));
 
         Assert.Equal("whisper-user456", whisperTarget.Value);
     }
@@ -71,37 +71,28 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void BroadcastPubSubMessageData_ChainedToAndWhisperTo_AccumulatesTargets()
     {
-        var data = new BroadcastPubSubMessageData { Message = "test message" }
+        BroadcastPubSubMessageData data = new BroadcastPubSubMessageData { Message = "test message" }
             .To(new UserId("broadcaster123"))
+            .To(new UserId("broadcaster456"))
+            .WhisperTo(new UserId("user123"))
             .WhisperTo(new UserId("user456"));
 
-        Assert.Equal(2, data.Target.Count());
+        Assert.Equal(4, data.Target.Count());
         Assert.Contains(ExtensionPubSubMessageTarget.Broadcast, data.Target);
+        Assert.Contains(data.Target, t => t.Value == "broadcaster123");
+        Assert.Contains(data.Target, t => t.Value == "broadcaster456");
+        Assert.Contains(data.Target, t => t.Value == "whisper-user123");
         Assert.Contains(data.Target, t => t.Value == "whisper-user456");
-    }
-
-    [Fact]
-    public void BroadcastPubSubMessageData_MultipleWhisperTo_AccumulatesWhisperTargets()
-    {
-        var data = new BroadcastPubSubMessageData { Message = "test message" }
-            .WhisperTo(new UserId("user1"))
-            .WhisperTo(new UserId("user2"))
-            .WhisperTo(new UserId("user3"));
-
-        Assert.Equal(3, data.Target.Count());
-        Assert.Contains(data.Target, t => t.Value == "whisper-user1");
-        Assert.Contains(data.Target, t => t.Value == "whisper-user2");
-        Assert.Contains(data.Target, t => t.Value == "whisper-user3");
     }
 
     [Fact]
     public void BroadcastPubSubMessageData_To_SerializesWithCorrectStructure()
     {
-        var data = new BroadcastPubSubMessageData { Message = "test message" }
+        BroadcastPubSubMessageData data = new BroadcastPubSubMessageData { Message = "test message" }
             .To(new UserId("broadcaster123"));
 
-        var json = JsonSerializer.Serialize(data, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(data, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
         Assert.False(jsonNode["is_global_broadcast"]?.GetValue<bool>());
@@ -113,7 +104,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void BroadcastPubSubMessageData_OriginalInstance_IsUnmodified()
     {
-        var original = new BroadcastPubSubMessageData { Message = "test message" };
+        BroadcastPubSubMessageData original = new() { Message = "test message" };
         _ = original.To(new UserId("broadcaster123"));
 
         Assert.Empty(original.Target);
@@ -123,7 +114,7 @@ public class Test_SendExtensionPubSubMessageRequestData
     [Fact]
     public void ExtensionPubSubMessageTarget_Whisper_HasCorrectFormat()
     {
-        var whisper = ExtensionPubSubMessageTarget.Whisper("user123");
+        ExtensionPubSubMessageTarget whisper = ExtensionPubSubMessageTarget.Whisper("user123");
 
         Assert.Equal("whisper-user123", whisper.Value);
     }

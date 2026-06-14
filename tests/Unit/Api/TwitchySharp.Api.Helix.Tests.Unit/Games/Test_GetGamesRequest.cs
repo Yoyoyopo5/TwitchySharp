@@ -7,12 +7,12 @@ public class Test_GetGamesRequest
     [Fact]
     public void SingleGameIdQuery_QueryString_ContainsId()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [new GameIdQuery(new GameId("123"))]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("id=123", queryString);
     }
@@ -20,7 +20,7 @@ public class Test_GetGamesRequest
     [Fact]
     public void MultipleGameIdQueries_QueryString_ContainsAllIds()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [
                 new GameIdQuery(new GameId("123")),
@@ -29,7 +29,7 @@ public class Test_GetGamesRequest
             ]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("id=123", queryString);
         Assert.Contains("id=456", queryString);
@@ -39,12 +39,12 @@ public class Test_GetGamesRequest
     [Fact]
     public void SingleGameNameQuery_QueryString_ContainsName()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [new GameNameQuery("Fortnite")]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("name=Fortnite", queryString);
     }
@@ -52,7 +52,7 @@ public class Test_GetGamesRequest
     [Fact]
     public void MultipleGameNameQueries_QueryString_ContainsAllNames()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [
                 new GameNameQuery("Fortnite"),
@@ -60,7 +60,7 @@ public class Test_GetGamesRequest
             ]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("name=Fortnite", queryString);
         Assert.Contains("name=Minecraft", queryString);
@@ -69,12 +69,12 @@ public class Test_GetGamesRequest
     [Fact]
     public void SingleIgdbQuery_QueryString_ContainsIgdbId()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [new GameIgdbQuery(new IgdbId("1905"))]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("igdb_id=1905", queryString);
     }
@@ -82,7 +82,7 @@ public class Test_GetGamesRequest
     [Fact]
     public void MixedQueryTypes_QueryString_ContainsAllParams()
     {
-        var request = new GetGamesRequest
+        GetGamesRequest request = new()
         {
             Games = [
                 new GameIdQuery(new GameId("123")),
@@ -91,7 +91,7 @@ public class Test_GetGamesRequest
             ]
         };
 
-        var queryString = request.RequestUri.Query;
+        string queryString = request.RequestUri.Query;
 
         Assert.Contains("id=123", queryString);
         Assert.Contains("name=Fortnite", queryString);

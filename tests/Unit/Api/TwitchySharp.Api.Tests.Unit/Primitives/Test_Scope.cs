@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Api.Tests.Unit.Authorization;
+﻿namespace TwitchySharp.Api.Tests.Unit;
 
 public class Test_Scope
 {

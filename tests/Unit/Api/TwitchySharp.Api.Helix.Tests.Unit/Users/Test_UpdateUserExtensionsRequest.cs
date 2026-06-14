@@ -13,7 +13,7 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_PanelExtensions_ProducesCorrectJsonStructure()
     {
-        var config = new ExtensionsConfiguration
+        ExtensionsConfiguration config = new()
         {
             PanelExtensions = [new UpdateExtensionParameters()
             {
@@ -22,13 +22,13 @@ public class Test_UpdateUserExtensionsRequest
                 Active = true
             }]
         };
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        var panelNode = jsonNode["data"]?["panel"]?["1"];
+        JsonNode? panelNode = jsonNode["data"]?["panel"]?["1"];
         Assert.NotNull(panelNode);
         Assert.True(panelNode["active"]?.GetValue<bool>());
         Assert.Equal("rh6jq1q334hqc2rr1qlzqbvwlfl3x0", panelNode["id"]?.GetValue<string>());
@@ -38,7 +38,7 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_MultiplePanelExtensions_UsesCorrect1BasedKeys()
     {
-        var config = new ExtensionsConfiguration
+        ExtensionsConfiguration config = new()
         {
             PanelExtensions = [
                 new UpdateExtensionParameters()
@@ -55,13 +55,13 @@ public class Test_UpdateUserExtensionsRequest
                 }
             ]
         };
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        var panelNode = jsonNode["data"]?["panel"];
+        JsonNode? panelNode = jsonNode["data"]?["panel"];
         Assert.NotNull(panelNode);
         Assert.NotNull(panelNode["1"]);
         Assert.NotNull(panelNode["2"]);
@@ -70,7 +70,7 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_OverlayExtensions_ProducesCorrectJsonStructure()
     {
-        var config = new ExtensionsConfiguration
+        ExtensionsConfiguration config = new()
         {
             OverlayExtensions = [new UpdateExtensionParameters()
                 {
@@ -79,13 +79,13 @@ public class Test_UpdateUserExtensionsRequest
                     Active = true
                 }]
         };
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        var overlayNode = jsonNode["data"]?["overlay"]?["1"];
+        JsonNode? overlayNode = jsonNode["data"]?["overlay"]?["1"];
         Assert.NotNull(overlayNode);
         Assert.True(overlayNode["active"]?.GetValue<bool>());
         Assert.Equal("zfh2irvx2jb4s60f02jq0ajm8vwgka", overlayNode["id"]?.GetValue<string>());
@@ -95,7 +95,7 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_ComponentExtensions_IncludesXYCoordinates()
     {
-        var config = new ExtensionsConfiguration
+        ExtensionsConfiguration config = new()
         {
             ComponentExtensions = [new UpdateComponentExtensionParameters()
             {
@@ -106,13 +106,13 @@ public class Test_UpdateUserExtensionsRequest
                 Y = 0
             }]
         };
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        var componentNode = jsonNode["data"]?["component"]?["1"];
+        JsonNode? componentNode = jsonNode["data"]?["component"]?["1"];
         Assert.NotNull(componentNode);
         Assert.True(componentNode["active"]?.GetValue<bool>());
         Assert.Equal("lqnf3zxk0rv0g7gq92mtmnirjz2cjj", componentNode["id"]?.GetValue<string>());
@@ -124,7 +124,7 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_MixedExtensionTypes_ProducesCorrectJsonStructure()
     {
-        var config = new ExtensionsConfiguration
+        ExtensionsConfiguration config = new()
         {
             PanelExtensions = [new UpdateExtensionParameters()
                 {
@@ -147,10 +147,10 @@ public class Test_UpdateUserExtensionsRequest
                     Y = 200,
                 }]
         };
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
         Assert.NotNull(jsonNode["data"]?["panel"]?["1"]);
@@ -161,14 +161,14 @@ public class Test_UpdateUserExtensionsRequest
     [Fact]
     public void Serialize_EmptyConfiguration_OmitsExtensionTypes()
     {
-        var config = new ExtensionsConfiguration();
-        var requestData = new UpdateUserExtensionsRequestData(config);
+        ExtensionsConfiguration config = new();
+        UpdateUserExtensionsRequestData requestData = new(config);
 
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode);
-        var dataNode = jsonNode["data"]?.AsObject();
+        JsonObject? dataNode = jsonNode["data"]?.AsObject();
         Assert.NotNull(dataNode);
         Assert.False(dataNode.ContainsKey("panel"));
         Assert.False(dataNode.ContainsKey("overlay"));
@@ -199,10 +199,10 @@ public class Test_UpdateUserExtensionsRequest
             },
         ];
 
-        var fullConfig = new ExtensionsConfiguration { PanelExtensions = config };
-        var requestData = new UpdateUserExtensionsRequestData(fullConfig);
-        var json = JsonSerializer.Serialize(requestData, JsonOptions);
-        var jsonNode = JsonNode.Parse(json);
+        ExtensionsConfiguration fullConfig = new() { PanelExtensions = config };
+        UpdateUserExtensionsRequestData requestData = new(fullConfig);
+        string json = JsonSerializer.Serialize(requestData, JsonOptions);
+        JsonNode? jsonNode = JsonNode.Parse(json);
 
         Assert.NotNull(jsonNode?["data"]?["panel"]?["1"]);
         Assert.NotNull(jsonNode?["data"]?["panel"]?["2"]);
@@ -248,12 +248,12 @@ public class Test_UpdateUserExtensionsRequest
         }
         """;
 
-        var response = JsonSerializer.Deserialize<UpdateUserExtensionsResponse>(responseJson, JsonOptions);
+        UpdateUserExtensionsResponse? response = JsonSerializer.Deserialize<UpdateUserExtensionsResponse>(responseJson, JsonOptions);
 
         Assert.NotNull(response);
         Assert.NotNull(response.Data);
 
-        var panel1 = response.Data.Panel["1"];
+        UserActiveExtension panel1 = response.Data.Panel["1"];
         Assert.True(panel1.Active);
         Assert.NotNull(panel1.Id);
         Assert.Equal("rh6jq1q334hqc2rr1qlzqbvwlfl3x0", panel1.Id!.Value.Value);
