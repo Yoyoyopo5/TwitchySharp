@@ -65,7 +65,7 @@ public record TwitchVideo
     public required int ViewCount { get; init; }
     /// <summary>
     /// The ISO 639-1 two-letter language code that the video was broadcast in.
-    /// For a list of supported languages, see <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">Supported Stream Language</see>. 
+    /// For a list of supported languages, see <see href="https://help.twitch.tv/s/article/languages-on-twitch#streamlang">Supported Stream Language</see>.
     /// The language value is <c>"other"</c> if the video was broadcast in a language not in the list of supported languages.
     /// </summary>
     public required LanguageCode Language { get; init; }
@@ -88,12 +88,12 @@ public record TwitchVideo
 internal class Iso8601TimeSpanJsonConverter : JsonConverter<TimeSpan>
 {
     public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => reader.GetString() switch
-        {
-            string value => XmlConvert.ToTimeSpan("PT" + value.ToUpper()), // API docs says it returns ISO 8601 duration format, but it only returns the end, so we append PT for proper format.
-            _ => default
-        };
+        // We need to do E2E tests on this endpoint to discover the actual wire format.
+        // Does not appear to be strict Iso8601 format including "PT".
+        => reader.GetString() is string value
+            ? XmlConvert.ToTimeSpan("PT" + value.ToUpper())
+            : TimeSpan.Zero;
 
     public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
-        => XmlConvert.ToString(value);
+        => writer.WriteStringValue(XmlConvert.ToString(value).TrimStart("PT"));
 }
