@@ -66,8 +66,8 @@ internal record UpdateUserExtensionsRequestData
             Component = ConvertToNumberedDict(extensions.ComponentExtensions)
         };
 
-    private static ImmutableDictionary<string, T>? ConvertToNumberedDict<T>(ImmutableArray<T?> array)
-        => new Dictionary<string, T>(array.OfType<T>().Select((data, index) => new KeyValuePair<string, T>((index + 1).ToString(), data))) // Twitch expects 1-indexed object here.
+    private static ImmutableDictionary<string, T>? ConvertToNumberedDict<T>(ImmutableArray<T> array)
+        => new Dictionary<string, T>(array.Select((data, index) => new KeyValuePair<string, T>((index + 1).ToString(), data))) // Twitch expects 1-indexed object here.
             .ToImmutableDictionary() switch
         {
             { Count: 0 } => null,
@@ -83,15 +83,15 @@ internal record UpdateUserExtensionsMaps
     /// <summary>
     /// The panel extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UpdateExtensionParameters>? Panel { get; init; }
+    public IReadOnlyDictionary<string, UpdateExtensionParameters?>? Panel { get; init; }
     /// <summary>
     /// The overlay extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UpdateExtensionParameters>? Overlay { get; init; }
+    public IReadOnlyDictionary<string, UpdateExtensionParameters?>? Overlay { get; init; }
     /// <summary>
     /// The component extensions that will be updated.
     /// </summary>
-    public IReadOnlyDictionary<string, UpdateComponentExtensionParameters>? Component { get; init; }
+    public IReadOnlyDictionary<string, UpdateComponentExtensionParameters?>? Component { get; init; }
 }
 
 /// <summary>
@@ -108,24 +108,21 @@ public record ExtensionsConfiguration
     /// <remarks>
     /// There are 3 panel extension slots.
     /// </remarks>
-    public ImmutableArray<UpdateExtensionParameters?> PanelExtensions { get; init; }
-        = new UpdateExtensionParameters?[3].ToImmutableArray();
+    public ImmutableArray<UpdateExtensionParameters?> PanelExtensions { get; init; } = [];
     /// <summary>
     /// The overlay extension slots to update.
     /// </summary>
     /// <remarks>
     /// There is 1 overlay extension slot.
     /// </remarks>
-    public ImmutableArray<UpdateExtensionParameters?> OverlayExtensions { get; init; }
-        = new UpdateExtensionParameters?[1].ToImmutableArray();
+    public ImmutableArray<UpdateExtensionParameters?> OverlayExtensions { get; init; } = [];
     /// <summary>
     /// The component extension slots to update.
     /// </summary>
     /// <remarks>
     /// There are 2 component extension slots.
     /// </remarks>
-    public ImmutableArray<UpdateComponentExtensionParameters?> ComponentExtensions { get; init; }
-        = new UpdateComponentExtensionParameters?[2].ToImmutableArray();
+    public ImmutableArray<UpdateComponentExtensionParameters?> ComponentExtensions { get; init; } = [];
 }
 
 /// <summary>
