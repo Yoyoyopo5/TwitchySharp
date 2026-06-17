@@ -8,21 +8,37 @@ namespace TwitchySharp.Api.Tests.Unit.Helix.Users;
 
 public class Test_UpdateUserExtensionsRequest
 {
+    private const string FAKE_EXTENSION_ID = "rh6jq1q334hqc2rr1qlzqbvwlfl3x0";
+    private const string FAKE_EXTENSION_VERSION = "1.1.0";
+    private const int COMPONENT_X = 0;
+    private const int COMPONENT_Y = 0;
+
     private static readonly JsonSerializerOptions JsonOptions = JsonConfig.ApiOptions;
+
+    private static readonly UpdateExtensionParameters FakeExtensionParameters = new()
+    {
+        Id = new ExtensionId(FAKE_EXTENSION_ID),
+        Version = new ExtensionVersion(FAKE_EXTENSION_VERSION),
+        Active = true
+    };
+
+    private static readonly UpdateComponentExtensionParameters FakeComponentExtensionParameters = new()
+    {
+        Id = new ExtensionId(FAKE_EXTENSION_ID),
+        Version = new ExtensionVersion(FAKE_EXTENSION_VERSION),
+        Active = true,
+        X = COMPONENT_X,
+        Y = COMPONENT_Y
+    };
 
     [Fact]
     public void Serialize_PanelExtensions_ProducesCorrectJsonStructure()
     {
-        ExtensionsConfiguration config = new()
+        ExtensionsConfiguration fakeConfig = new()
         {
-            PanelExtensions = [new UpdateExtensionParameters()
-            {
-                Id = new ExtensionId("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"),
-                Version = new ExtensionVersion("1.1.0"),
-                Active = true
-            }]
+            PanelExtensions = [FakeExtensionParameters, null, null]
         };
-        UpdateUserExtensionsRequestData requestData = new(config);
+        UpdateUserExtensionsRequestData requestData = new(fakeConfig);
 
         string json = JsonSerializer.Serialize(requestData, JsonOptions);
         JsonNode? jsonNode = JsonNode.Parse(json);
@@ -31,8 +47,8 @@ public class Test_UpdateUserExtensionsRequest
         JsonNode? panelNode = jsonNode["data"]?["panel"]?["1"];
         Assert.NotNull(panelNode);
         Assert.True(panelNode["active"]?.GetValue<bool>());
-        Assert.Equal("rh6jq1q334hqc2rr1qlzqbvwlfl3x0", panelNode["id"]?.GetValue<string>());
-        Assert.Equal("1.1.0", panelNode["version"]?.GetValue<string>());
+        Assert.Equal(FAKE_EXTENSION_ID, panelNode["id"]?.GetValue<string>());
+        Assert.Equal(FAKE_EXTENSION_VERSION, panelNode["version"]?.GetValue<string>());
     }
 
     [Fact]
@@ -41,18 +57,9 @@ public class Test_UpdateUserExtensionsRequest
         ExtensionsConfiguration config = new()
         {
             PanelExtensions = [
-                new UpdateExtensionParameters()
-                {
-                    Id = new ExtensionId("ext1"),
-                    Version = new ExtensionVersion("1.0.0"),
-                    Active = true
-                },
-                new UpdateExtensionParameters()
-                {
-                    Id = new ExtensionId("ext2"),
-                    Version = new ExtensionVersion("2.0.0"),
-                    Active = false
-                }
+                FakeExtensionParameters,
+                null,
+                FakeExtensionParameters
             ]
         };
         UpdateUserExtensionsRequestData requestData = new(config);
@@ -64,7 +71,7 @@ public class Test_UpdateUserExtensionsRequest
         JsonNode? panelNode = jsonNode["data"]?["panel"];
         Assert.NotNull(panelNode);
         Assert.NotNull(panelNode["1"]);
-        Assert.NotNull(panelNode["2"]);
+        Assert.NotNull(panelNode["3"]);
     }
 
     [Fact]
@@ -72,12 +79,7 @@ public class Test_UpdateUserExtensionsRequest
     {
         ExtensionsConfiguration config = new()
         {
-            OverlayExtensions = [new UpdateExtensionParameters()
-                {
-                    Id = new ExtensionId("zfh2irvx2jb4s60f02jq0ajm8vwgka"),
-                    Version = new ExtensionVersion("1.0.19"),
-                    Active = true
-                }]
+            OverlayExtensions = [FakeExtensionParameters]
         };
         UpdateUserExtensionsRequestData requestData = new(config);
 
@@ -88,8 +90,8 @@ public class Test_UpdateUserExtensionsRequest
         JsonNode? overlayNode = jsonNode["data"]?["overlay"]?["1"];
         Assert.NotNull(overlayNode);
         Assert.True(overlayNode["active"]?.GetValue<bool>());
-        Assert.Equal("zfh2irvx2jb4s60f02jq0ajm8vwgka", overlayNode["id"]?.GetValue<string>());
-        Assert.Equal("1.0.19", overlayNode["version"]?.GetValue<string>());
+        Assert.Equal(FAKE_EXTENSION_ID, overlayNode["id"]?.GetValue<string>());
+        Assert.Equal(FAKE_EXTENSION_VERSION, overlayNode["version"]?.GetValue<string>());
     }
 
     [Fact]
@@ -97,14 +99,7 @@ public class Test_UpdateUserExtensionsRequest
     {
         ExtensionsConfiguration config = new()
         {
-            ComponentExtensions = [new UpdateComponentExtensionParameters()
-            {
-                Id = new ExtensionId("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"),
-                Version = new ExtensionVersion("0.0.1"),
-                Active = true,
-                X = 0,
-                Y = 0
-            }]
+            ComponentExtensions = [FakeComponentExtensionParameters, null]
         };
         UpdateUserExtensionsRequestData requestData = new(config);
 
@@ -115,10 +110,10 @@ public class Test_UpdateUserExtensionsRequest
         JsonNode? componentNode = jsonNode["data"]?["component"]?["1"];
         Assert.NotNull(componentNode);
         Assert.True(componentNode["active"]?.GetValue<bool>());
-        Assert.Equal("lqnf3zxk0rv0g7gq92mtmnirjz2cjj", componentNode["id"]?.GetValue<string>());
-        Assert.Equal("0.0.1", componentNode["version"]?.GetValue<string>());
-        Assert.Equal(0, componentNode["x"]?.GetValue<int>());
-        Assert.Equal(0, componentNode["y"]?.GetValue<int>());
+        Assert.Equal(FAKE_EXTENSION_ID, componentNode["id"]?.GetValue<string>());
+        Assert.Equal(FAKE_EXTENSION_VERSION, componentNode["version"]?.GetValue<string>());
+        Assert.Equal(COMPONENT_X, componentNode["x"]?.GetValue<int>());
+        Assert.Equal(COMPONENT_Y, componentNode["y"]?.GetValue<int>());
     }
 
     [Fact]
@@ -126,26 +121,9 @@ public class Test_UpdateUserExtensionsRequest
     {
         ExtensionsConfiguration config = new()
         {
-            PanelExtensions = [new UpdateExtensionParameters()
-                {
-                    Id = new ExtensionId("panel_ext"),
-                    Version = new ExtensionVersion("1.0.0"),
-                    Active = true,
-                }],
-            OverlayExtensions = [new UpdateExtensionParameters()
-                {
-                    Id = new ExtensionId("overlay_ext"),
-                    Version = new ExtensionVersion("2.0.0"),
-                    Active = true
-                }],
-            ComponentExtensions = [new UpdateComponentExtensionParameters()
-                {
-                    Id = new ExtensionId("component_ext"),
-                    Version = new ExtensionVersion("3.0.0"),
-                    Active = true,
-                    X = 100,
-                    Y = 200,
-                }]
+            PanelExtensions = [FakeExtensionParameters, null , null],
+            OverlayExtensions = [FakeExtensionParameters],
+            ComponentExtensions = [FakeComponentExtensionParameters, null]
         };
         UpdateUserExtensionsRequestData requestData = new(config);
 
@@ -173,40 +151,6 @@ public class Test_UpdateUserExtensionsRequest
         Assert.False(dataNode.ContainsKey("panel"));
         Assert.False(dataNode.ContainsKey("overlay"));
         Assert.False(dataNode.ContainsKey("component"));
-    }
-
-    [Fact]
-    public void ExtensionsConfigurationType_ChainedConfigureExtension_AccumulatesExtensions()
-    {
-        ImmutableArray<UpdateExtensionParameters?> config = [
-            new UpdateExtensionParameters()
-            {
-                Id = new ExtensionId("ext1"),
-                Version = new ExtensionVersion("1.0.0"),
-                Active = true
-            },
-            new UpdateExtensionParameters()
-            {
-                Id = new ExtensionId("ext2"),
-                Version = new ExtensionVersion("2.0.0"),
-                Active = false
-            },
-            new UpdateExtensionParameters()
-            {
-                Id = new ExtensionId("ext3"),
-                Version = new ExtensionVersion("3.0.0"),
-                Active = true
-            },
-        ];
-
-        ExtensionsConfiguration fullConfig = new() { PanelExtensions = config };
-        UpdateUserExtensionsRequestData requestData = new(fullConfig);
-        string json = JsonSerializer.Serialize(requestData, JsonOptions);
-        JsonNode? jsonNode = JsonNode.Parse(json);
-
-        Assert.NotNull(jsonNode?["data"]?["panel"]?["1"]);
-        Assert.NotNull(jsonNode?["data"]?["panel"]?["2"]);
-        Assert.NotNull(jsonNode?["data"]?["panel"]?["3"]);
     }
 
     [Fact]

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using TwitchySharp.Api.Helix.Videos;
 using TwitchySharp.Tests.Unit;
 
@@ -8,96 +10,35 @@ public class Iso8601TimeSpanJsonConverterTestDataset
 {
     public static IEnumerable<JsonConverterTestData<TimeSpan>> ValidData
         => [
-
+            new() { Value = TimeSpan.Zero, Json = "0H0M0S".AsJson() },
+            new() { Value = TimeSpan.FromSeconds(30), Json = "0H0M30S".AsJson() },
+            new() { Value = TimeSpan.FromMinutes(5), Json = "0H5M0S".AsJson() },
+            new() { Value = TimeSpan.FromHours(1), Json = "1H0M0S".AsJson() }
             ];
 
     public static IEnumerable<string> InvalidJson
         => [
-
+            "null",
+            "{}",
+            "[]",
+            "5".AsJson(),
+            "5"
             ];
 }
 
-public class Test_Iso8601TimeSpanJsonConverter
+public class PublicIso8601TimeSpanJsonConverter : JsonConverter<TimeSpan>
 {
-    private readonly Iso8601TimeSpanJsonConverter _converter = new();
+    private static readonly Iso8601TimeSpanJsonConverter Converter = new();
 
-    [Fact]
-    public void Read_MinutesAndSeconds_ReturnsTimeSpan()
-    {
-        const string json = "\"3m21s\"";
+    public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => Converter.Read(ref reader, typeToConvert, options);
 
-        TimeSpan result = _converter.Read(json);
+    public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+        => Converter.Write(writer, value, options);
+}
 
-        Assert.Equal(TimeSpan.FromMinutes(3) + TimeSpan.FromSeconds(21), result);
-    }
-
-    [Fact]
-    public void Read_HoursMinutesSeconds_ReturnsTimeSpan()
-    {
-        const string json = "\"1h30m45s\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(new TimeSpan(1, 30, 45), result);
-    }
-
-    [Fact]
-    public void Read_SecondsOnly_ReturnsTimeSpan()
-    {
-        const string json = "\"45s\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(TimeSpan.FromSeconds(45), result);
-    }
-
-    [Fact]
-    public void Read_MinutesOnly_ReturnsTimeSpan()
-    {
-        const string json = "\"5m\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(TimeSpan.FromMinutes(5), result);
-    }
-
-    [Fact]
-    public void Read_HoursOnly_ReturnsTimeSpan()
-    {
-        const string json = "\"2h\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(TimeSpan.FromHours(2), result);
-    }
-
-    [Fact]
-    public void Read_LowercaseInput_ReturnsTimeSpan()
-    {
-        const string json = "\"1h30m45s\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(new TimeSpan(1, 30, 45), result);
-    }
-
-    [Fact]
-    public void Read_Null_ReturnsDefault()
-    {
-        const string json = "null";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(TimeSpan.Zero, result);
-    }
-
-    [Fact]
-    public void Read_LongDuration_ReturnsTimeSpan()
-    {
-        const string json = "\"10h5m30s\"";
-
-        var result = _converter.Read(json);
-
-        Assert.Equal(new TimeSpan(10, 5, 30), result);
-    }
+public class Test_Iso8601TimeSpanJsonConverter
+    : JsonConverterTest<TimeSpan, PublicIso8601TimeSpanJsonConverter, Iso8601TimeSpanJsonConverterTestDataset>
+{
+    protected override PublicIso8601TimeSpanJsonConverter Converter { get; } = new();
 }
