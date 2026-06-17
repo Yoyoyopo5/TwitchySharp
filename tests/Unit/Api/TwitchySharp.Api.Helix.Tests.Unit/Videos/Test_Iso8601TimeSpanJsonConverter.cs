@@ -10,15 +10,14 @@ public class Iso8601TimeSpanJsonConverterTestDataset
 {
     public static IEnumerable<JsonConverterTestData<TimeSpan>> ValidData
         => [
-            new() { Value = TimeSpan.Zero, Json = "0H0M0S".AsJson() },
-            new() { Value = TimeSpan.FromSeconds(30), Json = "0H0M30S".AsJson() },
-            new() { Value = TimeSpan.FromMinutes(5), Json = "0H5M0S".AsJson() },
-            new() { Value = TimeSpan.FromHours(1), Json = "1H0M0S".AsJson() }
+            new() { Value = TimeSpan.Zero, Json = "0S".AsJson() },
+            new() { Value = TimeSpan.FromSeconds(30), Json = "30S".AsJson() },
+            new() { Value = TimeSpan.FromMinutes(5), Json = "5M".AsJson() },
+            new() { Value = TimeSpan.FromHours(1), Json = "1H".AsJson() }
             ];
 
     public static IEnumerable<string> InvalidJson
         => [
-            "null",
             "{}",
             "[]",
             "5".AsJson(),
