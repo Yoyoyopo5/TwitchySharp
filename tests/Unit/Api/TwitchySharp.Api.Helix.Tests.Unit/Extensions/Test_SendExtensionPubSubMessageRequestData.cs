@@ -73,14 +73,13 @@ public class Test_SendExtensionPubSubMessageRequestData
     {
         BroadcastPubSubMessageData data = new BroadcastPubSubMessageData { Message = "test message" }
             .To(new UserId("broadcaster123"))
-            .To(new UserId("broadcaster456"))
+            //.To(new UserId("broadcaster456")) Chained To should not accumulate.
             .WhisperTo(new UserId("user123"))
             .WhisperTo(new UserId("user456"));
 
-        Assert.Equal(4, data.Target.Count());
+        Assert.Equal(3, data.Target.Count());
         Assert.Contains(ExtensionPubSubMessageTarget.Broadcast, data.Target);
-        Assert.Contains(data.Target, t => t.Value == "broadcaster123");
-        Assert.Contains(data.Target, t => t.Value == "broadcaster456");
+        Assert.Equal("broadcaster123", data.BroadcasterId);
         Assert.Contains(data.Target, t => t.Value == "whisper-user123");
         Assert.Contains(data.Target, t => t.Value == "whisper-user456");
     }
