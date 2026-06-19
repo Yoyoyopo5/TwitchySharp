@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TwitchySharp.EventSub.Webhooks.Crypto;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Crypto;
 
