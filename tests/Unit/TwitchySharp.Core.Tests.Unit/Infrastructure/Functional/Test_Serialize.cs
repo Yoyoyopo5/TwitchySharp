@@ -1,21 +1,11 @@
 using System.Diagnostics;
 using TwitchySharp.Infrastructure.Functional;
+using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.Core.Tests.Unit.Infrastructure.Functional;
 
 public class Test_Serialize
 {
-    private static async Task<T[]> RunConcurrently<T>(
-        int workerCount,
-        ManualResetEventSlim gate,
-        Func<int, Task<T>> func
-    )
-    {
-        Task<T>[] tasks = Enumerable.Range(0, workerCount).Select(func).ToArray();
-        gate.Set();
-        return await Task.WhenAll(tasks);
-    }
-
     [Fact]
     public async Task Serialize_ConcurrentTasksWithDefaultProviderAndSameKey_CompleteInSeries()
     {
@@ -37,7 +27,7 @@ public class Test_Serialize
             }, ct)
         );
 
-        int[] results = await RunConcurrently(WORKER_COUNT, gate, i => concurrentFunc(i, TestContext.Current.CancellationToken).AsTask());
+        int[] results = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrentFunc(i, TestContext.Current.CancellationToken).AsTask());
 
         Assert.Equal(WORKER_COUNT * WORKER_ITERATIONS, state);
         Assert.Equal(Enumerable.Range(1, WORKER_COUNT).Select(w => w * WORKER_ITERATIONS), results);
@@ -60,7 +50,7 @@ public class Test_Serialize
             }));
 
         Stopwatch sw = Stopwatch.StartNew();
-        int[] result = await RunConcurrently(WORKER_COUNT, gate, i => concurrent(i, TestContext.Current.CancellationToken).AsTask());
+        int[] result = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrent(i, TestContext.Current.CancellationToken).AsTask());
         sw.Stop();
 
         Assert.True(sw.ElapsedMilliseconds < WORK_MS * WORKER_COUNT); // Not entirely deterministic, but should suffice in most conditions.
