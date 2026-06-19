@@ -62,7 +62,7 @@ public static class ThreadSafety
     /// <param name="keySelector">A selector function that derives a <typeparamref name="TKey"/> from the input <typeparamref name="T"/>.</param>
     /// <param name="lockFactory">A factory function that returns a <see cref="IAsyncDisposable"/> for a given <typeparamref name="TKey"/>.</param>
     /// <returns>A function returning a function that calls its input within a per-key thread-safe semaphore block.</returns>
-    public static Func<Func<T, CancellationToken, ValueTask<TResult>>, Func<T, CancellationToken, ValueTask<TResult>>> Concurrently<T, TKey, TResult>(
+    public static Func<Func<T, CancellationToken, ValueTask<TResult>>, Func<T, CancellationToken, ValueTask<TResult>>> Serialize<T, TKey, TResult>(
         Func<T, TKey> keySelector,
         Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
         )

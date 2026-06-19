@@ -25,7 +25,7 @@ public class Test_Serialize
         int state = 0;
         ManualResetEventSlim gate = new(false);
 
-        Func<int, CancellationToken, ValueTask<int>> concurrentFunc = ThreadSafety.Concurrently<int, string, int>(_ => "STATIC")(async (_, ct) =>
+        Func<int, CancellationToken, ValueTask<int>> concurrentFunc = ThreadSafety.Serialize<int, string, int>(_ => "STATIC")(async (_, ct) =>
             await Task.Run(() =>
             {
                 gate.Wait(ct);
@@ -51,7 +51,7 @@ public class Test_Serialize
 
         ManualResetEventSlim gate = new(false);
 
-        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Concurrently<int, int, int>(i => i)(
+        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Serialize<int, int, int>(i => i)(
             async (_, ct) => await Task.Run(async () =>
             {
                 gate.Wait(ct);
@@ -77,7 +77,7 @@ public class Test_Serialize
             return ValueTask.FromResult<IAsyncDisposable>(new StubLock());
         }
 
-        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Concurrently<int, int, int>(i => 0, ProvideLock)(
+        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Serialize<int, int, int>(i => 0, ProvideLock)(
             async (_, ct) => await Task.Run(() => Task.FromResult(0)));
 
         int result = await concurrent(0, TestContext.Current.CancellationToken);
@@ -93,7 +93,7 @@ public class Test_Serialize
         ValueTask<IAsyncDisposable> ProvideLock(int key, CancellationToken ct)
             => ValueTask.FromResult<IAsyncDisposable>(@lock);
 
-        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Concurrently<int, int, int>(i => 0, ProvideLock)(
+        Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Serialize<int, int, int>(i => 0, ProvideLock)(
             async (_, ct) => await Task.Run(() => Task.FromResult(0)));
 
         int result = await concurrent(0, TestContext.Current.CancellationToken);
