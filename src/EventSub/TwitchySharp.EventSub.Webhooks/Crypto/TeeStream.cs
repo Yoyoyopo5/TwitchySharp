@@ -24,7 +24,7 @@ internal sealed class TeeStream(Stream origin, Stream destination, bool leaveOpe
     {
         int bytesRead = _origin.Read(buffer, offset, count);
         if (bytesRead > 0)
-            _dest.Write(buffer, offset, count);
+            _dest.Write(buffer, offset, bytesRead);
         return bytesRead;
     }
 
