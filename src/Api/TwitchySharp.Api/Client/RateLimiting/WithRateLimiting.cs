@@ -11,7 +11,7 @@ public static class TwitchRateLimiting
     private readonly static ClientId EmptyClientId = new("");
     private static SendTwitchRequest SerializeRequestsByClientId(this SendTwitchRequest send, Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
     {
-        var sendConcurrently = ThreadSafety.Concurrently<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx switch
+        var sendConcurrently = ThreadSafety.Serialize<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx switch
         {
             TwitchAuthorizationRequestContext authContext => authContext.AuthorizationHeaders.ClientId ?? EmptyClientId,
             TwitchRequestContext context => (context.Request is IAuthorizedTwitchRequest authorizedRequest ? authorizedRequest.AuthorizationContext.Identity.ClientId : null) ?? EmptyClientId,
