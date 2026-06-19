@@ -14,12 +14,12 @@ public record JsonConverterTestData<T>
 
     public void Deserialize(IXunitSerializationInfo info)
     {
-        Value = info.GetValue<T>(nameof(Value));
+        Value = JsonSerializer.Deserialize<T>(info.GetValue<string>(nameof(Value)));
         Json = info.GetValue<string>(nameof(Json));
     }
     public void Serialize(IXunitSerializationInfo info)
     {
-        info.AddValue(nameof(Value), Value);
+        info.AddValue(nameof(Value), JsonSerializer.Serialize(Value));
         info.AddValue(nameof(Json), Json);
     }
 }
