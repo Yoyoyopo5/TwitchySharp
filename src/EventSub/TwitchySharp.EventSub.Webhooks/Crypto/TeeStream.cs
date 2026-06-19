@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks.Crypto;
+﻿namespace TwitchySharp.EventSub.Webhooks;
 
 /// <summary>
 /// Helper class for splitting a <see cref="Stream"/>, allowing the original stream to be consumed once while writing to a second stream concurrently.
