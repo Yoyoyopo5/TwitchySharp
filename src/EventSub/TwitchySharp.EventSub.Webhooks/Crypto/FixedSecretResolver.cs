@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
 public static partial class SecretResolvers
 {

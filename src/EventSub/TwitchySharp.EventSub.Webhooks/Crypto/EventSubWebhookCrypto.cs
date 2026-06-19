@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TwitchySharp.EventSub.Webhooks;
+namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
 internal static class EventSubWebhookCrypto
 {
