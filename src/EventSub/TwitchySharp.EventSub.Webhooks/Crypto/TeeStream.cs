@@ -6,7 +6,6 @@
 /// <param name="origin">The origin stream.</param>
 /// <param name="destination">The stream that the origin will be copied to as it is read.</param>
 /// <param name="leaveOpen">Determines whether the streams will be disposed upon disposing this instance. Defaults to <see langword="false"/>.</param>
-// Needs unit tests
 internal sealed class TeeStream(Stream origin, Stream destination, bool leaveOpen = false) : Stream
 {
     private readonly Stream _origin = origin;
