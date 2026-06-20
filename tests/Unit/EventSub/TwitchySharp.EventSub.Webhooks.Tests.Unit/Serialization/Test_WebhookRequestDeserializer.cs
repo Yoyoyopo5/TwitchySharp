@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Text;
-using TwitchySharp.EventSub.Notifications;
+﻿using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.EventSub.Webhooks.Serialization;
@@ -171,25 +169,4 @@ public class Test_WebhookRequestDeserializer
             onValid: _ => throw new Exception("The process result was valid (expected error).")
             );
     }
-}
-
-internal static class StringExtensions
-{
-    public static MemoryStream ToMemoryStream(this string body)
-        => new(Encoding.UTF8.GetBytes(body));
-}
-
-public record StubEventSubNotification : IEventSubNotification
-{
-    public EventSubSubscription Subscription { get; } = new()
-    {
-        Id = new("f1c2a387-161a-49f9-a165-0f21d7a4e1c4"),
-        Status = EventSubSubscriptionStatus.Enabled,
-        Type = new("channel.follow"),
-        Version = new("1"),
-        Cost = 1,
-        Condition = new Dictionary<string, object>() { { "broadcaster_user_id", "12826" } }.ToImmutableDictionary(),
-        CreatedAt = DateTimeOffset.Parse("2019-11-16T10:11:12.634234626Z"),
-        Transport = new() { Method = EventSubTransportMethod.Webhook, Callback = new("https://example.com/webhooks/callback") }
-    };
 }
