@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchySharp.EventSub.Serialization;
+﻿using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 
@@ -27,7 +22,7 @@ internal class ProcessStubs
                 TwitchEventsubMessageTimestamp = new("12387447"),
                 TwitchEventsubMessageSignature = new("very-legit-signature")
             },
-            Content = new(new MemoryStream(Encoding.UTF8.GetBytes(requestBody ?? FAKE_REQUEST_BODY)))
+            Content = new((requestBody ?? FAKE_REQUEST_BODY).ToMemoryStream())
         };
 
     private static FakeWebhookRequestContent CreateFakeContent(NotificationPayloadStream bodyStream)
