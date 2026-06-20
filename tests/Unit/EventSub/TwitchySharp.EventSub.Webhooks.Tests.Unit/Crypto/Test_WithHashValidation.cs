@@ -1,6 +1,4 @@
-﻿using System.Text;
-using TwitchySharp.EventSub.Serialization;
-using TwitchySharp.EventSub.Webhooks.Crypto;
+﻿using TwitchySharp.EventSub.Webhooks.Crypto;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 

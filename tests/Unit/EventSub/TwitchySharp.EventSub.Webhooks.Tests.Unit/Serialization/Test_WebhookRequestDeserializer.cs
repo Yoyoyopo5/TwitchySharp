@@ -5,7 +5,7 @@ using TwitchySharp.EventSub.Webhooks.Serialization;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
+namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Serialization;
 
 public class Test_WebhookRequestDeserializer
 {

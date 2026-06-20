@@ -5,7 +5,7 @@ using TwitchySharp.EventSub.Webhooks.Crypto;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 
-namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
+namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Crypto;
 
 public class Test_WebhookHashVerifier
 {
