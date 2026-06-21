@@ -60,8 +60,13 @@ public static class TwitchEventSubWebhooksServiceExtensions
 
                 return pipeline =>
                 {
-                    pipeline = verify is not null ? pipeline.WithHashValidation(verify) : pipeline;
+                    // Reason for the ordering:
+                    // Idempotency is checked on the inbound path before the request is deserialized.
+                    // Signature verification requires the subscription to be deserialized before it can call the secret resolver,
+                    // so it is called on the outbound path.
+                    // Handler is called last only when idempotency and verification both succeed (also on the outbound path).
                     pipeline = idempotency is not null ? pipeline.WithIdempotentRequests(idempotency) : pipeline;
+                    pipeline = verify is not null ? pipeline.WithHashValidation(verify) : pipeline;
                     pipeline = handler is not null ? pipeline.WithHandler(handler) : pipeline;
 
                     return pipeline;
