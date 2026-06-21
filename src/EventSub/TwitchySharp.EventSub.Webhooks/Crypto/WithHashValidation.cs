@@ -20,6 +20,12 @@ public static partial class ProcessWebhookRequestExtensions
                 EventSubWebhookRequest nextRequest = request with { Content = new(teeStream) };
                 EventSubWebhookRequest toVerify = request with { Content = new(cryptoStream) };
 
+                // There is a slight security implication here because the
+                // verification occurs on the outbound path (after next is called).
+                // We have to do this to provide the deserialized subscription
+                // information to the verifier, but it does leave the pipeline
+                // open to potential DoS attacks. Could be mitigated with something
+                // like fail2ban since we can return back 401 if verification fails.
                 return await next(nextRequest, ct)
                     .BindAsync((result, ct) =>
                     {
