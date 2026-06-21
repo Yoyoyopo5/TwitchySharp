@@ -45,11 +45,11 @@ public static class TwitchEventSubWebhooksServiceExtensions
     // We don't want to add that dependency to the Webhooks lib, nor do we want to create another lib (right now), so it goes here.
     public static IServiceCollection AddTwitchEventSubWebhooks(
         this IServiceCollection services,
-        Action<TwitchEventSubWebhooksOptions> configure
+        Action<TwitchEventSubWebhooksOptions>? configure = null
         )
     {
         TwitchEventSubWebhooksOptions options = new();
-        configure(options);
+        configure?.Invoke(options);
 
         services.AddTwitchEventSubWebhooks(
             configurePipeline: sp =>
