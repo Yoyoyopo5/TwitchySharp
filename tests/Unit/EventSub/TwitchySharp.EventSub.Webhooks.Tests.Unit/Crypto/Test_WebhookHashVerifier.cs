@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Text;
+using TwitchySharp.Tests.Unit;
 using TwitchySharp.EventSub.Webhooks.Crypto;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;

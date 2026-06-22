@@ -3,6 +3,7 @@ using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
+using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
 

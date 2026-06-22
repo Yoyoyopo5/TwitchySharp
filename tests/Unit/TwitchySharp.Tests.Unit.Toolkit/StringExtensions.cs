@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
+namespace TwitchySharp.Tests.Unit;
 
-internal static class StringExtensions
+public static class StringExtensions
 {
     public static MemoryStream ToMemoryStream(this string body)
         => new(Encoding.UTF8.GetBytes(body));

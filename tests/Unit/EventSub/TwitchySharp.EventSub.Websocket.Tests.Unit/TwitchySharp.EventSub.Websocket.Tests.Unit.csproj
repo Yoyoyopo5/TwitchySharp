@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../../src/EventSub/TwitchySharp.EventSub.Websocket/TwitchySharp.EventSub.Websocket.csproj" />
+    <ProjectReference Include="../../TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
