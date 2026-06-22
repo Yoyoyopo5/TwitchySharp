@@ -4,6 +4,7 @@ using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.EventSub.Webhooks.Serialization;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
+using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Serialization;
 
