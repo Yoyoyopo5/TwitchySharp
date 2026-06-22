@@ -29,6 +29,7 @@
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Tests.Unit/TwitchySharp.EventSub.Tests.Unit.csproj" />
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Unit/TwitchySharp.EventSub.Webhooks.Tests.Unit.csproj" />
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Websocket.Tests.Unit/TwitchySharp.EventSub.Websocket.Tests.Unit.csproj" />
   </Folder>
   <Folder Name="/tests/Integration/" />
   <Folder Name="/tests/Integration/Api/">
