@@ -64,17 +64,18 @@ public static class StartEventSubWebsocketClientExtensions
                 // This is then set when the client is actually started, so the pipeline
                 // should never see it as a null reference.
                 StopWebsocketClient? stopClient = null;
-                stopClient = await startClient(createReconnectPipelineFor(stopClient!), url, ct);
+                stopClient = await startClient(createReconnectPipelineFor(() => stopClient!), url, ct);
                 return stopClient;
             }
 
             async Task startAndSetPending(EventSubWebsocketUrl url, CancellationToken ct)
                 => await setPending(await startNewClient(url, ct), ct);
 
-            ProcessWebsocketMessage createReconnectPipelineFor(StopWebsocketClient client)
+            ProcessWebsocketMessage createReconnectPipelineFor(Func<StopWebsocketClient> getClient)
             {
                 Task promoteToCurrent(CancellationToken ct) => semaphore.Concurrently(async () =>
                     {
+                        StopWebsocketClient client = getClient();
                         if (!ReferenceEquals(pending, client))
                         {
                             // This client might be current, so:
