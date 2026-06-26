@@ -17,7 +17,7 @@ public static class WebsocketMessageDeserializer
     /// An error that occurred during Websocket message deserialization.
     /// </summary>
     /// <param name="Message">The error message.</param>
-    public record DeserializationError(string Message) : Error(Message);
+    public record DeserializationError(string Message, Exception? JsonSerializerException = null) : Error(Message);
 
     /// <summary>
     /// Create a default <see cref="ProcessWebsocketMessage"/> function with the configured parameters.
@@ -46,12 +46,12 @@ public static class WebsocketMessageDeserializer
             onError: e => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(e),
             onValid: async message => message.Metadata.MessageType.Value switch
             {
-                WebsocketMessageTypes.WELCOME => message.DeserializePayload<WelcomeMessagePayload>(options),
-                WebsocketMessageTypes.KEEPALIVE => message.DeserializePayload<KeepaliveMessagePayload>(options),
-                WebsocketMessageTypes.NOTIFICATION => (await message.Payload.ToNotification(deserializeNotification, ct))
-                    .Bind<EventSubWebsocketMessage>(n => message.WithPayload(_ => new NotificationMessagePayload() { Notification = n })),
-                WebsocketMessageTypes.REVOCATION => message.DeserializePayload<RevocationMessagePayload>(options),
-                WebsocketMessageTypes.RECONNECT => message.DeserializePayload<ReconnectMessagePayload>(options),
+                WebsocketMessageTypes.WELCOME => message.DeserializePayload<WelcomeMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
+                WebsocketMessageTypes.KEEPALIVE => message.DeserializePayload<KeepaliveMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
+                WebsocketMessageTypes.NOTIFICATION => await message.Payload.ToNotification(deserializeNotification, ct)
+                    .MapAsync<IEventSubNotification, EventSubWebsocketMessage>(n => message.WithPayload(new NotificationMessagePayload() { Notification = n })),
+                WebsocketMessageTypes.REVOCATION => message.DeserializePayload<RevocationMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
+                WebsocketMessageTypes.RECONNECT => message.DeserializePayload<ReconnectMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
                 _ => new DeserializationError("The \"message_type\" metadata property was an unsupported value.")
             });
     }
@@ -81,14 +81,29 @@ public static class WebsocketMessageDeserializer
                 Payload = payload
             }));
 
-    private static EventSubWebsocketMessage<TPayload> WithPayload<TPayload>(this EventSubWebsocketMessage<PayloadElement> message, Func<PayloadElement, TPayload> deserialize)
-    => new()
+    private static Validation<EventSubWebsocketMessage<TPayload>> WithPayload<TPayload>(this EventSubWebsocketMessage<PayloadElement> message, Func<PayloadElement, Validation<TPayload>> deserialize)
+        => deserialize(message.Payload).Map(payload => message.WithPayload(payload));
+
+    private static EventSubWebsocketMessage<TPayload> WithPayload<TPayload>(this EventSubWebsocketMessage message, TPayload payload)
+        => new()
+        {
+            Metadata = message.Metadata,
+            Payload = payload
+        };
+    private static Validation<EventSubWebsocketMessage<TPayload>> DeserializePayload<TPayload>(this EventSubWebsocketMessage<PayloadElement> message, JsonSerializerOptions options)
     {
-        Metadata = message.Metadata,
-        Payload = deserialize(message.Payload)
-    };
-    private static EventSubWebsocketMessage<TPayload> DeserializePayload<TPayload>(this EventSubWebsocketMessage<PayloadElement> message, JsonSerializerOptions options)
-        => message.WithPayload(payload => JsonSerializer.Deserialize<TPayload>(payload.Value, options)!);
+        try
+        {
+            return message.WithPayload<TPayload>(payload => JsonSerializer.Deserialize<TPayload>(payload.Value, options) is { } deserialized
+                ? deserialized
+                : new DeserializationError("Payload was null literal.")
+                );
+        }
+        catch (Exception ex)
+        {
+            return new DeserializationError("JsonSerializer threw an exception.", ex);
+        }
+    }
 
     private static readonly RecyclableMemoryStreamManager _memoryManager = new();
     private static ValueTask<Validation<IEventSubNotification>> ToNotification(this PayloadElement payloadElement, DeserializeNotification deserialize, CancellationToken ct)
