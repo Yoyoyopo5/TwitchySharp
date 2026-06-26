@@ -20,7 +20,7 @@ public static class WebsocketMessageDeserializer
     public record DeserializationError(string Message) : Error(Message);
 
     /// <summary>
-    /// Create a default <see cref="DeserializeWebsocketMessage"/> function with the configured parameters.
+    /// Create a default <see cref="ProcessWebsocketMessage"/> function with the configured parameters.
     /// </summary>
     /// <param name="deserializeNotification">The notification payload deserialize function to use.</param>
     /// <param name="serializerOptions">The serializer options to use.</param>
