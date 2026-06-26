@@ -30,13 +30,13 @@ public static class ProcessWebsocketMessageExtensions
                             await handler.OnNotified(notification.Payload.Notification, ct);
                             break;
                         case EventSubWebsocketMessage<WelcomeMessagePayload> welcome:
-                            await handler.OnConnected(welcome.Payload.Session, ct);
+                            await handler.OnWelcome(welcome.Payload.Session, ct);
                             break;
                         case EventSubWebsocketMessage<RevocationMessagePayload> revocation:
                             await handler.OnSubscriptionRevoked(revocation.Payload.Subscription, ct);
                             break;
                         case EventSubWebsocketMessage<ReconnectMessagePayload> reconnect:
-                            await handler.OnReconnected(reconnect.Payload.Session, ct);
+                            await handler.OnReconnect(reconnect.Payload.Session, ct);
                             break;
                         default:
                             return new Error("Unsupported Websocket message type.");
