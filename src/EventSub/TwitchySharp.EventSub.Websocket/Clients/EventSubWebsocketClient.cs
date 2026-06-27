@@ -3,19 +3,16 @@
 /// <summary>
 /// Stops and disposes the Websocket client.
 /// </summary>
-/// <remarks>
-/// Note that this function is not awaited by the default <see cref="EventSubWebsocketClient"/> upon cancellation.
-/// </remarks>
 /// <returns>
-/// A <see cref="Task"/> that completes when the client is disposed.
+/// A <see cref="Task"/> that completes when the client is fully stopped and disposed.
 /// </returns>
-public delegate Task StopWebsocketClient();
+public delegate Task StopWebsocketClient(CancellationToken ct = default);
 /// <summary>
 /// Starts the Websocket client.
 /// </summary>
 /// <param name="ct">Cancellation Token</param>
 /// <returns>A <see cref="Task"/> that completes with a function that stops the Websocket client.</returns>
-public delegate Task<StopWebsocketClient> StartWebsocketClient(CancellationToken ct);
+public delegate Task<StopWebsocketClient> StartWebsocketClient(CancellationToken ct = default);
 /// <summary>
 /// Creates and configures the Websocket client.
 /// </summary>
@@ -46,42 +43,30 @@ public record EventSubWebsocketClientContext
 }
 
 /// <summary>
-/// Contains a function for creating a <see cref="ListenToEventSubWebsocketClient"/> function from an arbitrary Websocket client.
+/// Contains a function for creating a <see cref="StartEventSubWebsocketClient"/> function from an arbitrary Websocket client.
 /// </summary>
 public static class EventSubWebsocketClient
 {
     /// <summary>
-    /// Wrap an arbitrary Websocket client into a <see cref="ListenToEventSubWebsocketClient"/> function.
+    /// Wrap an arbitrary Websocket client implementation into a <see cref="StartEventSubWebsocketClient"/> function.
     /// </summary>
     /// <param name="createClient">The client creation function.</param>
     /// <returns>
-    /// A function returning a long-lived <see cref="Task"/> that completes when the cancellation token is cancelled (or an exception is thrown).
+    /// A function that starts the Websocket client.
     /// </returns>
-    public static ListenToEventSubWebsocketClient Create(CreateWebsocketClient createClient)
-        => async (pipeline, url, ct) =>
-        {
-            TaskCompletionSource tcs = new();
-
-            StopWebsocketClient stopClient = await url.ToUri()
-                .Map(uri => createClient(
-                    new EventSubWebsocketClientContext
-                    {
-                        Uri = uri,
-                        OnMessage = async (stream, messageCt) => await pipeline(new(stream), messageCt),
-                        OnError = error => tcs.TrySetException(error)
-                    }
-                    ))
-                .Match(
-                    onError: e => throw new ArgumentException("The url could not be converted to a Uri.", nameof(url)),
-                    onValid: startClient => startClient(ct)
-                    );
-
-            await using CancellationTokenRegistration cancellation = ct.Register(() =>
-            {
-                tcs.TrySetResult();
-                _ = stopClient();
-            });
-
-            await tcs.Task;
-        };
+    public static StartEventSubWebsocketClient Create(CreateWebsocketClient createClient, Action<Exception>? onError = null)
+        => async (pipeline, url, ct)
+        => await url.ToUri()
+            .Map(uri => createClient(
+                new EventSubWebsocketClientContext
+                {
+                    Uri = uri,
+                    OnMessage = async (stream, messageCt) => await pipeline(new(stream), messageCt),
+                    OnError = error => onError?.Invoke(error)
+                }
+                ))
+            .Match(
+                onError: e => throw new ArgumentException("The url could not be converted to a Uri.", nameof(url)),
+                onValid: startClient => startClient(ct)
+                );
 }

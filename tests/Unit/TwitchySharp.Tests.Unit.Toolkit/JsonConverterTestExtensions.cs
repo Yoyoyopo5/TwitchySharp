@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace TwitchySharp.Tests;
+namespace TwitchySharp.Tests.Unit;
 
 /// <summary>
 /// Extension methods for testing <see cref="JsonConverter{T}"/> implementations.
@@ -12,6 +12,8 @@ namespace TwitchySharp.Tests;
 /// </remarks>
 public static class JsonConverterTestExtensions
 {
+    public static string AsJson(this string value) => $"\"{value}\"";
+
     public static TResult? Read<TResult>(
         this JsonConverter<TResult> converter,
         string token,
@@ -50,7 +52,12 @@ public static class JsonConverterTestExtensions
     {
         options ??= JsonSerializerOptions.Default;
         using var ms = new MemoryStream();
-        using var writer = new Utf8JsonWriter(ms);
+        using var writer = new Utf8JsonWriter(ms, new JsonWriterOptions()
+        {
+            Encoder = options.Encoder,
+            Indented = options.WriteIndented,
+            MaxDepth = options.MaxDepth
+        });
         converter.Write(writer, value, options);
         writer.Flush();
         var result = Encoding.UTF8.GetString(ms.ToArray());

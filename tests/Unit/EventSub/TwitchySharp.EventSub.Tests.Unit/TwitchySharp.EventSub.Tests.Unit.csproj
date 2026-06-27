@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../../src/EventSub/TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
+    <ProjectReference Include="../../TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

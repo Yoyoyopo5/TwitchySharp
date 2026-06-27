@@ -23,7 +23,7 @@ public class EmptyDateTimeOffsetConverter : JsonConverter<DateTimeOffset?>
         writer.WriteStringValue(value.HasValue switch
         {
             false => string.Empty,
-            true => value.Value.ToString("o") // Fix locale-dependence by using round-trip format.
+            true => value.Value.ToString(value.Value.Offset == TimeSpan.Zero ? "yyyy-MM-ddTHH:mm:ss.fffffffZ" : "yyyy-MM-ddTHH:mm:ss.fffffffzzz")
         });
     }
 }
