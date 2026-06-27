@@ -5,7 +5,7 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
-public delegate ValueTask<Validation<Unit>> VerifyWebhookHash(EventSubSubscription subscription, EventSubWebhookRequest request, CancellationToken ct);
+public delegate ValueTask<Validation> VerifyWebhookHash(EventSubSubscription subscription, EventSubWebhookRequest request, CancellationToken ct);
 
 public class WebhookHashVerifier
 {
@@ -15,7 +15,7 @@ public class WebhookHashVerifier
         => async (subscription, request, ct) => await resolveSecret(subscription, ct) is not WebhookSecret secret
             ? new VerificationError("The webhook for the subscription resolved to null.", subscription)
             : await VerifySignature(secret, request, ct)
-            ? new Unit()
+            ? new Validation()
             : new VerificationError("The webhook request did not have the expected hash for the resolved secret. This may mean the request did not originate from Twitch.", subscription);
 
     private static async ValueTask<bool> VerifySignature(

@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.EventSub.Webhooks;
+﻿namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
 /// <summary>
 /// A function resolving a specific webhook secret for an EventSub subscription.

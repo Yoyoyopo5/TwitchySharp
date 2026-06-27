@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.EventSub.Websocket.Functional;
+﻿using Yoyoyopo5.ValueWrapper;
+
+namespace TwitchySharp.EventSub.Websocket.Functional;
 
 /// <summary>
 /// An id for a specific Twitch EventSub Websocket message.
@@ -8,4 +10,5 @@
 /// This means you may receive a notification twice. If Twitch resends the message, the message id will be the same.
 /// </remarks>
 /// <param name="Value">The string value of the message id.</param>
+[Wrapper<string>]
 public readonly partial record struct WebsocketMessageId(string Value);

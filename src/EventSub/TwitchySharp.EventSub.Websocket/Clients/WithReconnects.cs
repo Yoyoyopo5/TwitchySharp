@@ -3,117 +3,98 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Websocket.Clients;
 
-public static class ListenToEventSubWebsocketClientExtensions
+public static class StartEventSubWebsocketClientExtensions
 {
-    public record EventSubWebsocketReconnectClientError(Exception Exception) : Error("An exception was thrown"); 
-
-    private static Func<CancellationToken, Task<Validation>> Concurrently(this SemaphoreSlim semaphore, Func<Task> func)
-        => async ct =>
-        {
-            try
-            {
-                await semaphore.WaitAsync(ct);
-            }
-            catch (TaskCanceledException)
-            {
-                return new Error("The task was cancelled while acquiring a lock.");
-            }
-            try
-            {
-                await func();
-                return new Validation();
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        };
-
     /// <summary>
-    /// Wraps an EventSub Websocket listener to support seamless automatic reconnect message handling.
+    /// Wraps an EventSub Websocket client to support seamless automatic reconnect message handling.
     /// </summary>
     /// <remarks>
-    /// This may call <paramref name="listenToClient"/> multiple times over its lifecycle and
-    /// expects an implementation that supports being called multiple times, each starting its own connection.
+    /// This may call <paramref name="startClient"/> and its resulting stop function multiple times
+    /// over its lifecycle and expects an implementation that supports being called multiple times,
+    /// each starting its own connection. Up to two clients may be active at one time to allow for
+    /// seamless reconnect transitions.
     /// </remarks>
-    /// <param name="listenToClient">
+    /// <param name="startClient">
     /// The base client to use.
     /// </param>
-    /// <returns>A <see cref="ListenToEventSubWebsocketClient"/> that automatically handles reconnect messages.</returns>
-    public static ListenToEventSubWebsocketClient WithReconnects(this ListenToEventSubWebsocketClient listenToClient)
+    /// <returns>A <see cref="StartEventSubWebsocketClient"/> that automatically handles reconnect messages.</returns>
+    public static StartEventSubWebsocketClient WithReconnects(
+        this StartEventSubWebsocketClient startClient,
+        Action<Exception>? onReconnectError = null
+        )
     {
-        return async (pipeline, url, wrapperCancellationToken) =>
+        return async (pipeline, url, ct) =>
         {
             SemaphoreSlim semaphore = new(1, 1);
-            TaskCompletionSource<Validation> wrapperTask = new();
-            await using CancellationTokenRegistration registration = wrapperCancellationToken.Register(() => wrapperTask.TrySetResult(new Validation()));
 
-            CancellationTokenSource? current = null;
-            CancellationTokenSource? pending = null;
+            StopWebsocketClient? current = null;
+            StopWebsocketClient? pending = null;
 
-            Task<Validation> setPending(CancellationTokenSource reconnectCts)
+            // disposed during stop
+            CancellationTokenSource wrapperCts = new();
+            // register on the start cancellation token so if we cancel during startup (before we get the stop function),
+            // the wrapper cts is still disposed (but it is not disposed if we successfully start).
+            await using CancellationTokenRegistration disposeWrapperCts = ct.Register(() => wrapperCts.Dispose());
+
+            async Task stop(CancellationToken ct)
+            {
+                // Cancels any ongoing handoff operation.
+                await wrapperCts.CancelAsync();
+
+                await semaphore.Concurrently(async () =>
+                {
+                    await (current?.Invoke(ct) ?? Task.CompletedTask);
+                    await (pending?.Invoke(ct) ?? Task.CompletedTask);
+                })(ct);
+
+                wrapperCts.Dispose();
+            }
+
+            Task setPending(StopWebsocketClient reconnectClient, CancellationToken ct)
                 => semaphore.Concurrently(async () =>
                 {
                     if (pending is not null)
-                        await pending.CancelAsync();
-                    pending = reconnectCts;
-                })(reconnectCts.Token);
+                        await pending(ct);
+                    pending = reconnectClient;
+                })(ct);
 
-            async Task startNewClient(CancellationTokenSource clientCts, EventSubWebsocketUrl url)
+            async Task<StopWebsocketClient> startNewClient(EventSubWebsocketUrl url, CancellationToken ct)
             {
-                try
-                {
-                    await listenToClient(createReconnectPipelineFor(clientCts), url, clientCts.Token);
-
-                    if (clientCts.IsCancellationRequested)
-                        return;
-
-                    await semaphore.Concurrently(() =>
-                    {
-                        if (ReferenceEquals(clientCts, pending) || (ReferenceEquals(clientCts, current) && pending is null))
-                            wrapperTask.TrySetResult(new Error("The client stopped listening without an error."));
-                        return Task.CompletedTask;
-                    })(clientCts.Token);
-                }
-                catch (Exception ex)
-                {
-                    wrapperTask.TrySetException(ex);
-                }
-                finally
-                {
-                    clientCts.Dispose();
-                }
+                // We initialize a StopWebsocketClient variable to pass into the pipeline.
+                // This is then set when the client is actually started, so the pipeline
+                // should never see it as a null reference.
+                StopWebsocketClient? stopClient = null;
+                stopClient = await startClient(createReconnectPipelineFor(() => stopClient!), url, ct);
+                return stopClient;
             }
 
-            Task<Validation> startAndSetPending(EventSubWebsocketUrl url)
-            {
-                CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(wrapperCancellationToken);
-                return setPending(cts).BindAsync(async _ => { await startNewClient(cts, url); return new Validation(); }, CancellationToken.None);
-            }
+            async Task startAndSetPending(EventSubWebsocketUrl url, CancellationToken ct)
+                => await setPending(await startNewClient(url, ct), ct);
 
-            ProcessWebsocketMessage createReconnectPipelineFor(CancellationTokenSource clientCts)
+            ProcessWebsocketMessage createReconnectPipelineFor(Func<StopWebsocketClient> getClient)
             {
-                Task<Validation> tryPromoteToCurrent() => semaphore.Concurrently(async () =>
+                Task promoteToCurrent(CancellationToken ct) => semaphore.Concurrently(async () =>
                     {
-                        if (!ReferenceEquals(pending, clientCts))
+                        StopWebsocketClient client = getClient();
+                        if (!ReferenceEquals(pending, client))
                         {
                             // This client might be current, so:
-                            if (!ReferenceEquals(current, clientCts))
+                            if (!ReferenceEquals(current, client))
                             {
                                 // Cleanup orphaned instance.
-                                await clientCts.CancelAsync();
+                                await client(ct);
                             }
                             return;
                         }
                         if (current is not null)
                         {
                             // Safe to stop the current instance.
-                            await current.CancelAsync();
+                            await current(ct);
                         }
                         // Promote
                         current = pending;
                         pending = null;
-                    })(clientCts.Token);
+                    })(ct);
 
                 return pipeline.With(next => async (messageStream, messageCt) =>
                 {
@@ -121,18 +102,25 @@ public static class ListenToEventSubWebsocketClientExtensions
                     // This is essentially a side effect of the pipeline, it does not change the output of next.
                     // We could have it return the message back to make a one-liner, but that's probably too confusing.
                     _ = message.Match(
-                        onError: e => Task.CompletedTask, // no effect on error.
+                        onError: e => Task.CompletedTask, // no effect here on error, it is passed up the pipeline.
                         onValid: message =>
                         {
                             switch (message)
                             {
-                                // Errors on these functions are from task cancellation, which we don't care about here.
-                                // Cancellation will be picked up by the clients internally and hit the Match we set up when started.
+                                // We don't want to block the processing pipeline here, so we add tasks that use the semaphore.
+                                // We attach the optional error handler, while ignoring cancellation exceptions, as these would
+                                // be caused by the consumer running the stop function returned from the WithReconnects method.
                                 case EventSubWebsocketMessage<ReconnectMessagePayload> reconnectMessage:
-                                    _ = startAndSetPending(reconnectMessage.Payload.Session.ReconnectUrl);
+                                    _ = Task.Run(WithTry(
+                                        () => startAndSetPending(reconnectMessage.Payload.Session.ReconnectUrl, wrapperCts.Token),
+                                        onReconnectError.IgnoreCancellationExceptions()
+                                        ));
                                     break;
                                 case EventSubWebsocketMessage<WelcomeMessagePayload> welcomeMessage when pending is not null:
-                                    _ = tryPromoteToCurrent();
+                                    _ = Task.Run(WithTry(
+                                        () => promoteToCurrent(wrapperCts.Token),
+                                        onReconnectError.IgnoreCancellationExceptions()
+                                        ));
                                     break;
                                 default:
                                     break;
@@ -145,8 +133,52 @@ public static class ListenToEventSubWebsocketClientExtensions
                 });
             }
 
-            _ = startAndSetPending(url);
-            await wrapperTask.Task; // This should never complete unless cancelled or an error occurs.
+            await startAndSetPending(url, ct);
+            return stop;
         };
     }
+
+    // Helper extensions
+    private static Func<Task> WithTry(this Func<Task> func, Action<Exception>? @catch)
+    => async () =>
+    {
+        try
+        {
+            await func();
+        }
+        catch (Exception ex)
+        {
+            if (@catch is null)
+                throw;
+            @catch(ex);
+        }
+    };
+
+    private static Action<Exception>? IgnoreCancellationExceptions(this Action<Exception>? @catch)
+        => @catch is not null ? ex =>
+        {
+            switch (ex)
+            {
+                case OperationCanceledException or TaskCanceledException:
+                    break;
+                default:
+                    @catch(ex);
+                    break;
+            }
+        }
+    : null;
+
+    private static Func<CancellationToken, Task> Concurrently(this SemaphoreSlim semaphore, Func<Task> func)
+        => async ct =>
+        {
+            await semaphore.WaitAsync(ct);
+            try
+            {
+                await func();
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        };
 }

@@ -22,12 +22,16 @@
   </Folder>
   <Folder Name="/tests/Unit/Api/">
     <Project Path="tests/Unit/Api/TwitchySharp.Api.Tests.Unit/TwitchySharp.Api.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/Api/TwitchySharp.Api.Helix.Tests.Unit/TwitchySharp.Api.Helix.Tests.Unit.csproj" />
     <Project Path="tests/Unit/Api/TwitchySharp.Api.Authentication.Tests.Unit/TwitchySharp.Api.Authentication.Tests.Unit.csproj" />
   </Folder>
   <Folder Name="/tests/Unit/EventSub/">
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Tests.Unit/TwitchySharp.EventSub.Tests.Unit.csproj" />
     <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Unit/TwitchySharp.EventSub.Webhooks.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Websocket.Tests.Unit/TwitchySharp.EventSub.Websocket.Tests.Unit.csproj" />
   </Folder>
+  <Folder Name="/tests/Integration/" />
   <Folder Name="/tests/Integration/Api/">
     <Project Path="tests/Integration/Api/TwitchySharp.Api.Tests.Integration/TwitchySharp.Api.Tests.Integration.csproj" />
     <Project Path="tests/Integration/Api/TwitchySharp.Api.Authentication.Tests.Integration/TwitchySharp.Api.Authentication.Tests.Integration.csproj" />
@@ -36,6 +40,7 @@
     <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Websocket.Tests.Integration/TwitchySharp.EventSub.Websocket.Tests.Integration.csproj" />
     <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Integration/TwitchySharp.EventSub.Webhooks.Tests.Integration.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
   <Folder Name="/tests/E2E/">
     <Project Path="tests/E2E/TwitchySharp.Api.Tests.E2E/TwitchySharp.Api.Tests.E2E.csproj" />
     <Project Path="tests/E2E/TwitchySharp.EventSub.Tests.E2E/TwitchySharp.EventSub.Tests.E2E.csproj" />

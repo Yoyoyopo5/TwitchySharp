@@ -1,0 +1,67 @@
+﻿using System.Net;
+using TwitchySharp.Infrastructure.Http;
+
+namespace TwitchySharp.Core.Tests.Unit.Infrastructure;
+
+public class Test_HttpQueryParameters
+{
+    [Theory]
+    [InlineData("key", "value")]
+    [InlineData("gas and cigarettes", "every night")]
+    [InlineData("somevalue&anotherone", "not#a%%problematic$&value")]
+    public void Add_SingleStringParameter_ReturnParametersString(string key, string value)
+    {
+        string mockParametersString = $"?{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value)}";
+
+        string actual = new HttpQueryParameters()
+            .Add(key, value)
+            .ToString();
+
+        Assert.Equal(mockParametersString, actual);
+    }
+
+    [Theory]
+    [InlineData("key", "value", "another_key", "another_value")]
+    [InlineData("key", "value", "key", "value")]
+    public void Add_MultipleStringParameters_ReturnParametersString(string key1, string value1, string key2, string value2)
+    {
+        string mockParametersString = $"?{key1}={value1}&{key2}={value2}";
+
+        string actual = new HttpQueryParameters()
+            .Add(key1, value1)
+            .Add(key2, value2)
+            .ToString();
+
+        Assert.Equal(mockParametersString, actual);
+    }
+
+    [Theory]
+    [InlineData("key", "value", "another_value")]
+    public void Add_SingleEnumerableParameter_ReturnParametersString(string key, string value1, string value2)
+    {
+        string mockParametersString = $"?{key}={value1}&{key}={value2}";
+
+        string actual = new HttpQueryParameters()
+            .Add(key, [value1, value2])
+            .ToString();
+
+        Assert.Equal(mockParametersString, actual);
+    }
+
+    [Fact]
+    public void Add_NullParameterValue_ReturnParametersString()
+    {
+        const string STUB_NON_NULL_PARAMETER_KEY = "non_null_key";
+        const string STUB_NON_NULL_PARAMETER_VALUE = "non_null_value";
+        const string STUB_NULL_PARAMETER_KEY = "null_key";
+
+        string mockParametersString = $"?non_null_key=non_null_value";
+
+        string actual = new HttpQueryParameters()
+            .Add(STUB_NON_NULL_PARAMETER_KEY, STUB_NON_NULL_PARAMETER_VALUE)
+            .Add(STUB_NULL_PARAMETER_KEY, (string?)null)
+            .ToString();
+
+        Assert.Equal(mockParametersString, actual);
+    }
+}

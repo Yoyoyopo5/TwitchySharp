@@ -10,8 +10,8 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public partial record ImageUrlTemplate(string Value)
 {
-    protected string WidthTemplate { get; set; } = "{width}";
-    protected string HeightTemplate { get; set; } = "{height}";
+    protected string WidthTemplate { get; init; } = "{width}";
+    protected string HeightTemplate { get; init; } = "{height}";
 
     /// <summary>
     /// Creates a valid url to an image based on the requested width and height.
