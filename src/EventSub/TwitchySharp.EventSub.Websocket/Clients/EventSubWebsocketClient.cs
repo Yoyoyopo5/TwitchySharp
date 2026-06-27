@@ -36,10 +36,6 @@ public record EventSubWebsocketClientContext
     /// The function that should be called when a message is received.
     /// </summary>
     public required Func<Stream, CancellationToken, ValueTask> OnMessage { get; init; }
-    /// <summary>
-    /// The function that should be called when a fatal error occurs and the connection must be closed.
-    /// </summary>
-    public required Action<Exception> OnError { get; init; }
 }
 
 /// <summary>
@@ -54,15 +50,14 @@ public static class EventSubWebsocketClient
     /// <returns>
     /// A function that starts the Websocket client.
     /// </returns>
-    public static StartEventSubWebsocketClient Create(CreateWebsocketClient createClient, Action<Exception>? onError = null)
+    public static StartEventSubWebsocketClient Create(CreateWebsocketClient createClient)
         => async (pipeline, url, ct)
         => await url.ToUri()
             .Map(uri => createClient(
                 new EventSubWebsocketClientContext
                 {
                     Uri = uri,
-                    OnMessage = async (stream, messageCt) => await pipeline(new(stream), messageCt),
-                    OnError = error => onError?.Invoke(error)
+                    OnMessage = async (stream, messageCt) => await pipeline(new(stream), messageCt)
                 }
                 ))
             .Match(
