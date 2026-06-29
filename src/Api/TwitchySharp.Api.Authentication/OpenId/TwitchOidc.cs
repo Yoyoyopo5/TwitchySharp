@@ -19,18 +19,18 @@ public record TwitchOidc
     public static TwitchOidc FromJsonWebToken(JsonWebToken jwt)
         => new()
         {
-            Aud = jwt.Audiences.FirstOrDefault() ?? string.Empty,
-            Azp = jwt.Azp,
+            Aud = new(jwt.Audiences.FirstOrDefault() ?? string.Empty),
+            Azp = new(jwt.Azp),
             Exp = jwt.ValidTo,
             Iat = jwt.IssuedAt,
-            Iss = jwt.Issuer,
-            Sub = jwt.Subject,
+            Iss = new(jwt.Issuer),
+            Sub = new(jwt.Subject),
             Nonce = jwt.GetValueOrDefault<string>("nonce"),
             Email = jwt.GetValueOrDefault<string>("email") is string email ? new(email) : null,
-            EmailVerified = jwt.GetValueOrDefault<bool>("email_verified"),
-            Picture = jwt.GetValueOrDefault<string>("picture"),
-            PreferredUsername = jwt.GetValueOrDefault<string>("preferred_username"),
-            UpdatedAt = jwt.GetValueOrDefault<DateTime>("updated_at")
+            EmailVerified = jwt.GetValueOrNull<bool>("email_verified"),
+            Picture = jwt.GetValueOrDefault<string>("picture") is string url ? new(url) : null,
+            PreferredUsername = jwt.GetValueOrDefault<string>("preferred_username") is string name ? new(name) : null,
+            UpdatedAt = jwt.TryGetValue("updated_at", out int seconds) ? DateTimeOffset.FromUnixTimeSeconds(seconds) : null
         };
 
     public static explicit operator TwitchOidc(JsonWebToken jwt)
@@ -39,12 +39,12 @@ public record TwitchOidc
     /// <summary>
     /// The client ID of the application that requested the user’s authorization.
     /// </summary>
-    public required string Aud { get; init; }
+    public required ClientId Aud { get; init; }
     /// <summary>
     /// The client ID of the application that received the user’s authorization. 
     /// This contains the same value as <see cref="Aud"/>.
     /// </summary>
-    public required string Azp { get; init; }
+    public required ClientId Azp { get; init; }
     /// <summary>
     /// The UNIX timestamp of when the token expires.
     /// </summary>
@@ -58,11 +58,11 @@ public record TwitchOidc
     /// <summary>
     /// The URI of the issuing authority (twitch.tv in this case).
     /// </summary>
-    public required string Iss { get; init; }
+    public required Url Iss { get; init; }
     /// <summary>
     /// The Twitch ID of the user that authorized the app.
     /// </summary>
-    public required string Sub { get; init; }
+    public required UserId Sub { get; init; }
     /// <summary>
     /// The nonce that was used in the authorization request, if one was used.
     /// </summary>
@@ -81,12 +81,12 @@ public record TwitchOidc
     /// A URL to the user’s profile image if they included one; otherwise, a default image.
     /// Obtaining this requires <see cref="OidcClaim.Picture"/> during authorization.
     /// </summary>
-    public string? Picture { get; init; }
+    public ImageUrl? Picture { get; init; }
     /// <summary>
     /// The user’s display name.
     /// Obtaining this requires <see cref="OidcClaim.PreferredUsername"/> during authorization.
     /// </summary>
-    public string? PreferredUsername { get; init; }
+    public UserName? PreferredUsername { get; init; }
     /// <summary>
     /// The date and time (ISO 8601) that the user last updated their profile.
     /// Obtaining this requires <see cref="OidcClaim.UpdatedAt"/> during authorization.
@@ -98,4 +98,8 @@ internal static class JsonWebTokenExtensions
 {
     public static T? GetValueOrDefault<T>(this JsonWebToken jwt, string claim)
         => jwt.TryGetValue(claim, out T value) ? value : default;
+
+    public static Nullable<T> GetValueOrNull<T>(this JsonWebToken jwt, string claim)
+        where T : unmanaged
+        => jwt.TryGetValue(claim, out T value) ? value : null;
 }
