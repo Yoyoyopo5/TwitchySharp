@@ -1,31 +1,17 @@
 using System.Collections.Immutable;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.AuthorizationResolution;
 using TwitchySharp.Api.Tests.Integration.Controllers;
-using TwitchySharp.Api.Tests.Integration.Models;
 
 namespace TwitchySharp.Api.Tests.Integration.Fixtures;
 
-/// <summary>
-/// Stub program class for WebApplicationFactory.
-/// </summary>
-public class Program { }
-
-/// <summary>
-/// Test fixture providing a mock Twitch API server for integration tests.
-/// </summary>
-public class TwitchApiTestFixture : WebApplicationFactory<Program>
+public class TwitchApiTestFixture
 {
-    /// <summary>
-    /// Allows tests to configure mock responses.
-    /// </summary>
-    public MockResponseConfigurator ResponseConfig { get; } = new();
 
     // Test constants
     public const string TEST_CLIENT_ID = "test_client_id";
@@ -63,11 +49,34 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
         }
     ];
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    private readonly static IWebHost Host = ConfigureWebHost(new WebHostBuilder()).Start();
+    private readonly static HttpClient Client = Host.GetTestClient();
+
+    protected static IWebHostBuilder ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseTestServer();
+
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton(ResponseConfig);
+            services.AddScoped(sp => new HelixControllerOptions()
+            {
+                ValidClientId = TestClientId,
+                ValidBearerToken = new(TEST_ACCESS_TOKEN),
+                RateLimitDetails = new()
+                {
+                    Limit = 1000,
+                    Remaining = 999,
+                    Reset = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(2)
+                }
+            });
+            services.AddScoped(sp => new AuthorizationControllerOptions()
+            {
+                ValidClientId = TestClientId,
+                ValidClientSecret = TestClientSecret,
+                ValidAuthorizationCode = TEST_AUTHORIZATION_CODE,
+                ValidRedirectUri = TestRedirectUri,
+                ValidRefreshToken = new(TEST_REFRESH_TOKEN)
+            });
             services.AddControllers()
                 .AddApplicationPart(typeof(MockAuthorizationController).Assembly);
         });
@@ -77,46 +86,36 @@ public class TwitchApiTestFixture : WebApplicationFactory<Program>
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         });
+
+        return builder;
     }
 
-    protected override IHostBuilder? CreateHostBuilder() =>
-        Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseTestServer());
-
-    public ITwitchClientBuilder CreateTwitchClientBuilder()
+    public TwitchAuthorizationResolutionOptions HelixAuthorizationOptions { get; } = new TwitchAuthorizationResolutionOptions()
     {
-        ITwitchClient authClient = new TwitchClientBuilder() { HttpClient = CreateClient() }.Build();
-        return new TwitchClientBuilder()
-        {
-            HttpClient = CreateClient()
-        }.WithAuthorizationResolution(
-            new TwitchAuthorizationResolutionOptions()
-            {
-                FallbackClientIdResolver = (_, _) => ValueTask.FromResult<ClientId?>(TestClientId)
-            }
-            .ConfigureIdentityTokenResolution(new AppAccessTokenResolutionOptions()
-            {
-                AuthenticationClient = authClient,
-                ClientSecretResolver = (_, _) => ValueTask.FromResult<ClientSecret?>(TestClientSecret),
-                GetCachedToken = (context, _) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.App>(context).FirstOrDefault())
-            })
-            .ConfigureIdentityTokenResolution(new UserAccessTokenResolutionOptions()
-            {
-                AuthenticationClient = authClient,
-                ClientSecretResolver = (_, _) => ValueTask.FromResult<ClientSecret?>(TestClientSecret),
-                GetCachedToken = (context, _) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.User>(context).FirstOrDefault()),
-                ResolveFallbackClientId = (_, _) => ValueTask.FromResult<ClientId?>(TestClientId)
-            })
-            );
-    }
+        FallbackClientIdResolver = (_, ct) => ValueTask.FromResult<ClientId?>(TestClientId)
+    }.ConfigureIdentity<TwitchIdentity.Client, AccessTokenDetails.App>(new()
+    {
+        GetCachedToken = (ctx, ct) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.App>(ctx).FirstOrDefault())
+    }).ConfigureIdentity<TwitchIdentity.User, AccessTokenDetails.User>(new()
+    {
+        GetCachedToken = (ctx, ct) => ValueTask.FromResult(TestTokens.WhereTokenMeetsRequirements<AccessTokenDetails.User>(ctx).FirstOrDefault())
+    });
 
-    /// <summary>
-    /// Creates an HttpClient configured to use the test server directly.
-    /// </summary>
-    /// <returns>An HttpClient that sends requests to the mock server.</returns>
-    public new HttpClient CreateClient() =>
-        CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+    public ITwitchClient CreateTwitchClient()
+        => TwitchClient.CreateDefault(Client)
+            .WithAuthentication(HelixAuthorizationOptions)
+            .WithRateLimiting()
+            .With(next => async (request, ct) =>
+            {
+                try
+                {
+                    return await next(request, ct);
+                }
+                catch (TwitchApiException ex)
+                {
+                    TestContext.Current.AddAttachment("ApiExceptionStatusCode", ex.StatusCode.ToString());
+                    TestContext.Current.AddAttachment("ApiExceptionContent", Encoding.UTF8.GetString(ex.Content));
+                    throw;
+                }
+            });
 }

@@ -34,7 +34,6 @@
   <Folder Name="/tests/Integration/" />
   <Folder Name="/tests/Integration/Api/">
     <Project Path="tests/Integration/Api/TwitchySharp.Api.Tests.Integration/TwitchySharp.Api.Tests.Integration.csproj" />
-    <Project Path="tests/Integration/Api/TwitchySharp.Api.Authentication.Tests.Integration/TwitchySharp.Api.Authentication.Tests.Integration.csproj" />
   </Folder>
   <Folder Name="/tests/Integration/EventSub/">
     <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Websocket.Tests.Integration/TwitchySharp.EventSub.Websocket.Tests.Integration.csproj" />
