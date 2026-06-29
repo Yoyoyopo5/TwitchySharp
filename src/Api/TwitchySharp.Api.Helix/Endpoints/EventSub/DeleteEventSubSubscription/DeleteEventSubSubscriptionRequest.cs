@@ -89,4 +89,7 @@ public record DeleteEventSubSubscriptionRequest()
     /// The id of the subscription to delete.
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
+
+    protected override ValueTask<DeleteEventSubSubscriptionResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
+        => ValueTask.FromResult(new DeleteEventSubSubscriptionResponse());
 }
