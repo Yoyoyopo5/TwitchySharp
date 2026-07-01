@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
-    <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
+    <InternalsVisibleTo Include="TwitchySharp.EventSub.Webhooks.Tests.Integration" />
   </ItemGroup>
 
 </Project>
