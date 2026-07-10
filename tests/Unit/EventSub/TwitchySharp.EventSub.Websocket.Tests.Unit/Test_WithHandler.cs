@@ -85,10 +85,7 @@ public class Test_WithHandler
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<NotificationMessagePayload>()
         {
             Metadata = StubMetadata,
-            Payload = new NotificationMessagePayload()
-            {
-                Notification = expectedNotification
-            }
+            Payload = new(expectedNotification)
         }).WithHandler(handler);
 
         await mockProcess(new(), CancellationToken.None);

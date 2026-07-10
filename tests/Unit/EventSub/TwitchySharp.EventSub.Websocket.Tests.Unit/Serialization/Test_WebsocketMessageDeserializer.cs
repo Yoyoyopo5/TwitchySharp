@@ -238,7 +238,7 @@ public class Test_WebsocketMessageDeserializer
             = new()
             {
                 Metadata = JsonSerializer.Deserialize<EventSubWebsocketMessage>(NOTIFICATION_MESSAGE, SerializerOptions)!.Metadata,
-                Payload = new() { Notification = new StubNotification() }
+                Payload = new(new StubNotification())
             };
 
         await MockProcess(new(NOTIFICATION_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
