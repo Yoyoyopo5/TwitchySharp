@@ -49,7 +49,7 @@ public static class WebsocketMessageDeserializer
                 WebsocketMessageTypes.WELCOME => message.DeserializePayload<WelcomeMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
                 WebsocketMessageTypes.KEEPALIVE => message.DeserializePayload<KeepaliveMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
                 WebsocketMessageTypes.NOTIFICATION => await message.Payload.ToNotification(deserializeNotification, ct)
-                    .MapAsync<IEventSubNotification, EventSubWebsocketMessage>(n => message.WithPayload(new NotificationMessagePayload() { Notification = n })),
+                    .MapAsync<IEventSubNotification, EventSubWebsocketMessage>(n => message.WithPayload(new NotificationMessagePayload(n))),
                 WebsocketMessageTypes.REVOCATION => message.DeserializePayload<RevocationMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
                 WebsocketMessageTypes.RECONNECT => message.DeserializePayload<ReconnectMessagePayload>(options).Map(x => x as EventSubWebsocketMessage),
                 _ => new DeserializationError("The \"message_type\" metadata property was an unsupported value.")

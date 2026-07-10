@@ -1,4 +1,5 @@
 ﻿using TwitchySharp.EventSub.Notifications;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.EventSub.Websocket.Functional;
 
@@ -8,7 +9,5 @@ namespace TwitchySharp.EventSub.Websocket.Functional;
 /// <remarks>
 /// /// See <see href="https://dev.twitch.tv/docs/eventsub/handling-websocket-events#notification-message">Notification Message</see> for more information.
 /// </remarks>
-public readonly record struct NotificationMessagePayload
-{
-    public required IEventSubNotification Notification { get; init; }
-}
+[Wrapper<IEventSubNotification>]
+public readonly partial record struct NotificationMessagePayload(IEventSubNotification Value);
