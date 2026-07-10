@@ -39,5 +39,5 @@ internal class NotificationConverter(Func<EventSubSubscriptionType, Func<JsonSer
             : deserializer(options, document);
     }
     public override void Write(Utf8JsonWriter writer, IEventSubNotification value, JsonSerializerOptions options)
-        => throw new NotImplementedException();
+        => JsonSerializer.Serialize<object>(writer, value, options);
 }
