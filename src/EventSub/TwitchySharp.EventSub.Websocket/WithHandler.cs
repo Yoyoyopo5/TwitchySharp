@@ -27,7 +27,7 @@ public static class ProcessWebsocketMessageExtensions
                             await handler.OnKeepalive(ct);
                             break;
                         case EventSubWebsocketMessage<NotificationMessagePayload> notification:
-                            await handler.OnNotified(notification.Payload.Notification, ct);
+                            await handler.OnNotified(notification.Payload.Value, ct);
                             break;
                         case EventSubWebsocketMessage<WelcomeMessagePayload> welcome:
                             await handler.OnWelcome(welcome.Payload.Session, ct);

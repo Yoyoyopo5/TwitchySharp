@@ -1,81 +1,164 @@
-﻿using System.Net.WebSockets;
+﻿using System.Collections.Concurrent;
+using System.Net.WebSockets;
 using System.Text;
-using System.Threading.Channels;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
-using TwitchySharp.EventSub.Websocket.Messages.Payloads;
+using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Websocket.Clients;
+using TwitchySharp.EventSub.Websocket.Functional;
+using TwitchySharp.EventSub.Websocket.Idempotency;
+using TwitchySharp.EventSub.Websocket.Serialization;
+using TwitchySharp.Infrastructure.Functional;
+using TwitchySharp.Serialization;
 using Websocket.Client;
 
-namespace TwitchySharp.EventSub.Websocket.Clients.Websocket.Client.Tests.Integration;
+namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
 
-public class Program { }
-public class WebsocketFixture : WebApplicationFactory<Program>
+public class WebsocketFixture : IAsyncLifetime
 {
-    private const int TEST_PORT = 28390;
-    private readonly Channel<WebSocket> _sockets = Channel.CreateUnbounded<WebSocket>();
-    public TestHandler Handler => Services.GetRequiredService<IWebsocketEventSubHandler>() as TestHandler ?? throw new InvalidOperationException("The IWebsocketEventSubHandler is not registered as TestHandler.");
-    public WebsocketClientEventSubWebsocketClient Client => Services.GetRequiredService<WebsocketClientEventSubWebsocketClient>();
-    public static Uri Path => new UriBuilder()
-    {
-        Host = "localhost",
-        Scheme = "ws",
-        Port = TEST_PORT
-    }.Uri;
+    private readonly ConcurrentDictionary<EventSubWebsocketSessionId, WebSocket> _sockets = [];
+    public IReadOnlyDictionary<EventSubWebsocketSessionId, WebSocket> OpenWebsockets => _sockets;
+    public WebApplication Host { get; }
+
+    public IServiceScope NewServiceScope()
+        => Host.Services.CreateScope();
 
     public WebsocketFixture()
     {
-        // We use kestrel here because Websocket library requires a WebSocketClient (cannot be used with TestServer as far as I know).
-        // UseKestrel(TEST_PORT); - need to disable this to get the project to build when migrating to xUnit v3, will revist later
-    }
-
-    public async Task SendTestMessageAsync(string message, CancellationToken ct = default)
-    {
-        await (await _sockets.Reader.ReadAsync(ct)).SendAsync(message, ct);
-        await Handler.MessageProcessed(ct);
-    }
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.ConfigureServices((ctx, s) =>
+        Host = ConfigureWebHost(WebApplication.CreateBuilder()).Build();
+        Host.UseWebSockets();
+        Host.Map("/ws", async ctx =>
         {
-            s.AddSingleton<IWebsocketEventSubHandler, TestHandler>();
-            s.AddTransient<IWebsocketClientFactory>(sp => new TestWebsocketClientFactory(Path));
-            s.AddTransient(sp => new WebsocketClientEventSubWebsocketClient(
-                sp.GetRequiredService<IWebsocketEventSubHandler>(),
-                websocketClientFactory: sp.GetRequiredService<IWebsocketClientFactory>()
-                ));
-        });
-        builder.Configure(app =>
-        {
-            app.UseWebSockets();
-            app.Run(async ctx =>
+            CancellationToken ct = TestContext.Current.CancellationToken;
+            if (!ctx.WebSockets.IsWebSocketRequest)
             {
-                if (!ctx.WebSockets.IsWebSocketRequest)
-                {
-                    ctx.Response.StatusCode = 400;
-                    return;
-                }
+                ctx.Response.StatusCode = 400;
+                return;
+            }
 
-                using WebSocket ws = await ctx.WebSockets.AcceptWebSocketAsync();
-                await _sockets.Writer.WriteAsync(ws);
-                await ws.WaitForClientClose();
-            });
+            using WebSocket ws = await ctx.WebSockets.AcceptWebSocketAsync();
+
+            EventSubWebsocketSessionId sessionId = new(Guid.NewGuid().ToString());
+
+            _sockets.AddOrUpdate(sessionId, ws, (_, w) => w);
+
+            await ws.SendEventSubMessage(
+                new EventSubWebsocketMessage<WelcomeMessagePayload>()
+                {
+                    Metadata = new()
+                    {
+                        MessageId = new(Guid.NewGuid().ToString()),
+                        MessageTimestamp = DateTimeOffset.UtcNow,
+                        MessageType = WebsocketMessageType.Welcome
+                    },
+                    Payload = new()
+                    {
+                        Session = new()
+                        {
+                            Id = sessionId,
+                            Status = EventSubSessionStatus.Connected,
+                            ConnectedAt = DateTimeOffset.UtcNow,
+                            KeepaliveTimeout = TimeSpan.FromSeconds(10)
+                        }
+                    }
+                },
+                JsonConfig.ApiOptions,
+                ct
+                );
+
+            await ws.WaitForClientClose(ct);
+
+            _sockets.TryRemove(new(sessionId, ws));
         });
     }
 
-    protected override IHostBuilder? CreateHostBuilder()
-        => Host.CreateDefaultBuilder();
-}
+    public Task SendTestMessageAsync(EventSubWebsocketSessionId sessionId, string message, CancellationToken ct = default)
+        => !_sockets.TryGetValue(sessionId, out WebSocket? ws)
+            ? throw new KeyNotFoundException("The websocket connection with the specified key was not found.")
+            : ws.SendAsync(message, ct);
 
-public class TestWebsocketClientFactory(Uri testServerUri) : IWebsocketClientFactory
-{
-    public IWebsocketClient CreateWebsocketClient()
-        => new WebsocketClient(testServerUri);
+    public Task SendTestMessageAsync<TPayload>(EventSubWebsocketSessionId sessionId, EventSubWebsocketMessage<TPayload> message, CancellationToken ct = default)
+        => SendTestMessageAsync(sessionId, JsonSerializer.Serialize(message, JsonConfig.ApiOptions), ct);
+
+    public async Task<StopWebsocketClient> StartNewClient(IServiceProvider sp, CancellationToken ct = default)
+    {
+        StartEventSubWebsocketClient start = EventSubWebsocketClient.Create(ctx =>
+        {
+            Host.GetTestServer().CreateWebSocketClient();
+            WebsocketClient client = new(
+                url: ctx.Uri,
+                connectionFactory: (uri, ct) => Host.GetTestServer().CreateWebSocketClient().ConnectAsync(uri, ct),
+                logger: null
+                )
+            {
+                IsStreamDisposedAutomatically = false,
+                IsTextMessageConversionEnabled = false
+            };
+
+            IDisposable messageHandler = client.MessageReceived.Subscribe(async message =>
+            {
+                if (message.Stream is not Stream stream)
+                    return;
+
+                await ctx.OnMessage(stream, TestContext.Current.CancellationToken);
+                await stream.DisposeAsync();
+            });
+
+            return async ct =>
+            {
+                await client.StartOrFail();
+                return async ct =>
+                {
+                    messageHandler.Dispose();
+                    try
+                    {
+                        await client.StopOrFail(WebSocketCloseStatus.NormalClosure, string.Empty);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                };
+            };
+        }).WithReconnects(error => throw error);
+
+        return await start(
+                sp.GetRequiredService<ProcessWebsocketMessage>(),
+                new("ws://localhost/ws"),
+                ct
+                );
+    }
+
+    private static WebApplicationBuilder ConfigureWebHost(WebApplicationBuilder builder)
+    {
+        builder.WebHost.UseTestServer();
+        builder.Services.AddScoped<TestHandler>();
+        builder.Services.AddScoped<IdempotencyCache>();
+        builder.Services.AddScoped<ProcessWebsocketMessage>(sp
+            => WebsocketMessageDeserializer.Create()
+                .WithIdempotentMessages((id, ct) => sp.GetRequiredService<IdempotencyCache>().IsRepeated(id, ct))
+                .WithHandler(sp.GetRequiredService<TestHandler>())
+                .With(next => async (message, ct) =>
+                {
+                    Validation<EventSubWebsocketMessage> result = await next(message, ct);
+                    return result.Match<Validation<EventSubWebsocketMessage>>(
+                        e => { TestContext.Current.AddAttachment("pipeline-error", $"{e.GetType().FullName}: {e.Message}"); return e; },
+                        message => message
+                        );
+                })
+                );
+        return builder;
+    }
+
+    public async ValueTask InitializeAsync()
+        => await Host.StartAsync(TestContext.Current.CancellationToken);
+    public async ValueTask DisposeAsync()
+    {
+        await Host.StopAsync();
+        await Host.DisposeAsync();
+    }
 }
 
 public class TestHandler : IWebsocketEventSubHandler
@@ -83,69 +166,85 @@ public class TestHandler : IWebsocketEventSubHandler
     public EventSubWebsocketSession? Session { get; private set; }
     public int KeepaliveCounter { get; private set; } = 0;
     public IEventSubNotification? LastNotification { get; private set; }
-    public EventSubSubscription? RevokedSubscription { get; private set; }
-    public Exception? LastException { get; private set; }
-    private TaskCompletionSource _messageProcessed = new();
-    public void Reset()
+    public EventSubSubscription? LastRevokedSubscription { get; private set; }
+    public EventSubReconnectSession? LastReconnect { get; private set; }
+    public Error? LastError { get; private set; }
+
+    private TaskCompletionSource MessageReceived = new();
+
+    public async Task WaitForMessage(CancellationToken ct)
     {
-        Session = null;
-        KeepaliveCounter = 0;
-        LastNotification = null;
-        RevokedSubscription = null;
-        LastException = null;
-        _messageProcessed = new();
-    }
-    public async Task MessageProcessed(CancellationToken ct = default)
-    {
-        await _messageProcessed.Task.WaitAsync(ct);
-        _messageProcessed = new();
-        return;
+        // Not exactly thread safe but the use case shouldn't cause an issue.
+        await MessageReceived.Task.WaitAsync(ct);
+        MessageReceived = new();
     }
 
-    public ValueTask OnConnected(EventSubWebsocketSession session, CancellationToken ct = default)
+    public ValueTask OnWelcome(EventSubWebsocketSession session, CancellationToken ct = default)
     {
         Session = session;
-        _messageProcessed.TrySetResult();
-        return ValueTask.CompletedTask;
-    }
-
-    public ValueTask OnException(Exception exception, CancellationToken ct = default)
-    {
-        LastException = exception;
-        _messageProcessed.TrySetResult();
+        MessageReceived.TrySetResult();
         return ValueTask.CompletedTask;
     }
 
     public ValueTask OnKeepalive(CancellationToken ct = default)
     {
         KeepaliveCounter++;
-        _messageProcessed.TrySetResult();
+        MessageReceived.TrySetResult();
         return ValueTask.CompletedTask;
     }
 
     public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default)
     {
         LastNotification = notification;
-        _messageProcessed.TrySetResult();
+        MessageReceived.TrySetResult();
         return ValueTask.CompletedTask;
     }
 
     public ValueTask OnSubscriptionRevoked(EventSubSubscription subscription, CancellationToken ct = default)
     {
-        RevokedSubscription = subscription;
-        _messageProcessed.TrySetResult();
+        LastRevokedSubscription = subscription;
+        MessageReceived.TrySetResult();
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask OnReconnected(EventSubReconnectSession reconnect, CancellationToken ct = default)
+    public ValueTask OnReconnect(EventSubReconnectSession reconnect, CancellationToken ct = default)
     {
-        _messageProcessed.TrySetResult();
+        LastReconnect = reconnect;
+        MessageReceived.TrySetResult();
         return ValueTask.CompletedTask;
+    }
+
+    public ValueTask OnError(Error error, CancellationToken ct = default)
+    {
+        LastError = error;
+        MessageReceived.TrySetResult();
+        return ValueTask.CompletedTask;
+    }
+}
+
+public class IdempotencyCache
+{
+    private readonly HashSet<string> _cache = [];
+
+    public ValueTask<bool> IsRepeated(WebsocketMessageId messageId, CancellationToken ct)
+    {
+        if (_cache.Contains(messageId))
+            return ValueTask.FromResult(true);
+        _cache.Add(messageId);
+        return ValueTask.FromResult(false);
     }
 }
 
 public static class WebsocketTestExtensions
 {
+    public static Task SendEventSubMessage<TPayload>(
+        this WebSocket ws,
+        EventSubWebsocketMessage<TPayload> message,
+        JsonSerializerOptions serializerOptions,
+        CancellationToken ct = default
+        )
+        => ws.SendAsync(JsonSerializer.Serialize(message, serializerOptions), ct);
+
     public static Task SendAsync(this WebSocket ws, string message, CancellationToken ct = default)
         => ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(message)),
             WebSocketMessageType.Text,

@@ -1,66 +1,92 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using TwitchySharp.EventSub.Models;
-using TwitchySharp.EventSub.Models.Notifications;
+using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Webhooks.AspNetCore;
+using TwitchySharp.EventSub.Webhooks.Functional;
+using TwitchySharp.Infrastructure.Functional;
 
-namespace TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Integration;
+namespace TwitchySharp.EventSub.Webhooks.Tests.Integration;
 
-public class Program { }
-
-public class WebhooksFixture : WebApplicationFactory<Program>
+public class WebhooksFixture : IAsyncLifetime
 {
-    private const string FAKE_SECRET = "super_secure_secret";
-    private const string FAKE_PATH = "/test-webhooks";
-    public TestHandler Handler => Services.GetRequiredService<IWebhookEventSubHandler>() as TestHandler ?? throw new InvalidOperationException("The IWebhookEventSubHandler is not registered as TestHandler.");
-    public string Secret => Services.GetRequiredService<IConfiguration>().GetRequiredSection("TwitchWebhooks").GetValue<string>("Secret") ?? string.Empty;
-    public string Path => Services.GetRequiredService<IConfiguration>().GetRequiredSection("TwitchWebhooks").GetValue<string>("Path") ?? string.Empty;
+    public const string WEBHOOKS_SECRET = "super_secure_secret";
+    public const string WEBHOOKS_PATH = "/test-webhooks";
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    private readonly HashSet<WebhookMessageId> IdempotencyCache = [];
+    public WebhookSecret WebhooksSecret { get; init; } = new(WEBHOOKS_SECRET);
+    public IWebHost Host { get; } // TODO: Convert to WebApplication
+    public TestHandler Handler { get; } = new();
+
+    public WebhooksFixture()
     {
-        builder.ConfigureAppConfiguration((ctx, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    { "TwitchWebhooks:Secret", FAKE_SECRET },
-                    { "TwitchWebhooks:Path", FAKE_PATH }
-                });
-        });
+        Host = ConfigureWebHost(new WebHostBuilder()).Build();
+    }
+
+    public ValueTask<IResult> SimulateRequest(HttpContext context, CancellationToken ct)
+    {
+        using IServiceScope scope = Host.Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<HandleAspNetWebhookRequest>()(context, ct);
+    }
+
+    private IWebHostBuilder ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseTestServer();
         builder.ConfigureServices((ctx, s) =>
         {
-            s.AddSingleton<IWebhookEventSubHandler, TestHandler>();
-            s.AddTwitchEventSubWebhooksVerification(options =>
+            s.AddRouting();
+            s.AddSingleton<IWebhookEventSubHandler>(_ => Handler);
+            s.AddTwitchEventSubWebhooks(options =>
             {
-                options.Secret = ctx.Configuration.GetRequiredSection("TwitchWebhooks").GetValue<string>("Secret") ?? string.Empty;
+                options.SecretResolver = _ => (subscription, ct) => ValueTask.FromResult<WebhookSecret?>(WebhooksSecret);
+                options.IdempotencyCache = _ => (messageId, ct) =>
+                {
+
+                    if (IdempotencyCache.Contains(messageId))
+                        return ValueTask.FromResult(true);
+                    IdempotencyCache.Add(messageId);
+                    return ValueTask.FromResult(false);
+                };
             });
-            s.AddTwitchEventSubWebhooks();
         });
         builder.Configure(app =>
         {
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapTwitchWebhooks(app.ApplicationServices.GetRequiredService<IConfiguration>().GetRequiredSection("TwitchWebhooks").GetValue<string>("Path") ?? "/");
+                endpoints.MapTwitchWebhooks(WEBHOOKS_PATH);
             });
         });
+
+        return builder;
     }
 
-    protected override IHostBuilder? CreateHostBuilder()
-        => Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseTestServer();
-            });
+    public async ValueTask InitializeAsync()
+        => await Host.StartAsync(TestContext.Current.CancellationToken);
+
+    public async ValueTask DisposeAsync()
+    {
+        await Host.StopAsync(TestContext.Current.CancellationToken);
+        Host.Dispose();
+    }
+}
+
+public static class WebhooksSecretExtensions
+{
+    public static byte[] ToBytes(this WebhookSecret secret)
+        => Encoding.UTF8.GetBytes(secret.Value);
 }
 
 public class TestHandler : IWebhookEventSubHandler
 {
-    public EventSubSubscription? ActiveSubscription { get; set; }
+    public EventSubSubscription? LastCallback { get; set; }
+    public string? LastCallbackChallenge { get; set; }
+    public EventSubSubscription? LastRevoked { get; set; }
     public IEventSubNotification? LastNotification { get; set; }
+    public Error? LastError { get; set; }
 
     public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default)
     {
@@ -70,16 +96,19 @@ public class TestHandler : IWebhookEventSubHandler
 
     public ValueTask OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default)
     {
-        if (ActiveSubscription is null)
-            return ValueTask.CompletedTask;
-        if (ActiveSubscription.Id == revokedSubscription.Id)
-            ActiveSubscription = null;
+        LastRevoked = revokedSubscription;
         return ValueTask.CompletedTask;
     }
 
     public ValueTask OnCallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
     {
-        ActiveSubscription = newSubscription;
+        LastCallback = newSubscription;
+        LastCallbackChallenge = challenge;
+        return ValueTask.CompletedTask;
+    }
+    public ValueTask OnError(Error error, CancellationToken ct = default)
+    {
+        LastError = error;
         return ValueTask.CompletedTask;
     }
 }

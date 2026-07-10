@@ -11,15 +11,15 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../../src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
     <ProjectReference Include="../../../../src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
+    <ProjectReference Include="../../../../src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
   </ItemGroup>
 
   <ItemGroup>
