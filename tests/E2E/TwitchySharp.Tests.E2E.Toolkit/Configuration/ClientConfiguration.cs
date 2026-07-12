@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Tests.E2E;
+﻿using TwitchySharp.Api;
+
+namespace TwitchySharp.Tests.E2E;
 
 public class ClientConfiguration
 {
