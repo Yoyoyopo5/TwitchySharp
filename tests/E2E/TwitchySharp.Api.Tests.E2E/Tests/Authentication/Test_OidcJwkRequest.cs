@@ -2,7 +2,6 @@
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 
-[Collection("twitch")]
 public class Test_OidcJwkRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
@@ -12,8 +11,9 @@ public class Test_OidcJwkRequest(TwitchClientFixture fixture)
     {
         OidcJwkRequest request = new();
 
-        OidcJwkResponse response = (await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken)).Content;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TwitchResponse<OidcJwkResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
-        Assert.NotEmpty(response.Keys);
+        Assert.NotEmpty(response.Content.Keys);
     }
 }

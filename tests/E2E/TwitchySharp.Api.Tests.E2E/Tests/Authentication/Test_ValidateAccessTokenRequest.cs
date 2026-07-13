@@ -1,21 +1,30 @@
 ﻿using TwitchySharp.Api.Authorization;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 
-[Collection("twitch")]
 public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
 
+    private readonly EndpointName _endpointName = new("validate-access-token");
+
     [Fact]
     public async Task Send_ValidateAccessTokenRequest_ReturnSuccessResponse()
     {
+        if (_fixture.GetUserConfigFor(_endpointName) is not UserConfiguration userConfig)
+        {
+            TestContext.Current.AddSkippedEndpointWarning(_endpointName);
+            return;
+        }
+
         ValidateAccessTokenRequest request = new()
         {
-            UserId = _fixture.UserIdentity.UserId
+            UserId = userConfig.UserId
         };
 
-        var response = await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TwitchResponse<ValidateAccessTokenResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);
         Assert.False(string.IsNullOrEmpty(response.Content.Login));
