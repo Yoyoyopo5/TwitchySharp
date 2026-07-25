@@ -6,11 +6,13 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 public class Test_ClientCredentialsRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private readonly static TestName TestName = new("client-credentials");
 
     [Fact]
     public async Task Send_ClientCredentialsRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig = _fixture.GetClientConfig();
+        ClientConfiguration clientConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         ClientCredentialsRequest request = new()
         {

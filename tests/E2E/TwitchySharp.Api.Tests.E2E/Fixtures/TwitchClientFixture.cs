@@ -20,25 +20,52 @@ public class TwitchClientFixture
             .AddEnvironmentVariables();
 
         builder.Services
-            .Configure<ClientConfiguration>(builder.Configuration.GetRequiredSection("Client"))
-            .Configure<ExtensionConfiguration>(builder.Configuration.GetRequiredSection("Extension"))
+            .Configure<ClientConfiguration[]>(builder.Configuration.GetRequiredSection("Clients"))
+            .Configure<ExtensionConfiguration[]>(builder.Configuration.GetRequiredSection("Extensions"))
             .Configure<UserConfiguration[]>(builder.Configuration.GetRequiredSection("Users"))
+            .Configure<OrganizationConfiguration[]>(builder.Configuration.GetRequiredSection("Organizations"));
+
+        builder.Services
             .AddSingleton<TokenStore>(sp
                 => new(sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.Select(user
-                    => user.ToAccessTokenDetails(sp.GetRequiredService<IOptions<ClientConfiguration>>().Value.ClientId))))
-            .AddHttpClient()
+                    => user.ToAccessTokenDetails())))
+            .AddSingleton<TwitchRateLimitQueueOptions>();
+
+        builder.Services
+            .AddTransient<ResponseRecorder>()
+            .AddHttpClient<TwitchClient>()
+            .AddHttpMessageHandler<ResponseRecorder>();
+
+        builder.Services
             .AddAppAccessTokens()
             .AddUserAccessTokens()
             .AddExtensionJwts()
             .AddTransient<ITwitchClient>(sp
-                => TwitchClient.CreateDefault(sp.GetRequiredService<HttpClient>())
-                    .WithRateLimiting()
+                => TwitchClient.CreateDefault(sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(TwitchClient)))
+                    .With(next => async (request, ct) =>
+                    {
+                        try
+                        {
+                            return await next(request, ct);
+                        }
+                        catch (TwitchApiException apiEx)
+                        {
+                            TestContext.Current.AddAttachment("twitch-api-exception", apiEx.ToReportString());
+                            throw;
+                        }
+                    })
+                    .WithRateLimiting(sp.GetRequiredService<TwitchRateLimitQueueOptions>())
                     .WithAuthentication(new TwitchAuthorizationResolutionOptions()
                         {
-                            FallbackClientIdResolver = (_, _) => ValueTask.FromResult<ClientId?>(sp.GetRequiredService<IOptions<ClientConfiguration>>().Value.ClientId)
+                            FallbackClientIdResolver = (ctx, _) => ValueTask.FromResult(ctx.Identity switch
+                            {
+                                TwitchIdentity.User userIdentity => sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.FirstOrDefault(u => u.UserId == userIdentity.UserId)?.Token.ClientId,
+                                _ => sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault()?.ClientId ?? null
+                            })
                         }
                         .AddTokens(sp)
                         )
+                    // Need a request/response capture middleware for creating integration tests
                 );
 
         return builder;
@@ -47,14 +74,27 @@ public class TwitchClientFixture
 
 public static class TwitchClientFixtureExtensions
 {
-    public static ClientConfiguration GetClientConfig(this TwitchClientFixture fixture)
-        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<ClientConfiguration>>().Value;
+    public static T? GetAuthorizingConfigForEndpoint<T>(this TwitchClientFixture fixture, TestName endpointName)
+        where T : ITestIdentity
+        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<T[]>>().Value.WithTestName(endpointName);
 
-    public static UserConfiguration? GetUserConfigFor(this TwitchClientFixture fixture, EndpointName endpoint)
-        => fixture.ApplicationHost.Services.GetService<IOptions<UserConfiguration[]>>()?.Value.WithEndpointName(endpoint);
+    public static T GetAuthorizingConfigForTestOrSkip<T>(this TwitchClientFixture fixture, TestName endpointName)
+        where T : ITestIdentity
+    {
+        if (fixture.GetAuthorizingConfigForEndpoint<T>(endpointName) is T config)
+            return config;
+        Assert.Skip($"No {typeof(T).Name} found for endpoint {endpointName}.");
+        return default;
+    }
 
     public static ITwitchClient GetTwitchApiClient(this TwitchClientFixture fixture)
         => fixture.ApplicationHost.Services.GetRequiredService<ITwitchClient>();
+
+    public static ClientConfiguration? GetClientConfig(this TwitchClientFixture fixture, ClientId clientId)
+        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault(c => c.ClientId == clientId);
+
+    public static ClientConfiguration? GetClientConfig(this TwitchClientFixture fixture, UserConfiguration userConfig)
+        => fixture.GetClientConfig(userConfig.Token.ClientId);
 
     public static TokenStore GetTokenStore(this TwitchClientFixture fixture)
         => fixture.ApplicationHost.Services.GetRequiredService<TokenStore>();

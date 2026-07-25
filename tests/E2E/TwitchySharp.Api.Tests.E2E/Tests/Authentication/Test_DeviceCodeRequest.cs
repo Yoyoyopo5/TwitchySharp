@@ -6,11 +6,13 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 public class Test_DeviceCodeRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("device-code");
 
     [Fact]
     public async Task Send_DeviceCodeRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig = _fixture.GetClientConfig();
+        ClientConfiguration clientConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         HashSet<Scope> scopes = [];
         DeviceCodeRequest request = new()

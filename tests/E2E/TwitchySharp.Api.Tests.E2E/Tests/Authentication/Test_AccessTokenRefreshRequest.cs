@@ -7,19 +7,21 @@ public class Test_AccessTokenRefreshRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
 
-    private readonly EndpointName _endpointName = new("refresh-access-token");
+    private readonly static TestName TestName = new("access-token-refresh");
 
     [Fact]
     public async Task Send_AccessTokenRefreshRequest_ReturnSuccessResponse()
     {
-        if (_fixture.GetUserConfigFor(_endpointName) is not UserConfiguration userConfig)
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+         if (_fixture.GetClientConfig(userConfig) is not ClientConfiguration clientConfig)
         {
-            TestContext.Current.AddSkippedEndpointWarning(_endpointName);
+            Assert.Skip($"Could not find a {typeof(ClientConfiguration).Name} with token ClientId {userConfig.Token.ClientId}.");
             return;
         }
-        ClientConfiguration clientConfig = _fixture.GetClientConfig();
 
-        AccessTokenDetails.User userTokenDetails = userConfig.ToAccessTokenDetails(clientConfig.ClientId);
+        AccessTokenDetails.User userTokenDetails = userConfig.ToAccessTokenDetails();
 
         Assert.NotNull(userTokenDetails.RefreshToken);
 

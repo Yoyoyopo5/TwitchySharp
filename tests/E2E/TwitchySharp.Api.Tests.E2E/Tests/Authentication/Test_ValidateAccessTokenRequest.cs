@@ -7,16 +7,13 @@ public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
 
-    private readonly EndpointName _endpointName = new("validate-access-token");
+    private readonly TestName TestName = new("validate-access-token");
 
     [Fact]
     public async Task Send_ValidateAccessTokenRequest_ReturnSuccessResponse()
     {
-        if (_fixture.GetUserConfigFor(_endpointName) is not UserConfiguration userConfig)
-        {
-            TestContext.Current.AddSkippedEndpointWarning(_endpointName);
-            return;
-        }
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         ValidateAccessTokenRequest request = new()
         {
