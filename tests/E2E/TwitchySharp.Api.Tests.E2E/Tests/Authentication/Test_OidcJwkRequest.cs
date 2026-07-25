@@ -1,11 +1,11 @@
 ﻿using TwitchySharp.Api.Authorization;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
 
 public class Test_OidcJwkRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
-
     [Fact]
     public async Task Send_OidcJwtRequest_ReturnSuccessResponse()
     {

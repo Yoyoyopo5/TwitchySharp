@@ -7,16 +7,13 @@ public class Test_UserInfoRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
 
-    private readonly EndpointName _endpointName = new("user-info");
+    private readonly TestName TestName = new("user-info");
 
     [Fact]
     public async Task Send_UserInfoRequest_ReturnSuccessfulResponse()
     {
-        if (_fixture.GetUserConfigFor(_endpointName) is not UserConfiguration userConfig)
-        {
-            TestContext.Current.AddSkippedEndpointWarning(_endpointName);
-            return;
-        }
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         UserInfoRequest stubRequest = new()
         {
