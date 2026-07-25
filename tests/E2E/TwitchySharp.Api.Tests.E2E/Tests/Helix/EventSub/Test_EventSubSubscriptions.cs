@@ -1,5 +1,8 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using System.Diagnostics.CodeAnalysis;
+using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
+using TwitchySharp.Api.Helix.EventSub.Subscriptions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 
@@ -7,64 +10,98 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
 {
     private readonly EventSubWebSocketsFixture _fixture = fixture;
 
-    [Theory]
-    [ClassData(typeof(EventSubTestTypes))]
-    public async Task Send_WebhookEventSubCreateGetDeleteRequests_ReturnSuccessResponses(string subscriptionTypeName, EventSubTransportMethod transportMethod)
+    [Fact]
+    public async Task Send_EventSubWebsocketCreateGetDeleteRequests_ReturnSuccessResponses()
     {
-        const string CALLBACK_URI = "https://fake-callback.xyz";
+        EventSubWebsocketSessionId sessionId = new("12345");
 
-        ITwitchClient client = TwitchClientFixture.Client;
-        CancellationToken ct = TestContext.Current.CancellationToken;
+        await SendEventSubSubscriptionRequests(
+            _fixture,
+            EventSubTestProvider.Data.First(static t => t.Data is EventSubTest<ChannelFollow, UserConfiguration>).Data,
+            new WebsocketSubscriptionTransport(sessionId),
+            TestContext.Current.CancellationToken
+            );
+    }
 
-        EventSubSubscriptionTransportSpecification transport = transportMethod switch
+    [Theory]
+    [ClassData(typeof(EventSubTestProvider))]
+    public async Task Send_EventSubWebhookCreateGetDeleteRequests_ReturnSuccessResponses(EventSubTest subscriptionTestData)
+    {
+        EventSubCallbackUrl callbackUrl = new("https://fake-callback.xyz");
+        WebhookSecret secret = new("FAKE_SECRET");
+
+        await SendEventSubSubscriptionRequests(
+            _fixture,
+            subscriptionTestData,
+            new WebhookSubscriptionTransport(callbackUrl, secret),
+            TestContext.Current.CancellationToken
+            );
+    }
+
+    private async static Task SendEventSubSubscriptionRequests(
+        EventSubWebSocketsFixture fixture,
+        EventSubTest testData,
+        EventSubSubscriptionTransportSpecification transport,
+        CancellationToken ct
+        )
+    {
+        ITwitchClient client = fixture.GetTwitchApiClient();
+
+        EventSubSubscriptionSpecification specification = new()
         {
-            _ when transportMethod == EventSubTransportMethod.Webhook
-                => new WebhookSubscriptionTransport(new(CALLBACK_URI), "FAKE_SECRET"),
-            _ when transportMethod == EventSubTransportMethod.Websocket
-                => new WebsocketSubscriptionTransport(_fixture.SessionId),
-            _ => throw new NotSupportedException() // We should eventually add conduit transport tests too.
+            Type = testData.WithFixture(fixture),
+            Transport = transport
         };
-
-        CreateEventSubSubscriptionRequest createRequest = new()
-        {
-            Subscription = new()
-            {
-                Type = _fixture.GetSubscriptionType(subscriptionTypeName),
-                Transport = new WebhookSubscriptionTransport(new(CALLBACK_URI), "FAKE_SECRET")
-            }
-        };
-
-        var createResponse = await client.SendAsync(createRequest, ct);
-        EventSubSubscription subscription = createResponse.Content.Data.Single();
-
-        Assert.Equal(createRequest.Subscription.Type.Type.Type, (string)subscription.Type);
-        Assert.Equal(createRequest.Subscription.Type.Type.Version, (string)subscription.Version);
-        Assert.True(createRequest.Subscription.Type.Condition.All(kvp => subscription.Condition.GetValueOrDefault(kvp.Key) == (string)kvp.Value));
-        Assert.Equal(createRequest.Subscription.Transport.Method, subscription.Transport.Method);
-        if (subscription.Transport.Method == EventSubTransportMethod.Websocket)
-        {
-            Assert.NotNull(subscription.Transport.SessionId);
-            Assert.Equal(createRequest.Subscription.Transport.SessionId!, subscription.Transport.SessionId);
-        }
-        if (subscription.Transport.Method == EventSubTransportMethod.Webhook)
-        {
-            Assert.NotNull(subscription.Transport.Callback);
-            Assert.Equal(CALLBACK_URI, subscription.Transport.Callback.AbsoluteUri);
-        }
+        EventSubSubscription createdSubscription = await CreateSubscription(client, specification, ct);
+        AssertEqual(specification, createdSubscription);
 
         await Task.Delay(100, ct);
 
-        GetEventSubSubscriptionsRequest getRequest = new()
-        {
-            SubscriptionId = subscription.Id
-        };
-        var getResponse = await client.SendAsync(getRequest, ct);
-        Assert.NotEmpty(getResponse.Content.Data);
+        EventSubSubscription? subscription = await GetSubscription(client, createdSubscription, ct);
+        AssertEqual(specification, subscription);
 
-        DeleteEventSubSubscriptionRequest deleteRequest = new()
+        await DeleteSubscription(client, subscription, ct);
+    }
+
+    private static Task<TwitchResponse<DeleteEventSubSubscriptionResponse>> DeleteSubscription(
+        ITwitchClient client,
+        EventSubSubscription subscription,
+        CancellationToken ct
+        )
+        => client.SendAsync(new DeleteEventSubSubscriptionRequest()
         {
             SubscriptionId = subscription.Id
-        };
-        await client.SendAsync(deleteRequest, ct);
+        }, ct);
+
+    private async static Task<EventSubSubscription?> GetSubscription(
+        ITwitchClient client,
+        EventSubSubscription subscription,
+        CancellationToken ct
+        )
+        => (await client.SendAsync(new GetEventSubSubscriptionsRequest() { SubscriptionId = subscription.Id }, ct)).Content
+            .Data
+            .FirstOrDefault();
+
+    private async static Task<EventSubSubscription> CreateSubscription(
+        ITwitchClient client,
+        EventSubSubscriptionSpecification specification,
+        CancellationToken ct
+        )
+        => (await client.SendAsync(new CreateEventSubSubscriptionRequest()
+        {
+            Subscription = specification
+        }, ct)).Content.Data.Single();
+
+    private static void AssertEqual(
+        EventSubSubscriptionSpecification specification,
+        [NotNull] EventSubSubscription? subscription
+        )
+    {
+        Assert.NotNull(subscription);
+        Assert.Equal(specification.Type.Type.Type, subscription.Type.Value);
+        Assert.Equal(specification.Type.Type.Version, subscription.Version.Value);
+        Assert.True(specification.Type.Condition.All(kvp => subscription.Condition.GetValueOrDefault(kvp.Key) == (string)kvp.Value));
+        Assert.Equal(specification.Transport.Method, subscription.Transport.Method);
+        Assert.Equal(specification.Transport.Callback, subscription.Transport.Callback);
     }
 }

@@ -7,17 +7,20 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 /// <summary>
 /// Creates a websocket connection to Twitch EventSub servers and holds it open for the duration of the test.
 /// </summary>
-public sealed class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IAsyncLifetime
+public sealed class EventSubWebSocketsFixture : TwitchClientFixture, IDisposable, IAsyncLifetime
 {
     public EventSubWebsocketSessionId SessionId { get; private set; } = new();
     private readonly ClientWebSocket _ws = new();
 
-    private static async ValueTask<string> GetWebsocketSessionIdAync(ClientWebSocket ws)
+    private static async ValueTask<string> GetWebsocketSessionId(ClientWebSocket ws)
     {
-        const int TIMEOUT = 5000;
+        const int TIMEOUT_MS = 5000;
+        TimeSpan timeout = TimeSpan.FromMilliseconds(TIMEOUT_MS);
+
         const string TWITCH_EVENTSUB_WEBSOCKET_URI = "wss://eventsub.wss.twitch.tv/ws";
 
-        CancellationTokenSource cts = new(TIMEOUT);
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(timeout);
 
         await ws.ConnectAsync(new Uri(TWITCH_EVENTSUB_WEBSOCKET_URI), cts.Token);
 
@@ -47,10 +50,15 @@ public sealed class EventSubWebSocketsFixture : EventSubFixture, IDisposable, IA
 
     public void Dispose() => _ws.Dispose();
 
-    public new async ValueTask InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
-        await base.InitializeAsync();
-        SessionId = new(await GetWebsocketSessionIdAync(_ws));
+        SessionId = new(await GetWebsocketSessionId(_ws));
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        Dispose();
+        return ValueTask.CompletedTask;
     }
 }
 
