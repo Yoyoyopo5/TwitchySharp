@@ -1,29 +1,34 @@
 ﻿using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Extensions;
 
-[Collection("twitch")]
 public class Test_SendExtensionChatMessage(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("send-extension-chat-message");
 
     [Fact]
     public async Task Send_SendExtensionChatMessageRequest_ReturnSuccessResponse()
     {
-        const string TEST_EXTENSION_VERSION = "0.0.1";
-        ExtensionVersion testExtensionVersion = new(TEST_EXTENSION_VERSION);
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(TestName);
+
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         SendExtensionChatMessageRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
-            ExtensionOwnerId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
+            ExtensionOwnerId = userConfig.UserId,
             Message = new()
             {
-                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
-                ExtensionVersion = testExtensionVersion,
+                ExtensionId = extensionConfig.ExtensionId,
+                ExtensionVersion = extensionConfig.Version,
                 Text = "Test Extension Message"
             }
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

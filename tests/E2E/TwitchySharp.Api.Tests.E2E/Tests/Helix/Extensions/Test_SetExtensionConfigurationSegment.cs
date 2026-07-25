@@ -1,59 +1,81 @@
 ﻿using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Extensions;
 
-[Collection("twitch")]
 public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("set-extension-configuration-segment");
 
     [Fact]
     public async Task Send_SetGlobalExtensionConfigurationSegementRequest_ReturnSuccessResponse()
     {
+        TestName testName = new(TestName.Value + "-global");
+
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(testName);
+
         SetExtensionConfigurationSegmentRequest request = new()
         {
-            ExtensionOwnerId = _fixture.UserIdentity.UserId,
+            ExtensionOwnerId = extensionConfig.ExtensionOwnerUserId,
             Configuration = new SetExtensionConfigurationGlobalSegmentData()
             {
-                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
+                ExtensionId = extensionConfig.ExtensionId,
                 Content = "Test Global Segment Content"
             }
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Send_SetDeveloperExtensionConfigurationSegementRequest_ReturnSuccessResponse()
     {
+        TestName testName = new(TestName.Value + "-developer");
+
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(testName);
+
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
+
         SetExtensionConfigurationSegmentRequest request = new()
         {
-            ExtensionOwnerId = _fixture.UserIdentity.UserId,
+            ExtensionOwnerId = userConfig.UserId,
             Configuration = new SetExtensionConfigurationDeveloperSegmentData()
             {
-                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
-                BroadcasterId = _fixture.UserIdentity.UserId,
+                ExtensionId = extensionConfig.ExtensionId,
+                BroadcasterId = userConfig.UserId,
                 Content = "Test Developer Segment Content"
             }
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Send_SetBroadcasterExtensionConfigurationSegementRequest_ReturnSuccessResponse()
     {
+        TestName testName = new(TestName.Value + "-broadcaster");
+
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(testName);
+
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
+
         SetExtensionConfigurationSegmentRequest request = new()
         {
-            ExtensionOwnerId = _fixture.UserIdentity.UserId,
+            ExtensionOwnerId = userConfig.UserId,
             Configuration = new SetExtensionConfigurationBroadcasterSegmentData()
             {
-                ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
-                BroadcasterId = _fixture.UserIdentity.UserId,
+                ExtensionId = extensionConfig.ExtensionId,
+                BroadcasterId = userConfig.UserId,
                 Content = "Test Broadcaster Segment Content"
             }
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

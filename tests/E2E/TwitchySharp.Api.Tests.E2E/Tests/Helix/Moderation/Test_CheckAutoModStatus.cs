@@ -1,18 +1,22 @@
 ﻿using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Moderation;
 
-[Collection("twitch")]
 public class Test_CheckAutoModStatus(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("check-auto-mod-status");
 
     [Fact]
     public async Task Send_CheckAutomodStatusRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         CheckAutoModStatusRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
             Messages = new()
             {
                 Messages = [ new() {
@@ -22,6 +26,6 @@ public class Test_CheckAutoModStatus(TwitchClientFixture fixture)
             }
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

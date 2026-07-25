@@ -1,21 +1,25 @@
 ﻿using TwitchySharp.Api.Helix.Analytics;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Analytics;
 
-[Collection("twitch")]
 public class Test_GetExtensionAnalyticsRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
 
+    private static readonly TestName TestName = new("get-extension-analytics");
+
     [Fact]
     public async Task Send_GetExtensionAnalyticsRequest_ReturnSuccessResponse()
     {
-        // We need an account with extension analytics to fully test this endpoint.
+        UserConfiguration? userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetExtensionAnalyticsRequest request = new()
         {
-            UserId = _fixture.UserIdentity.UserId
+            UserId = userConfig.UserId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

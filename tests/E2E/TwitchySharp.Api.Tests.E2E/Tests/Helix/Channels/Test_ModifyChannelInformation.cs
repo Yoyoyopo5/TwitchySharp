@@ -1,21 +1,25 @@
 ﻿using TwitchySharp.Api.Helix.Channels;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 
-[Collection("twitch")]
 public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("modify-channel-information");
 
     [Fact]
     public async Task Send_ModifyChannelInformationRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelInformationRequest getInfoRequest = new()
         {
-            BroadcasterIds = [_fixture.UserIdentity.UserId]
+            BroadcasterIds = [userConfig.UserId]
         };
 
         // cache original
@@ -24,7 +28,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
         Assert.True(LanguageCode.TryParse("en", out LanguageCode language));
         ModifyChannelInformationRequest modifyRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
             ChannelInformation = new()
             {
                 BroadcasterLanguage = language,
@@ -37,6 +41,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
 
         await client.SendAsync(modifyRequest, ct);
         await Task.Delay(250, ct);
+
         // restore original
         await client.SendAsync(modifyRequest with
         {

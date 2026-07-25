@@ -1,20 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.Schedule;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Schedule;
 
-[Collection("twitch")]
 public class Test_UpdateChannelStreamSchedule(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-channel-stream-schedule");
 
     [Fact]
     public async Task Send_UpdateChannelStreamScheduleRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         UpdateChannelStreamScheduleRequest request = new()
         {
             Settings = new UpdateChannelStreamScheduleRequestParameters()
             {
-                BroadcasterId = _fixture.UserIdentity.UserId,
+                BroadcasterId = userConfig.UserId,
             }.EnableVacationMode(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow + TimeSpan.FromDays(1), TimeZoneInfo.Local)
         };
 
@@ -22,11 +26,11 @@ public class Test_UpdateChannelStreamSchedule(TwitchClientFixture fixture)
         {
             Settings = new UpdateChannelStreamScheduleRequestParameters()
             {
-                BroadcasterId = _fixture.UserIdentity.UserId,
+                BroadcasterId = userConfig.UserId,
             }.DisableVacationMode()
         };
 
-        ITwitchClient client = TwitchClientFixture.Client;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await client.SendAsync(request, ct);

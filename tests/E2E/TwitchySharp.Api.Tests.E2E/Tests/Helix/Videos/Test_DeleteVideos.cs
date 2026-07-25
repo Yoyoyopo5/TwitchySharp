@@ -1,18 +1,22 @@
 ﻿using TwitchySharp.Api.Helix.Videos;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Videos;
 
-[Collection("twitch")]
 public class Test_DeleteVideos(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("delete-videos");
 
     [Fact]
     public async Task Send_DeleteVideosRequest_ReturnSuccessResponse()
     {
         // Note this has side effect of deleting most recent video on test channel. oof
-        UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        UserId broadcasterId = userConfig.UserId;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetVideosRequest getRequest = new()
@@ -23,7 +27,7 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
             }
         };
 
-        var getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetVideosResponse> getResponse = await client.SendAsync(getRequest, ct);
         if (getResponse.Content.Data.FirstOrDefault() is not TwitchVideo video)
             return;
 

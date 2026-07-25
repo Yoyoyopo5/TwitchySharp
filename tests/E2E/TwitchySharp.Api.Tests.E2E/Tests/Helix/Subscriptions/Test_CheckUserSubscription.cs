@@ -1,11 +1,12 @@
 ﻿using TwitchySharp.Api.Helix.Subscriptions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Subscriptions;
 
-[Collection("twitch")]
 public class Test_CheckUserSubscription(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("check-user-subscribed");
 
     [Fact]
     public async Task Send_CheckUserSubscriptionRequest_ReturnSuccessResponse()
@@ -15,15 +16,18 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
         // If discriminated unions are added to C#, we could use those, or we could wrap every response in a monad object.
         // Both of these solutions will likely add significant pattern matching boilerplate for consumers, even when error codes indicate exceptionality.
 
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         const string TEST_USER_ID = "141879576";
         UserId testUserId = new(TEST_USER_ID);
 
         CheckUserSubscriptionRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
             UserId = testUserId,
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

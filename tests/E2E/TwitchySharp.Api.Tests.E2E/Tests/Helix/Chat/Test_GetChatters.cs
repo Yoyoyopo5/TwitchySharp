@@ -1,21 +1,25 @@
 ﻿using TwitchySharp.Api.Helix.Chat;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Chat;
 
-[Collection("twitch")]
 public class Test_GetChatters(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("get-chatters");
 
     [Fact]
     public async Task Send_GetChattersRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetChattersRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
-            ModeratorId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
+            ModeratorId = userConfig.UserId,
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

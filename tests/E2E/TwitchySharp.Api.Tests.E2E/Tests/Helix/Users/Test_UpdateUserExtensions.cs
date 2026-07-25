@@ -1,17 +1,21 @@
 ﻿using TwitchySharp.Api.Helix.Users;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Users;
 
-[Collection("twitch")]
 public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-user-extensions");
 
     [Fact]
     public async Task Send_UpdateUserExtensionsRequest_ReturnSuccessResponse()
     {
-        UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        UserId broadcasterId = userConfig.UserId;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetUserExtensionsRequest getRequest = new()
@@ -19,7 +23,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             UserId = broadcasterId
         };
 
-        var getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetUserExtensionsResponse> getResponse = await client.SendAsync(getRequest, ct);
         if (getResponse.Content.Data.Where(ext => ext.Type.Contains(UserExtensionType.Panel)).FirstOrDefault() is not InstalledExtension extension)
             return;
 

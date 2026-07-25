@@ -1,20 +1,25 @@
 ﻿using TwitchySharp.Api.Helix.Channels;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 
-[Collection("twitch")]
 public class Test_GetChannelEditors(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("get-channel-editors");
+
 
     [Fact]
     public async Task Send_GetChannelEditorsRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetChannelEditorsRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId
+            BroadcasterId = userConfig.UserId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }
