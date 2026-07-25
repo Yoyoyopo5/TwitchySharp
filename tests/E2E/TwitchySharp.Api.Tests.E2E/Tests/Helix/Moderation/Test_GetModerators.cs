@@ -1,20 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Moderation;
 
-[Collection("twitch")]
 public class Test_GetModerators(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("get-moderators");
 
     [Fact]
     public async Task Send_GetChannelModeratorsRequest_ReturnSuccessResponses()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetModeratorsRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId
+            BroadcasterId = userConfig.UserId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

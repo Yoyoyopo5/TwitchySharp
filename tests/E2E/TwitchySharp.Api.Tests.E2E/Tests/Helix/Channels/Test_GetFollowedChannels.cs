@@ -1,20 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.Channels;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 
-[Collection("twitch")]
 public class Test_GetFollowedChannels(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private readonly static TestName TestName = new("get-followed-channels");
 
     [Fact]
     public async Task Send_GetFollowedChannelsRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetFollowedChannelsRequest request = new()
         {
-            UserId = _fixture.UserIdentity.UserId
+            UserId = userConfig.UserId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

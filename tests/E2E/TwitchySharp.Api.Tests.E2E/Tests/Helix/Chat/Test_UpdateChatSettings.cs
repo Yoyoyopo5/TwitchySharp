@@ -1,31 +1,35 @@
 ﻿using TwitchySharp.Api.Helix.Chat;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Chat;
 
-[Collection("twitch")]
 public class Test_UpdateChatSettings(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-chat-settings");
 
     [Fact]
     public async Task Send_UpdateChatSettingsRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChatSettingsRequest getSettingsRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
-            ModeratorId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
+            ModeratorId = userConfig.UserId,
         };
 
-        var getSettingsResponse = await client.SendAsync(getSettingsRequest, ct);
+        TwitchResponse<GetChatSettingsResponse> getSettingsResponse = await client.SendAsync(getSettingsRequest, ct);
         ChatSettings? settings = getSettingsResponse.Content.Data.FirstOrDefault();
 
         UpdateChatSettingsRequest updateSettingsRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
-            ModeratorId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
+            ModeratorId = userConfig.UserId,
             NewSettings = new()
             {
                 EmoteMode = true,

@@ -1,21 +1,25 @@
 ﻿using TwitchySharp.Api.Helix.Users;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Users;
 
-[Collection("twitch")]
 public class Test_UpdateUser(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-user");
 
     [Fact]
     public async Task Send_UpdateUserRequest_ReturnSuccessResponse()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         UpdateUserRequest request = new()
         {
-            UserId = _fixture.UserIdentity.UserId,
+            UserId = userConfig.UserId,
             Description = "On Vacation"
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

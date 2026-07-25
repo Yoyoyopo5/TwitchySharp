@@ -1,8 +1,8 @@
 ﻿using TwitchySharp.Api.Helix.Moderation;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Moderation;
 
-[Collection("twitch")]
 public class Test_ShieldMode(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
@@ -10,8 +10,13 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_UpdateShieldModeStatusRequest_ReturnSuccessResponses()
     {
-        UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = TwitchClientFixture.Client;
+        TestName testName = new("update-shield-mode");
+
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
+
+        UserId broadcasterId = userConfig.UserId;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await UpdateShieldModeStatus(client, broadcasterId, true, ct);
@@ -22,10 +27,15 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetShieldModeStatusRequest_ReturnSuccessResponse()
     {
-        await GetShieldModeStatus(TwitchClientFixture.Client, _fixture.UserIdentity.UserId, TestContext.Current.CancellationToken);
+        TestName testName = new("get-shield-mode");
+
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
+
+        await GetShieldModeStatus(_fixture.GetTwitchApiClient(), userConfig.UserId, TestContext.Current.CancellationToken);
     }
 
-    private static ValueTask<TwitchResponse<UpdateShieldModeStatusResponse>> UpdateShieldModeStatus(ITwitchClient client, UserId broadcasterId, bool isActive, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateShieldModeStatusResponse>> UpdateShieldModeStatus(ITwitchClient client, UserId broadcasterId, bool isActive, CancellationToken ct)
         => client.SendAsync(new UpdateShieldModeStatusRequest()
         {
             BroadcasterId = broadcasterId,
@@ -33,7 +43,7 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
             ShieldModeStatus = new() { IsActive = isActive }
         }, ct);
 
-    private static ValueTask<TwitchResponse<GetShieldModeStatusResponse>> GetShieldModeStatus(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<GetShieldModeStatusResponse>> GetShieldModeStatus(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new GetShieldModeStatusRequest()
         {
             BroadcasterId = broadcasterId,

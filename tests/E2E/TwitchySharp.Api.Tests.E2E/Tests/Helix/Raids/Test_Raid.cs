@@ -1,19 +1,23 @@
 ﻿using TwitchySharp.Api.Helix.Raids;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Raids;
 
-[Collection("twitch")]
 public class Test_Raid(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("raid");
 
     [Fact]
     public async Task Send_RaidRequests_ReturnSuccessResponses()
     {
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         const string TO_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
         UserId toBroadcasterId = new(TO_BROADCASTER_ID);
-        UserId fromBroadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserId fromBroadcasterId = userConfig.UserId;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         StartRaidRequest startRaidRequest = new()

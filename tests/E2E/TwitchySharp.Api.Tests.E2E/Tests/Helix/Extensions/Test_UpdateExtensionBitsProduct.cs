@@ -1,33 +1,37 @@
 ﻿using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Extensions;
 
-[Collection("twitch")]
 public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-extension-bits-product");
 
     [Fact]
     public async Task Send_UpdateExtensionBitsProductRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = TwitchClientFixture.Client;
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(TestName);
+
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetExtensionBitsProductsRequest getRequest = new()
         {
-            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
+            ExtensionId = extensionConfig.ExtensionId,
             ShouldIncludeAll = true
         };
 
-        var getResponse = await client.SendAsync(getRequest, ct);
-        var product = getResponse.Content.Data.Single(d => d.Sku == TwitchClientFixture.ExtensionConfig.BitsProduct.Sku);
+        TwitchResponse<GetExtensionBitsProductsResponse> getResponse = await client.SendAsync(getRequest, ct);
+        ExtensionBitsProduct product = getResponse.Content.Data.Single(d => d.Sku == extensionConfig.BitsProduct.Sku);
 
         UpdateExtensionBitsProductRequest updateRequest = new()
         {
-            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
+            ExtensionId = extensionConfig.ExtensionId,
             Product = new()
             {
-                Sku = TwitchClientFixture.ExtensionConfig.BitsProduct.Sku,
+                Sku = extensionConfig.BitsProduct.Sku,
                 Cost = new() { Type = ExtensionProductCostType.Bits, Amount = 100 },
                 DisplayName = "Super Cool Test Product",
                 InDevelopment = true,
@@ -41,10 +45,10 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
 
         UpdateExtensionBitsProductRequest restoreRequest = new()
         {
-            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId,
+            ExtensionId = extensionConfig.ExtensionId,
             Product = new()
             {
-                Sku = TwitchClientFixture.ExtensionConfig.BitsProduct.Sku,
+                Sku = extensionConfig.BitsProduct.Sku,
                 Cost = product.Cost,
                 DisplayName = product.DisplayName,
                 InDevelopment = product.InDevelopment,

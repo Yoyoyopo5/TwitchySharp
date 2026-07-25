@@ -1,11 +1,12 @@
 ﻿using TwitchySharp.Api.Helix.Extensions;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Extensions;
 
-[Collection("twitch")]
 public class Test_GetReleasedExtensions(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("get-released-extensions");
 
     [Fact]
     public async Task Send_GetReleasedExtensionsRequest_ReturnSuccessResponse()
@@ -13,11 +14,14 @@ public class Test_GetReleasedExtensions(TwitchClientFixture fixture)
         // Can't really test this one until we have a released extension.
         // Need to make sure an arbitary client id is allowed.
 
+        ExtensionConfiguration extensionConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(TestName);
+
         GetReleasedExtensionsRequest request = new()
         {
-            ExtensionId = TwitchClientFixture.ExtensionConfig.ExtensionId
+            ExtensionId = extensionConfig.ExtensionId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

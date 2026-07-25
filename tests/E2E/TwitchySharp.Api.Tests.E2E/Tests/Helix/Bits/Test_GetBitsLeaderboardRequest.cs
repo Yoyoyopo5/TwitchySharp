@@ -1,20 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.Bits;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Bits;
 
-[Collection("twitch")]
 public class Test_GetBitsLeaderboardRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private readonly static TestName TestName = new("get-bits-leaderboard");
 
     [Fact]
     public async Task Send_GetBitsLeaderboardRequest_ReturnSuccessResponse()
     {
+        UserConfiguration? userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
         GetBitsLeaderboardRequest request = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId
+            BroadcasterId = userConfig.UserId
         };
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

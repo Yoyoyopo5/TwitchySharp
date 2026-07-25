@@ -1,17 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.CCLs;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.CCLs;
 
-[Collection("twitch")]
 public class Test_GetContentClassificationLabelsRequest(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private readonly static TestName TestName = new("get-content-classification-labels");
 
     [Fact]
     public async Task Send_GetContentClassificationLabelsRequest_ReturnSuccessResponse()
     {
-        GetContentClassificationLabelsRequest request = new();
+        ClientConfiguration clientConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        await TwitchClientFixture.Client.SendAsync(request, TestContext.Current.CancellationToken);
+        GetContentClassificationLabelsRequest request = new()
+        {
+            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
+        };
+
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
     }
 }

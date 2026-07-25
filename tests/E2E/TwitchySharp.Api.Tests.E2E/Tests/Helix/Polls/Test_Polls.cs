@@ -1,20 +1,24 @@
 ﻿using TwitchySharp.Api.Helix.Polls;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Polls;
 
-[Collection("twitch")]
 public class Test_Polls(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("polls");
 
     [Fact]
     public async Task Send_PollRequests_ReturnSuccessResponses()
     {
-        UserId broadcasterId = _fixture.UserIdentity.UserId;
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        UserId broadcasterId = userConfig.UserId;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        var createResponse = await CreatePoll(client, broadcasterId, ct);
+        TwitchResponse<CreatePollResponse> createResponse = await CreatePoll(client, broadcasterId, ct);
         ChatPoll poll = createResponse.Content.Data.Single();
         await Task.Delay(250, ct);
 
@@ -22,7 +26,7 @@ public class Test_Polls(TwitchClientFixture fixture)
         await EndPoll(client, broadcasterId, poll.Id, ct);
     }
 
-    private static ValueTask<TwitchResponse<CreatePollResponse>> CreatePoll(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<CreatePollResponse>> CreatePoll(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new CreatePollRequest()
         {
             Poll = new CreatePollRequestData()
@@ -44,13 +48,13 @@ public class Test_Polls(TwitchClientFixture fixture)
             }
         }, ct);
 
-    private static ValueTask<TwitchResponse<GetPollsResponse>> GetPolls(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<GetPollsResponse>> GetPolls(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new GetPollsRequest()
         {
             BroadcasterId = broadcasterId
         }, ct);
 
-    private static ValueTask<TwitchResponse<EndPollResponse>> EndPoll(ITwitchClient client, UserId broadcasterId, PollId pollId, CancellationToken ct)
+    private static Task<TwitchResponse<EndPollResponse>> EndPoll(ITwitchClient client, UserId broadcasterId, PollId pollId, CancellationToken ct)
         => client.SendAsync(new EndPollRequest()
         {
             Poll = new EndPollRequestData()

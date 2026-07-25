@@ -1,20 +1,23 @@
-﻿using TwitchySharp.Api.Helix.Schedule;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Tests.E2E;
 
-namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Schedule;
+namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 
-public class Test_GetChannelICalendar(TwitchClientFixture fixture)
+public class Test_GetVips(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
-    private static readonly TestName TestName = new("get-channel-icalendar");
+    private static readonly TestName TestName = new(nameof(GetVipsRequest));
 
     [Fact]
-    public async Task Send_GetChannelICalendarRequest_ReturnSuccessResponse()
+    public async Task Send_GetVipsRequest_ReturnSuccessResponse()
     {
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        GetChannelICalendarRequest request = new()
+        GetVipsRequest request = new()
         {
             BroadcasterId = userConfig.UserId
         };

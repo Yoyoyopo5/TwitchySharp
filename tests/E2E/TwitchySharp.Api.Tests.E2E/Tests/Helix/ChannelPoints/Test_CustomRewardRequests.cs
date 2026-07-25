@@ -1,31 +1,35 @@
 ﻿using TwitchySharp.Api.Helix.ChannelPoints;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.ChannelPoints;
 
-[Collection("twitch")]
 public class Test_CustomRewardRequests(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("custom-rewards");
 
     [Fact]
     public async Task Send_CreateGetUpdateDeleteCustomRewardRequest_ReturnSuccessResponses()
     {
-        ITwitchClient client = TwitchClientFixture.Client;
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        CustomChannelPointsReward createdReward = await CreateReward(client, _fixture.UserIdentity.UserId, ct);
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        CustomChannelPointsReward createdReward = await CreateReward(client, userConfig.UserId, ct);
         await Task.Delay(250, TestContext.Current.CancellationToken);
 
-        await UpdateReward(client, createdReward, ct);
+        await UpdateReward(client, userConfig.UserId, createdReward, ct);
         await Task.Delay(250, TestContext.Current.CancellationToken);
 
-        await DeleteReward(client, createdReward, ct);
+        await DeleteReward(client, userConfig.UserId, createdReward, ct);
     }
 
-    private async ValueTask<CustomChannelPointsReward> CreateReward(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static async Task<CustomChannelPointsReward> CreateReward(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
         => (await client.SendAsync(new CreateCustomRewardsRequest
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = broadcasterId,
             Reward = new()
             {
                 Title = "Test Reward PLS Redeem",
@@ -44,13 +48,14 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
             }
         }, ct)).Content.Data.First();
 
-    private ValueTask<TwitchResponse<UpdateCustomRewardResponse>> UpdateReward(
+    private static Task<TwitchResponse<UpdateCustomRewardResponse>> UpdateReward(
         ITwitchClient client,
+        UserId broadcasterId,
         CustomChannelPointsReward reward,
         CancellationToken ct)
         => client.SendAsync(new UpdateCustomRewardRequest
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = broadcasterId,
             RewardId = reward.Id,
             UpdatedReward = new()
             {
@@ -65,13 +70,14 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
             }
         }, ct);
 
-    private ValueTask<TwitchResponse<DeleteCustomRewardResponse>> DeleteReward(
+    private static Task<TwitchResponse<DeleteCustomRewardResponse>> DeleteReward(
         ITwitchClient client,
+        UserId broadcasterId,
         CustomChannelPointsReward reward,
         CancellationToken ct)
         => client.SendAsync(new DeleteCustomRewardRequest
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = broadcasterId,
             RewardId = reward.Id
         }, ct);
 }

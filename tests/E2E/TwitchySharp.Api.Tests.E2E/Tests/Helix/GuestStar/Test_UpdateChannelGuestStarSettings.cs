@@ -1,30 +1,34 @@
 ﻿using TwitchySharp.Api.Helix.GuestStar;
+using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.GuestStar;
 
-[Collection("twitch")]
 public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
+    private static readonly TestName TestName = new("update-channel-guest-star-settings");
 
     [Fact]
     public async Task Send_UpdateChannelGuestStarSettingsRequest_ReturnSuccessResponse()
     {
-        ITwitchClient client = TwitchClientFixture.Client;
+        UserConfiguration userConfig
+            = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
+
+        ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelGuestStarSettingsRequest getRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
-            ModeratorId = _fixture.UserIdentity.UserId
+            BroadcasterId = userConfig.UserId,
+            ModeratorId = userConfig.UserId
         };
 
-        var getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetChannelGuestStarSettingsResponse> getResponse = await client.SendAsync(getRequest, ct);
         ChannelGuestStarSettings cachedSettings = getResponse.Content.Data.Single();
 
         UpdateChannelGuestStarSettingsRequest updateRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
             Settings = new()
             {
                 SlotCount = 4,
@@ -40,7 +44,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
 
         UpdateChannelGuestStarSettingsRequest restoreRequest = new()
         {
-            BroadcasterId = _fixture.UserIdentity.UserId,
+            BroadcasterId = userConfig.UserId,
             Settings = new()
             {
                 SlotCount = cachedSettings.SlotCount,
