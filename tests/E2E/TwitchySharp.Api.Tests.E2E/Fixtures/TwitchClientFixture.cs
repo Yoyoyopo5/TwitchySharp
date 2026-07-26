@@ -26,9 +26,8 @@ public class TwitchClientFixture
             .Configure<OrganizationConfiguration[]>(builder.Configuration.GetRequiredSection("Organizations"));
 
         builder.Services
-            .AddSingleton<TokenStore>(sp
-                => new(sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.Select(user
-                    => user.ToAccessTokenDetails())))
+            .AddAccessTokens(sp => sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.Select(user
+                    => user.ToAccessTokenDetails()))
             .AddSingleton<TwitchRateLimitQueueOptions>();
 
         builder.Services
@@ -37,9 +36,6 @@ public class TwitchClientFixture
             .AddHttpMessageHandler<ResponseRecorder>();
 
         builder.Services
-            .AddAppAccessTokens()
-            .AddUserAccessTokens()
-            .AddExtensionJwts()
             .AddTransient<ITwitchClient>(sp
                 => TwitchClient.CreateDefault(sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(TwitchClient)))
                     .With(next => async (request, ct) =>
