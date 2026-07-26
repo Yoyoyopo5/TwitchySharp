@@ -65,7 +65,6 @@ public class TwitchClientFixture
                         }
                         .AddTokens(sp)
                         )
-                    // Need a request/response capture middleware for creating integration tests
                 );
 
         return builder;
