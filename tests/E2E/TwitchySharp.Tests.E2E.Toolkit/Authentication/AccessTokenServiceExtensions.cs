@@ -10,6 +10,15 @@ public static class AccessTokenServiceExtensions
     private const string NEW_TOKEN = "new";
     private const string CACHED_TOKEN = "cached";
 
+    public static IServiceCollection AddAccessTokens(
+        this IServiceCollection sc,
+        Func<IServiceProvider, IEnumerable<AccessTokenDetails>>? populateTokens = null
+        )
+        => sc.AddSingleton<TokenStore>(sp => new(populateTokens is null ? null : populateTokens(sp)))
+            .AddAppAccessTokens()
+            .AddUserAccessTokens()
+            .AddExtensionJwts();
+
     public static IServiceCollection AddAppAccessTokens(this IServiceCollection sc)
         => sc
         .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.App>>(CACHED_TOKEN, (sp, _) => (ctx, ct) =>
@@ -17,17 +26,15 @@ public static class AccessTokenServiceExtensions
             sp.GetRequiredService<TokenStore>().TryGet(ctx.Identity, out AccessTokenDetails.App? details);
             return ValueTask.FromResult(details);
         })
-        .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.App>>(NEW_TOKEN, (sp, _) => async (ctx, ct) =>
-            {
-                ClientConfiguration clientConfig = sp.GetRequiredService<IOptions<ClientConfiguration>>().Value;
-                return ctx.Identity.ClientId != clientConfig.ClientId
-                    ? null
-                    : await sp.GetRequiredService<ITwitchClient>().GetNewAppAccessToken(clientConfig.ClientId, clientConfig.ClientSecret, ct);
-            })
+        .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.App>>(NEW_TOKEN, (sp, _) => (ctx, ct)
+            => sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault(config => config.ClientId == ctx.Identity.ClientId) is ClientConfiguration clientConfig
+                        ? sp.GetRequiredService<ITwitchClient>().GetNewAppAccessToken(clientConfig.ClientId, clientConfig.ClientSecret, ct)
+                        : ValueTask.FromResult<AccessTokenDetails.App?>(null)
+            )
         .AddTransient<AccessTokenRefresher<AccessTokenDetails.App>>(sp => async (details, ct) =>
             {
-                ClientConfiguration clientConfig = sp.GetRequiredService<IOptions<ClientConfiguration>>().Value;
-                return details.Identity.ClientId != clientConfig.ClientId
+                ClientConfiguration[] clientConfigs = sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value;
+                return clientConfigs.FirstOrDefault(config => config.ClientId == details.Identity.ClientId) is not ClientConfiguration clientConfig
                     ? new AccessTokenRefreshResult.Expired<AccessTokenDetails.App>(details)
                     : await sp.GetRequiredService<ITwitchClient>().GetNewAppAccessToken(clientConfig.ClientId, clientConfig.ClientSecret, ct) switch
                     {
@@ -48,10 +55,12 @@ public static class AccessTokenServiceExtensions
                 sp.GetRequiredService<TokenStore>().TryGet(ctx.Identity, out AccessTokenDetails.User? details);
                 return ValueTask.FromResult(details);
             })
-        .AddTransient<AccessTokenRefresher<AccessTokenDetails.User>>(sp => async (details, ct) =>
+        .AddTransient<AccessTokenRefresher<AccessTokenDetails.User>>(sp => (details, ct) =>
             {
-                ClientConfiguration config = sp.GetRequiredService<IOptions<ClientConfiguration>>().Value;
-                return await sp.GetRequiredService<ITwitchClient>().RefreshUserAccessToken(details, config.ClientSecret, ct);
+                ClientConfiguration[] clientConfigs = sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value;
+                return clientConfigs.FirstOrDefault(config => config.ClientId == details.Identity.ClientId) is ClientConfiguration clientConfig
+                    ? sp.GetRequiredService<ITwitchClient>().RefreshUserAccessToken(details, clientConfig.ClientSecret, ct)
+                    : ValueTask.FromResult<AccessTokenRefreshResult>(new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(details));
             })
         .AddTransient<Func<AccessTokenDetails.User, CancellationToken, ValueTask>>(sp => (details, ct) =>
             {
@@ -63,10 +72,11 @@ public static class AccessTokenServiceExtensions
         => sc
         .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.ExtensionJwt>>(NEW_TOKEN, (sp, _) => async (ctx, ct) =>
             {
-                ExtensionConfiguration extensionConfig = sp.GetRequiredService<IOptions<ExtensionConfiguration>>().Value;
-                return ctx.Identity is not TwitchIdentity.Extension ext || ext.ExtensionId != extensionConfig.ExtensionId
-                    ? null
-                    : await ext.SignNewJwt(extensionConfig.Secret);
+                ExtensionConfiguration[] extensionConfigs = sp.GetRequiredService<IOptions<ExtensionConfiguration[]>>().Value;
+                return ctx.Identity is TwitchIdentity.Extension ext
+                    && extensionConfigs.FirstOrDefault(config => config.ExtensionId == ext.ExtensionId) is ExtensionConfiguration extensionConfig
+                    ? await ext.SignNewJwt(extensionConfig.Secret)
+                    : null;
             })
         .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.ExtensionJwt>>(CACHED_TOKEN, (sp, _) => (ctx, ct) =>
             {
@@ -75,8 +85,8 @@ public static class AccessTokenServiceExtensions
             })
         .AddTransient<AccessTokenRefresher<AccessTokenDetails.ExtensionJwt>>(sp => async (details, ct) =>
             {
-                ExtensionConfiguration extensionConfig = sp.GetRequiredService<IOptions<ExtensionConfiguration>>().Value;
-                return details.Identity.ExtensionId != extensionConfig.ExtensionId
+                ExtensionConfiguration[] extensionConfigs = sp.GetRequiredService<IOptions<ExtensionConfiguration[]>>().Value;
+                return extensionConfigs.FirstOrDefault(config => config.ExtensionId == details.Identity.ExtensionId) is not ExtensionConfiguration extensionConfig
                     ? new AccessTokenRefreshResult.Expired<AccessTokenDetails.ExtensionJwt>(details)
                     : new AccessTokenRefreshResult.Refreshed<AccessTokenDetails.ExtensionJwt>(await details.Identity.SignNewJwt(extensionConfig.Secret));
             })
