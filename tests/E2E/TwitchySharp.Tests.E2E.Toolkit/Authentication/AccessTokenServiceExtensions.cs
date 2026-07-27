@@ -27,13 +27,13 @@ public static class AccessTokenServiceExtensions
             return ValueTask.FromResult(details);
         })
         .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.App>>(NEW_TOKEN, (sp, _) => (ctx, ct)
-            => sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault(config => config.ClientId == ctx.Identity.ClientId) is ClientConfiguration clientConfig
+            => sp.GetRequiredService<IOptions<List<ClientConfiguration>>>().Value.FirstOrDefault(config => config.ClientId == ctx.Identity.ClientId) is ClientConfiguration clientConfig
                         ? sp.GetRequiredService<ITwitchClient>().GetNewAppAccessToken(clientConfig.ClientId, clientConfig.ClientSecret, ct)
                         : ValueTask.FromResult<AccessTokenDetails.App?>(null)
             )
         .AddTransient<AccessTokenRefresher<AccessTokenDetails.App>>(sp => async (details, ct) =>
             {
-                ClientConfiguration[] clientConfigs = sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value;
+                List<ClientConfiguration> clientConfigs = sp.GetRequiredService<IOptions<List<ClientConfiguration>>>().Value;
                 return clientConfigs.FirstOrDefault(config => config.ClientId == details.Identity.ClientId) is not ClientConfiguration clientConfig
                     ? new AccessTokenRefreshResult.Expired<AccessTokenDetails.App>(details)
                     : await sp.GetRequiredService<ITwitchClient>().GetNewAppAccessToken(clientConfig.ClientId, clientConfig.ClientSecret, ct) switch
@@ -57,7 +57,7 @@ public static class AccessTokenServiceExtensions
             })
         .AddTransient<AccessTokenRefresher<AccessTokenDetails.User>>(sp => (details, ct) =>
             {
-                ClientConfiguration[] clientConfigs = sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value;
+                List<ClientConfiguration> clientConfigs = sp.GetRequiredService<IOptions<List<ClientConfiguration>>>().Value;
                 return clientConfigs.FirstOrDefault(config => config.ClientId == details.Identity.ClientId) is ClientConfiguration clientConfig
                     ? sp.GetRequiredService<ITwitchClient>().RefreshUserAccessToken(details, clientConfig.ClientSecret, ct)
                     : ValueTask.FromResult<AccessTokenRefreshResult>(new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(details));
@@ -72,7 +72,7 @@ public static class AccessTokenServiceExtensions
         => sc
         .AddKeyedTransient<AccessTokenDetailsResolver<AccessTokenDetails.ExtensionJwt>>(NEW_TOKEN, (sp, _) => async (ctx, ct) =>
             {
-                ExtensionConfiguration[] extensionConfigs = sp.GetRequiredService<IOptions<ExtensionConfiguration[]>>().Value;
+                List<ExtensionConfiguration> extensionConfigs = sp.GetRequiredService<IOptions<List<ExtensionConfiguration>>>().Value;
                 return ctx.Identity is TwitchIdentity.Extension ext
                     && extensionConfigs.FirstOrDefault(config => config.ExtensionId == ext.ExtensionId) is ExtensionConfiguration extensionConfig
                     ? await ext.SignNewJwt(extensionConfig.Secret)
@@ -85,7 +85,7 @@ public static class AccessTokenServiceExtensions
             })
         .AddTransient<AccessTokenRefresher<AccessTokenDetails.ExtensionJwt>>(sp => async (details, ct) =>
             {
-                ExtensionConfiguration[] extensionConfigs = sp.GetRequiredService<IOptions<ExtensionConfiguration[]>>().Value;
+                List<ExtensionConfiguration> extensionConfigs = sp.GetRequiredService<IOptions<List<ExtensionConfiguration>>>().Value;
                 return extensionConfigs.FirstOrDefault(config => config.ExtensionId == details.Identity.ExtensionId) is not ExtensionConfiguration extensionConfig
                     ? new AccessTokenRefreshResult.Expired<AccessTokenDetails.ExtensionJwt>(details)
                     : new AccessTokenRefreshResult.Refreshed<AccessTokenDetails.ExtensionJwt>(await details.Identity.SignNewJwt(extensionConfig.Secret));
