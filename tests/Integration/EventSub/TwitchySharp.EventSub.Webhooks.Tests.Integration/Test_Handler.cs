@@ -11,7 +11,7 @@ public class Test_Handler(WebhooksFixture fixture) : IClassFixture<WebhooksFixtu
     public async Task Receive_CallbackVerification_HandlerOnCallbackCalled()
     {
         const string FAKE_CHALLENGE = "test_challenge";
-        const string FAKE_MESSAGE_ID = "1234567890";
+        const string FAKE_MESSAGE_ID = "1234897124";
         const string FAKE_BODY = $$"""
             {
               "challenge": "{{FAKE_CHALLENGE}}",
@@ -53,7 +53,7 @@ public class Test_Handler(WebhooksFixture fixture) : IClassFixture<WebhooksFixtu
     public async Task Receive_Notification_HandlerOnNotifiedCalled()
     {
         const string FAKE_SUBSCRIPTION_ID = "0b7f3361-672b-4d39-b307-dd5b576c9b27";
-        const string FAKE_MESSAGE_ID = "1234567890";
+        const string FAKE_MESSAGE_ID = "1235678236";
         const string FAKE_TIMESTAMP = "2023-11-06T18:11:47.492253549Z";
         const string FAKE_MESSAGE = "Whaddup chat? Check out Yoyoyopo5 on Twitch, it's good.";
         const string FAKE_BODY = $$"""
@@ -144,7 +144,7 @@ public class Test_Handler(WebhooksFixture fixture) : IClassFixture<WebhooksFixtu
     public async Task Receive_Revocation_HandlerOnRevokedCalled()
     {
         const string FAKE_SUBSCRIPTION_ID = "f1c2a387-161a-49f9-a165-0f21d7a4e1c4";
-        const string FAKE_MESSAGE_ID = "1234567890";
+        const string FAKE_MESSAGE_ID = "23516795";
         const string FAKE_TIMESTAMP = "2019-11-16T10:11:12.634234626Z";
         const string FAKE_BODY = $$"""
             {
