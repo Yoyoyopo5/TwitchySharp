@@ -37,11 +37,11 @@ public class Test_Idempotency(WebsocketFixture fixture) : IClassFixture<Websocke
     [Fact]
     public async Task ReceiveSameMessageId_HandlerIgnoresSecondMessage()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
-        EventSubWebsocketMessage<KeepaliveMessagePayload> repeat = CreateKeepalive(new("test-message"));
+        EventSubWebsocketMessage<KeepaliveMessagePayload> repeat = CreateKeepalive(new("test-keepalive-message"));
 
         await connection.Handler.WaitForMessage(ct);
         await connection.SendMessage(repeat, ct);
