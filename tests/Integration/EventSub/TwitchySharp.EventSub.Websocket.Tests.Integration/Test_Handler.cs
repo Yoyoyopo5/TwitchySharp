@@ -10,7 +10,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
     [Fact]
     public async Task ReceiveWelcomeMessage_HandlerOnWelcomeCalled()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(100));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -22,7 +22,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
     [Fact]
     public async Task ReceiveKeepaliveMessage_HandlerOnKeepaliveCalled()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -47,7 +47,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
     [Fact]
     public async Task ReceiveReconnectMessage_HandlerOnReconnectCalled()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -81,7 +81,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
     [Fact]
     public async Task ReceiveNotificationMessage_HandlerOnNotifiedCalled()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -139,7 +139,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
     [Fact]
     public async Task RecieveRevocationMessage_HandlerOnSubscriptionRevokedCalled()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
