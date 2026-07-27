@@ -20,13 +20,13 @@ public class TwitchClientFixture
             .AddEnvironmentVariables();
 
         builder.Services
-            .Configure<ClientConfiguration[]>(builder.Configuration.GetRequiredSection("Clients"))
-            .Configure<ExtensionConfiguration[]>(builder.Configuration.GetRequiredSection("Extensions"))
-            .Configure<UserConfiguration[]>(builder.Configuration.GetRequiredSection("Users"))
-            .Configure<OrganizationConfiguration[]>(builder.Configuration.GetRequiredSection("Organizations"));
+            .Configure<List<ClientConfiguration>>(builder.Configuration.GetRequiredSection("Clients"))
+            .Configure<List<ExtensionConfiguration>>(builder.Configuration.GetRequiredSection("Extensions"))
+            .Configure<List<UserConfiguration>>(builder.Configuration.GetRequiredSection("Users"))
+            .Configure<List<OrganizationConfiguration>>(builder.Configuration.GetRequiredSection("Organizations"));
 
         builder.Services
-            .AddAccessTokens(sp => sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.Select(user
+            .AddAccessTokens(sp => sp.GetRequiredService<IOptions<List<UserConfiguration>>>().Value.Select(user
                     => user.ToAccessTokenDetails()))
             .AddSingleton<TwitchRateLimitQueueOptions>();
 
@@ -55,8 +55,8 @@ public class TwitchClientFixture
                         {
                             FallbackClientIdResolver = (ctx, _) => ValueTask.FromResult(ctx.Identity switch
                             {
-                                TwitchIdentity.User userIdentity => sp.GetRequiredService<IOptions<UserConfiguration[]>>().Value.FirstOrDefault(u => u.UserId == userIdentity.UserId)?.Token.ClientId,
-                                _ => sp.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault()?.ClientId ?? null
+                                TwitchIdentity.User userIdentity => sp.GetRequiredService<IOptions<List<UserConfiguration>>>().Value.FirstOrDefault(u => u.UserId == userIdentity.UserId)?.Token.ClientId,
+                                _ => sp.GetRequiredService<IOptions<List<ClientConfiguration>>>().Value.FirstOrDefault()?.ClientId ?? null
                             })
                         }
                         .AddTokens(sp)
@@ -71,7 +71,7 @@ public static class TwitchClientFixtureExtensions
 {
     public static T? GetAuthorizingConfigForEndpoint<T>(this TwitchClientFixture fixture, TestName endpointName)
         where T : ITestIdentity
-        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<T[]>>().Value.WithTestName(endpointName);
+        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<List<T>>>().Value.WithTestName(endpointName);
 
     public static T GetAuthorizingConfigForTestOrSkip<T>(this TwitchClientFixture fixture, TestName endpointName)
         where T : ITestIdentity
@@ -86,7 +86,7 @@ public static class TwitchClientFixtureExtensions
         => fixture.ApplicationHost.Services.GetRequiredService<ITwitchClient>();
 
     public static ClientConfiguration? GetClientConfig(this TwitchClientFixture fixture, ClientId clientId)
-        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<ClientConfiguration[]>>().Value.FirstOrDefault(c => c.ClientId == clientId);
+        => fixture.ApplicationHost.Services.GetRequiredService<IOptions<List<ClientConfiguration>>>().Value.FirstOrDefault(c => c.ClientId == clientId);
 
     public static ClientConfiguration? GetClientConfig(this TwitchClientFixture fixture, UserConfiguration userConfig)
         => fixture.GetClientConfig(userConfig.Token.ClientId);
