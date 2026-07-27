@@ -19,8 +19,10 @@ internal class ResponseRecorder : DelegatingHandler
         if (response.Content is not null)
         {
             await response.Content.LoadIntoBufferAsync(ct);
-            using StreamReader sr = new(await response.Content.ReadAsStreamAsync(ct));
+            Stream responseContentStream = await response.Content.ReadAsStreamAsync(ct);
+            using StreamReader sr = new(responseContentStream, leaveOpen: true);
             responseContent = await sr.ReadToEndAsync(ct);
+            responseContentStream.Seek(0, SeekOrigin.Begin);
         }
 
         TestContext.Current.AddAttachment($"http-{request.Method}-{request.RequestUri?.AbsolutePath.Replace('/', '_')}", $$"""
