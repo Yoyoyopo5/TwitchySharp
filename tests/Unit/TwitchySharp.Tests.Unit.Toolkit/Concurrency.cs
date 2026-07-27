@@ -12,4 +12,15 @@ public static class Concurrency
         gate.Set();
         return await Task.WhenAll(tasks);
     }
+
+    public static async Task RunConcurrently(
+        int workerCount,
+        ManualResetEventSlim gate,
+        Func<int, Task> func
+        )
+    {
+        Task[] tasks = Enumerable.Range(0, workerCount).Select(func).ToArray();
+        gate.Set();
+        await Task.WhenAll(tasks);
+    }
 }
