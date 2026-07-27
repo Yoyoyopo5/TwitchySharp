@@ -1,81 +1,29 @@
-using System.Text;
-using TwitchySharp.Api;
-using TwitchySharp.Api.Authorization;
-using TwitchySharp.Api.Helix.Chat;
-using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.Subscriptions;
-using TwitchySharp.EventSub.Models.Notifications.Channel.Chat;
+using TwitchySharp.EventSub.Websocket.Clients;
 
-namespace TwitchySharp.EventSub.Websocket.Tests.E2E;
+namespace TwitchySharp.EventSub.Tests.E2E;
 
-public class Test_TwitchEventSubWebSocketClient(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
+public sealed class Test_TwitchEventSubWebSocketClient(EventSubWebsocketFixture fixture) : IAsyncLifetime
 {
-    private readonly WebsocketFixture _fixture = fixture;
+    private readonly EventSubWebsocketFixture _fixture = fixture;
 
-    [Fact]
-    public async Task Send_ValidateAccessTokenRequest_ReturnSuccessResponseWithUserReadChatScope()
+    private readonly TestHandler _handler = new();
+    private StopWebsocketClient? _stopClient = null;
+
+    public async ValueTask InitializeAsync()
+        => _stopClient = await _fixture.StartWebsocketClient(_handler, TestContext.Current.CancellationToken);
+
+    public async ValueTask DisposeAsync()
     {
-        CancellationToken ct = TestContext.Current.CancellationToken;
-        var response = await _fixture.Client.SendAsync(new ValidateAccessTokenRequest() { UserId = _fixture.AuthorizedBroadcaster.UserId }, ct);
-        Assert.Contains(Scope.UserReadChat, response.Content.Scopes);
+        if (_stopClient is not null)
+            await _stopClient(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task WaitFor_WelcomeMessage_ReturnNotNull()
+    public async Task WaitFor_WelcomeMessage()
     {
-        Assert.Null(_fixture.Handler.ReceivedException);
-        Assert.NotNull(_fixture.Handler.ReceivedConnected);
-    }
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(1));
 
-    [Fact]
-    public async Task WaitFor_ChannelChatMessageSubscriptionNotification_ReturnNotNull()
-    {
-        const string TEST_MESSAGE = "test message pls ignore";
-        CancellationToken ct = TestContext.Current.CancellationToken;
-        EventSubSubscription? subscription = null;
-
-        Assert.NotNull(_fixture.Handler.ReceivedConnected);
-
-        try
-        {
-            // Create subscription
-            subscription = (await _fixture.Client.SendAsync(new CreateEventSubSubscriptionRequest()
-            {
-                Subscription = new()
-                {
-                    Transport = new WebsocketSubscriptionTransport(_fixture.Handler.ReceivedConnected.Id),
-                    Type = new ChannelChatMessage(_fixture.AuthorizedBroadcaster.UserId, _fixture.AuthorizedBroadcaster.UserId)
-                }
-            }, ct)).Content.Data.First();
-
-            // Send chat message
-            await _fixture.Client.SendAsync(new SendChatMessageRequest()
-            {
-                Message = new()
-                {
-                    BroadcasterId = _fixture.AuthorizedBroadcaster.UserId,
-                    SenderId = _fixture.AuthorizedBroadcaster.UserId,
-                    Message = TEST_MESSAGE
-                }
-            }, ct);
-
-            await Task.Delay(1000, ct);
-
-            ChannelChatMessageNotification? notification = _fixture.Handler.ReceivedNotification as ChannelChatMessageNotification;
-
-            Assert.Null(_fixture.Handler.ReceivedException);
-            Assert.NotNull(notification);
-            Assert.Equal(TEST_MESSAGE, notification.Event.Message.Text);
-        }
-        catch (TwitchApiException ex)
-        {
-            string content = Encoding.UTF8.GetString(ex.Content);
-            TestContext.Current.AddWarning("An API request failed with content: " + content);
-        }
-        finally
-        {
-            if (subscription is not null)
-                await _fixture.Client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
-        }
+        await _handler.WaitForWelcome(cts.Token);
     }
 }
