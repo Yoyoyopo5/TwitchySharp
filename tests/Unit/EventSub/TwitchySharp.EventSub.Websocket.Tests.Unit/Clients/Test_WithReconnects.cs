@@ -1,6 +1,7 @@
 ﻿using TwitchySharp.EventSub.Websocket.Clients;
 using TwitchySharp.EventSub.Websocket.Functional;
 using TwitchySharp.Tests.Unit;
+using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Unit.Clients;
 
@@ -55,11 +56,11 @@ public class Test_WithReconnects
     public class FakeWebsocket
     {
         public Uri? Url { get; private set; }
-        public Action<string>? OnMessage { get; set; }
+        public Func<string, CancellationToken, Task>? OnMessage { get; set; }
         public bool Connected { get; private set; } = false;
 
-        public void Receive(string message)
-            => OnMessage?.Invoke(message);
+        public Task Receive(string message, CancellationToken ct)
+            => OnMessage is null ? Task.CompletedTask : OnMessage(message, ct);
 
         public void Configure(Uri url)
             => Url = url;
@@ -82,7 +83,7 @@ public class Test_WithReconnects
             FakeWebsocket ws = new();
             ws.Configure(url.ToUri().Match(e => throw new ArgumentException(), uri => uri));
             ws.Start();
-            ws.OnMessage = message => _ = pipeline(new(message.ToMemoryStream()), TestContext.Current.CancellationToken).AsTask();
+            ws.OnMessage = (message, ct) => pipeline(new(message.ToMemoryStream()), ct).AsTask();
             lock (_l)
             {
                 _websockets.Add(ws);
@@ -105,10 +106,17 @@ public class Test_WithReconnects
 
         StartEventSubWebsocketClient reconnectListen = stubProvider.MockStart.WithReconnects();
 
-        await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
+        CancellationToken ct = cts.Token;
 
-        stubProvider.Websockets[0].Receive("reconnect");
-        await Task.Delay(2, TestContext.Current.CancellationToken);
+        await reconnectListen(_stubProcess, new("wss://original-url.com"), ct);
+
+        await stubProvider.Websockets[0].Receive("reconnect", ct);
+        while(!ct.IsCancellationRequested && stubProvider.Websockets.Count != 2)
+        {
+            await Task.Delay(100, ct);
+        }
 
         Assert.Equal(2, stubProvider.Websockets.Count);
         Assert.Equal(new Uri(MOCK_RECONNECT_URL).AbsoluteUri, stubProvider.Websockets[1].Url?.AbsoluteUri);
@@ -119,11 +127,22 @@ public class Test_WithReconnects
     {
         FakeWebsocketProvider stubProvider = new();
         StartEventSubWebsocketClient reconnectListen = stubProvider.MockStart.WithReconnects();
-        await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
 
-        stubProvider.Websockets[0].Receive("welcome"); // promotes
-        stubProvider.Websockets[0].Receive("reconnect");
-        await Task.Delay(1, TestContext.Current.CancellationToken);
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
+        CancellationToken ct = cts.Token;
+
+        await reconnectListen(_stubProcess, new("wss://original-url.com"), ct);
+
+        await stubProvider.Websockets[0].Receive("welcome", ct); // promotes
+        await stubProvider.Websockets[0].Receive("reconnect", ct);
+
+        while (!ct.IsCancellationRequested
+            && (stubProvider.Websockets.Count != 2
+            || stubProvider.Websockets.Any(ws => !ws.Connected)))
+        {
+            await Task.Delay(100, ct);
+        }
 
         Assert.Equal(2, stubProvider.Websockets.Count);
         Assert.All(stubProvider.Websockets, ws => Assert.True(ws.Connected));
@@ -134,14 +153,23 @@ public class Test_WithReconnects
     {
         FakeWebsocketProvider stubProvider = new();
         StartEventSubWebsocketClient reconnectListen = stubProvider.MockStart.WithReconnects();
-        await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
 
-        stubProvider.Websockets[0].Receive("welcome");
-        stubProvider.Websockets[0].Receive("reconnect");
-        await Task.Delay(250, TestContext.Current.CancellationToken);
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
+        CancellationToken ct = cts.Token;
 
-        stubProvider.Websockets[1].Receive("welcome");
-        await Task.Delay(1, TestContext.Current.CancellationToken);
+        await reconnectListen(_stubProcess, new("wss://original-url.com"), ct);
+
+        await stubProvider.Websockets[0].Receive("welcome", ct);
+        await stubProvider.Websockets[0].Receive("reconnect", ct);
+        await Task.Delay(100, ct);
+
+        await stubProvider.Websockets[1].Receive("welcome", ct);
+
+        while(!ct.IsCancellationRequested && stubProvider.Websockets.First().Connected)
+        {
+            await Task.Delay(100, ct);
+        }
 
         Assert.Collection(
             stubProvider.Websockets,
@@ -157,11 +185,28 @@ public class Test_WithReconnects
 
         FakeWebsocketProvider stubProvider = new();
         StartEventSubWebsocketClient reconnectListen = stubProvider.MockStart.WithReconnects();
+
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
+        CancellationToken ct = cts.Token;
+
         await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
 
-        stubProvider.Websockets[0].Receive("welcome");
-        Parallel.For(0, RECONNECT_COUNT, _ => stubProvider.Websockets[0].Receive("reconnect"));
-        await Task.Delay(2, TestContext.Current.CancellationToken);
+        await stubProvider.Websockets[0].Receive("welcome", ct);
+        ManualResetEventSlim gate = new(false);
+        await Concurrency.RunConcurrently(RECONNECT_COUNT, gate, i =>
+            Task.Run(() =>
+            {
+                gate.Wait(ct);
+                return stubProvider.Websockets[0].Receive("reconnect", ct);
+            }));
+
+        while (!ct.IsCancellationRequested
+            && (stubProvider.Websockets.Count != RECONNECT_COUNT + 1
+            || stubProvider.Websockets.Count(ws => ws.Connected) != 2))
+        {
+            await Task.Delay(100, ct);
+        }
 
         Assert.Equal(RECONNECT_COUNT + 1, stubProvider.Websockets.Count);
         Assert.Equal(2, stubProvider.Websockets.Count(ws => ws.Connected));
@@ -174,17 +219,34 @@ public class Test_WithReconnects
 
         FakeWebsocketProvider stubProvider = new();
         StartEventSubWebsocketClient reconnectListen = stubProvider.MockStart.WithReconnects();
-        await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
 
-        stubProvider.Websockets[0].Receive("welcome");
-        Parallel.For(0, RECONNECT_COUNT, _ => stubProvider.Websockets[0].Receive("reconnect"));
-        await Task.Delay(2, TestContext.Current.CancellationToken);
+        CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        cts.CancelAfter(TimeSpan.FromSeconds(2));
+        CancellationToken ct = cts.Token;
+
+        await reconnectListen(_stubProcess, new("wss://original-url.com"), ct);
+
+        await stubProvider.Websockets[0].Receive("welcome", ct);
+
+        ManualResetEventSlim gate = new(false);
+        await Concurrency.RunConcurrently(RECONNECT_COUNT, gate, i =>
+            Task.Run(() =>
+            {
+                gate.Wait(ct);
+                return stubProvider.Websockets[0].Receive("reconnect", ct);
+            }));
 
         foreach (FakeWebsocket ws in stubProvider.Websockets)
         {
-            ws.Receive("welcome");
+            await ws.Receive("welcome", ct);
         }
-        await Task.Delay(2, TestContext.Current.CancellationToken);
+
+        while (!ct.IsCancellationRequested
+            && (stubProvider.Websockets.Count != RECONNECT_COUNT + 1
+            || stubProvider.Websockets.Count(ws => ws.Connected) != 1))
+        {
+            await Task.Delay(100, TestContext.Current.CancellationToken);
+        }
 
         Assert.Equal(1, stubProvider.Websockets.Count(ws => ws.Connected));
     }
