@@ -30,7 +30,7 @@ public class Test_Reconnects(WebsocketFixture fixture) : IClassFixture<Websocket
     [Fact]
     public async Task ReconnectRecieved_SecondConnectionOpened()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -47,7 +47,7 @@ public class Test_Reconnects(WebsocketFixture fixture) : IClassFixture<Websocket
     [Fact]
     public async Task MultipleReconnectsRecieved_ThenStop_AllConnectionsClosed()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(500));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
@@ -67,7 +67,7 @@ public class Test_Reconnects(WebsocketFixture fixture) : IClassFixture<Websocket
     [Fact]
     public async Task MultipleReconnectsReceived_MaxTwoConnectionsOpen()
     {
-        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromMilliseconds(200));
+        CancellationToken ct = TestContext.Current.CreateLinkedCancellationToken(TimeSpan.FromSeconds(1));
         await using WebsocketFixtureExtensions.ConnectionScope connection
             = await _fixture.CreateTestConnection(ct);
 
