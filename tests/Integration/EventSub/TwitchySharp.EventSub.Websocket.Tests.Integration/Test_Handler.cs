@@ -30,7 +30,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
         {
             Metadata = new()
             {
-                MessageId = new("test-message"),
+                MessageId = new("test-keepalive-message"),
                 MessageTimestamp = DateTimeOffset.UtcNow,
                 MessageType = WebsocketMessageType.Keepalive
             },
@@ -55,7 +55,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
         {
             Metadata = new()
             {
-                MessageId = new("test-message"),
+                MessageId = new("test-reconnect-message"),
                 MessageTimestamp = DateTimeOffset.UtcNow,
                 MessageType = WebsocketMessageType.Reconnect
             },
@@ -89,7 +89,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
         {
             Metadata = new()
             {
-                MessageId = new("test-message"),
+                MessageId = new("test-notification-message"),
                 MessageTimestamp = DateTimeOffset.UtcNow,
                 MessageType = WebsocketMessageType.Notification,
                 SubscriptionType = new(EventSubSubscriptionType.ChannelFollow.Type),
@@ -147,7 +147,7 @@ public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFix
         {
             Metadata = new()
             {
-                MessageId = new("test-message"),
+                MessageId = new("test-revocation-message"),
                 MessageTimestamp = DateTimeOffset.UtcNow,
                 MessageType = WebsocketMessageType.Recovation,
                 SubscriptionType = new(EventSubSubscriptionType.ChannelFollow.Type),
