@@ -47,10 +47,11 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
             reward = createRewardResponse.Content.Data.First();
         }
 
-        GetCustomRewardRedemptionRequest getRedemptionsRequest = new()
+        GetCustomRewardRedemptionRequestByStatus getRedemptionsRequest = new()
         {
             BroadcasterId = userConfig.UserId,
-            RewardId = reward.Id
+            RewardId = reward.Id,
+            Status = RewardRedemptionStatus.Unfulfilled
         };
 
         TwitchResponse<GetCustomRewardRedemptionResponse> getRedemptionsResponse = await client.SendAsync(getRedemptionsRequest, ct);

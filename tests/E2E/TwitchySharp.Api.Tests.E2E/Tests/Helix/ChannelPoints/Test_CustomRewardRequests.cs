@@ -9,7 +9,7 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
     private static readonly TestName TestName = new("custom-rewards");
 
     [Fact]
-    public async Task Send_CreateGetUpdateDeleteCustomRewardRequest_ReturnSuccessResponses()
+    public async Task Send_CreateUpdateDeleteCustomRewardRequest_ReturnSuccessResponses()
     {
         ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -18,12 +18,17 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         CustomChannelPointsReward createdReward = await CreateReward(client, userConfig.UserId, ct);
-        await Task.Delay(250, TestContext.Current.CancellationToken);
+        try
+        {
+            await Task.Delay(250, TestContext.Current.CancellationToken);
 
-        await UpdateReward(client, userConfig.UserId, createdReward, ct);
-        await Task.Delay(250, TestContext.Current.CancellationToken);
-
-        await DeleteReward(client, userConfig.UserId, createdReward, ct);
+            await UpdateReward(client, userConfig.UserId, createdReward, ct);
+            await Task.Delay(250, TestContext.Current.CancellationToken);
+        }
+        finally
+        {
+            await DeleteReward(client, userConfig.UserId, createdReward, ct);
+        }
     }
 
     private static async Task<CustomChannelPointsReward> CreateReward(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
@@ -32,7 +37,7 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
             BroadcasterId = broadcasterId,
             Reward = new()
             {
-                Title = "Test Reward PLS Redeem",
+                Title = Guid.NewGuid().ToString()[..6],
                 Cost = 1,
                 ShouldRedemptionsSkipRequestQueue = true,
                 IsMaxPerStreamEnabled = true,
