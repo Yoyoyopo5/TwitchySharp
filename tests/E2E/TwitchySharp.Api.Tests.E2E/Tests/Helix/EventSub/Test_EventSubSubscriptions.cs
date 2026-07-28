@@ -13,7 +13,7 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
     [Fact]
     public async Task Send_EventSubWebsocketCreateGetDeleteRequests_ReturnSuccessResponses()
     {
-        EventSubWebsocketSessionId sessionId = new("12345");
+        EventSubWebsocketSessionId sessionId = new(_fixture.SessionId);
 
         await SendEventSubSubscriptionRequests(
             _fixture,
@@ -53,14 +53,19 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
             Transport = transport
         };
         EventSubSubscription createdSubscription = await CreateSubscription(client, specification, ct);
-        AssertEqual(specification, createdSubscription);
+        try
+        {
+            AssertEqual(specification, createdSubscription);
 
-        await Task.Delay(100, ct);
+            await Task.Delay(100, ct);
 
-        EventSubSubscription? subscription = await GetSubscription(client, createdSubscription, ct);
-        AssertEqual(specification, subscription);
-
-        await DeleteSubscription(client, subscription, ct);
+            EventSubSubscription? subscription = await GetSubscription(client, createdSubscription, ct);
+            AssertEqual(specification, subscription);
+        }
+        finally
+        {
+            await DeleteSubscription(client, createdSubscription, default);
+        }
     }
 
     private static Task<TwitchResponse<DeleteEventSubSubscriptionResponse>> DeleteSubscription(
@@ -68,19 +73,27 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
         EventSubSubscription subscription,
         CancellationToken ct
         )
-        => client.SendAsync(new DeleteEventSubSubscriptionRequest()
-        {
-            SubscriptionId = subscription.Id
-        }, ct);
+        => client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
 
-    private async static Task<EventSubSubscription?> GetSubscription(
+    private async static Task<EventSubSubscription> GetSubscription(
         ITwitchClient client,
         EventSubSubscription subscription,
         CancellationToken ct
         )
-        => (await client.SendAsync(new GetEventSubSubscriptionsRequest() { SubscriptionId = subscription.Id }, ct)).Content
-            .Data
-            .FirstOrDefault();
+    {
+        GetEventSubSubscriptionsRequest requestForSubscription = new() { SubscriptionId = subscription.Id };
+
+        return (await client.SendAsync(
+            subscription.Transport.Method != EventSubTransportMethod.Websocket
+                ? requestForSubscription
+                : new EventSubSubscriptionType(subscription.Type, subscription.Version).GetAuthorizingUserKey() is not ConditionKey userIdConditionKey
+                ? throw new KeyNotFoundException($"The authorizing user condition key was not defined for {subscription.Type} {subscription.Version}.")
+                : requestForSubscription.ForWebsocketSubscriptions(new(new UserId(subscription.Condition[userIdConditionKey]))),
+            ct
+            )).Content.Data.Single();
+    }
+
+
 
     private async static Task<EventSubSubscription> CreateSubscription(
         ITwitchClient client,
@@ -100,7 +113,7 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
         Assert.NotNull(subscription);
         Assert.Equal(specification.Type.Type.Type, subscription.Type.Value);
         Assert.Equal(specification.Type.Type.Version, subscription.Version.Value);
-        Assert.True(specification.Type.Condition.All(kvp => subscription.Condition.GetValueOrDefault(kvp.Key) == (string)kvp.Value));
+        Assert.True(specification.Type.Condition.All(kvp => subscription.Condition.GetValueOrDefault(kvp.Key) == kvp.Value.ToString()));
         Assert.Equal(specification.Transport.Method, subscription.Transport.Method);
         Assert.Equal(specification.Transport.Callback, subscription.Transport.Callback);
     }
