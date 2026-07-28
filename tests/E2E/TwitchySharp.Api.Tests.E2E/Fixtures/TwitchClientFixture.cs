@@ -8,9 +8,9 @@ using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E;
 
-public sealed class TwitchClientFixture : TwitchTestApplication
+public class TwitchClientFixture : TwitchTestApplication
 {
-    protected override HostApplicationBuilder ConfigureTwitchApplication(HostApplicationBuilder builder)
+    protected sealed override HostApplicationBuilder ConfigureTwitchApplication(HostApplicationBuilder builder)
     {
         builder.Configuration.AddUserSecrets<TwitchClientFixture>();
 
