@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user has updated their account.
@@ -8,12 +10,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="UserId">The user id for the user you want update notifications for.</param>
 public sealed record UserUpdate(UserId UserId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<UserUpdate>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.UserUpdate;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserUpdate;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserUpdate;
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("user_id"), UserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<UserUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
+            .Map(_ => new UserUpdate(UserId));
 }

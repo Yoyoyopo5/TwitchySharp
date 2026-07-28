@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// The specified broadcaster starts a stream.
@@ -7,12 +9,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) you want to get stream online notifications for.</param>
 public sealed record StreamOnline(UserId BroadcasterUserId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<StreamOnline>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.StreamOnline;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.StreamOnline;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.StreamOnline;
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<StreamOnline> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new StreamOnline(BroadcasterUserId));
 }

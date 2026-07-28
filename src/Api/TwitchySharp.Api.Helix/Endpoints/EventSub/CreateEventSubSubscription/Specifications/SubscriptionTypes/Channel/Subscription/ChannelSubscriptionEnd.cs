@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -12,15 +13,19 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This user must have created a user access token that includes <see cref="Scope.ChannelReadSubscriptions"/> for this application.
 /// </param>
 public sealed record ChannelSubscriptionEnd(UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelSubscriptionEnd>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSubscriptionEnd;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSubscriptionEnd;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelSubscriptionEnd;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadSubscriptions);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadSubscriptions);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelSubscriptionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new ChannelSubscriptionEnd(BroadcasterUserId));
 }

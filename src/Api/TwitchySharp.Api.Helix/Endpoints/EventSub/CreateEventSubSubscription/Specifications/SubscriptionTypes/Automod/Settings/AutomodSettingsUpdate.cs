@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -11,16 +12,20 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <param name="BroadcasterUserId">User id of the broadcaster (channel).</param>
 /// <param name="ModeratorUserId">User id of a moderator in the broadcaster's chat. This can also be the broadcaster.</param>
 public sealed record AutomodSettingsUpdate(UserId BroadcasterUserId, UserId ModeratorUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<AutomodSettingsUpdate>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodSettingsUpdate;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("moderator_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadAutomodSettings);
-    public UserId AuthorizingUser => ModeratorUserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodSettingsUpdate;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.AutomodSettingsUpdate;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadAutomodSettings);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<AutomodSettingsUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))
+            .Map(_ => new AutomodSettingsUpdate(BroadcasterUserId, ModeratorUserId));
 }

@@ -84,16 +84,16 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
         GetEventSubSubscriptionsRequest requestForSubscription = new() { SubscriptionId = subscription.Id };
 
         return (await client.SendAsync(
-            subscription.Transport.Method != EventSubTransportMethod.Websocket
-                ? requestForSubscription
-                : new EventSubSubscriptionType(subscription.Type, subscription.Version).GetAuthorizingUserKey() is not ConditionKey userIdConditionKey
-                ? throw new KeyNotFoundException($"The authorizing user condition key was not defined for {subscription.Type} {subscription.Version}.")
-                : requestForSubscription.ForWebsocketSubscriptions(new(new UserId(subscription.Condition[userIdConditionKey]))),
+            requestForSubscription with
+            {
+                AuthorizationContext = subscription.ToAuthorizationContext().Match(
+                    e => throw new InvalidOperationException(e.Message),
+                    ctx => ctx
+                    )
+            },
             ct
             )).Content.Data.Single();
     }
-
-
 
     private async static Task<EventSubSubscription> CreateSubscription(
         ITwitchClient client,

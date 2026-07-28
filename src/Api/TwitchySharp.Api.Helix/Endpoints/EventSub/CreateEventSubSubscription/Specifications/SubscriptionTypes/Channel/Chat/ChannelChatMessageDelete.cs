@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -12,16 +13,20 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <param name="BroadcasterUserId">User id of the broadcaster (channel) to receive chat message delete events for.</param>
 /// <param name="UserId">The user id of the user to read chat as.</param>
 public sealed record ChannelChatMessageDelete(UserId BroadcasterUserId, UserId UserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelChatMessageDelete>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatMessageDelete;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadChat);
-    public UserId AuthorizingUser => UserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatMessageDelete;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelChatMessageDelete;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadChat);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(UserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("user_id"), UserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelChatMessageDelete> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
+            .Map(_ => new ChannelChatMessageDelete(BroadcasterUserId, UserId));
 }

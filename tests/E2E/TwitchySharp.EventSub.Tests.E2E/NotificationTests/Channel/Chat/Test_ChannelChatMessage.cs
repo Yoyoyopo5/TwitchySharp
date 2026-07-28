@@ -14,7 +14,7 @@ public class Test_ChannelChatMessage(EventSubWebsocketFixture fixture)
 {
     protected override TestName TestName => new("channel-chat-message");
 
-    protected override IEventSubSubscriptionTypeSpecification CreateSubscription(UserConfiguration identityConfig)
+    protected override EventSubSubscriptionTypeSpecification CreateSubscription(UserConfiguration identityConfig)
         => new ChannelChatMessage(identityConfig.UserId, identityConfig.UserId);
     protected override Task RaiseNotification(ITwitchClient client, UserConfiguration identityConfig, CancellationToken ct = default)
     {

@@ -118,12 +118,12 @@ public class MockHelixController(HelixControllerOptions options) : ControllerBas
                         {
                             id = "12345",
                             status = "enabled",
-                            type = "fake.subscription",
+                            type = "automod.message.hold",
                             version = "1",
                             condition = new
                             {
-                                user_id = "82901",
-                                boradcaster_user_id = "12372"
+                                moderator_user_id = "82901",
+                                broadcaster_user_id = "12372"
                             },
                             created_at = DateTime.UtcNow.ToRfc3339(),
                             transport = new

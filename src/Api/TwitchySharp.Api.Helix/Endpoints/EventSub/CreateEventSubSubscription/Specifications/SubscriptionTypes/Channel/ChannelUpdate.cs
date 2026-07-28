@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A broadcaster updates their channel properties e.g., category, title, content classification labels, broadcast, or language.
@@ -7,12 +9,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) you want to get updates for.</param>
 public sealed record ChannelUpdate(UserId BroadcasterUserId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelUpdate>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUpdate;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUpdate;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelUpdate;
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new ChannelUpdate(BroadcasterUserId));
 }

@@ -8,7 +8,7 @@ public abstract class EventSubTest : IXunitSerializable
 {
     public required TestName TestName { get; set; }
 
-    public abstract IEventSubSubscriptionTypeSpecification WithFixture(TwitchClientFixture fixture);
+    public abstract EventSubSubscriptionTypeSpecification WithFixture(TwitchClientFixture fixture);
 
     public void Deserialize(IXunitSerializationInfo info)
     {
@@ -22,10 +22,10 @@ public abstract class EventSubTest : IXunitSerializable
 }
 
 public sealed class EventSubTest<TSubscription, TRequiredIdentity> : EventSubTest
-    where TSubscription : IEventSubSubscriptionTypeSpecification
+    where TSubscription : EventSubSubscriptionTypeSpecification
     where TRequiredIdentity : ITestIdentity
 {
     public required Func<TRequiredIdentity, TSubscription> CreateSpecification { get; init; }
-    public override IEventSubSubscriptionTypeSpecification WithFixture(TwitchClientFixture fixture)
+    public override EventSubSubscriptionTypeSpecification WithFixture(TwitchClientFixture fixture)
         => CreateSpecification(fixture.GetAuthorizingConfigForTestOrSkip<TRequiredIdentity>(TestName));
 }

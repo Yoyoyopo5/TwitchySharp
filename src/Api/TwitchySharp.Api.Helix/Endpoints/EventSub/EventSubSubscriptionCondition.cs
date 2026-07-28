@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 
@@ -40,4 +41,51 @@ internal record EventSubSubscriptionCondition
 
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_condition).GetEnumerator();
     #endregion
+}
+
+internal static class EventSubSubscriptionConditionExtensions
+{
+    internal static IReadOnlyDictionary<ConditionKey, string> GetValue<TOut>(this IReadOnlyDictionary<ConditionKey, string> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    {
+        if (dict.TryGetValue(key, out string? stringValue))
+            value = select(stringValue);
+        value = default;
+        return dict;
+    }
+
+    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this IReadOnlyDictionary<ConditionKey, string> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    {
+        if (dict.TryGetValue(key, out string? stringValue))
+        {
+            value = select(stringValue);
+            return new Validation<IReadOnlyDictionary<ConditionKey, string>>(dict);
+        }
+        value = default;
+        return new ConditionMissingRequiredKeyError(key);
+    }
+
+    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this Validation<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    {
+        value = dict.Match(
+            e => default,
+            d => d.TryGetValue(key, out string? stringValue)
+                    ? select(stringValue)
+                    : default
+            );
+        return dict.Bind(d => d.ContainsKey(key)
+            ? new Validation<IReadOnlyDictionary<ConditionKey, string>>(d)
+            : new ConditionMissingRequiredKeyError(key)
+            );
+    }
+
+    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetValue<TOut>(this Validation<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    {
+        value = dict.Match(
+            e => default,
+            d => d.TryGetValue(key, out string? stringValue)
+                    ? select(stringValue)
+                    : default
+            );
+        return dict;
+    }
 }

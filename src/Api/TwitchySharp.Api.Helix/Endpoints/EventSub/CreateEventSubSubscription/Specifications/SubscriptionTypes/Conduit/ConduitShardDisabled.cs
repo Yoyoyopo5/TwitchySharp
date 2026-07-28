@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// Sends a notification when EventSub disables a shard due to the status of the underlying transport changing.
@@ -14,13 +16,19 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// The conduit ID to receive events for.
 /// If <see langword="null"/>, events for all of this client's conduits are sent.</param>
 public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitId = null)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ConduitShardDisabled>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ConduitShardDisabled;
-
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ConduitShardDisabled;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ConduitShardDisabled;
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId)
             .Set(new("conduit_id"), ConduitId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+
+    public static Validation<ConduitShardDisabled> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("client_id"), out ClientId clientId, value => new(value))
+            .GetValue(new("conduit_id"), out ConduitId conduitId, value => new(value))
+            .Map(_ => new ConduitShardDisabled(clientId, conduitId));
 }

@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user's authorization has been revoked for your client id.
@@ -12,12 +14,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This must match the client id in the application access token used to make the request.
 /// </param>
 public sealed record UserAuthorizationRevoke(ClientId ClientId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<UserAuthorizationRevoke>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationRevoke;
-
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationRevoke;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserAuthorizationRevoke;
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<UserAuthorizationRevoke> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("client_id"), out ClientId ClientId, value => new(value))
+            .Map(_ => new UserAuthorizationRevoke(ClientId));
 }

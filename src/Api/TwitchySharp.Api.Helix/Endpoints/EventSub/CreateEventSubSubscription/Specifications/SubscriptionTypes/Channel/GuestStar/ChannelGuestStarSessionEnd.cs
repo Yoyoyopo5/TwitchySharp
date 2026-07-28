@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -11,16 +12,20 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) hosting the Guest Star Session.</param>
 /// <param name="ModeratorUserId">The user id of the broadcaster or a moderator of the specified broadcaster.</param>
 public sealed record ChannelGuestStarSessionEnd(UserId BroadcasterUserId, UserId ModeratorUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelGuestStarSessionEnd>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelGuestStarSessionEnd;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("moderator_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar);
-    public UserId AuthorizingUser => ModeratorUserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelGuestStarSessionEnd;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelGuestStarSessionEnd;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId)
             .Set(new("moderator_user_id"), ModeratorUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelGuestStarSessionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))
+            .Map(_ => new ChannelGuestStarSessionEnd(BroadcasterUserId, ModeratorUserId));
 }

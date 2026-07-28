@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 
@@ -13,15 +14,19 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This user must have also created a user access token including <see cref="Scope.ChannelReadHypeTrain"/> for your application.
 /// </param>
 public sealed record HypeTrainProgress(UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<HypeTrainProgress>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainProgress;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainProgress;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.HypeTrainProgress;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<HypeTrainProgress> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new HypeTrainProgress(BroadcasterUserId));
 }

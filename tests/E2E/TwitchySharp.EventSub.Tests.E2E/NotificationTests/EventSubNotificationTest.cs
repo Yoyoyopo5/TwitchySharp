@@ -41,7 +41,7 @@ public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsoc
             => await Client.SendAsync(new DeleteEventSubSubscriptionRequest(Subscription), TestContext.Current.CancellationToken);
     }
 
-    protected abstract IEventSubSubscriptionTypeSpecification CreateSubscription(TRequiredIdentity identityConfig);
+    protected abstract EventSubSubscriptionTypeSpecification CreateSubscription(TRequiredIdentity identityConfig);
     protected abstract Task RaiseNotification(ITwitchClient client, TRequiredIdentity identityConfig, CancellationToken ct = default);
     protected virtual void AssertNotification(IEventSubNotification notification) { }
     

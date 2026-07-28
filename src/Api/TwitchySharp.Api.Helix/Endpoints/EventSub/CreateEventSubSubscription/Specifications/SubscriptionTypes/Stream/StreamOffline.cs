@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// The specified broadcaster stops a stream.
@@ -7,12 +9,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) you want to get stream offline notifications for.</param>
 public sealed record StreamOffline(UserId BroadcasterUserId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<StreamOffline>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.StreamOffline;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.StreamOffline;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.StreamOffline;
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<StreamOffline> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new StreamOffline(BroadcasterUserId));
 }

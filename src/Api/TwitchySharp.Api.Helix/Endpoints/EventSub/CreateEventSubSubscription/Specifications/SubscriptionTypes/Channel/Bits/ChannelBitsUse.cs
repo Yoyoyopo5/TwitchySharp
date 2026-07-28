@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -17,15 +18,18 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) to get Bits Use notifications for.</param>
 public sealed record ChannelBitsUse(UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelBitsUse>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelBitsUse;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.BitsRead);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelBitsUse;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelBitsUse;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.BitsRead);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelBitsUse> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new ChannelBitsUse(BroadcasterUserId));
 }

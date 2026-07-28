@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using TwitchySharp.Api.Helix.EventSub.Subscriptions;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 
@@ -56,7 +58,10 @@ public record EventSubSubscription
     public required int Cost { get; init; }
 }
 
-internal static class EventSubSubscriptionExtensions
+public record MissingEventSubSubscriptionTypeError(EventSubSubscriptionType UnregisteredType)
+    : Error("The EventSubSubscription subscription type was not found in the provided registry."); 
+
+public static class EventSubSubscriptionExtensions
 {
     /// <summary>
     /// Get a <see cref="EventSubSubscriptionType"/> based on the type name and version of the subscription.
@@ -65,4 +70,134 @@ internal static class EventSubSubscriptionExtensions
     /// <returns>The <see cref="EventSubSubscriptionType"/> of the subscription.</returns>
     public static EventSubSubscriptionType GetSubscriptionType(this EventSubSubscription subscription)
         => new(subscription.Type, subscription.Version);
+
+    /// <summary>
+    /// The default set of <see cref="EventSubSubscriptionType"/> mapped to a function creating the respective <see cref="EventSubSubscriptionTypeSpecification"/> from an <see cref="EventSubSubscription.Condition"/>.
+    /// </summary>
+    public static ImmutableDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> DefaultSubscriptionTypeSpecificationRegistry { get; }
+        = new Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>()
+        .Register<AutomodMessageHold>()
+        .Register<AutomodMessageHoldV2>()
+        .Register<AutomodMessageUpdate>()
+        .Register<AutomodMessageUpdateV2>()
+        .Register<AutomodSettingsUpdate>()
+        .Register<AutomodTermsUpdate>()
+        .Register<ChannelBitsUse>()
+        .Register<ChannelUpdate>()
+        .Register<ChannelFollow>()
+        .Register<ChannelAdBreakBegin>()
+        .Register<ChannelChatClear>()
+        .Register<ChannelChatClearUserMessages>()
+        .Register<ChannelChatMessage>()
+        .Register<ChannelChatMessageDelete>()
+        .Register<ChannelChatNotification>()
+        .Register<ChannelChatSettingsUpdate>()
+        .Register<ChannelChatUserMessageHold>()
+        .Register<ChannelChatUserMessageUpdate>()
+        .Register<ChannelSharedChatSessionBegin>()
+        .Register<ChannelSharedChatSessionUpdate>()
+        .Register<ChannelSharedChatSessionEnd>()
+        .Register<ChannelSubscribe>()
+        .Register<ChannelSubscriptionEnd>()
+        .Register<ChannelSubscriptionGift>()
+        .Register<ChannelSubscriptionMessage>()
+        .Register<ChannelCheer>()
+        .Register<ChannelRaid>()
+        .Register<ChannelBan>()
+        .Register<ChannelUnban>()
+        .Register<ChannelUnbanRequestCreate>()
+        .Register<ChannelUnbanRequestResolve>()
+        .Register<ChannelModerate>()
+        .Register<ChannelModerateV2>()
+        .Register<ChannelModeratorAdd>()
+        .Register<ChannelModeratorRemove>()
+        .Register<ChannelGuestStarSessionBegin>()
+        .Register<ChannelGuestStarSessionEnd>()
+        .Register<ChannelGuestStarGuestUpdate>()
+        .Register<ChannelGuestStarSettingsUpdate>()
+        .Register<ChannelPointsAutomaticRewardRedemptionAdd>()
+        .Register<ChannelPointsAutomaticRewardRedemptionAddV2>()
+        .Register<ChannelPointsCustomRewardAdd>()
+        .Register<ChannelPointsCustomRewardUpdate>()
+        .Register<ChannelPointsCustomRewardRemove>()
+        .Register<ChannelPointsCustomRewardRedemptionAdd>()
+        .Register<ChannelPointsCustomRewardRedemptionUpdate>()
+        .Register<ChannelPollBegin>()
+        .Register<ChannelPollProgress>()
+        .Register<ChannelPollEnd>()
+        .Register<ChannelPredictionBegin>()
+        .Register<ChannelPredictionProgress>()
+        .Register<ChannelPredictionLock>()
+        .Register<ChannelPredictionEnd>()
+        .Register<ChannelSuspiciousUserMessage>()
+        .Register<ChannelSuspiciousUserUpdate>()
+        .Register<ChannelVipAdd>()
+        .Register<ChannelVipRemove>()
+        .Register<ChannelWarningAcknowledgement>()
+        .Register<ChannelWarningSend>()
+        .Register<CharityDonation>()
+        .Register<CharityCampaignStart>()
+        .Register<CharityCampaignProgress>()
+        .Register<CharityCampaignStop>()
+        .Register<ConduitShardDisabled>()
+        .Register<DropEntitlementGrant>()
+        .Register<ExtensionBitsTransactionCreate>()
+        .Register<GoalBegin>()
+        .Register<GoalProgress>()
+        .Register<GoalEnd>()
+        .Register<HypeTrainBegin>()
+        .Register<HypeTrainProgress>()
+        .Register<HypeTrainEnd>()
+        .Register<ShieldModeBegin>()
+        .Register<ShieldModeEnd>()
+        .Register<ShoutoutCreate>()
+        .Register<ShoutoutReceived>()
+        .Register<StreamOnline>()
+        .Register<StreamOffline>()
+        .Register<UserAuthorizationGrant>()
+        .Register<UserAuthorizationRevoke>()
+        .Register<UserUpdate>()
+        .Register<WhisperReceived>()
+        .ToImmutableDictionary();
+
+    private static Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> Register<T>(
+        this Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> subscriptionTypes
+        )
+        where T : EventSubSubscriptionTypeSpecification, IConditionConstructable<T>
+    {
+        subscriptionTypes.Add(T.SubscriptionType, condition => T.FromCondition(condition).Map(s => s as EventSubSubscriptionTypeSpecification));
+        return subscriptionTypes;
+    }
+
+    /// <summary>
+    /// Create a <see cref="EventSubSubscriptionTypeSpecification"/> from an existing <see cref="EventSubSubscription"/>.
+    /// </summary>
+    /// <param name="subscription">The <see cref="EventSubSubscription"/> to create the <see cref="EventSubSubscriptionTypeSpecification"/> from.</param>
+    /// <param name="registry">
+    /// The <see cref="EventSubSubscriptionType"/> registry to use.
+    /// This represents a mapping between the <see cref="EventSubSubscription.Condition"/> and a derived <see cref="EventSubSubscriptionTypeSpecification"/> factory function.
+    /// Leave <see langword="null"/> to use the <see cref="DefaultSubscriptionTypeSpecificationRegistry"/>.
+    /// You may extend the default with your own types that implement <see cref="IConditionConstructable{T}"/>.
+    /// </param>
+    /// <returns></returns>
+    public static Validation<EventSubSubscriptionTypeSpecification> ToSubscriptionTypeSpecification(
+        this EventSubSubscription subscription,
+        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? registry = null)
+    {
+        EventSubSubscriptionType subscriptionType = subscription.GetSubscriptionType();
+        return (registry ?? DefaultSubscriptionTypeSpecificationRegistry).TryGetValue(subscriptionType, out Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>? fromCondition)
+            ? fromCondition(subscription.Condition)
+            : new MissingEventSubSubscriptionTypeError(subscriptionType);
+    }
+
+    public static Validation<TwitchRequestAuthorizationContext> ToAuthorizationContext(
+        this EventSubSubscription subscription,
+        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? registry = null
+        )
+        => subscription.ToSubscriptionTypeSpecification(registry)
+            .Map(typeSpec => new TwitchRequestAuthorizationContext()
+                {
+                    Identity = typeSpec.GetRequestIdentity(subscription.Transport.Method),
+                    ValidScopes = typeSpec.ValidScopes
+                });
 }

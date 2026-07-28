@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -12,15 +13,19 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This user must have created a user access token including <see cref="Scope.ChannelReadPredictions"/> or <see cref="Scope.ChannelManagePredictions"/> for this application.
 /// </param>
 public sealed record ChannelPredictionProgress(UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelPredictionProgress>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPredictionProgress;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPredictionProgress;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelPredictionProgress;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadPredictions, Scope.ChannelManagePredictions);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadPredictions, Scope.ChannelManagePredictions);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelPredictionProgress> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new ChannelPredictionProgress(BroadcasterUserId));
 }
