@@ -5,13 +5,18 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// Gets a list of redemptions for the specified custom reward.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Use derived types <see cref="GetCustomRewardRedemptionRequestById"/> and <see cref="GetCustomRewardRedemptionRequestByStatus"/>.
+/// </para>
+/// <para>
 /// The app used to create the reward is the only app that may get the redemptions.
 /// <br/>
 /// Requires a user access token with <see cref="Scope.ChannelReadRedemptions"/> or <see cref="Scope.ChannelManageRedemptions"/>.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption">Get Custom Reward Redemption</see> for more information.
+/// </para>
 /// </remarks>
-public record GetCustomRewardRedemptionRequest
+public abstract record GetCustomRewardRedemptionRequest
     : TwitchHelixRequest<GetCustomRewardRedemptionResponse>, IPageableRequest
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
@@ -43,9 +48,6 @@ public record GetCustomRewardRedemptionRequest
     /// <summary>
     /// The id that identifies the custom reward whose redemptions you want to get.
     /// </summary>
-    /// <remarks>
-    /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
-    /// </remarks>
     public RewardId? RewardId { get; init; }
 
     /// <summary>
@@ -53,7 +55,6 @@ public record GetCustomRewardRedemptionRequest
     /// </summary>
     /// <remarks>
     /// Canceled and fulfilled redemptions are returned for only a few days after they're canceled or fulfilled.
-    /// At least one of <see cref="RewardId"/> or <see cref="Status"/> should be specified.
     /// </remarks>
     public RewardRedemptionStatus? Status { get; init; }
 
@@ -86,4 +87,28 @@ public record GetCustomRewardRedemptionRequest
     /// The minimum page size is 1 redemption per page and the maximum is 50.
     /// </remarks>
     public PaginationAmount? First { get; init; }
+}
+
+/// <summary>
+/// Gets a list of redemptions with the specified <see cref="RewardRedemptionId"/>(s) for the specified custom reward.
+/// </summary>
+/// <remarks>
+/// <inheritdoc cref="GetCustomRewardRedemptionRequest" path="/remarks/para[2]"/>
+/// </remarks>
+public record GetCustomRewardRedemptionRequestById : GetCustomRewardRedemptionRequest
+{
+    /// <inheritdoc cref="GetCustomRewardRedemptionRequest.Ids"/>
+    public required new IEnumerable<RewardRedemptionId> Ids { get => base.Ids!; init => base.Ids = value; }
+}
+
+/// <summary>
+/// Gets a list of redemptions with the specific <see cref="RewardRedemptionStatus"/> for the specified custom reward.
+/// </summary>
+/// <remarks>
+/// <inheritdoc cref="GetCustomRewardRedemptionRequest" path="/remarks/para[2]"/>
+/// </remarks>
+public record GetCustomRewardRedemptionRequestByStatus : GetCustomRewardRedemptionRequest
+{
+    /// <inheritdoc cref="GetCustomRewardRedemptionRequest.Status"/>
+    public required new RewardRedemptionStatus Status { get => base.Status!.Value; init => base.Status = value; }
 }
