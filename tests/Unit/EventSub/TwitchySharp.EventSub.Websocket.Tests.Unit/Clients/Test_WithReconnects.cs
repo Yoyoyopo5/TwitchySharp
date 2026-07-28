@@ -14,7 +14,7 @@ public class Test_WithReconnects
         MessageTimestamp = new(2026, 6, 22, 6, 43, 11, TimeSpan.Zero)
     };
 
-    const string MOCK_RECONNECT_URL = "wss://new-url.com";
+    private const string MOCK_RECONNECT_URL = "wss://new-url.com";
 
     private static readonly ProcessWebsocketMessage _stubProcess = async (stream, ct) =>
     {
