@@ -1,7 +1,7 @@
 ﻿using TwitchySharp.Api.Authorization;
 using TwitchySharp.Tests.E2E;
 
-namespace TwitchySharp.Api.Tests.E2E.Tests.Authorization;
+namespace TwitchySharp.Api.Tests.E2E.Tests.Authentication;
 
 public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
 {
