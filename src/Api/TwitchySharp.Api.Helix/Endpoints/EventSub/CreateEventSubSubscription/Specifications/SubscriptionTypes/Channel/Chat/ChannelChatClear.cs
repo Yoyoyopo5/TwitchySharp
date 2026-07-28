@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -12,16 +13,20 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <param name="BroadcasterUserId">The user id of the broadcaster (channel) to receive chat clear events for.</param>
 /// <param name="UserId">The user id of the user to read chat as.</param>
 public sealed record ChannelChatClear(UserId BroadcasterUserId, UserId UserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelChatClear>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatClear;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadChat);
-    public UserId AuthorizingUser => UserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatClear;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelChatClear;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadChat);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(UserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("user_id"), UserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelChatClear> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
+            .Map(_ => new ChannelChatClear(BroadcasterUserId, UserId));
 }

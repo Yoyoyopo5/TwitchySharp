@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -13,15 +14,18 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This user must have created a user access token for this application that includes <see cref="Scope.ChannelReadGoals"/>.
 /// </param>
 public sealed record GoalProgress(UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<GoalProgress>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.GoalProgress;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadGoals);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.GoalProgress;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.GoalProgress;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadGoals);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<GoalProgress> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new GoalProgress(BroadcasterUserId));
 }

@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A user's authorization has been granted to your client id.
@@ -11,12 +13,16 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// This must match the client id in the application access token used to make the request.
 /// </param>
 public sealed record UserAuthorizationGrant(ClientId ClientId)
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<UserAuthorizationGrant>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationGrant;
-
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationGrant;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserAuthorizationGrant;
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<UserAuthorizationGrant> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("client_id"), out ClientId ClientId, value => new(value))
+            .Map(_ => new UserAuthorizationGrant(ClientId));
 }

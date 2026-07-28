@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -12,17 +13,22 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// The user id of the broadcaster or a moderator in the broadcaster's chat.
 /// This user must have created a user access token including <see cref="Scope.ModeratorReadUnbanRequests"/> or <see cref="Scope.ModeratorManageUnbanRequests"/> for this application.
 /// </param>
-public sealed record ChannelUnbanRequestResolve(UserId ModeratorUserId, UserId BroadcasterUserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+public sealed record ChannelUnbanRequestResolve(UserId BroadcasterUserId, UserId ModeratorUserId)
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelUnbanRequestResolve>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUnbanRequestResolve;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUnbanRequestResolve;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelUnbanRequestResolve;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("moderator_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests);
-    public UserId AuthorizingUser => ModeratorUserId;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId)
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelUnbanRequestResolve> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .Map(_ => new ChannelUnbanRequestResolve(ModeratorUserId, BroadcasterUserId));
 }

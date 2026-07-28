@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace TwitchySharp.Api.Helix.EventSub;
@@ -25,20 +24,8 @@ public record CreateEventSubSubscriptionRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
-    {
-        Identity = Subscription.Type switch
-        {
-            IUserAuthorizedSubscriptionTypeSpecification userAuthorizedSubscription when Subscription.Transport.Method == EventSubTransportMethod.Websocket
-                => new TwitchIdentity.User(userAuthorizedSubscription.AuthorizingUser),
-            _ => TwitchIdentity.Client.Default
-        },
-        ValidScopes = Subscription.Type switch
-        {
-            IUserAuthorizedSubscriptionTypeSpecification userAuthorized => userAuthorized.ValidScopes,
-            _ => ImmutableHashSet<Scope>.Empty
-        }
-    };
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
+        => Subscription.GetRequestAuthorizationContext();
     public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
 
     /// <summary>

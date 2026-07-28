@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -9,17 +10,21 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="BroadcasterUserId">The broadcaster user ID for the channel you want to receive channel points custom reward remove notifications for.</param>
 /// <param name="RewardId">Optional. Specify a reward id to only receive notifications for a specific reward.</param>
-public sealed record ChannelPointsCustomRewardRemove(UserId BroadcasterUserId, string? RewardId = null)
-    : IUserAuthorizedSubscriptionTypeSpecification
+public sealed record ChannelPointsCustomRewardRemove(UserId BroadcasterUserId, RewardId? RewardId = null)
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelPointsCustomRewardRemove>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsCustomRewardRemove;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("broadcaster_user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions);
-    public UserId AuthorizingUser => BroadcasterUserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsCustomRewardRemove;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelPointsCustomRewardRemove;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("reward_id"), RewardId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelPointsCustomRewardRemove> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
+            .GetRequiredValue(new("reward_id"), out RewardId RewardId, value => new(value))
+            .Map(_ => new ChannelPointsCustomRewardRemove(BroadcasterUserId, RewardId));
 }

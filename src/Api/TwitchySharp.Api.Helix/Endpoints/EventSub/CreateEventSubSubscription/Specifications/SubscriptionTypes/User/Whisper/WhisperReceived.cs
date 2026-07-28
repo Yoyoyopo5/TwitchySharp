@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
@@ -9,15 +10,18 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// </remarks>
 /// <param name="UserId">The user id of the user receiving the whisper.</param>
 public sealed record WhisperReceived(UserId UserId)
-    : IUserAuthorizedSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<WhisperReceived>
 {
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
-    public static ConditionKey AuthorizingUserConditionKey { get; } = new("user_id");
-    public IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadWhispers, Scope.UserManageWhispers);
-    public UserId AuthorizingUser => UserId;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.WhisperReceived;
+    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadWhispers, Scope.UserManageWhispers);
+    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(UserId);
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new("user_id"), UserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<WhisperReceived> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+        => condition
+            .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
+            .Map(_ => new WhisperReceived(UserId));
 }

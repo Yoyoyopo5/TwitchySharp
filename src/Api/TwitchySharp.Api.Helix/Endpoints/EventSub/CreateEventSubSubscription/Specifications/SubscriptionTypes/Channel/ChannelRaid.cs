@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// <summary>
 /// A broadcaster raids another broadcaster's channel.
@@ -17,7 +19,7 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// The channel raid condition must include either <paramref name="FromBroadcasterUserId"/> or <paramref name="ToBroadcasterUserId"/>.
 /// </param>
 public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadcasterUserId = null) // May need to remove this primary constuctor IF setting both conditions is not allowed.
-    : IEventSubSubscriptionTypeSpecification
+    : EventSubSubscriptionTypeSpecification, IConditionConstructable<ChannelRaid>
 {
     /// <summary>
     /// Subscribe to raids from a specific channel.
@@ -37,13 +39,21 @@ public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadc
     public static ChannelRaid To(UserId toBroadcasterUserId)
         => new(toBroadcasterUserId, null);
 
-    public EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelRaid;
+    public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelRaid;
+    public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelRaid;
 
-    private readonly EventSubSubscriptionCondition _condition =
-        new EventSubSubscriptionCondition()
+    public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+        = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("from_broadcaster_user_id"), FromBroadcasterUserId)
             .Set(new ConditionKey("to_broadcaster_user_id"), ToBroadcasterUserId);
-    public IReadOnlyDictionary<ConditionKey, object> Condition => _condition;
+    public static Validation<ChannelRaid> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    {
+        condition
+            .GetValue(new("from_broadcaster_user_id"), out UserId FromBroadcasterUserId, value => new(value))
+            .GetValue(new("to_broadcaster_user_id"), out UserId ToBroadcasterUserId, value => new(value));
+        return new ChannelRaid(FromBroadcasterUserId, ToBroadcasterUserId);
+    }
+            
 }
 
 public static class ChannelRaidFluentExtensions

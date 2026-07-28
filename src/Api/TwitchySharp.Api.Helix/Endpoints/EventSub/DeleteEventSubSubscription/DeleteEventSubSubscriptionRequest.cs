@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub;
 /// <summary>
@@ -22,38 +23,21 @@ public record DeleteEventSubSubscriptionRequest()
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
-    {
-        Identity = Subscription switch
-        {
-            { } when Subscription.Transport.Method == EventSubTransportMethod.Websocket
-                => new TwitchIdentity.User(GetAuthorizingUserOrNull(Subscription) ?? throw new InvalidOperationException(
-                    $"Failed to resolve required {nameof(TwitchIdentity.User)} from subscription type {Subscription.GetSubscriptionType()} when attempting to delete the subscription. " +
-                    $"Set the {nameof(AuthorizationContext)} property manually to suppress this error. " +
-                    $"The {nameof(EventSubSubscription)} instance passed to this {nameof(DeleteEventSubSubscriptionRequest)} may be malformed, " +
-                    $"or the respective {nameof(EventSubSubscriptionType)} may not be supported yet. If the latter is the case, please raise an issue on GitHub with the {nameof(EventSubSubscription)} you are trying to delete.")),
-            _ => TwitchIdentity.Client.Default
-        }
-    };
+    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
+        => Subscription is not null
+            ? Subscription.ToAuthorizationContext(_specificationRegistry)
+                .Match(
+                    onError: e => throw new InvalidOperationException($"An error occurred when determining the identity to make the request with: {e.Message}."),
+                    onValid: ctx => ctx
+                    )
+            : new TwitchRequestAuthorizationContext()
+            {
+                Identity = TwitchIdentity.Client.Default
+            };
+
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", SubscriptionId);
-
-    /// <summary>
-    /// Function mapping <see cref="EventSubSubscriptionType"/> to the <see cref="ConditionKey"/> of the <see cref="EventSubSubscription.Condition"/>
-    /// that corresponds to the id of the user that must authorize delete subscription requests.
-    /// </summary>
-    /// <remarks>
-    /// This has a default value of <see cref="AuthorizingUserConditionKeys.GetAuthorizingUserKey"/> and does not need to be set unless you are adding new subscription types.
-    /// </remarks>
-    public Func<EventSubSubscriptionType, ConditionKey?> GetAuthorizingUserKey { get; init; } = AuthorizingUserConditionKeys.GetAuthorizingUserKey;
-
-    private UserId? GetAuthorizingUserOrNull(EventSubSubscription subscription)
-        => GetAuthorizingUserKey(subscription.GetSubscriptionType()) is not ConditionKey key
-            ? null
-            : subscription.Condition.TryGetValue(key, out string? value)
-            ? new UserId(value)
-            : null;
 
     /// <summary>
     /// The subscription to delete.
@@ -72,6 +56,9 @@ public record DeleteEventSubSubscriptionRequest()
                 SubscriptionId = value.Id;
         }
     }
+
+    private readonly IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> _specificationRegistry = EventSubSubscriptionExtensions.DefaultSubscriptionTypeSpecificationRegistry;
+
     /// <summary>
     /// Automatically sets the required <see cref="SubscriptionId"/>.
     /// </summary>
@@ -81,9 +68,12 @@ public record DeleteEventSubSubscriptionRequest()
     /// </remarks>
     /// <param name="subscription">The subscription to delete.</param>
     [SetsRequiredMembers]
-    public DeleteEventSubSubscriptionRequest(EventSubSubscription subscription)
+    public DeleteEventSubSubscriptionRequest(
+        EventSubSubscription subscription,
+        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? specificationRegistry = null
+        )
         : this()
-        => (Subscription, SubscriptionId) = (subscription, subscription.Id);
+        => (Subscription, SubscriptionId, _specificationRegistry) = (subscription, subscription.Id, specificationRegistry ?? EventSubSubscriptionExtensions.DefaultSubscriptionTypeSpecificationRegistry);
 
     /// <summary>
     /// The id of the subscription to delete.
