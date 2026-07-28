@@ -24,8 +24,7 @@ JsonSerializerOptions serializerOptions = new()
     WriteIndented = true,
 };
 
-TwitchClientBuilder builder = new() { HttpClient = new() };
-ITwitchClient client = builder.Build();
+TwitchClient client = TwitchClient.CreateDefault(new());
 
 string state = Guid.NewGuid().ToString();
 string nonce = Guid.NewGuid().ToString();
