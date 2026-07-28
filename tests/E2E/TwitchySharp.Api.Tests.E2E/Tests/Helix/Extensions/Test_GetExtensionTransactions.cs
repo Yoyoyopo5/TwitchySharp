@@ -6,7 +6,7 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Extensions;
 public class Test_GetExtensionTransactions(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
-    private static readonly TestName TestName = new();
+    private static readonly TestName TestName = new("get-extension-transactions");
 
     [Fact]
     public async Task Send_GetExtensionTransactionsRequest_ReturnSuccessResponse()

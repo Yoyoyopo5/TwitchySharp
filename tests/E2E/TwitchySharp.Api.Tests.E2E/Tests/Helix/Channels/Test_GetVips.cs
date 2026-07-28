@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
 public class Test_GetVips(TwitchClientFixture fixture)
 {
     private readonly TwitchClientFixture _fixture = fixture;
-    private static readonly TestName TestName = new(nameof(GetVipsRequest));
+    private static readonly TestName TestName = new("get-vips");
 
     [Fact]
     public async Task Send_GetVipsRequest_ReturnSuccessResponse()
