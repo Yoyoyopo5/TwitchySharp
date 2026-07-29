@@ -25,7 +25,7 @@ internal class ResponseRecorder : DelegatingHandler
             responseContentStream.Seek(0, SeekOrigin.Begin);
         }
 
-        TestContext.Current.AddAttachment($"http-{request.Method}-{request.RequestUri?.AbsolutePath.Replace('/', '_')}", $$"""
+        TestContext.Current.AddAttachment($"http-{request.Method}-{request.RequestUri?.AbsolutePath.Replace('/', '_')}-{Guid.CreateVersion7()}", $$"""
             {
                 "request": {
                     "url": {{request.RequestUri?.AbsoluteUri}},
