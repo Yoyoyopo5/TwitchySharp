@@ -1,8 +1,12 @@
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
-/// Gets a lists of all shards for a conduit.
+/// Gets a lists of all configured shards for a conduit.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Newly created unconfigured shards are not returned by this endpoint.
+/// <see cref="ConduitShardId"/> is a zero-based index per conduit.
+/// </para>
 /// Requires an app access token.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-conduit-shards">Get Conduit Shards</see> for more information.
