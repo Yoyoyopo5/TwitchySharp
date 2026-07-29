@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Api.Helix.Subscriptions;
+﻿using System.Net;
+using TwitchySharp.Api.Helix.Subscriptions;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Subscriptions;
@@ -19,15 +20,21 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        const string TEST_USER_ID = "141879576";
-        UserId testUserId = new(TEST_USER_ID);
+        UserId testBroadcasterId = new("52137752");
 
         CheckUserSubscriptionRequest request = new()
         {
-            BroadcasterId = userConfig.UserId,
-            UserId = testUserId,
+            BroadcasterId = testBroadcasterId,
+            UserId = userConfig.UserId,
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        try
+        {
+            await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        }
+        catch (TwitchApiException ex)
+        {
+            Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
+        }
     }
 }
