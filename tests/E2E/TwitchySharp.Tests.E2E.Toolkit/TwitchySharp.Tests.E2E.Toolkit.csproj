@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../../src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
+    <ProjectReference Include="../../../src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
   </ItemGroup>
 
 </Project>
