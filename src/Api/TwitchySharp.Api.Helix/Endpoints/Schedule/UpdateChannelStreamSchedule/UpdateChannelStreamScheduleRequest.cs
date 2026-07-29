@@ -28,7 +28,7 @@ public record UpdateChannelStreamScheduleRequest
             .Add("is_vacation_enabled", Settings.IsVacationEnabled?.ToString())
             .Add("vacation_start_time", Settings.VacationStartTime?.UtcDateTime.ToRfc3339())
             .Add("vacation_end_time", Settings.VacationEndTime?.UtcDateTime.ToRfc3339())
-            .Add("timezone", Settings.Timezone?.Id);
+            .Add("timezone", Settings.Timezone?.ToIanaId());
 
     /// <summary>
     /// The request parameters.

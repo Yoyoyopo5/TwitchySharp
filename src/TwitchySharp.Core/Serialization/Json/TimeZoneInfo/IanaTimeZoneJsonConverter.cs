@@ -17,13 +17,5 @@ public class IanaTimeZoneJsonConverter : JsonConverter<TimeZoneInfo>
         };
 
     public override void Write(Utf8JsonWriter writer, TimeZoneInfo value, JsonSerializerOptions options)
-        => writer.WriteStringValue(TimeZoneInfo.TryConvertWindowsIdToIanaId(value.Id, out string? ianaId) switch
-        {
-            true => ianaId,
-            false => value.HasIanaId switch
-            {
-                true => ianaId,
-                false => throw new JsonException($"Cannot convert timezone id '{value.Id}' to IANA id format.")
-            }
-        });
+        => writer.WriteStringValue(value.ToIanaId());
 }
