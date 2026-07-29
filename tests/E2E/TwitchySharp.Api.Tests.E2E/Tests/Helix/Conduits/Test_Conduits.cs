@@ -18,14 +18,21 @@ public class Test_Conduits(TwitchClientFixture fixture)
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         ConduitId conduitId = (await CreateConduit(client, clientConfig, ct)).Content.Data.First().Id;
-        await Task.Delay(250, ct);
+        try
+        {
+            await Task.Delay(250, ct);
 
-        await GetConduits(client, clientConfig, ct);
-        ConduitShardId shardId = (await GetConduitShards(client, clientConfig, conduitId, ct)).Content.Data.First().Id;
+            await UpdateConduitShards(client, clientConfig, conduitId, new("0"), ct);
 
-        await UpdateConduitShards(client, clientConfig, conduitId, shardId, ct);
-        await UpdateConduit(client, clientConfig, conduitId, ct);
-        await DeleteConduit(client, clientConfig, conduitId, ct);
+            await GetConduits(client, clientConfig, ct);
+            await GetConduitShards(client, clientConfig, conduitId, ct);
+            
+            await UpdateConduit(client, clientConfig, conduitId, ct);
+        }
+        finally
+        {
+            await DeleteConduit(client, clientConfig, conduitId, ct);
+        }
     }
 
     private static Task<TwitchResponse<CreateConduitsResponse>> CreateConduit(ITwitchClient client, ClientConfiguration clientConfig, CancellationToken ct)
@@ -76,7 +83,7 @@ public class Test_Conduits(TwitchClientFixture fixture)
             ConduitData = new()
             {
                 Id = conduitId,
-                ShardCount = 2
+                ShardCount = 3
             }
         }, ct);
 

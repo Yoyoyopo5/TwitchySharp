@@ -1,5 +1,4 @@
-﻿
-namespace TwitchySharp.Api.Helix.Conduits;
+﻿namespace TwitchySharp.Api.Helix.Conduits;
 
 /// <summary>
 /// Contains information used to update a specific shard.
@@ -9,6 +8,9 @@ public record ConduitShardUpdate
     /// <summary>
     /// The id of the shard to update.
     /// </summary>
+    /// <remarks>
+    /// Conduit shard id is a zero-based index per conduit.
+    /// </remarks>
     public required ConduitShardId Id { get; init; }
     /// <summary>
     /// The transport details that you want to update the shard to.
