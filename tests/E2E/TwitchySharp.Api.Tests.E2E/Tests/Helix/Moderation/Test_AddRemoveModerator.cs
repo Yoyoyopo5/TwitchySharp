@@ -14,7 +14,7 @@ public class Test_AddRemoveModerator(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        const string TEST_MODERATOR_ID = "52137750";
+        const string TEST_MODERATOR_ID = "159571771";
         UserId moderatorId = new(TEST_MODERATOR_ID);
 
         ITwitchClient client = _fixture.GetTwitchApiClient();
