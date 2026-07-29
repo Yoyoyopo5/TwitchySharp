@@ -15,6 +15,11 @@ public class Test_CreateStreamMarker(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
+        ITwitchClient client = _fixture.GetTwitchApiClient();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+
+        await client.SkipIfBroadcasterIsNotStreaming(userConfig.UserId, ct);
+
         CreateStreamMarkerRequest request = new()
         {
             Marker = new()
@@ -24,6 +29,6 @@ public class Test_CreateStreamMarker(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await client.SendAsync(request, ct);
     }
 }
