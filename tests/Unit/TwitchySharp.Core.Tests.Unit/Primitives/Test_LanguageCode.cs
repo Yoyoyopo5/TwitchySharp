@@ -4,16 +4,6 @@ namespace TwitchySharp.Core.Tests.Unit.Primitives;
 
 public class Test_LanguageCode
 {
-    [Fact]
-    public void Constructor_CultureInfo_ExtractsLanguageCode()
-    {
-        var cultureInfo = new CultureInfo("en-US");
-
-        var languageCode = new LanguageCode(cultureInfo);
-
-        Assert.Equal("en", languageCode.Value);
-    }
-
     [Theory]
     [InlineData("en")]
     [InlineData("es")]
@@ -23,24 +13,17 @@ public class Test_LanguageCode
     [InlineData("ko")]
     [InlineData("pt")]
     [InlineData("zh")]
-    [InlineData("other")]
-    public void TryParse_ValidLanguageCode_ReturnTrue(string code)
+    [InlineData("en-gb")]
+    public void ToCultureInfo_ValidLanguageCode_ReturnsCultureInfo(string validCode)
     {
-        bool result = LanguageCode.TryParse(code, out LanguageCode languageCode);
-
-        Assert.True(result);
-        Assert.Equal(code, languageCode.Value);
+        CultureInfo culture = new LanguageCode(validCode).ToCultureInfo();
     }
 
-    [Theory]
-    [InlineData("acb")]
-    [InlineData("---")]
-    [InlineData(".")]
-    public void TryParse_InvalidLanguageCode_ReturnFalse(string invalidCode)
+    [Fact]
+    public void ToCultureInfo_InvalidLanguageCode_ThrowsCultureNotFoundException()
     {
-        bool result = LanguageCode.TryParse(invalidCode, out LanguageCode languageCode);
+        const string INVALID_CODE = "---";
 
-        Assert.False(result);
-        Assert.Equal(default, languageCode);
+        Assert.Throws<CultureNotFoundException>(() => new LanguageCode(INVALID_CODE).ToCultureInfo());
     }
 }

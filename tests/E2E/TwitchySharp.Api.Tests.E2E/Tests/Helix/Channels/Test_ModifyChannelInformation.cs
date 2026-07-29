@@ -25,13 +25,12 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
         // cache original
         ChannelInformation channelInfo = (await client.SendAsync(getInfoRequest, ct)).Content.Data.First();
 
-        Assert.True(LanguageCode.TryParse("en", out LanguageCode language));
         ModifyChannelInformationRequest modifyRequest = new()
         {
             BroadcasterId = userConfig.UserId,
             ChannelInformation = new()
             {
-                BroadcasterLanguage = language,
+                BroadcasterLanguage = new("en"),
                 ContentClassificationLabels = [new(ContentClassificationLabelId.ProfanityVulgarity, true)],
                 GameId = GameId.None,
                 Tags = ["TestStream"],
