@@ -22,33 +22,98 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
         ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        TwitchResponse<CreateGuestStarSessionResponse> createResponse = await CreateGuestStarSession(client, userConfig.UserId, ct);
+        TwitchResponse<CreateGuestStarSessionResponse> createResponse
+            = await CreateGuestStarSession(client, userConfig.UserId, ct);
         GuestStarSessionId sessionId = createResponse.Content.Data.Single().Id;
-        await Task.Delay(100, ct);
 
         try
         {
-            await SendGuestStarInvite(client, userConfig.UserId, sessionId, guestUserId, ct);
             await Task.Delay(100, ct);
 
-            await GetGuestStarInvites(client, userConfig.UserId, sessionId, ct);
+            await SendGuestStarInvite(
+                client,
+                userConfig.UserId,
+                sessionId,
+                guestUserId,
+                ct
+                );
 
-            await DeleteGuestStarInvite(client, userConfig.UserId, sessionId, guestUserId, ct);
+            await Task.Delay(100, ct);
 
-            await SendGuestStarInvite(client, userConfig.UserId, sessionId, guestUserId, ct);
+            await GetGuestStarInvites(
+                client,
+                userConfig.UserId,
+                sessionId,
+                ct
+                );
 
-            await Task.Delay(1000, ct); // Wait for join.
-            if ((await GetGuestStarSession(client, userConfig.UserId, ct)).Content.Data.FirstOrDefault()?.Guests.FirstOrDefault() is not GuestStarSessionGuest guest)
-                return;
+            await DeleteGuestStarInvite(
+                client,
+                userConfig.UserId,
+                sessionId,
+                guestUserId,
+                ct
+                );
+
+            await SendGuestStarInvite(
+                client,
+                userConfig.UserId,
+                sessionId,
+                guestUserId,
+                ct
+                );
+
+            await Task.Delay(TimeSpan.FromSeconds(5), ct); // Wait for join.
+
+            GuestStarSessionGuest? guest = (await GetGuestStarSession(client, userConfig.UserId, ct))
+                .Content
+                .Data
+                .FirstOrDefault()?
+                .Guests
+                .ElementAtOrDefault(1);
+
+            Assert.SkipWhen(
+                guest is null,
+                "The invited guest did not join the session."
+                );
 
             GuestStarSlotId slot1 = new("1");
             GuestStarSlotId slot2 = new("2");
 
-            await AssignGuestStarSlot(client, userConfig.UserId, sessionId, guest.UserId, slot1, ct); // Cannot get this to work, not sure when it is acceptable to call.
-            await UpdateGuestStarSlotSettings(client, userConfig.UserId, sessionId, slot1, ct);
-            await UpdateGuestStarSlot(client, userConfig.UserId, sessionId, slot1, slot2, ct);
+            await AssignGuestStarSlot(client,
+                userConfig.UserId,
+                sessionId,
+                guest.UserId,
+                slot1,
+                ct
+                ); // Cannot get this to work, not sure when it is acceptable to call.
+
+            await UpdateGuestStarSlotSettings(
+                client,
+                userConfig.UserId,
+                sessionId,
+                slot1,
+                ct
+                );
+
+            await UpdateGuestStarSlot(
+                client,
+                userConfig.UserId,
+                sessionId,
+                slot1,
+                slot2,
+                ct
+                );
+
             await Task.Delay(100, ct);
-            await DeleteGuestStarSlot(client, userConfig.UserId, sessionId, guest.UserId, slot2, ct);
+            await DeleteGuestStarSlot(
+                client,
+                userConfig.UserId,
+                sessionId,
+                guest.UserId,
+                slot2,
+                ct
+                );
         }
         finally
         {
