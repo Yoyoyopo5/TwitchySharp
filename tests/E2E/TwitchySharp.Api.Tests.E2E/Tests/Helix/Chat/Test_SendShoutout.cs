@@ -14,6 +14,11 @@ public class Test_SendShoutout(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
+        ITwitchClient client = _fixture.GetTwitchApiClient();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+
+        await client.SkipIfBroadcasterIsNotStreaming(userConfig.UserId, ct);
+
         const string TO_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
         UserId toBroadcasterId = new(TO_BROADCASTER_ID);
 
@@ -24,6 +29,6 @@ public class Test_SendShoutout(TwitchClientFixture fixture)
             ModeratorId = userConfig.UserId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await client.SendAsync(request, ct);
     }
 }
