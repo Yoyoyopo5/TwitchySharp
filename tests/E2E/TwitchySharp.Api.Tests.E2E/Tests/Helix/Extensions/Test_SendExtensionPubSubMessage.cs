@@ -41,9 +41,10 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
 
         SendExtensionPubSubMessageRequest broadcastRequest = new()
         {
-            ExtensionIdentity = extensionConfig.ToIdentity(),
+            ExtensionIdentity = extensionConfig.ToIdentity() with { BroadcasterId = userConfig.UserId },
             Message = new BroadcastPubSubMessageData() { Message = "Test broadcast message." }.To(userConfig.UserId)
         };
+
         ITwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
@@ -63,7 +64,7 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
 
         SendExtensionPubSubMessageRequest whisperRequest = new()
         {
-            ExtensionIdentity = extensionConfig.ToIdentity(),
+            ExtensionIdentity = extensionConfig.ToIdentity() with { BroadcasterId = userConfig.UserId },
             Message = new BroadcastPubSubMessageData() { Message = "Test whisper message." }.WhisperTo(userConfig.UserId)
         };
         ITwitchClient client = _fixture.GetTwitchApiClient();
