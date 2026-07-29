@@ -11,18 +11,18 @@ public readonly partial record struct GuestStarGroupLayout(string Value)
     /// <summary>
     /// All live guests are tiled within the browser source with the same size.
     /// </summary>
-    public static GuestStarGroupLayout Tiled { get; } = new("TILED_LAYOUT");
+    public static GuestStarGroupLayout Tiled { get; } = new("TILED");
     /// <summary>
     /// All live guests are tiled within the browser source with the same size. 
     /// If there is an active screen share, it is sized larger than the other guests.
     /// </summary>
-    public static GuestStarGroupLayout Screenshare { get; } = new("SCREENSHARE_LAYOUT");
+    public static GuestStarGroupLayout Screenshare { get; } = new("SCREENSHARE");
     /// <summary>
     /// All live guests are arranged in a horizontal bar within the browser source.
     /// </summary>
-    public static GuestStarGroupLayout Horizontal { get; } = new("HORIZONTAL_LAYOUT");
+    public static GuestStarGroupLayout Horizontal { get; } = new("HORIZONTAL");
     /// <summary>
     /// All live guests are arranged in a vertical bar within the browser source.
     /// </summary>
-    public static GuestStarGroupLayout Vertical { get; } = new("VERTICAL_LAYOUT");
+    public static GuestStarGroupLayout Vertical { get; } = new("VERTICAL");
 }
