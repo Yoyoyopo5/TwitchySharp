@@ -17,7 +17,8 @@ public static class UserAccessTokenExtensions
             Identity = new TwitchIdentity.User(userId, clientId),
             AccessToken = new UserAccessToken(refreshResponse.Content.AccessToken),
             RefreshToken = new RefreshToken(refreshResponse.Content.RefreshToken),
-            Scopes = refreshResponse.Content.Scope?.Select(s => new Scope(s)).ToHashSet() ?? []
+            Scopes = refreshResponse.Content.Scope?.Select(s => new Scope(s)).ToHashSet() ?? [],
+            ExpiresAt = DateTimeOffset.UtcNow + refreshResponse.Content.ExpiresIn
         });
 
     public static async ValueTask<AccessTokenRefreshResult> RefreshUserAccessToken(
@@ -27,7 +28,7 @@ public static class UserAccessTokenExtensions
         CancellationToken ct
         )
     {
-        if (tokenDetails is not { Identity.ClientId: not null, RefreshToken: not null } validTokenDetails)
+        if (tokenDetails is not { Identity.ClientId: not null, RefreshToken: not null })
         {
             TestContext.Current.AddWarning("Failed to refresh a user access token because the token details are missing required information (client id or refresh token).");
             return new AccessTokenRefreshResult.Expired<AccessTokenDetails.User>(tokenDetails);

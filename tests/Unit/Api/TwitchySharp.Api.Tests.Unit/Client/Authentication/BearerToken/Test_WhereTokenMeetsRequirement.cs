@@ -4,11 +4,11 @@ namespace TwitchySharp.Api.AuthorizationResolution.Tests.Unit;
 public class Test_WhereTokenMeetsRequirement
 {
     private readonly static AccessTokenDetails.App AppTokenDetails
-        = new() { AccessToken = new(), Identity = new(new("")) };
+        = new() { AccessToken = new(), Identity = new(new("")), ExpiresAt = DateTimeOffset.MaxValue };
     private readonly static AccessTokenDetails.ExtensionJwt ExtensionJwtDetails
         = new() { AccessToken = new(), Identity = new(new UserId(""), new ExtensionId("")) };
     private static AccessTokenDetails.User CreateUserTokenDetails(string value, IReadOnlySet<Scope> scopes)
-        => new() { AccessToken = new(value), Identity = UserIdentity, Scopes = scopes };
+        => new() { AccessToken = new(value), Identity = UserIdentity, Scopes = scopes, ExpiresAt = DateTimeOffset.MaxValue };
 
     private const string USER_ID_VALUE = "test_user_id";
     private const string CLIENT_ID_VALUE = "test_client_id";
