@@ -1,428 +1,453 @@
 ﻿using System.Collections;
+using System.Collections.Immutable;
+using TwitchySharp.Api.Helix.EventSub;
 using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 
-public class EventSubTestProvider : IEnumerable<TheoryDataRow<EventSubTest>>
+public static class EventSubTestRegistry
 {
-    private const string EVENT_SUB_TEST_PREFIX = "event-sub-";
-    private static TestName CreateTestName(string name)
-        => new(EVENT_SUB_TEST_PREFIX + name);
+    private readonly static Dictionary<EventSubSubscriptionType, EventSubTest> _registry
+        = new Dictionary<EventSubSubscriptionType, EventSubTest>()
+        .Register<AutomodMessageHold, UserConfiguration>(userConfig => new AutomodMessageHold(userConfig.UserId, userConfig.UserId))
+        .Register<AutomodMessageHoldV2, UserConfiguration>(userConfig => new AutomodMessageHoldV2(userConfig.UserId, userConfig.UserId))
+        .Register<AutomodMessageUpdate, UserConfiguration>(userConfig => new AutomodMessageUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<AutomodMessageUpdateV2, UserConfiguration>(userConfig => new AutomodMessageUpdateV2(userConfig.UserId, userConfig.UserId))
+        .Register<AutomodSettingsUpdate, UserConfiguration>(userConfig => new AutomodSettingsUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<AutomodTermsUpdate, UserConfiguration>(userConfig => new AutomodTermsUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelBitsUse, UserConfiguration>(userConfig => new ChannelBitsUse(userConfig.UserId))
+        .Register<ChannelUpdate, UserConfiguration>(userConfig => new ChannelUpdate(userConfig.UserId))
+        .Register<ChannelFollow, UserConfiguration>(userConfig => new ChannelFollow(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelAdBreakBegin, UserConfiguration>(userConfig => new ChannelAdBreakBegin(userConfig.UserId))
+        .Register<ChannelChatClear, UserConfiguration>(userConfig => new ChannelChatClear(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatClearUserMessages, UserConfiguration>(userConfig => new ChannelChatClearUserMessages(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatMessage, UserConfiguration>(userConfig => new ChannelChatMessage(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatMessageDelete, UserConfiguration>(userConfig => new ChannelChatMessageDelete(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatNotification, UserConfiguration>(userConfig => new ChannelChatNotification(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatSettingsUpdate, UserConfiguration>(userConfig => new ChannelChatSettingsUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatUserMessageHold, UserConfiguration>(userConfig => new ChannelChatUserMessageHold(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelChatUserMessageUpdate, UserConfiguration>(userConfig => new ChannelChatUserMessageUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelSharedChatSessionBegin, UserConfiguration>(userConfig => new ChannelSharedChatSessionBegin(userConfig.UserId))
+        .Register<ChannelSharedChatSessionUpdate, UserConfiguration>(userConfig => new ChannelSharedChatSessionUpdate(userConfig.UserId))
+        .Register<ChannelSharedChatSessionEnd, UserConfiguration>(userConfig => new ChannelSharedChatSessionEnd(userConfig.UserId))
+        .Register<ChannelSubscribe, UserConfiguration>(userConfig => new ChannelSubscribe(userConfig.UserId))
+        .Register<ChannelSubscriptionEnd, UserConfiguration>(userConfig => new ChannelSubscriptionEnd(userConfig.UserId))
+        .Register<ChannelSubscriptionGift, UserConfiguration>(userConfig => new ChannelSubscriptionGift(userConfig.UserId))
+        .Register<ChannelSubscriptionMessage, UserConfiguration>(userConfig => new ChannelSubscriptionMessage(userConfig.UserId))
+        .Register<ChannelCheer, UserConfiguration>(userConfig => new ChannelCheer(userConfig.UserId))
+        .Register<ChannelRaid, UserConfiguration>(userConfig => new ChannelRaid(userConfig.UserId))
+        .Register<ChannelBan, UserConfiguration>(userConfig => new ChannelBan(userConfig.UserId))
+        .Register<ChannelUnban, UserConfiguration>(userConfig => new ChannelUnban(userConfig.UserId))
+        .Register<ChannelUnbanRequestCreate, UserConfiguration>(userConfig => new ChannelUnbanRequestCreate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelUnbanRequestResolve, UserConfiguration>(userConfig => new ChannelUnbanRequestResolve(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelModerate, UserConfiguration>(userConfig => new ChannelModerate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelModerateV2, UserConfiguration>(userConfig => new ChannelModerateV2(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelModeratorAdd, UserConfiguration>(userConfig => new ChannelModeratorAdd(userConfig.UserId))
+        .Register<ChannelModeratorRemove, UserConfiguration>(userConfig => new ChannelModeratorRemove(userConfig.UserId))
+        .Register<ChannelGuestStarSessionBegin, UserConfiguration>(userConfig => new ChannelGuestStarSessionBegin(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelGuestStarSessionEnd, UserConfiguration>(userConfig => new ChannelGuestStarSessionEnd(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelGuestStarGuestUpdate, UserConfiguration>(userConfig => new ChannelGuestStarGuestUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelGuestStarSettingsUpdate, UserConfiguration>(userConfig => new ChannelGuestStarSettingsUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelPointsAutomaticRewardRedemptionAdd, UserConfiguration>(userConfig => new ChannelPointsAutomaticRewardRedemptionAdd(userConfig.UserId))
+        .Register<ChannelPointsAutomaticRewardRedemptionAddV2, UserConfiguration>(userConfig => new ChannelPointsAutomaticRewardRedemptionAddV2(userConfig.UserId))
+        .Register<ChannelPointsCustomRewardAdd, UserConfiguration>(userConfig => new ChannelPointsCustomRewardAdd(userConfig.UserId))
+        .Register<ChannelPointsCustomRewardUpdate, UserConfiguration>(userConfig => new ChannelPointsCustomRewardUpdate(userConfig.UserId))
+        .Register<ChannelPointsCustomRewardRemove, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRemove(userConfig.UserId))
+        .Register<ChannelPointsCustomRewardRedemptionAdd, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRedemptionAdd(userConfig.UserId))
+        .Register<ChannelPointsCustomRewardRedemptionUpdate, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRedemptionUpdate(userConfig.UserId))
+        .Register<ChannelPollBegin, UserConfiguration>(userConfig => new ChannelPollBegin(userConfig.UserId))
+        .Register<ChannelPollProgress, UserConfiguration>(userConfig => new ChannelPollProgress(userConfig.UserId))
+        .Register<ChannelPollEnd, UserConfiguration>(userConfig => new ChannelPollEnd(userConfig.UserId))
+        .Register<ChannelPredictionBegin, UserConfiguration>(userConfig => new ChannelPredictionBegin(userConfig.UserId))
+        .Register<ChannelPredictionProgress, UserConfiguration>(userConfig => new ChannelPredictionProgress(userConfig.UserId))
+        .Register<ChannelPredictionLock, UserConfiguration>(userConfig => new ChannelPredictionLock(userConfig.UserId))
+        .Register<ChannelPredictionEnd, UserConfiguration>(userConfig => new ChannelPredictionEnd(userConfig.UserId))
+        .Register<ChannelSuspiciousUserMessage, UserConfiguration>(userConfig => new ChannelSuspiciousUserMessage(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelSuspiciousUserUpdate, UserConfiguration>(userConfig => new ChannelSuspiciousUserUpdate(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelVipAdd, UserConfiguration>(userConfig => new ChannelVipAdd(userConfig.UserId))
+        .Register<ChannelVipRemove, UserConfiguration>(userConfig => new ChannelVipRemove(userConfig.UserId))
+        .Register<ChannelWarningAcknowledgement, UserConfiguration>(userConfig => new ChannelWarningAcknowledgement(userConfig.UserId, userConfig.UserId))
+        .Register<ChannelWarningSend, UserConfiguration>(userConfig => new ChannelWarningSend(userConfig.UserId, userConfig.UserId))
+        .Register<CharityDonation, UserConfiguration>(userConfig => new CharityDonation(userConfig.UserId))
+        .Register<CharityCampaignStart, UserConfiguration>(userConfig => new CharityCampaignStart(userConfig.UserId))
+        .Register<CharityCampaignProgress, UserConfiguration>(userConfig => new CharityCampaignProgress(userConfig.UserId))
+        .Register<CharityCampaignStop, UserConfiguration>(userConfig => new CharityCampaignStop(userConfig.UserId))
+        .Register<ConduitShardDisabled, ClientConfiguration>(clientConfig => new ConduitShardDisabled(clientConfig.ClientId))
+        .Register<DropEntitlementGrant, OrganizationConfiguration>(organizationConfig => new DropEntitlementGrant(organizationConfig.OrganizationId))
+        .Register<ExtensionBitsTransactionCreate, ExtensionConfiguration>(extensionConfig => new ExtensionBitsTransactionCreate(extensionConfig.ExtensionId))
+        .Register<GoalBegin, UserConfiguration>(userConfig => new GoalBegin(userConfig.UserId))
+        .Register<GoalProgress, UserConfiguration>(userConfig => new GoalProgress(userConfig.UserId))
+        .Register<GoalEnd, UserConfiguration>(userConfig => new GoalEnd(userConfig.UserId))
+        .Register<HypeTrainBegin, UserConfiguration>(userConfig => new HypeTrainBegin(userConfig.UserId))
+        .Register<HypeTrainProgress, UserConfiguration>(userConfig => new HypeTrainProgress(userConfig.UserId))
+        .Register<HypeTrainEnd, UserConfiguration>(userConfig => new HypeTrainEnd(userConfig.UserId))
+        .Register<ShieldModeBegin, UserConfiguration>(userConfig => new ShieldModeBegin(userConfig.UserId, userConfig.UserId))
+        .Register<ShieldModeEnd, UserConfiguration>(userConfig => new ShieldModeEnd(userConfig.UserId, userConfig.UserId))
+        .Register<ShoutoutCreate, UserConfiguration>(userConfig => new ShoutoutCreate(userConfig.UserId, userConfig.UserId))
+        .Register<ShoutoutReceived, UserConfiguration>(userConfig => new ShoutoutReceived(userConfig.UserId, userConfig.UserId))
+        .Register<StreamOnline, UserConfiguration>(userConfig => new StreamOnline(userConfig.UserId))
+        .Register<StreamOffline, UserConfiguration>(userConfig => new StreamOffline(userConfig.UserId))
+        .Register<UserAuthorizationGrant, ClientConfiguration>(clientConfig => new UserAuthorizationGrant(clientConfig.ClientId))
+        .Register<UserAuthorizationRevoke, ClientConfiguration>(clientConfig => new UserAuthorizationRevoke(clientConfig.ClientId))
+        .Register<UserUpdate, UserConfiguration>(userConfig => new UserUpdate(userConfig.UserId))
+        .Register<WhisperReceived, UserConfiguration>(userConfig => new WhisperReceived(userConfig.UserId));
 
-    public readonly static IEnumerable<TheoryDataRow<EventSubTest>> Data = [
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodMessageHold, UserConfiguration>()
+    private static Dictionary<EventSubSubscriptionType, EventSubTest> Register<TSpecification, TRequiredIdentity>(
+        this Dictionary<EventSubSubscriptionType, EventSubTest> registry,
+        Func<TRequiredIdentity, TSpecification> create
+        )
+        where TSpecification : EventSubSubscriptionTypeSpecification, IConditionConstructable<TSpecification>
+        where TRequiredIdentity : ITestIdentity
+    {
+        registry.Add(TSpecification.SubscriptionType, new EventSubTest<TRequiredIdentity, TSpecification>()
         {
-            TestName = CreateTestName("automod-message-hold"),
-            CreateSpecification = userConfig => new AutomodMessageHold(userConfig.UserId, userConfig.UserId)
+            CreateSpecification = create
+        });
+        return registry;
+    }
+
+    public static EventSubTest Get(EventSubSubscriptionType subscriptionType)
+        => _registry[subscriptionType];
+
+    public static EventSubTest Get<TSpecification>()
+        where TSpecification : EventSubSubscriptionTypeSpecification, IConditionConstructable<TSpecification>
+        => _registry[TSpecification.SubscriptionType];
+}
+
+public class EventSubTestProvider : IEnumerable<TheoryDataRow<EventSubTestRow>>
+{
+    public readonly static IEnumerable<TheoryDataRow<EventSubTestRow>> Data = [
+        new TheoryDataRow<EventSubTestRow>(new()
+        {
+            SubscriptionType = AutomodMessageHold.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodMessageHoldV2, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("automod-message-hold-v2"),
-            CreateSpecification = userConfig => new AutomodMessageHoldV2(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = AutomodMessageHoldV2.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodMessageUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("automod-message-update"),
-            CreateSpecification = userConfig => new AutomodMessageUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = AutomodMessageUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodMessageUpdateV2, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("automod-message-update-v2"),
-            CreateSpecification = userConfig => new AutomodMessageUpdateV2(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = AutomodMessageUpdateV2.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodSettingsUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("automod-settings-update"),
-            CreateSpecification = userConfig => new AutomodSettingsUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = AutomodSettingsUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<AutomodTermsUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("automod-terms-update"),
-            CreateSpecification = userConfig => new AutomodTermsUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = AutomodTermsUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelBitsUse, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-bits-use"),
-            CreateSpecification = userConfig => new ChannelBitsUse(userConfig.UserId)
+            SubscriptionType = ChannelBitsUse.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-update"),
-            CreateSpecification = userConfig => new ChannelUpdate(userConfig.UserId)
+            SubscriptionType = ChannelUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelFollow, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-follow"),
-            CreateSpecification = userConfig => new ChannelFollow(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelFollow.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelAdBreakBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-ad-break-begin"),
-            CreateSpecification = userConfig => new ChannelAdBreakBegin(userConfig.UserId)
+            SubscriptionType = ChannelAdBreakBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatClear, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-clear"),
-            CreateSpecification = userConfig => new ChannelChatClear(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatClear.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatClearUserMessages, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-clear-user-messages"),
-            CreateSpecification = userConfig => new ChannelChatClearUserMessages(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatClearUserMessages.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatMessage, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-message"),
-            CreateSpecification = userConfig => new ChannelChatMessage(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatMessage.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatMessageDelete, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-message-delete"),
-            CreateSpecification = userConfig => new ChannelChatMessageDelete(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatMessageDelete.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatNotification, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-notification"),
-            CreateSpecification = userConfig => new ChannelChatNotification(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatNotification.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatSettingsUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-settings-update"),
-            CreateSpecification = userConfig => new ChannelChatSettingsUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatSettingsUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatUserMessageHold, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-user-message-hold"),
-            CreateSpecification = userConfig => new ChannelChatUserMessageHold(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatUserMessageHold.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelChatUserMessageUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-chat-user-message-update"),
-            CreateSpecification = userConfig => new ChannelChatUserMessageUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelChatUserMessageUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSharedChatSessionBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-shared-chat-session-begin"),
-            CreateSpecification = userConfig => new ChannelSharedChatSessionBegin(userConfig.UserId)
+            SubscriptionType = ChannelSharedChatSessionBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSharedChatSessionUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-shared-chat-session-update"),
-            CreateSpecification = userConfig => new ChannelSharedChatSessionUpdate(userConfig.UserId)
+            SubscriptionType = ChannelSharedChatSessionUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSharedChatSessionEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-shared-chat-session-end"),
-            CreateSpecification = userConfig => new ChannelSharedChatSessionEnd(userConfig.UserId)
+            SubscriptionType = ChannelSharedChatSessionEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSubscribe, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-subscription"),
-            CreateSpecification = userConfig => new ChannelSubscribe(userConfig.UserId)
+            SubscriptionType = ChannelSubscribe.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSubscriptionEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-subscription-end"),
-            CreateSpecification = userConfig => new ChannelSubscriptionEnd(userConfig.UserId)
+            SubscriptionType = ChannelSubscriptionEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSubscriptionGift, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-subscription-gift"),
-            CreateSpecification = userConfig => new ChannelSubscriptionGift(userConfig.UserId)
+            SubscriptionType = ChannelSubscriptionGift.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSubscriptionMessage, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-subscription-message"),
-            CreateSpecification = userConfig => new ChannelSubscriptionMessage(userConfig.UserId)
+            SubscriptionType = ChannelSubscriptionMessage.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelCheer, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-cheer"),
-            CreateSpecification = userConfig => new ChannelCheer(userConfig.UserId)
+            SubscriptionType = ChannelCheer.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelRaid, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-raid"),
-            CreateSpecification = userConfig => new ChannelRaid(userConfig.UserId)
+            SubscriptionType = ChannelRaid.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelBan, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-ban"),
-            CreateSpecification = userConfig => new ChannelBan(userConfig.UserId)
+            SubscriptionType = ChannelBan.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelUnban, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-unban"),
-            CreateSpecification = userConfig => new ChannelUnban(userConfig.UserId)
+            SubscriptionType = ChannelUnban.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelUnbanRequestCreate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-unban-request-create"),
-            CreateSpecification = userConfig => new ChannelUnbanRequestCreate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelUnbanRequestCreate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelUnbanRequestResolve, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-unban-request-resolve"),
-            CreateSpecification = userConfig => new ChannelUnbanRequestResolve(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelUnbanRequestResolve.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelModerate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-moderate"),
-            CreateSpecification = userConfig => new ChannelModerate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelModerate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelModerateV2, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-moderate-v2"),
-            CreateSpecification = userConfig => new ChannelModerateV2(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelModerateV2.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelModeratorAdd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-moderator-add"),
-            CreateSpecification = userConfig => new ChannelModeratorAdd(userConfig.UserId)
+            SubscriptionType = ChannelModeratorAdd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelModeratorRemove, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-moderator-remove"),
-            CreateSpecification = userConfig => new ChannelModeratorRemove(userConfig.UserId)
+            SubscriptionType = ChannelModeratorRemove.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelGuestStarSessionBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-guest-star-session-begin"),
-            CreateSpecification = userConfig => new ChannelGuestStarSessionBegin(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelGuestStarSessionBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelGuestStarSessionEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-guest-star-session-end"),
-            CreateSpecification = userConfig => new ChannelGuestStarSessionEnd(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelGuestStarSessionEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelGuestStarGuestUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-guest-star-guest-update"),
-            CreateSpecification = userConfig => new ChannelGuestStarGuestUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelGuestStarGuestUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelGuestStarSettingsUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-guest-star-settings-update"),
-            CreateSpecification = userConfig => new ChannelGuestStarSettingsUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelGuestStarSettingsUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsAutomaticRewardRedemptionAdd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-automatic-reward-redemption-add"),
-            CreateSpecification = userConfig => new ChannelPointsAutomaticRewardRedemptionAdd(userConfig.UserId)
+            SubscriptionType = ChannelPointsAutomaticRewardRedemptionAdd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsAutomaticRewardRedemptionAddV2, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-automatic-reward-redemption-add-v2"),
-            CreateSpecification = userConfig => new ChannelPointsAutomaticRewardRedemptionAddV2(userConfig.UserId)
+            SubscriptionType = ChannelPointsAutomaticRewardRedemptionAddV2.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsCustomRewardAdd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-custom-reward-add"),
-            CreateSpecification = userConfig => new ChannelPointsCustomRewardAdd(userConfig.UserId)
+            SubscriptionType = ChannelPointsCustomRewardAdd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsCustomRewardUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-custom-reward-update"),
-            CreateSpecification = userConfig => new ChannelPointsCustomRewardUpdate(userConfig.UserId)
+            SubscriptionType = ChannelPointsCustomRewardUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsCustomRewardRemove, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-custom-reward-remove"),
-            CreateSpecification = userConfig => new ChannelPointsCustomRewardRemove(userConfig.UserId)
+            SubscriptionType = ChannelPointsCustomRewardRemove.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsCustomRewardRedemptionAdd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-custom-reward-redemption-add"),
-            CreateSpecification = userConfig => new ChannelPointsCustomRewardRedemptionAdd(userConfig.UserId)
+            SubscriptionType = ChannelPointsCustomRewardRedemptionAdd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPointsCustomRewardRedemptionUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-points-custom-reward-redemption-update"),
-            CreateSpecification = userConfig => new ChannelPointsCustomRewardRedemptionUpdate(userConfig.UserId)
+            SubscriptionType = ChannelPointsCustomRewardRedemptionUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPollBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-poll-begin"),
-            CreateSpecification = userConfig => new ChannelPollBegin(userConfig.UserId)
+            SubscriptionType = ChannelPollBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPollProgress, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-poll-progress"),
-            CreateSpecification = userConfig => new ChannelPollProgress(userConfig.UserId)
+            SubscriptionType = ChannelPollProgress.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPollEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-poll-end"),
-            CreateSpecification = userConfig => new ChannelPollEnd(userConfig.UserId)
+            SubscriptionType = ChannelPollEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPredictionBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-prediction-begin"),
-            CreateSpecification = userConfig => new ChannelPredictionBegin(userConfig.UserId)
+            SubscriptionType = ChannelPredictionBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPredictionProgress, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-prediction-progress"),
-            CreateSpecification = userConfig => new ChannelPredictionProgress(userConfig.UserId)
+            SubscriptionType = ChannelPredictionProgress.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPredictionLock, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-prediction-lock"),
-            CreateSpecification = userConfig => new ChannelPredictionLock(userConfig.UserId)
+            SubscriptionType = ChannelPredictionLock.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelPredictionEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-prediction-end"),
-            CreateSpecification = userConfig => new ChannelPredictionEnd(userConfig.UserId)
+            SubscriptionType = ChannelPredictionEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSuspiciousUserMessage, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-suspicious-user-message"),
-            CreateSpecification = userConfig => new ChannelSuspiciousUserMessage(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelSuspiciousUserMessage.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelSuspiciousUserUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-suspicious-user-update"),
-            CreateSpecification = userConfig => new ChannelSuspiciousUserUpdate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelSuspiciousUserUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelVipAdd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-vip-add"),
-            CreateSpecification = userConfig => new ChannelVipAdd(userConfig.UserId)
+            SubscriptionType = ChannelVipAdd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelVipRemove, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-vip-remove"),
-            CreateSpecification = userConfig => new ChannelVipRemove(userConfig.UserId)
+            SubscriptionType = ChannelVipRemove.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelWarningAcknowledgement, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-warning-acknowledgement"),
-            CreateSpecification = userConfig => new ChannelWarningAcknowledgement(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelWarningAcknowledgement.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ChannelWarningSend, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("channel-warning-send"),
-            CreateSpecification = userConfig => new ChannelWarningSend(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ChannelWarningSend.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<CharityDonation, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("charity-donation"),
-            CreateSpecification = userConfig => new CharityDonation(userConfig.UserId)
+            SubscriptionType = CharityDonation.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<CharityCampaignStart, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("charity-campaign-start"),
-            CreateSpecification = userConfig => new CharityCampaignStart(userConfig.UserId)
+            SubscriptionType = CharityCampaignStart.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<CharityCampaignProgress, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("charity-campaign-progress"),
-            CreateSpecification = userConfig => new CharityCampaignProgress(userConfig.UserId)
+            SubscriptionType = CharityCampaignProgress.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<CharityCampaignStop, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("charity-campaign-stop"),
-            CreateSpecification = userConfig => new CharityCampaignStop(userConfig.UserId)
+            SubscriptionType = CharityCampaignStop.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ConduitShardDisabled, ClientConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("conduit-shard-disabled"),
-            CreateSpecification = clientConfig => new ConduitShardDisabled(clientConfig.ClientId)
+            SubscriptionType = ConduitShardDisabled.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<DropEntitlementGrant, OrganizationConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("drop-entitlement-grant"),
-            CreateSpecification = organizationConfig => new DropEntitlementGrant(organizationConfig.OrganizationId)
+            SubscriptionType = DropEntitlementGrant.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ExtensionBitsTransactionCreate, ExtensionConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("extension-bits-transaction-create"),
-            CreateSpecification = extensionConfig => new ExtensionBitsTransactionCreate(extensionConfig.ExtensionId)
+            SubscriptionType = ExtensionBitsTransactionCreate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<GoalBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("goal-begin"),
-            CreateSpecification = userConfig => new GoalBegin(userConfig.UserId)
+            SubscriptionType = GoalBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<GoalProgress, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("goal-progress"),
-            CreateSpecification = userConfig => new GoalProgress(userConfig.UserId)
+            SubscriptionType = GoalProgress.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<GoalEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("goal-end"),
-            CreateSpecification = userConfig => new GoalEnd(userConfig.UserId)
+            SubscriptionType = GoalEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<HypeTrainBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("hype-train-begin"),
-            CreateSpecification = userConfig => new HypeTrainBegin(userConfig.UserId)
+            SubscriptionType = HypeTrainBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<HypeTrainProgress, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("hype-train-progress"),
-            CreateSpecification = userConfig => new HypeTrainProgress(userConfig.UserId)
+            SubscriptionType = HypeTrainProgress.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<HypeTrainEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("hype-train-end"),
-            CreateSpecification = userConfig => new HypeTrainEnd(userConfig.UserId)
+            SubscriptionType = HypeTrainEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ShieldModeBegin, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("shield-mode-begin"),
-            CreateSpecification = userConfig => new ShieldModeBegin(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ShieldModeBegin.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ShieldModeEnd, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("shield-mode-end"),
-            CreateSpecification = userConfig => new ShieldModeEnd(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ShieldModeEnd.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ShoutoutCreate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("shoutout-create"),
-            CreateSpecification = userConfig => new ShoutoutCreate(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ShoutoutCreate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<ShoutoutReceived, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("shoutout-received"),
-            CreateSpecification = userConfig => new ShoutoutReceived(userConfig.UserId, userConfig.UserId)
+            SubscriptionType = ShoutoutReceived.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<StreamOnline, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("stream-online"),
-            CreateSpecification = userConfig => new StreamOnline(userConfig.UserId)
+            SubscriptionType = StreamOnline.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<StreamOffline, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("stream-offline"),
-            CreateSpecification = userConfig => new StreamOffline(userConfig.UserId)
+            SubscriptionType = StreamOffline.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<UserAuthorizationGrant, ClientConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("user-authorization-grant"),
-            CreateSpecification = clientConfig => new UserAuthorizationGrant(clientConfig.ClientId)
+            SubscriptionType = UserAuthorizationGrant.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<UserAuthorizationRevoke, ClientConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("user-authorization-revoke"),
-            CreateSpecification = clientConfig => new UserAuthorizationRevoke(clientConfig.ClientId)
+            SubscriptionType = UserAuthorizationRevoke.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<UserUpdate, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("user-update"),
-            CreateSpecification = userConfig => new UserUpdate(userConfig.UserId)
+            SubscriptionType = UserUpdate.SubscriptionType
         }),
-        new TheoryDataRow<EventSubTest>(new EventSubTest<WhisperReceived, UserConfiguration>()
+        new TheoryDataRow<EventSubTestRow>(new()
         {
-            TestName = CreateTestName("whisper-received"),
-            CreateSpecification = userConfig => new WhisperReceived(userConfig.UserId)
+            SubscriptionType = WhisperReceived.SubscriptionType
         })
         ];
 
-    public IEnumerator<TheoryDataRow<EventSubTest>> GetEnumerator() => Data.AsEnumerable().GetEnumerator();
+    public IEnumerator<TheoryDataRow<EventSubTestRow>> GetEnumerator() => Data.AsEnumerable().GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

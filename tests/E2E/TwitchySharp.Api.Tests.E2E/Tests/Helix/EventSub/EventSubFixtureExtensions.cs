@@ -1,45 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using TwitchySharp.Api.Authorization;
 using TwitchySharp.Api.Helix.EventSub;
-using TwitchySharp.Api.Helix.EventSub.Subscriptions;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.EventSub;
 
-public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : IClassFixture<EventSubWebSocketsFixture>
+public static class EventSubFixtureExtensions
 {
-    private readonly EventSubWebSocketsFixture _fixture = fixture;
-
-    [Fact]
-    public async Task Send_EventSubWebsocketCreateGetDeleteRequests_ReturnSuccessResponses()
-    {
-        EventSubWebsocketSessionId sessionId = new(_fixture.SessionId);
-
-        await SendEventSubSubscriptionRequests(
-            _fixture,
-            EventSubTestProvider.Data.First(static t => t.Data is EventSubTest<ChannelFollow, UserConfiguration>).Data,
-            new WebsocketSubscriptionTransport(sessionId),
-            TestContext.Current.CancellationToken
-            );
-    }
-
-    [Theory]
-    [ClassData(typeof(EventSubTestProvider))]
-    public async Task Send_EventSubWebhookCreateGetDeleteRequests_ReturnSuccessResponses(EventSubTest subscriptionTestData)
-    {
-        EventSubCallbackUrl callbackUrl = new("https://fake-callback.xyz");
-        WebhookSecret secret = new("FAKE_SECRET");
-
-        await SendEventSubSubscriptionRequests(
-            _fixture,
-            subscriptionTestData,
-            new WebhookSubscriptionTransport(callbackUrl, secret),
-            TestContext.Current.CancellationToken
-            );
-    }
-
-    private async static Task SendEventSubSubscriptionRequests(
-        EventSubWebSocketsFixture fixture,
+    public async static Task SendEventSubSubscriptionRequests(
+        this TwitchClientFixture fixture,
         EventSubTest testData,
         EventSubSubscriptionTransportSpecification transport,
         CancellationToken ct
@@ -69,14 +38,14 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
     }
 
     private static Task<TwitchResponse<DeleteEventSubSubscriptionResponse>> DeleteSubscription(
-        ITwitchClient client,
+        this ITwitchClient client,
         EventSubSubscription subscription,
         CancellationToken ct
         )
         => client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), ct);
 
     private async static Task<EventSubSubscription> GetSubscription(
-        ITwitchClient client,
+        this ITwitchClient client,
         EventSubSubscription subscription,
         CancellationToken ct
         )
@@ -96,7 +65,7 @@ public class Test_EventSubSubscriptions(EventSubWebSocketsFixture fixture) : ICl
     }
 
     private async static Task<EventSubSubscription> CreateSubscription(
-        ITwitchClient client,
+        this ITwitchClient client,
         EventSubSubscriptionSpecification specification,
         CancellationToken ct
         )
