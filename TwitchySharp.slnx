@@ -1,0 +1,58 @@
+<Solution>
+  <!-- src/ -->
+  <Folder Name="/src/">
+    <Project Path="src/TwitchySharp.Core/TwitchySharp.Core.csproj" />
+  </Folder>
+  <Folder Name="/src/Api/">
+    <Project Path="src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
+    <Project Path="src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
+    <Project Path="src/Api/TwitchySharp.Api/TwitchySharp.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/EventSub/">
+    <Project Path="src/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore/TwitchySharp.EventSub.Webhooks.AspNetCore.csproj" />
+    <Project Path="src/EventSub/TwitchySharp.EventSub.Webhooks/TwitchySharp.EventSub.Webhooks.csproj" />
+    <Project Path="src/EventSub/TwitchySharp.EventSub.Websocket/TwitchySharp.EventSub.Websocket.csproj" />
+    <Project Path="src/EventSub/TwitchySharp.EventSub/TwitchySharp.EventSub.csproj" />
+  </Folder>
+
+  <!-- tests/ -->
+  <Folder Name="/tests/Unit/">
+    <Project Path="tests/Unit/TwitchySharp.Core.Tests.Unit/TwitchySharp.Core.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
+  </Folder>
+  <Folder Name="/tests/Unit/Api/">
+    <Project Path="tests/Unit/Api/TwitchySharp.Api.Authentication.Tests.Unit/TwitchySharp.Api.Authentication.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/Api/TwitchySharp.Api.Helix.Tests.Unit/TwitchySharp.Api.Helix.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/Api/TwitchySharp.Api.Tests.Unit/TwitchySharp.Api.Tests.Unit.csproj" />
+  </Folder>
+  <Folder Name="/tests/Unit/EventSub/">
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Tests.Unit/TwitchySharp.EventSub.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit/TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Unit/TwitchySharp.EventSub.Webhooks.Tests.Unit.csproj" />
+    <Project Path="tests/Unit/EventSub/TwitchySharp.EventSub.Websocket.Tests.Unit/TwitchySharp.EventSub.Websocket.Tests.Unit.csproj" />
+  </Folder>
+  <Folder Name="/tests/Integration/" />
+  <Folder Name="/tests/Integration/Api/">
+    <Project Path="tests/Integration/Api/TwitchySharp.Api.Tests.Integration/TwitchySharp.Api.Tests.Integration.csproj" />
+  </Folder>
+  <Folder Name="/tests/Integration/EventSub/">
+    <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Webhooks.Tests.Integration/TwitchySharp.EventSub.Webhooks.Tests.Integration.csproj" />
+    <Project Path="tests/Integration/EventSub/TwitchySharp.EventSub.Websocket.Tests.Integration/TwitchySharp.EventSub.Websocket.Tests.Integration.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/E2E/">
+    <Project Path="tests/E2E/TwitchySharp.Api.Tests.E2E/TwitchySharp.Api.Tests.E2E.csproj" />
+    <Project Path="tests/E2E/TwitchySharp.EventSub.Tests.E2E/TwitchySharp.EventSub.Tests.E2E.csproj" />
+    <Project Path="tests/E2E/TwitchySharp.Tests.E2E.Toolkit/TwitchySharp.Tests.E2E.Toolkit.csproj" />
+  </Folder>
+
+  <!-- utils/ -->
+  <Folder Name="/utils/">
+    <Project Path="utils/AcquireUserAccessToken/AcquireUserAccessToken.csproj" />
+  </Folder>
+
+  <File Path="Directory.Packages.props" />
+  <File Path="Directory.Build.props" />
+  <File Path=".editorconfig" />
+
+</Solution>

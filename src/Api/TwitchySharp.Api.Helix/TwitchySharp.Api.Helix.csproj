@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../TwitchySharp.Api/TwitchySharp.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="TwitchySharp.Infrastructure.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
+	</ItemGroup>
+
+</Project>

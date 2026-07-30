@@ -1,0 +1,51 @@
+using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
+
+namespace TwitchySharp.Api.Helix.EventSub;
+
+/// <summary>
+/// Indicates that a required condition key was missing in a <see cref="EventSubSubscription.Condition"/>.
+/// </summary>
+/// <param name="MissingKey">The missing required condition key.</param>
+public record ConditionMissingRequiredKeyError(ConditionKey MissingKey)
+    : Error("The condition was missing a required key");
+
+/// <summary>
+/// An <see cref="EventSubSubscriptionTypeSpecification"/> that can be created via a <see cref="EventSubSubscription.Condition"/>.
+/// </summary>
+/// <typeparam name="T">The <see cref="EventSubSubscriptionTypeSpecification"/> type.</typeparam>
+public interface IConditionConstructable<T>
+    where T : EventSubSubscriptionTypeSpecification
+{
+    static abstract EventSubSubscriptionType SubscriptionType { get; }
+    static abstract Validation<T> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition);
+}
+
+/// <summary>
+/// An EventSub subscription type.
+/// </summary>
+public abstract record EventSubSubscriptionTypeSpecification
+{
+    /// <summary>
+    /// The type of the subscription, combining name and version.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types#subscription-types">Subscription Types</see>.
+    /// </remarks>
+    public abstract EventSubSubscriptionType Type { get; }
+    /// <summary>
+    /// A dictionary that contains the parameter values that are specific to the specified subscription type.
+    /// For the object's required and optional fields, see the subscription type's documentation.
+    /// </summary>
+    public abstract IReadOnlyDictionary<ConditionKey, object> Condition { get; }
+
+    /// <summary>
+    /// The identity that must authorize this subscription.
+    /// </summary>
+    public virtual TwitchIdentity Identity { get; } = TwitchIdentity.Client.Default;
+
+    /// <summary>
+    /// The scopes required for user authentication.
+    /// </summary>
+    public virtual IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet<Scope>.Empty;
+}
