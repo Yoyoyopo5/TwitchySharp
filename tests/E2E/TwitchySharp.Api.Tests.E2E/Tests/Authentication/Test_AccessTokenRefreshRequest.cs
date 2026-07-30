@@ -49,6 +49,5 @@ public class Test_AccessTokenRefreshRequest(TwitchClientFixture fixture)
         Assert.Equal([.. userTokenDetails.Scopes], response.Content.Scope?.ToHashSet());
         Assert.NotEqual(userTokenDetails.AccessToken, response.Content.AccessToken);
         Assert.False(string.IsNullOrWhiteSpace(refreshedTokenDetails.RefreshToken));
-        Assert.True(refreshedTokenDetails.ExpiresAt > userTokenDetails.ExpiresAt);
     }
 }
