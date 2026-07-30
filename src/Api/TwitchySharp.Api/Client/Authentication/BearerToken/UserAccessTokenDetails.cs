@@ -30,7 +30,7 @@ public abstract partial record AccessTokenDetails
         public IReadOnlySet<Scope> Scopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 
         /// <inheritdoc cref="AccessTokenDetails.ExpiresAt"/>
-        public new DateTimeOffset ExpiresAt { get; init; }
+        public required new DateTimeOffset ExpiresAt { get; init; }
         protected override DateTimeOffset BaseExpiresAt => ExpiresAt;
     }
 }

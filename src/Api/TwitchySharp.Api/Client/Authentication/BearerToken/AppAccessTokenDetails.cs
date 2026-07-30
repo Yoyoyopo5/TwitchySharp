@@ -19,7 +19,7 @@ public abstract partial record AccessTokenDetails
         protected override IAccessToken BaseAccessToken => AccessToken;
 
         /// <inheritdoc cref="AccessTokenDetails.ExpiresAt"/>
-        public new DateTimeOffset ExpiresAt { get; init; }
+        public required new DateTimeOffset ExpiresAt { get; init; }
         protected override DateTimeOffset BaseExpiresAt => ExpiresAt;
     }
 }
