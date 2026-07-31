@@ -4,22 +4,32 @@ public static class Concurrency
 {
     public static async Task<T[]> RunConcurrently<T>(
         int workerCount,
-        ManualResetEventSlim gate,
-        Func<int, Task<T>> func
-    )
+        Func<int, Task<T>> func,
+        CancellationToken ct
+        )
     {
-        Task<T>[] tasks = Enumerable.Range(0, workerCount).Select(func).ToArray();
+        ManualResetEventSlim gate = new(false);
+        Task<T>[] tasks = Enumerable.Range(0, workerCount).Select(i => Task.Run(() =>
+        {
+            gate.Wait(ct);
+            return func(i);
+        })).ToArray();
         gate.Set();
         return await Task.WhenAll(tasks);
     }
 
     public static async Task RunConcurrently(
         int workerCount,
-        ManualResetEventSlim gate,
-        Func<int, Task> func
+        Func<int, Task> func,
+        CancellationToken ct
         )
     {
-        Task[] tasks = Enumerable.Range(0, workerCount).Select(func).ToArray();
+        ManualResetEventSlim gate = new(false);
+        Task[] tasks = Enumerable.Range(0, workerCount).Select(i => Task.Run(() =>
+        {
+            gate.Wait(ct);
+            return func(i);
+        })).ToArray();
         gate.Set();
         await Task.WhenAll(tasks);
     }

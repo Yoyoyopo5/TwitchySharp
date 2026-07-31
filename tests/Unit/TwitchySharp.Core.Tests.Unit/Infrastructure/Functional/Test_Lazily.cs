@@ -12,18 +12,16 @@ public class Test_Lazily
         const int WORKER_COUNT = 16;
         const int WORK_MS = 20;
 
-        ManualResetEventSlim gate = new(false);
 
         Func<int, CancellationToken, ValueTask<object>> concurrent = ThreadSafety.Lazily<int, int, object>(i => 0)(
-            async (_, ct) => await Task.Run(async () =>
+            async (_, ct) =>
             {
-                gate.Wait(ct);
                 await Task.Delay(WORK_MS, ct);
                 return new object();
-            }));
+            });
 
         Stopwatch sw = Stopwatch.StartNew();
-        object[] results = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrent(i, TestContext.Current.CancellationToken).AsTask());
+        object[] results = await Concurrency.RunConcurrently(WORKER_COUNT, i => concurrent(i, TestContext.Current.CancellationToken).AsTask(), TestContext.Current.CancellationToken);
         sw.Stop();
 
         Assert.True(sw.ElapsedMilliseconds < WORKER_COUNT * WORK_MS);
@@ -50,17 +48,16 @@ public class Test_Lazily
     public async Task Lazily_ConcurrentTasksWithUniqueKeys_AllReturnUniqueResult()
     {
         const int WORKER_COUNT = 16;
-
-        ManualResetEventSlim gate = new(false);
+        const int WORK_MS = 20;
 
         Func<int, CancellationToken, ValueTask<object>> concurrent = ThreadSafety.Lazily<int, int, object>(i => i)(
-            async (_, ct) => await Task.Run(async () =>
+            async (_, ct) =>
             {
-                gate.Wait(ct);
+                await Task.Delay(WORK_MS, ct);
                 return new object();
-            }));
+            });
 
-        object[] results = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrent(i, TestContext.Current.CancellationToken).AsTask());
+        object[] results = await Concurrency.RunConcurrently(WORKER_COUNT, i => concurrent(i, default).AsTask(), TestContext.Current.CancellationToken);
 
         Assert.Equal(WORKER_COUNT, results.ToHashSet().Count);
     }

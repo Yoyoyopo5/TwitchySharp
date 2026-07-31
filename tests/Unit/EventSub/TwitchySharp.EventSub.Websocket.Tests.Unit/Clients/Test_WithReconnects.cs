@@ -193,13 +193,7 @@ public class Test_WithReconnects
         await reconnectListen(_stubProcess, new("wss://original-url.com"), TestContext.Current.CancellationToken);
 
         await stubProvider.Websockets[0].Receive("welcome", ct);
-        ManualResetEventSlim gate = new(false);
-        await Concurrency.RunConcurrently(RECONNECT_COUNT, gate, i =>
-            Task.Run(() =>
-            {
-                gate.Wait(ct);
-                return stubProvider.Websockets[0].Receive("reconnect", ct);
-            }));
+        await Concurrency.RunConcurrently(RECONNECT_COUNT, i => stubProvider.Websockets[0].Receive("reconnect", ct), ct);
 
         while (!ct.IsCancellationRequested
             && (stubProvider.Websockets.Count != RECONNECT_COUNT + 1
@@ -228,13 +222,7 @@ public class Test_WithReconnects
 
         await stubProvider.Websockets[0].Receive("welcome", ct);
 
-        ManualResetEventSlim gate = new(false);
-        await Concurrency.RunConcurrently(RECONNECT_COUNT, gate, i =>
-            Task.Run(() =>
-            {
-                gate.Wait(ct);
-                return stubProvider.Websockets[0].Receive("reconnect", ct);
-            }));
+        await Concurrency.RunConcurrently(RECONNECT_COUNT, i => stubProvider.Websockets[0].Receive("reconnect", ct), ct);
 
         foreach (FakeWebsocket ws in stubProvider.Websockets)
         {

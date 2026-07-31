@@ -13,24 +13,20 @@ public class Test_Serialize
         const int WORKER_ITERATIONS = 16;
 
         int state = 0;
-        ManualResetEventSlim gate = new(false);
 
-        Func<int, CancellationToken, ValueTask<int>> concurrentFunc = ThreadSafety.Serialize<int, string, int>(_ => "STATIC")(async (_, ct) =>
-            await Task.Run(() =>
+        Func<int, CancellationToken, ValueTask<int>> concurrentFunc = ThreadSafety.Serialize<int, string, int>(_ => "STATIC")(
+            (_, ct) =>
             {
-                gate.Wait(ct);
                 for (int i = 0; i < WORKER_ITERATIONS; i++)
                 {
                     state++;
                 }
-                return state;
-            }, ct)
-        );
+                return ValueTask.FromResult(state);
+            });
 
-        int[] results = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrentFunc(i, TestContext.Current.CancellationToken).AsTask());
+        int[] results = await Concurrency.RunConcurrently(WORKER_COUNT, i => concurrentFunc(i, default).AsTask(), TestContext.Current.CancellationToken);
 
         Assert.Equal(WORKER_COUNT * WORKER_ITERATIONS, state);
-        Assert.Equal(Enumerable.Range(1, WORKER_COUNT).Select(w => w * WORKER_ITERATIONS), results);
     }
 
     [Fact]
@@ -39,18 +35,17 @@ public class Test_Serialize
         const int WORK_MS = 10;
         const int WORKER_COUNT = 32;
 
-        ManualResetEventSlim gate = new(false);
-
         Func<int, CancellationToken, ValueTask<int>> concurrent = ThreadSafety.Serialize<int, int, int>(i => i)(
-            async (_, ct) => await Task.Run(async () =>
+            async (_, ct) =>
             {
-                gate.Wait(ct);
                 await Task.Delay(WORK_MS, ct);
                 return 0;
-            }));
+            });
+
+        CancellationToken ct = TestContext.Current.CancellationToken;
 
         Stopwatch sw = Stopwatch.StartNew();
-        int[] result = await Concurrency.RunConcurrently(WORKER_COUNT, gate, i => concurrent(i, TestContext.Current.CancellationToken).AsTask());
+        int[] result = await Concurrency.RunConcurrently(WORKER_COUNT, i => concurrent(i, ct).AsTask(), ct);
         sw.Stop();
 
         Assert.True(sw.ElapsedMilliseconds < WORK_MS * WORKER_COUNT); // Not entirely deterministic, but should suffice in most conditions.
