@@ -37,26 +37,23 @@ public record CreateEventSubSubscriptionRequest
 internal record CreateEventSubSubscriptionRequestData
 {
     [JsonPropertyName("type")]
-    public required string Type { get; init; }
+    public required EventSubSubscriptionTypeName Type { get; init; }
     [JsonPropertyName("version")]
-    public required string Version { get; init; }
+    public required EventSubSubscriptionTypeVersion Version { get; init; }
     [JsonPropertyName("condition")]
-    public required IReadOnlyDictionary<string, object> Condition { get; init; }
+    public required IReadOnlyDictionary<ConditionKey, object> Condition { get; init; }
     [JsonPropertyName("transport")]
     public required EventSubSubscriptionTransportSpecification Transport { get; init; }
     [JsonPropertyName("is_batching_enabled")]
-    public bool? IsBatchingEnabled => Type switch // Kind of jank but this is the only type that requires this.
-    {
-        EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT => true,
-        _ => null
-    };
+    public bool? IsBatchingEnabled => Type == EventSubSubscriptionTypeName.DropEntitlementGrant
+        ? true : null;
 
     public static explicit operator CreateEventSubSubscriptionRequestData(EventSubSubscriptionSpecification subscription)
         => new()
         {
             Type = subscription.Type.Type.Type,
             Version = subscription.Type.Type.Version,
-            Condition = subscription.Type.Condition.ToDictionary(kvp => (string)kvp.Key, kvp => kvp.Value),
+            Condition = subscription.Type.Condition.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
             Transport = subscription.Transport
         };
 }

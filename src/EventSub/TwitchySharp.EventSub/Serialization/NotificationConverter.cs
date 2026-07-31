@@ -33,7 +33,7 @@ internal class NotificationConverter(Func<EventSubSubscriptionType, Func<JsonSer
         if (subscriptionVersionElement.ValueKind != JsonValueKind.String)
             throw new NotSupportedException($"Notification version property is {subscriptionTypeElement.ValueKind} (Expected {nameof(JsonValueKind.String)}).");
 
-        EventSubSubscriptionType type = new(subscriptionTypeElement.GetString()!, subscriptionVersionElement.GetString()!);
+        EventSubSubscriptionType type = new(new(subscriptionTypeElement.GetString()!), new(subscriptionVersionElement.GetString()!));
         return _map(type) is not { } deserializer
             ? throw new NotSupportedException("Unknown subscription type.")
             : deserializer(options, document);

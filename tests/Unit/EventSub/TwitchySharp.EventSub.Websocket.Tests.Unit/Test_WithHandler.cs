@@ -72,8 +72,8 @@ public class Test_WithHandler
                 Method = EventSubTransportMethod.Websocket,
                 SessionId = new("1237")
             },
-            Type = new(EventSubSubscriptionTypeNames.CHANNEL_BAN),
-            Version = new(EventSubSubscriptionTypeVersions.V1)
+            Type = EventSubSubscriptionType.ChannelBan.Type,
+            Version = EventSubSubscriptionType.ChannelBan.Version
         };
     }
 

@@ -12,8 +12,8 @@ public static class WebhookRequest
         DefaultHttpContext context = new();
         context.Request.Headers.Append("Twitch-Eventsub-Message-Id", messageId.Value);
         context.Request.Headers.Append("Twitch-Eventsub-Message-Type", messageType.Value);
-        context.Request.Headers.Append("Twitch-Eventsub-Subscription-Type", subscriptionType.Type);
-        context.Request.Headers.Append("Twitch-Eventsub-Subscription-Version", subscriptionType.Version);
+        context.Request.Headers.Append("Twitch-Eventsub-Subscription-Type", subscriptionType.Type.Value);
+        context.Request.Headers.Append("Twitch-Eventsub-Subscription-Version", subscriptionType.Version.Value);
         context.Request.Headers.Append("Twitch-Eventsub-Message-Timestamp", timestamp.ToUnixTimeSeconds().ToString());
         context.Request.Headers.Append("Twitch-Eventsub-Message-Signature", await ComputeSignature(secret, messageId, timestamp, body));
 

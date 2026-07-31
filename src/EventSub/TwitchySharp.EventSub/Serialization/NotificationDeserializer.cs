@@ -59,9 +59,100 @@ public static class NotificationDeserializer
         }
     }
 
-    private static Func<JsonSerializerOptions, JsonDocument, T?> CreateMapDeserializer<T>()
+    private readonly static Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> _defaultMap
+        = new Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>>()
+            .Register<AutomodMessageHoldNotification>(EventSubSubscriptionType.AutomodMessageHold)
+            .Register<AutomodMessageHoldV2Notification>(EventSubSubscriptionType.AutomodMessageHoldV2)
+            .Register<AutomodMessageUpdateNotification>(EventSubSubscriptionType.AutomodMessageUpdate)
+            .Register<AutomodMessageUpdateV2Notification>(EventSubSubscriptionType.AutomodMessageUpdateV2)
+            .Register<AutomodSettingsUpdateNotification>(EventSubSubscriptionType.AutomodSettingsUpdate)
+            .Register<AutomodTermsUpdateNotification>(EventSubSubscriptionType.AutomodTermsUpdate)
+            .Register<ChannelBanNotification>(EventSubSubscriptionType.ChannelBan)
+            .Register<ChannelCheerNotification>(EventSubSubscriptionType.ChannelCheer)
+            .Register<ChannelFollowNotification>(EventSubSubscriptionType.ChannelFollow)
+            .Register<ChannelModerateNotification>(EventSubSubscriptionType.ChannelModerate)
+            .Register<ChannelModerateV2Notification>(EventSubSubscriptionType.ChannelModerateV2)
+            .Register<ChannelRaidNotification>(EventSubSubscriptionType.ChannelRaid)
+            .Register<ChannelSubscribeNotification>(EventSubSubscriptionType.ChannelSubscribe)
+            .Register<ChannelUnbanNotification>(EventSubSubscriptionType.ChannelUnban)
+            .Register<ChannelUpdateNotification>(EventSubSubscriptionType.ChannelUpdate)
+            .Register<ChannelAdBreakBeginNotification>(EventSubSubscriptionType.ChannelAdBreakBegin)
+            .Register<ChannelBitsUseNotification>(EventSubSubscriptionType.ChannelBitsUse)
+            .Register<ChannelPointsAutomaticRewardRedemptionAddNotification>(EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAdd)
+            .Register<ChannelPointsAutomaticRewardRedemptionAddV2Notification>(EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2)
+            .Register<ChannelPointsCustomRewardAddNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardAdd)
+            .Register<ChannelPointsCustomRewardUpdateNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardUpdate)
+            .Register<ChannelPointsCustomRewardRemoveNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRemove)
+            .Register<ChannelPointsCustomRewardRedemptionAddNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionAdd)
+            .Register<ChannelPointsCustomRewardRedemptionUpdateNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate)
+            .Register<CharityDonationNotification>(EventSubSubscriptionType.CharityDonation)
+            .Register<CharityCampaignStartNotification>(EventSubSubscriptionType.CharityCampaignStart)
+            .Register<CharityCampaignProgressNotification>(EventSubSubscriptionType.CharityCampaignProgress)
+            .Register<CharityCampaignStopNotification>(EventSubSubscriptionType.CharityCampaignStop)
+            .Register<ChannelChatClearNotification>(EventSubSubscriptionType.ChannelChatClear)
+            .Register<ChannelChatClearUserMessagesNotification>(EventSubSubscriptionType.ChannelChatClearUserMessages)
+            .Register<ChannelChatMessageNotification>(EventSubSubscriptionType.ChannelChatMessage)
+            .Register<ChannelChatMessageDeleteNotification>(EventSubSubscriptionType.ChannelChatMessageDelete)
+            .Register<ChannelChatNotificationNotification>(EventSubSubscriptionType.ChannelChatNotification)
+            .Register<ChannelChatUserMessageHoldNotification>(EventSubSubscriptionType.ChannelChatUserMessageHold)
+            .Register<ChannelChatUserMessageUpdateNotification>(EventSubSubscriptionType.ChannelChatUserMessageUpdate)
+            .Register<ChannelChatSettingsUpdateNotification>(EventSubSubscriptionType.ChannelChatSettingsUpdate)
+            .Register<GoalBeginNotification>(EventSubSubscriptionType.GoalBegin)
+            .Register<GoalProgressNotification>(EventSubSubscriptionType.GoalProgress)
+            .Register<GoalEndNotification>(EventSubSubscriptionType.GoalEnd)
+            .Register<ChannelGuestStarSessionBeginNotification>(EventSubSubscriptionType.ChannelGuestStarSessionBegin)
+            .Register<ChannelGuestStarSessionEndNotification>(EventSubSubscriptionType.ChannelGuestStarSessionEnd)
+            .Register<ChannelGuestStarGuestUpdateNotification>(EventSubSubscriptionType.ChannelGuestStarGuestUpdate)
+            .Register<ChannelGuestStarSettingsUpdateNotification>(EventSubSubscriptionType.ChannelGuestStarSettingsUpdate)
+            .Register<HypeTrainBeginNotification>(EventSubSubscriptionType.HypeTrainBegin)
+            .Register<HypeTrainProgressNotification>(EventSubSubscriptionType.HypeTrainProgress)
+            .Register<HypeTrainEndNotification>(EventSubSubscriptionType.HypeTrainEnd)
+            .Register<ChannelModeratorAddNotification>(EventSubSubscriptionType.ChannelModeratorAdd)
+            .Register<ChannelModeratorRemoveNotification>(EventSubSubscriptionType.ChannelModeratorRemove)
+            .Register<ChannelPollBeginNotification>(EventSubSubscriptionType.ChannelPollBegin)
+            .Register<ChannelPollProgressNotification>(EventSubSubscriptionType.ChannelPollProgress)
+            .Register<ChannelPollEndNotification>(EventSubSubscriptionType.ChannelPollEnd)
+            .Register<ChannelPredictionBeginNotification>(EventSubSubscriptionType.ChannelPredictionBegin)
+            .Register<ChannelPredictionProgressNotification>(EventSubSubscriptionType.ChannelPredictionProgress)
+            .Register<ChannelPredictionLockNotification>(EventSubSubscriptionType.ChannelPredictionLock)
+            .Register<ChannelPredictionEndNotification>(EventSubSubscriptionType.ChannelPredictionEnd)
+            .Register<ChannelSharedChatBeginNotification>(EventSubSubscriptionType.ChannelSharedChatSessionBegin)
+            .Register<ChannelSharedChatUpdateNotification>(EventSubSubscriptionType.ChannelSharedChatSessionUpdate)
+            .Register<ChannelSharedChatEndNotification>(EventSubSubscriptionType.ChannelSharedChatSessionEnd)
+            .Register<ShieldModeBeginNotification>(EventSubSubscriptionType.ShieldModeBegin)
+            .Register<ShieldModeEndNotification>(EventSubSubscriptionType.ShieldModeEnd)
+            .Register<ShoutoutCreateNotification>(EventSubSubscriptionType.ShoutoutCreate)
+            .Register<ShoutoutReceivedNotification>(EventSubSubscriptionType.ShoutoutReceived)
+            .Register<ChannelSubscriptionEndNotification>(EventSubSubscriptionType.ChannelSubscriptionEnd)
+            .Register<ChannelSubscriptionGiftNotification>(EventSubSubscriptionType.ChannelSubscriptionGift)
+            .Register<ChannelSubscriptionMessageNotification>(EventSubSubscriptionType.ChannelSubscriptionMessage)
+            .Register<ChannelSuspiciousUserMessageNotification>(EventSubSubscriptionType.ChannelSuspiciousUserMessage)
+            .Register<ChannelSuspiciousUserUpdateNotification>(EventSubSubscriptionType.ChannelSuspiciousUserUpdate)
+            .Register<ChannelUnbanRequestCreateNotification>(EventSubSubscriptionType.ChannelUnbanRequestCreate)
+            .Register<ChannelUnbanRequestResolveNotification>(EventSubSubscriptionType.ChannelUnbanRequestResolve)
+            .Register<ChannelVipAddNotification>(EventSubSubscriptionType.ChannelVIPAdd)
+            .Register<ChannelVipRemoveNotification>(EventSubSubscriptionType.ChannelVIPRemove)
+            .Register<ChannelWarningAcknowledgementNotification>(EventSubSubscriptionType.ChannelWarningAcknowledgement)
+            .Register<ChannelWarningSendNotification>(EventSubSubscriptionType.ChannelWarningSend)
+            .Register<ConduitShardDisabledNotification>(EventSubSubscriptionType.ConduitShardDisabled)
+            .Register<DropEntitlementGrantNotification>(EventSubSubscriptionType.DropEntitlementGrant)
+            .Register<ExtensionBitsTransactionCreateNotification>(EventSubSubscriptionType.ExtensionBitsTransactionCreate)
+            .Register<StreamOnlineNotification>(EventSubSubscriptionType.StreamOnline)
+            .Register<StreamOfflineNotification>(EventSubSubscriptionType.StreamOffline)
+            .Register<UserAuthorizationGrantNotification>(EventSubSubscriptionType.UserAuthorizationGrant)
+            .Register<UserAuthorizationRevokeNotification>(EventSubSubscriptionType.UserAuthorizationRevoke)
+            .Register<UserUpdateNotification>(EventSubSubscriptionType.UserUpdate)
+            .Register<WhisperReceivedNotification>(EventSubSubscriptionType.WhisperReceived);
+
+    private static Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> Register<T>(
+        this Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> map,
+        EventSubSubscriptionType subscriptionType
+        )
         where T : IEventSubNotification
-        => (options, document) => JsonSerializer.Deserialize<T>(document, options);
+    {
+        map.Add(subscriptionType, (options, document) => JsonSerializer.Deserialize<T>(document, options));
+        return map;
+    }
 
     /// <summary>
     /// Creates the default deserializer map for EventSub notification types.
@@ -71,161 +162,5 @@ public static class NotificationDeserializer
     /// </remarks>
     /// <returns>A function mapping <see cref="EventSubSubscriptionType"/> to a specific deserialization function returning <see cref="IEventSubNotification"/> for that subscription type.</returns>
     public static Func<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>?> CreateDefaultMap()
-        // We could potentially source generate this if maintenance becomes an issue.
-        => subscriptionType => subscriptionType.Type switch
-        {
-            // --- Automod ---
-            EventSubSubscriptionTypeNames.AUTOMOD_MESSAGE_HOLD => subscriptionType.Version switch
-            {
-                EventSubSubscriptionTypeVersions.V1 => CreateMapDeserializer<AutomodMessageHoldNotification>(),
-                EventSubSubscriptionTypeVersions.V2 => CreateMapDeserializer<AutomodMessageHoldV2Notification>(),
-                _ => null
-            },
-            EventSubSubscriptionTypeNames.AUTOMOD_MESSAGE_UPDATE => subscriptionType.Version switch
-            {
-                EventSubSubscriptionTypeVersions.V1 => CreateMapDeserializer<AutomodMessageUpdateNotification>(),
-                EventSubSubscriptionTypeVersions.V2 => CreateMapDeserializer<AutomodMessageUpdateV2Notification>(),
-                _ => null
-            },
-            EventSubSubscriptionTypeNames.AUTOMOD_SETTINGS_UPDATE => CreateMapDeserializer<AutomodSettingsUpdateNotification>(),
-            EventSubSubscriptionTypeNames.AUTOMOD_TERMS_UPDATE => CreateMapDeserializer<AutomodTermsUpdateNotification>(),
-
-            // --- Channel ---
-            EventSubSubscriptionTypeNames.CHANNEL_BAN => CreateMapDeserializer<ChannelBanNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHEER => CreateMapDeserializer<ChannelCheerNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_FOLLOW => CreateMapDeserializer<ChannelFollowNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_MODERATE => subscriptionType.Version switch
-            {
-                EventSubSubscriptionTypeVersions.V1 => CreateMapDeserializer<ChannelModerateNotification>(),
-                EventSubSubscriptionTypeVersions.V2 => CreateMapDeserializer<ChannelModerateV2Notification>(),
-                _ => null
-            },
-            EventSubSubscriptionTypeNames.CHANNEL_RAID => CreateMapDeserializer<ChannelRaidNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIBE => CreateMapDeserializer<ChannelSubscribeNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_UNBAN => CreateMapDeserializer<ChannelUnbanNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_UPDATE => CreateMapDeserializer<ChannelUpdateNotification>(),
-
-            // AdBreak
-            EventSubSubscriptionTypeNames.CHANNEL_AD_BREAK_BEGIN => CreateMapDeserializer<ChannelAdBreakBeginNotification>(),
-
-            // Bits
-            EventSubSubscriptionTypeNames.CHANNEL_BITS_USE => CreateMapDeserializer<ChannelBitsUseNotification>(),
-
-            // ChannelPoints
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_AUTOMATIC_REWARD_REDEMPTION_ADD => subscriptionType.Version switch
-            {
-                EventSubSubscriptionTypeVersions.V1 => CreateMapDeserializer<ChannelPointsAutomaticRewardRedemptionAddNotification>(),
-                EventSubSubscriptionTypeVersions.V2 => CreateMapDeserializer<ChannelPointsAutomaticRewardRedemptionAddV2Notification>(),
-                _ => null
-            },
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_ADD => CreateMapDeserializer<ChannelPointsCustomRewardAddNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_UPDATE => CreateMapDeserializer<ChannelPointsCustomRewardUpdateNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REMOVE => CreateMapDeserializer<ChannelPointsCustomRewardRemoveNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REDEMPTION_ADD => CreateMapDeserializer<ChannelPointsCustomRewardRedemptionAddNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POINTS_CUSTOM_REWARD_REDEMPTION_UPDATE => CreateMapDeserializer<ChannelPointsCustomRewardRedemptionUpdateNotification>(),
-
-            // CharityCampaign
-            EventSubSubscriptionTypeNames.CHARITY_DONATION => CreateMapDeserializer<CharityDonationNotification>(),
-            EventSubSubscriptionTypeNames.CHARITY_CAMPAIGN_START => CreateMapDeserializer<CharityCampaignStartNotification>(),
-            EventSubSubscriptionTypeNames.CHARITY_CAMPAIGN_PROGRESS => CreateMapDeserializer<CharityCampaignProgressNotification>(),
-            EventSubSubscriptionTypeNames.CHARITY_CAMPAIGN_STOP => CreateMapDeserializer<CharityCampaignStopNotification>(),
-
-            // Chat
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_CLEAR => CreateMapDeserializer<ChannelChatClearNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_CLEAR_USER_MESSAGES => CreateMapDeserializer<ChannelChatClearUserMessagesNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_MESSAGE => CreateMapDeserializer<ChannelChatMessageNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_MESSAGE_DELETE => CreateMapDeserializer<ChannelChatMessageDeleteNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_NOTIFICATION => CreateMapDeserializer<ChannelChatNotificationNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_USER_MESSAGE_HOLD => CreateMapDeserializer<ChannelChatUserMessageHoldNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_USER_MESSAGE_UPDATE => CreateMapDeserializer<ChannelChatUserMessageUpdateNotification>(),
-
-            // ChatSettings
-            EventSubSubscriptionTypeNames.CHANNEL_CHAT_SETTINGS_UPDATE => CreateMapDeserializer<ChannelChatSettingsUpdateNotification>(),
-
-            // Goals
-            EventSubSubscriptionTypeNames.GOAL_BEGIN => CreateMapDeserializer<GoalBeginNotification>(),
-            EventSubSubscriptionTypeNames.GOAL_PROGRESS => CreateMapDeserializer<GoalProgressNotification>(),
-            EventSubSubscriptionTypeNames.GOAL_END => CreateMapDeserializer<GoalEndNotification>(),
-
-            // GuestStar
-            EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SESSION_BEGIN => CreateMapDeserializer<ChannelGuestStarSessionBeginNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SESSION_END => CreateMapDeserializer<ChannelGuestStarSessionEndNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_GUEST_UPDATE => CreateMapDeserializer<ChannelGuestStarGuestUpdateNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_GUEST_STAR_SETTINGS_UPDATE => CreateMapDeserializer<ChannelGuestStarSettingsUpdateNotification>(),
-
-            // HypeTrain
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_BEGIN => CreateMapDeserializer<HypeTrainBeginNotification>(),
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_PROGRESS => CreateMapDeserializer<HypeTrainProgressNotification>(),
-            EventSubSubscriptionTypeNames.HYPE_TRAIN_END => CreateMapDeserializer<HypeTrainEndNotification>(),
-
-            // Moderator
-            EventSubSubscriptionTypeNames.CHANNEL_MODERATOR_ADD => CreateMapDeserializer<ChannelModeratorAddNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_MODERATOR_REMOVE => CreateMapDeserializer<ChannelModeratorRemoveNotification>(),
-
-            // Polls
-            EventSubSubscriptionTypeNames.CHANNEL_POLL_BEGIN => CreateMapDeserializer<ChannelPollBeginNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POLL_PROGRESS => CreateMapDeserializer<ChannelPollProgressNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_POLL_END => CreateMapDeserializer<ChannelPollEndNotification>(),
-
-            // Predictions
-            EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_BEGIN => CreateMapDeserializer<ChannelPredictionBeginNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_PROGRESS => CreateMapDeserializer<ChannelPredictionProgressNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_LOCK => CreateMapDeserializer<ChannelPredictionLockNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_PREDICTION_END => CreateMapDeserializer<ChannelPredictionEndNotification>(),
-
-            // SharedChat
-            EventSubSubscriptionTypeNames.CHANNEL_SHARED_CHAT_SESSION_BEGIN => CreateMapDeserializer<ChannelSharedChatBeginNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SHARED_CHAT_SESSION_UPDATE => CreateMapDeserializer<ChannelSharedChatUpdateNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SHARED_CHAT_SESSION_END => CreateMapDeserializer<ChannelSharedChatEndNotification>(),
-
-            // ShieldMode
-            EventSubSubscriptionTypeNames.SHIELD_MODE_BEGIN => CreateMapDeserializer<ShieldModeBeginNotification>(),
-            EventSubSubscriptionTypeNames.SHIELD_MODE_END => CreateMapDeserializer<ShieldModeEndNotification>(),
-
-            // Shoutout
-            EventSubSubscriptionTypeNames.SHOUTOUT_CREATE => CreateMapDeserializer<ShoutoutCreateNotification>(),
-            EventSubSubscriptionTypeNames.SHOUTOUT_RECEIVED => CreateMapDeserializer<ShoutoutReceivedNotification>(),
-
-            // Subscription
-            EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIPTION_END => CreateMapDeserializer<ChannelSubscriptionEndNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIPTION_GIFT => CreateMapDeserializer<ChannelSubscriptionGiftNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SUBSCRIPTION_MESSAGE => CreateMapDeserializer<ChannelSubscriptionMessageNotification>(),
-
-            // SuspiciousUser
-            EventSubSubscriptionTypeNames.CHANNEL_SUSPICIOUS_USER_MESSAGE => CreateMapDeserializer<ChannelSuspiciousUserMessageNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_SUSPICIOUS_USER_UPDATE => CreateMapDeserializer<ChannelSuspiciousUserUpdateNotification>(),
-
-            // UnbanRequest
-            EventSubSubscriptionTypeNames.CHANNEL_UNBAN_REQUEST_CREATE => CreateMapDeserializer<ChannelUnbanRequestCreateNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_UNBAN_REQUEST_RESOLVE => CreateMapDeserializer<ChannelUnbanRequestResolveNotification>(),
-
-            // VIP
-            EventSubSubscriptionTypeNames.CHANNEL_VIP_ADD => CreateMapDeserializer<ChannelVipAddNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_VIP_REMOVE => CreateMapDeserializer<ChannelVipRemoveNotification>(),
-
-            // Warning
-            EventSubSubscriptionTypeNames.CHANNEL_WARNING_ACKNOWLEDGEMENT => CreateMapDeserializer<ChannelWarningAcknowledgementNotification>(),
-            EventSubSubscriptionTypeNames.CHANNEL_WARNING_SEND => CreateMapDeserializer<ChannelWarningSendNotification>(),
-
-            // --- Conduit ---
-            EventSubSubscriptionTypeNames.CONDUIT_SHARD_DISABLED => CreateMapDeserializer<ConduitShardDisabledNotification>(),
-
-            // --- Drops ---
-            EventSubSubscriptionTypeNames.DROP_ENTITLEMENT_GRANT => CreateMapDeserializer<DropEntitlementGrantNotification>(),
-
-            // --- Extension ---
-            EventSubSubscriptionTypeNames.EXTENSION_BITS_TRANSACTION_CREATE => CreateMapDeserializer<ExtensionBitsTransactionCreateNotification>(),
-
-            // --- Stream ---
-            EventSubSubscriptionTypeNames.STREAM_ONLINE => CreateMapDeserializer<StreamOnlineNotification>(),
-            EventSubSubscriptionTypeNames.STREAM_OFFLINE => CreateMapDeserializer<StreamOfflineNotification>(),
-
-            // --- User ---
-            EventSubSubscriptionTypeNames.USER_AUTHORIZATION_GRANT => CreateMapDeserializer<UserAuthorizationGrantNotification>(),
-            EventSubSubscriptionTypeNames.USER_AUTHORIZATION_REVOKE => CreateMapDeserializer<UserAuthorizationRevokeNotification>(),
-            EventSubSubscriptionTypeNames.USER_UPDATE => CreateMapDeserializer<UserUpdateNotification>(),
-            EventSubSubscriptionTypeNames.WHISPER_RECEIVED => CreateMapDeserializer<WhisperReceivedNotification>(),
-
-            _ => null
-        };
+        => subscriptionType => _defaultMap.GetValueOrDefault(subscriptionType);
 }

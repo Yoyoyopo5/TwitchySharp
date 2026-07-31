@@ -21,14 +21,14 @@ public class EventSubTestRow() : IXunitSerializable
     public void Deserialize(IXunitSerializationInfo info)
     {
         SubscriptionType = new(
-            Type: info.GetValue<string>(nameof(SubscriptionType.Type)) ?? "unknown",
-            Version: info.GetValue<string>(nameof(SubscriptionType.Version)) ?? "unknown"
+            Type: new(info.GetValue<string>(nameof(SubscriptionType.Type)) ?? "unknown"),
+            Version: new(info.GetValue<string>(nameof(SubscriptionType.Version)) ?? "unknown")
             );
     }
     public void Serialize(IXunitSerializationInfo info)
     {
-        info.AddValue(nameof(SubscriptionType.Type), SubscriptionType.Type);
-        info.AddValue(nameof(SubscriptionType.Version), SubscriptionType.Version);
+        info.AddValue(nameof(SubscriptionType.Type), SubscriptionType.Type.Value);
+        info.AddValue(nameof(SubscriptionType.Version), SubscriptionType.Version.Value);
     }
 
     public override string ToString() => TestName;

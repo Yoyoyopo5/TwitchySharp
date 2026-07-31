@@ -24,7 +24,7 @@ public class Test_Idempotency(WebhooksFixture fixture) : IClassFixture<WebhooksF
                 "id": "{{FAKE_MESSAGE_ID}}",
                 "status": "enabled",
                 "type": "channel.follow",
-                "version": "1",
+                "version": "2",
                 "cost": {{cost}},
                 "condition": {
                   "broadcaster_user_id": "12826",

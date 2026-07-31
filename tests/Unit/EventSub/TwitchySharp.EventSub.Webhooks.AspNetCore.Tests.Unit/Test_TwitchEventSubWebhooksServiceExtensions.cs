@@ -53,8 +53,8 @@ public class Test_TwitchEventSubWebhooksServiceExtensions
         context.Request.Headers.Add(new("Twitch-Eventsub-Message-Type", new(EventSubWebhookMessageType.WebhookCallbackVerification)));
         context.Request.Headers.Add(new("Twitch-Eventsub-Message-Signature", new("93c64c8f37e5d13cd95963d28b9c92d7d0c0283d343443d01e351b39d8295968")));
         context.Request.Headers.Add(new("Twitch-Eventsub-Message-Timestamp", new("1248174")));
-        context.Request.Headers.Add(new("Twitch-Eventsub-Subscription-Type", new(EventSubSubscriptionTypeNames.CHANNEL_CHAT_CLEAR)));
-        context.Request.Headers.Add(new("Twitch-Eventsub-Subscription-Version", new("1")));
+        context.Request.Headers.Add(new("Twitch-Eventsub-Subscription-Type", new(EventSubSubscriptionType.ChannelChatClear.Type)));
+        context.Request.Headers.Add(new("Twitch-Eventsub-Subscription-Version", new(EventSubSubscriptionType.ChannelChatClear.Version)));
 
         context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(CALLBACK_VERIFICATION_JSON));
 
