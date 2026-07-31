@@ -24,7 +24,10 @@ public record SendExtensionPubSubMessageRequest
     public override HttpMethod Method => HttpMethod.Post;
     protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = ExtensionIdentity with
+        {
+            BroadcasterId = Message is BroadcastPubSubMessageData broadcast ? broadcast.BroadcasterId : null
+        }
     };
 
     /// <summary>
@@ -110,5 +113,5 @@ public record BroadcastPubSubMessageData
     /// </summary>
     /// <param name="userId">The id of the user to send the PubSub message to.</param>
     public BroadcastPubSubMessageData WhisperTo(UserId userId)
-        => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Whisper(userId)) };
+        => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Whisper(userId)), BroadcasterId = userId };
 }
