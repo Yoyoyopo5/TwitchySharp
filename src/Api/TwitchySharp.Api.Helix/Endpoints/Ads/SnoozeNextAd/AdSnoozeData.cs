@@ -1,4 +1,7 @@
-﻿namespace TwitchySharp.Api.Helix.Ads;
+﻿using System.Text.Json.Serialization;
+using TwitchySharp.Serialization;
+
+namespace TwitchySharp.Api.Helix.Ads;
 
 /// <summary>
 /// Contains information related to ad snoozing.
@@ -13,9 +16,11 @@ public record AdSnoozeData
     /// <summary>
     /// The time when the broadcaster will gain an additional snooze.
     /// </summary>
+    [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
     public required DateTimeOffset SnoozeRefreshAt { get; init; }
     /// <summary>
     /// The time of the broadcaster’s next scheduled ad.
     /// </summary>
+    [JsonConverter(typeof(UnixSecondsDateTimeOffsetConverter))]
     public required DateTimeOffset NextAdAt { get; init; }
 }
