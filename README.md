@@ -1,20 +1,19 @@
 # TwitchySharp
-A third-party Twitch API wrapper for .NET Core.
+A third-party Twitch API/EventSub wrapper for .NET Core.
 
 ## Work In Progress
 TwitchySharp is still undergoing initial development. 
 Expect breaking changes.
 
 ### Completed Features
-- [X] Custom `ITwitchApi` typed HttpHandler
-  - [X] Strongly-typed Twitch Authentication and Helix API endpoints (up-to-date as of Feburary 2026)
-  - [X] Authentication header middleware `.WithTwitchAuthorization()`
+- [X] Api
+  - [X] Strongly-typed Twitch Authentication and Helix API endpoints (up-to-date as of February 2026)
+  - [X] Authentication header middleware `.WithAuthentication()`
   - [X] Rate limiter middleware `.WithRateLimiting()`
 - [X] EventSub
   - [X] Webhooks transport support
     - [X] ASP.NET Core integration `.AddTwitchEventSubWebhooks()`
-  - [X] Websockets transport support
-    - [X] [Websocket.Client](https://github.com/Marfusios/websocket-client) integration
+  - [X] Websockets transport support (Websocket client agnostic)
 
 ### TODO
 
@@ -22,7 +21,7 @@ Expect breaking changes.
 - [ ] Microsoft.Extensions.Hosting integration (dependency injection)
   
 #### EventSub
-- [ ] Comprehensive E2E Testing
+- [ ] Comprehensive EventSub E2E testing for each subscription type
 
 #### Documentation
 - [ ] API Example Project
