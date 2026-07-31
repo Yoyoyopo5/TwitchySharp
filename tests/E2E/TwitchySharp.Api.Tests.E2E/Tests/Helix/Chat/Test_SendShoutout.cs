@@ -19,7 +19,7 @@ public class Test_SendShoutout(TwitchClientFixture fixture)
 
         await client.SkipIfBroadcasterIsNotStreaming(userConfig.UserId, ct);
 
-        const string TO_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
+        const string TO_BROADCASTER_ID = "52137752";
         UserId toBroadcasterId = new(TO_BROADCASTER_ID);
 
         SendShoutoutRequest request = new()
