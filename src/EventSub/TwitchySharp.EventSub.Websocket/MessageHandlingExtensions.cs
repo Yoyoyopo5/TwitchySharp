@@ -32,7 +32,7 @@ public static class MessageHandlingExtensions
     /// Assign a function that is called when an error occurs during message processing.
     /// </summary>
     /// <param name="process"><inheritdoc cref="Map{T}(ProcessWebsocketMessage, Func{EventSubWebsocketMessage{T}, CancellationToken, ValueTask})"/></param>
-    /// <param name="handleError"></param>
+    /// <param name="handleError">The function to call when an <see cref="Error"/> is returned from the pipeline.</param>
     /// <returns><inheritdoc cref="Map{T}(ProcessWebsocketMessage, Func{EventSubWebsocketMessage{T}, CancellationToken, ValueTask})"/></returns>
     public static ProcessWebsocketMessage MapError(this ProcessWebsocketMessage process, Func<Error, CancellationToken, ValueTask> handleError)
         => async (message, ct) =>
