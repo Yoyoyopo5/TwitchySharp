@@ -27,5 +27,5 @@ public record EventSubWebsocketSession
     /// <summary>
     /// The date and time when the session was connected.
     /// </summary>
-    public DateTimeOffset ConnectedAt { get; init; }
+    public required DateTimeOffset ConnectedAt { get; init; }
 }

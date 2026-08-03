@@ -1,4 +1,5 @@
 using TwitchySharp.EventSub.Websocket.Clients;
+using TwitchySharp.EventSub.Websocket;
 
 namespace TwitchySharp.EventSub.Tests.E2E;
 
@@ -6,11 +7,17 @@ public sealed class Test_TwitchEventSubWebSocketClient(EventSubWebsocketFixture 
 {
     private readonly EventSubWebsocketFixture _fixture = fixture;
 
-    private readonly TestHandler _handler = new();
     private StopWebsocketClient? _stopClient = null;
+    private readonly TaskCompletionSource<EventSubWebsocketSession> _welcomeReceived = new();
 
     public async ValueTask InitializeAsync()
-        => _stopClient = await _fixture.StartWebsocketClient(_handler, TestContext.Current.CancellationToken);
+        => _stopClient = await _fixture.StartWebsocketClient(process =>
+            process.MapWelcome((session, ct) =>
+            {
+                _welcomeReceived.TrySetResult(session);
+                return ValueTask.CompletedTask;
+            }),
+            TestContext.Current.CancellationToken);
 
     public async ValueTask DisposeAsync()
     {
@@ -24,6 +31,6 @@ public sealed class Test_TwitchEventSubWebSocketClient(EventSubWebsocketFixture 
         CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         cts.CancelAfter(TimeSpan.FromSeconds(1));
 
-        await _handler.WaitForWelcome(cts.Token);
+        await _welcomeReceived.Task.WaitAsync(cts.Token);
     }
 }

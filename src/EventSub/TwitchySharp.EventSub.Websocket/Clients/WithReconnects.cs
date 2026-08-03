@@ -96,41 +96,24 @@ public static class StartEventSubWebsocketClientExtensions
                         pending = null;
                     })(ct);
 
-                return pipeline.With(next => async (messageStream, messageCt) =>
-                {
-                    Validation<EventSubWebsocketMessage> message = await next(messageStream, messageCt);
-                    // This is essentially a side effect of the pipeline, it does not change the output of next.
-                    // We could have it return the message back to make a one-liner, but that's probably too confusing.
-                    _ = message.Match(
-                        onError: e => Task.CompletedTask, // no effect here on error, it is passed up the pipeline.
-                        onValid: message =>
-                        {
-                            switch (message)
-                            {
-                                // We don't want to block the processing pipeline here, so we add tasks that use the semaphore.
-                                // We attach the optional error handler, while ignoring cancellation exceptions, as these would
-                                // be caused by the consumer running the stop function returned from the WithReconnects method.
-                                case EventSubWebsocketMessage<ReconnectMessagePayload> reconnectMessage:
-                                    _ = Task.Run(WithTry(
-                                        () => startAndSetPending(reconnectMessage.Payload.Session.ReconnectUrl, wrapperCts.Token),
-                                        onReconnectError.IgnoreCancellationExceptions()
-                                        ));
-                                    break;
-                                case EventSubWebsocketMessage<WelcomeMessagePayload> welcomeMessage when pending is not null:
-                                    _ = Task.Run(WithTry(
-                                        () => promoteToCurrent(wrapperCts.Token),
-                                        onReconnectError.IgnoreCancellationExceptions()
-                                        ));
-                                    break;
-                                default:
-                                    break;
-                            }
-                            return Task.CompletedTask;
-                        }
-                        );
-
-                    return message;
-                });
+                return pipeline
+                    .MapReconnect((reconnectSession, ct) =>
+                    {
+                        _ = Task.Run(WithTry(
+                                () => startAndSetPending(reconnectSession.ReconnectUrl, wrapperCts.Token),
+                                onReconnectError.IgnoreCancellationExceptions()
+                                ), wrapperCts.Token);
+                        return ValueTask.CompletedTask;
+                    })
+                    .MapWelcome((session, ct) =>
+                    {
+                        if (pending is not null)
+                            _ = Task.Run(WithTry(
+                                    () => promoteToCurrent(wrapperCts.Token),
+                                    onReconnectError.IgnoreCancellationExceptions()
+                                    ), wrapperCts.Token);
+                        return ValueTask.CompletedTask;
+                    });
             }
 
             await startAndSetPending(url, ct);

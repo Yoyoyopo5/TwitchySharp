@@ -18,8 +18,8 @@ public class Test_TwitchEventSubWebhooksServiceExtensions
     // since the AddTwitchEventSubWebhooks call is doing significant
     // orchestration between different units.
 
-    private static ServiceProvider BuildMockServiceProvider(Action<TwitchEventSubWebhooksOptions>? configure = null)
-        => new ServiceCollection().AddSingleton<ILoggerFactory, StubLoggerFactory>().AddTwitchEventSubWebhooks(configure).BuildServiceProvider();
+    private static ServiceProvider BuildMockServiceProvider(Func<IServiceProvider, Func<ProcessWebhookRequest, ProcessWebhookRequest>>? configure = null)
+        => new ServiceCollection().AddTwitchEventSubWebhooks(configure ?? (sp => process => process)).BuildServiceProvider();
 
     private const string CORRECT_SECRET = "super_secure_secret";
 
@@ -61,23 +61,6 @@ public class Test_TwitchEventSubWebhooksServiceExtensions
         return context;
     }
 
-    private record TrackingHandler(Action OnInvoked) : IWebhookEventSubHandler
-    {
-        private ValueTask Notify()
-        {
-            OnInvoked();
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnCallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
-            => Notify();
-        public ValueTask OnError(Error error, CancellationToken ct = default)
-            => Notify();
-        public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default)
-            => Notify();
-        public ValueTask OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default)
-            => Notify();
-    }
-
     [Fact]
     public void AddTwitchEventSubWebhooks_GetService_ReturnsHandleAspNetWebhookRequest()
     {
@@ -88,135 +71,21 @@ public class Test_TwitchEventSubWebhooksServiceExtensions
         Assert.NotNull(pipeline);
     }
 
-    private class StubLoggerFactory : ILoggerFactory
-    {
-        public StubLogger Logger { get; } = new();
-
-        public void AddProvider(ILoggerProvider provider) { }
-        public ILogger CreateLogger(string categoryName) => Logger;
-        public void Dispose() { }
-    }
-
-    private class StubLogger : ILogger
-    {
-        private class StubDisposable : IDisposable
-        {
-            public void Dispose() { }
-        }
-
-        private readonly List<string> _logs = [];
-        public IReadOnlyList<string> Logs => _logs;
-
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => new StubDisposable();
-        public bool IsEnabled(LogLevel logLevel) => true;
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => _logs.Add(formatter(state, exception));
-    }
-
     [Fact]
-    public async Task AddTwitchEventSubWebhooks_NoConfiguration_ConfigurationValidatorLogsWarnings()
+    public async Task AddTwitchEventSubWebhooks_InvokePipeline_CallsConfiguredFunctions()
     {
-        ServiceProvider sp = BuildMockServiceProvider();
+        string? recievedChallenge = null;
 
-        await sp.GetServices<IHostedService>().OfType<TwitchWebhooksConfigurationValidator>().Single().StartAsync(TestContext.Current.CancellationToken);
-
-        IReadOnlyList<string> logs = (sp.GetRequiredService<ILoggerFactory>() as StubLoggerFactory)!.Logger.Logs;
-
-        Assert.Equal(3, logs.Count);
-    }
-
-    [Fact]
-    public async Task HandleWebhookRequest_WithHandlerConfigured_InvokesHandler()
-    {
-        bool handlerInvoked = false;
-
-        TrackingHandler handler = new(() => handlerInvoked = true);
-
-        ServiceProvider sp = BuildMockServiceProvider(options =>
-        {
-            options.MessageHandler = (_) => handler;
-        });
-
-        HandleAspNetWebhookRequest pipeline = sp.GetRequiredService<HandleAspNetWebhookRequest>();
-
-        await pipeline(CreateStubContext(), TestContext.Current.CancellationToken);
-
-        Assert.True(handlerInvoked);
-    }
-
-    [Fact]
-    public async Task HandleWebhookRequest_WithSecretResolverConfigured_InvokesSecretResolver()
-    {
-        bool secretResolverCalled = false;
-
-        ServiceProvider sp = BuildMockServiceProvider(options =>
-        {
-            options.SecretResolver = _ => (_, _) =>
+        ServiceProvider sp = BuildMockServiceProvider(sp => process => process
+            .MapCallbackVerification((subscription, challenge, ct) =>
             {
-                secretResolverCalled = true;
-                return ValueTask.FromResult<WebhookSecret?>(new WebhookSecret(CORRECT_SECRET));
-            };
-        });
+                recievedChallenge = challenge;
+                return ValueTask.CompletedTask;
+            })
+            );
 
-        HandleAspNetWebhookRequest pipeline = sp.GetRequiredService<HandleAspNetWebhookRequest>();
+        await sp.GetRequiredService<HandleAspNetWebhookRequest>()(CreateStubContext(), TestContext.Current.CancellationToken);
 
-        await pipeline(CreateStubContext(), TestContext.Current.CancellationToken);
-
-        Assert.True(secretResolverCalled);
-    }
-
-    [Fact]
-    public async Task HandleWebhookRequest_WithIdempotencyConfigured_InvokesIdempotency()
-    {
-        bool idempotencyCalled = false;
-
-        ServiceProvider sp = BuildMockServiceProvider(options =>
-        {
-            options.IdempotencyCache = _ => (_, _) =>
-            {
-                idempotencyCalled = true;
-                return ValueTask.FromResult(false);
-            };
-        });
-
-        HandleAspNetWebhookRequest pipeline = sp.GetRequiredService<HandleAspNetWebhookRequest>();
-
-        await pipeline(CreateStubContext(), TestContext.Current.CancellationToken);
-
-        Assert.True(idempotencyCalled);
-    }
-
-    [Fact]
-    public async Task HandleWebhookRequest_WithAllConfigured_InvokesInCorrectOrder()
-    {
-        int order = 1;
-
-        int secretResolverOrder = 0;
-        int idempotencyCacheOrder = 0;
-        int handlerOrder = 0;
-
-        TrackingHandler handler = new(() => handlerOrder = order++);
-
-        ServiceProvider sp = BuildMockServiceProvider(options =>
-        {
-            options.SecretResolver = _ => (_, _) =>
-            {
-                secretResolverOrder = order++;
-                return ValueTask.FromResult<WebhookSecret?>(new WebhookSecret(CORRECT_SECRET));
-            };
-            options.IdempotencyCache = _ => (_, _) =>
-            {
-                idempotencyCacheOrder = order++;
-                return ValueTask.FromResult(false);
-            };
-            options.MessageHandler = _ => handler;
-        });
-
-        HandleAspNetWebhookRequest pipeline = sp.GetRequiredService<HandleAspNetWebhookRequest>();
-
-        await pipeline(CreateStubContext(), TestContext.Current.CancellationToken);
-
-        Assert.Equal(1, idempotencyCacheOrder);
-        Assert.Equal(2, secretResolverOrder);
-        Assert.Equal(3, handlerOrder);
+        Assert.Equal("fake-challenge", recievedChallenge);
     }
 }

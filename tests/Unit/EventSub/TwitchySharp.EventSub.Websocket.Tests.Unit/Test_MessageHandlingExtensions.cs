@@ -4,49 +4,8 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Unit;
 
-public class Test_WithHandler
+public class Test_MessageHandlingExtensions
 {
-    private class TestHandler : IWebsocketEventSubHandler
-    {
-        public Error? LastError { get; private set; }
-        public bool KeepaliveReceived { get; private set; }
-        public IEventSubNotification? LastNotification { get; private set; }
-        public EventSubReconnectSession? LastReconnect { get; private set; }
-        public EventSubSubscription? LastRevocation { get; private set; }
-        public EventSubWebsocketSession? LastWelcome { get; private set; }
-
-        public ValueTask OnError(Error error, CancellationToken ct = default)
-        {
-            LastError = error;
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnKeepalive(CancellationToken ct = default)
-        {
-            KeepaliveReceived = true;
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnNotified(IEventSubNotification notification, CancellationToken ct = default)
-        {
-            LastNotification = notification;
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnReconnect(EventSubReconnectSession reconnect, CancellationToken ct = default)
-        {
-            LastReconnect = reconnect;
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default)
-        {
-            LastRevocation = revokedSubscription;
-            return ValueTask.CompletedTask;
-        }
-        public ValueTask OnWelcome(EventSubWebsocketSession session, CancellationToken ct = default)
-        {
-            LastWelcome = session;
-            return ValueTask.CompletedTask;
-        }
-    }
-
     private static ProcessWebsocketMessage CreateStubProcess(Validation<EventSubWebsocketMessage> stubReturn)
         => (_, _) => ValueTask.FromResult(stubReturn);
 
@@ -80,38 +39,38 @@ public class Test_WithHandler
     [Fact]
     public async Task ProcessWebsocketMessage_Notification_CallsOnNotified()
     {
-        TestHandler handler = new();
         IEventSubNotification expectedNotification = new StubNotification();
+        IEventSubNotification? receivedNotification = null;
+
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<NotificationMessagePayload>()
         {
             Metadata = StubMetadata,
             Payload = new(expectedNotification)
-        }).WithHandler(handler);
+        }).MapNotification<StubNotification>(async (notification, ct) => receivedNotification = notification);
 
-        await mockProcess(new(), CancellationToken.None);
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-        Assert.Equal(expectedNotification, handler.LastNotification);
+        Assert.Equal(expectedNotification, receivedNotification);
     }
 
     [Fact]
     public async Task ProcessWebsocketMessage_Keepalive_CallsOnKeepalive()
     {
-        TestHandler handler = new();
+        bool keepaliveReceived = false;
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<KeepaliveMessagePayload>()
         {
             Metadata = StubMetadata,
             Payload = new()
-        }).WithHandler(handler);
+        }).MapKeepalive(async _ => keepaliveReceived = true);
 
-        await mockProcess(new(), CancellationToken.None);
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-        Assert.True(handler.KeepaliveReceived);
+        Assert.True(keepaliveReceived);
     }
 
     [Fact]
     public async Task ProcessWebsocketMessage_Reconnect_CallsOnReconnect()
     {
-        TestHandler handler = new();
         EventSubReconnectSession expectedReconnect = new()
         {
             ConnectedAt = DateTime.MinValue,
@@ -119,6 +78,7 @@ public class Test_WithHandler
             Status = EventSubSessionStatus.Reconnecting,
             ReconnectUrl = new("wss://fake-ws.com")
         };
+        EventSubReconnectSession? receivedReconnect = null;
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<ReconnectMessagePayload>()
         {
             Metadata = StubMetadata,
@@ -126,18 +86,19 @@ public class Test_WithHandler
             {
                 Session = expectedReconnect
             }
-        }).WithHandler(handler);
+        }).MapReconnect(async (reconnect, ct) => receivedReconnect = reconnect);
 
-        await mockProcess(new(), CancellationToken.None);
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-        Assert.Equal(expectedReconnect, handler.LastReconnect);
+        Assert.Equal(expectedReconnect, receivedReconnect);
     }
 
     [Fact]
     public async Task ProcessWebsocketMessage_Revocation_CallsOnRevoked()
     {
-        TestHandler handler = new();
         EventSubSubscription expectedRevocation = new StubNotification().Subscription;
+        EventSubSubscription? receivedRevocation = null;
+
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<RevocationMessagePayload>()
         {
             Metadata = StubMetadata,
@@ -145,17 +106,16 @@ public class Test_WithHandler
             {
                 Subscription = expectedRevocation
             }
-        }).WithHandler(handler);
+        }).MapSubscriptionRevoked(async (subscription, ct) => receivedRevocation = subscription);
 
-        await mockProcess(new(), CancellationToken.None);
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-        Assert.Equal(expectedRevocation, handler.LastRevocation);
+        Assert.Equal(expectedRevocation, receivedRevocation);
     }
 
     [Fact]
     public async Task ProcessWebsocketMessage_Welcome_CallsOnWelcome()
     {
-        TestHandler handler = new();
         EventSubWebsocketSession expectedWelcome = new()
         {
             Id = new("12378"),
@@ -163,6 +123,7 @@ public class Test_WithHandler
             KeepaliveTimeout = TimeSpan.FromSeconds(5),
             ConnectedAt = DateTime.MinValue,
         };
+        EventSubWebsocketSession? receivedWelcome = null;
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<WelcomeMessagePayload>()
         {
             Metadata = StubMetadata,
@@ -170,38 +131,24 @@ public class Test_WithHandler
             {
                 Session = expectedWelcome
             }
-        }).WithHandler(handler);
+        }).MapWelcome(async (welcome, ct) => receivedWelcome = welcome);
 
-        await mockProcess(new(), CancellationToken.None);
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-        Assert.Equal(expectedWelcome, handler.LastWelcome);
+        Assert.Equal(expectedWelcome, receivedWelcome);
     }
 
     [Fact]
     public async Task ProcessWebsocketMessage_ProcessReturnsError_CallsOnError()
     {
-        TestHandler handler = new();
         Error expectedError = new("test-error");
-        ProcessWebsocketMessage mockProcess = CreateStubProcess(expectedError).WithHandler(handler);
+        Error? receivedError = null;
 
-        await mockProcess(new(), CancellationToken.None);
+        ProcessWebsocketMessage mockProcess = CreateStubProcess(expectedError)
+            .MapError(async (error, ct) => receivedError = error);
 
-        Assert.Equal(expectedError, handler.LastError);
-    }
+        await mockProcess(new(), TestContext.Current.CancellationToken);
 
-    [Fact]
-    public async Task ProcessWebsocketMessage_UnsupportedMessageType_CallsNone()
-    {
-        TestHandler handler = new();
-        ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<object>()
-        {
-            Metadata = StubMetadata,
-            Payload = new()
-        }).WithHandler(handler);
-
-        await mockProcess(new(), CancellationToken.None);
-
-        Assert.Null(handler.LastError);
-        Assert.Null(handler.LastNotification);
+        Assert.Equal(expectedError, receivedError);
     }
 }

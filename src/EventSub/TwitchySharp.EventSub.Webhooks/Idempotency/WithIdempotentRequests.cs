@@ -20,5 +20,7 @@ public static class ProcessWebhookRequestExtensions
         this ProcessWebhookRequest pipeline,
         Func<WebhookMessageId, CancellationToken, ValueTask<bool>> isRepeated
         )
-        => pipeline.With(next => async (request, ct) => await isRepeated(request.Header.TwitchEventsubMessageId, ct) ? new Validation<WebhookRequestContent>(new IdempotencyError(request.Header.TwitchEventsubMessageId)) : await next(request, ct));
+        => async (request, ct) => await isRepeated(request.Header.TwitchEventsubMessageId, ct)
+            ? new Validation<WebhookRequestContent>(new IdempotencyError(request.Header.TwitchEventsubMessageId))
+            : await pipeline(request, ct);
 }

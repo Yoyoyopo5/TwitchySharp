@@ -3,7 +3,7 @@ using TwitchySharp.EventSub.Websocket.Functional;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
 
-public class Test_Handler(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
+public class Test_MessageHandlingExtensions(WebsocketFixture fixture) : IClassFixture<WebsocketFixture>
 {
     private readonly WebsocketFixture _fixture = fixture;
 

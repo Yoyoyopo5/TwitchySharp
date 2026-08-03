@@ -139,15 +139,13 @@ public class WebsocketFixture : IAsyncLifetime
         builder.Services.AddScoped<ProcessWebsocketMessage>(sp
             => WebsocketMessageDeserializer.Create()
                 .WithIdempotentMessages((id, ct) => sp.GetRequiredService<IdempotencyCache>().IsRepeated(id, ct))
-                .WithHandler(sp.GetRequiredService<TestHandler>())
-                .With(next => async (message, ct) =>
-                {
-                    Validation<EventSubWebsocketMessage> result = await next(message, ct);
-                    return result.Match<Validation<EventSubWebsocketMessage>>(
-                        e => { TestContext.Current.AddAttachment("pipeline-error", $"{e.GetType().FullName}: {e.Message}"); return e; },
-                        message => message
-                        );
-                })
+                .MapError(async (e, ct) => TestContext.Current.AddAttachment("pipeline-error", $"{e.GetType().FullName}: {e.Message}"))
+                .MapError(sp.GetRequiredService<TestHandler>().OnError)
+                .MapKeepalive(sp.GetRequiredService<TestHandler>().OnKeepalive)
+                .MapReconnect(sp.GetRequiredService<TestHandler>().OnReconnect)
+                .MapSubscriptionRevoked(sp.GetRequiredService<TestHandler>().OnSubscriptionRevoked)
+                .MapWelcome(sp.GetRequiredService<TestHandler>().OnWelcome)
+                .MapNotification<IEventSubNotification>(sp.GetRequiredService<TestHandler>().OnNotified)
                 );
         return builder;
     }
@@ -161,7 +159,7 @@ public class WebsocketFixture : IAsyncLifetime
     }
 }
 
-public class TestHandler : IWebsocketEventSubHandler
+public class TestHandler
 {
     public EventSubWebsocketSession? Session { get; private set; }
     public int KeepaliveCounter { get; private set; } = 0;

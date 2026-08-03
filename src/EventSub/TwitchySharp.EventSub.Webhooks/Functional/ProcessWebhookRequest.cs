@@ -13,9 +13,3 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> containing the request.</returns>
 public delegate ValueTask<Validation<WebhookRequestContent>> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
-
-public static partial class ProcessWebhookRequestExtensions
-{
-    public static ProcessWebhookRequest With(this ProcessWebhookRequest process, Func<ProcessWebhookRequest, ProcessWebhookRequest> with)
-        => with(process);
-}
