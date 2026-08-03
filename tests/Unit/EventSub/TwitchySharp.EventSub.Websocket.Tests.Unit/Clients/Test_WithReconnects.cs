@@ -31,7 +31,8 @@ public class Test_WithReconnects
                     {
                         Id = new("12345"),
                         Status = EventSubSessionStatus.Connected,
-                        KeepaliveTimeout = TimeSpan.FromSeconds(5)
+                        KeepaliveTimeout = TimeSpan.FromSeconds(5),
+                        ConnectedAt = DateTimeOffset.MinValue
                     }
                 }
             },
