@@ -7,30 +7,13 @@ using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.EventSub.Tests.E2E.NotificationTests;
 
-public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsocketFixture fixture)
-    : IAsyncLifetime
+public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>(EventSubWebsocketFixture fixture)
     where TRequiredIdentity : ITestIdentity
+    where TNotification : IEventSubNotification
 {
     protected abstract TestName TestName { get; }
 
     private readonly EventSubWebsocketFixture _fixture = fixture;
-    private readonly TestHandler _handler = new();
-    private EventSubWebsocketSession _session = null!;
-    private StopWebsocketClient? _stopClient = null;
-
-    public WebsocketSubscriptionTransport Transport => new(_session.Id);
-
-    public async ValueTask InitializeAsync()
-    {
-        _stopClient = await _fixture.StartWebsocketClient(_handler, TestContext.Current.CancellationToken);
-        _session = await _handler.WaitForWelcome(TestContext.Current.CancellationToken);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_stopClient is not null)
-            await _stopClient(TestContext.Current.CancellationToken);
-    }
 
     private record DeleteSubscription(
         ITwitchClient Client,
@@ -41,6 +24,14 @@ public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsoc
             => await Client.SendAsync(new DeleteEventSubSubscriptionRequest(Subscription), TestContext.Current.CancellationToken);
     }
 
+    private record DisposeWebsocketClient(
+        StopWebsocketClient StopClient
+        ) : IAsyncDisposable
+    {
+        public async ValueTask DisposeAsync()
+            => await StopClient();
+    }
+
     protected abstract EventSubSubscriptionTypeSpecification CreateSubscription(TRequiredIdentity identityConfig);
     protected abstract Task RaiseNotification(ITwitchClient client, TRequiredIdentity identityConfig, CancellationToken ct = default);
     protected virtual void AssertNotification(IEventSubNotification notification) { }
@@ -48,6 +39,7 @@ public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsoc
     private async Task<IAsyncDisposable> CreateSubscription(
         ITwitchClient client,
         TRequiredIdentity identityConfig,
+        EventSubWebsocketSession session,
         CancellationToken ct = default
         )
     {
@@ -57,7 +49,7 @@ public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsoc
                 Subscription = new()
                 {
                     Type = CreateSubscription(identityConfig),
-                    Transport = Transport
+                    Transport = new WebsocketSubscriptionTransport(session.Id)
                 }
             }, ct);
 
@@ -75,9 +67,21 @@ public abstract class EventSubNotificationTest<TRequiredIdentity>(EventSubWebsoc
         cts.CancelAfter(TimeSpan.FromSeconds(5));
         CancellationToken ct = cts.Token;
 
-        await using IAsyncDisposable deleteSubscription = await CreateSubscription(client, identityConfig, ct);
+        TaskCompletionSource<EventSubWebsocketSession> welcomeReceived = new();
+        TaskCompletionSource<TNotification> notificationReceived = new();
+
+        await using DisposeWebsocketClient stopWebsocketClient = new(await _fixture.StartWebsocketClient(
+            process => process
+                .MapWelcome(async (session, ct) => welcomeReceived.TrySetResult(session))
+                .MapNotification<TNotification>(async (notification, ct) => notificationReceived.TrySetResult(notification)),
+                ct));
+
+        EventSubWebsocketSession session = await welcomeReceived.Task.WaitAsync(ct);
+
+        await using IAsyncDisposable deleteSubscription = await CreateSubscription(client, identityConfig, session, ct);
         await RaiseNotification(client, identityConfig, ct);
-        IEventSubNotification notification = await _handler.WaitForNotification(ct);
+
+        IEventSubNotification notification = await notificationReceived.Task.WaitAsync(ct);
 
         AssertNotification(notification);
     }

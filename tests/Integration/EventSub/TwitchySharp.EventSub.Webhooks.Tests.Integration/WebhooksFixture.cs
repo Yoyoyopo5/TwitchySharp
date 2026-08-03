@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.AspNetCore;
 using TwitchySharp.EventSub.Webhooks.Functional;
+using TwitchySharp.EventSub.Webhooks.Crypto;
+using TwitchySharp.EventSub.Webhooks.Idempotency;
 using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Integration;
@@ -38,19 +40,21 @@ public class WebhooksFixture : IAsyncLifetime
         builder.ConfigureServices((ctx, s) =>
         {
             s.AddRouting();
-            s.AddSingleton<IWebhookEventSubHandler>(_ => Handler);
-            s.AddTwitchEventSubWebhooks(options =>
-            {
-                options.SecretResolver = _ => (subscription, ct) => ValueTask.FromResult<WebhookSecret?>(WebhooksSecret);
-                options.IdempotencyCache = _ => (messageId, ct) =>
-                {
-
-                    if (IdempotencyCache.Contains(messageId))
-                        return ValueTask.FromResult(true);
-                    IdempotencyCache.Add(messageId);
-                    return ValueTask.FromResult(false);
-                };
-            });
+            s.AddTwitchEventSubWebhooks(sp => pipeline => 
+                pipeline
+                    .WithHashValidation(WebhookHashVerifier.Create((subscription, ct) => ValueTask.FromResult<WebhookSecret?>(WebhooksSecret)))
+                    .WithIdempotentRequests((messageId, ct) =>
+                    {
+                        if (IdempotencyCache.Contains(messageId))
+                            return ValueTask.FromResult(true);
+                        IdempotencyCache.Add(messageId);
+                        return ValueTask.FromResult(false);
+                    })
+                    .MapCallbackVerification((subscription, challenge, ct) => Handler.OnCallbackVerification(subscription, challenge, ct))
+                    .MapSubscriptionRevoked((subscription, ct) => Handler.OnSubscriptionRevoked(subscription, ct))
+                    .MapError((error, ct) => Handler.OnError(error, ct))
+                    .MapNotification<IEventSubNotification>((notification, ct) => Handler.OnNotified(notification, ct))
+            );
         });
         builder.Configure(app =>
         {
@@ -80,7 +84,7 @@ public static class WebhooksSecretExtensions
         => Encoding.UTF8.GetBytes(secret.Value);
 }
 
-public class TestHandler : IWebhookEventSubHandler
+public class TestHandler
 {
     public EventSubSubscription? LastCallback { get; set; }
     public string? LastCallbackChallenge { get; set; }

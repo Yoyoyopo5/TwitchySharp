@@ -49,7 +49,7 @@ public sealed class EventSubWebsocketFixture : TwitchTestApplication
                     {
                         try
                         {
-                            await ctx.OnMessage(message.Stream, TestContext.Current.CancellationToken).AsTask();
+                            await ctx.OnMessage(message.Stream, TestContext.Current.CancellationToken);
                         }
                         catch (Exception ex)
                         {
@@ -74,12 +74,11 @@ public static class WebsocketFixtureExtensions
 {
     public static Task<StopWebsocketClient> StartWebsocketClient(
         this EventSubWebsocketFixture fixture,
-        IWebsocketEventSubHandler handler,
+        Func<ProcessWebsocketMessage, ProcessWebsocketMessage> configurePipeline,
         CancellationToken ct = default
         )
         => fixture.ApplicationHost.Services.GetRequiredService<StartEventSubWebsocketClient>()(
-            fixture.ApplicationHost.Services.GetRequiredService<ProcessWebsocketMessage>()
-                .WithHandler(handler),
+            configurePipeline(fixture.ApplicationHost.Services.GetRequiredService<ProcessWebsocketMessage>()),
             new("wss://eventsub.wss.twitch.tv/ws"),
             ct
             );
