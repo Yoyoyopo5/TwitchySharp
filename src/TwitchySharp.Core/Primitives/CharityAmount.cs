@@ -22,7 +22,7 @@ public readonly record struct CharityAmount
     /// Calculated monetary value (dollar value) as given by <see cref="Value"/> and <see cref="DecimalPlaces"/>.
     /// Note that this value is calculated each time it is called.
     /// </summary>
-    public double MonetaryValue => (double)Value / Math.Pow(10, DecimalPlaces);
+    public decimal MonetaryValue => Value / (decimal)Math.Pow(10, DecimalPlaces);
     /// <summary>
     /// The ISO-4217 three-letter currency code that identifies the type of currency in value.
     /// </summary>
