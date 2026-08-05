@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-transactions">Get Extension Transactions</see> for more information.
 /// </remarks>
 public record GetExtensionTransactionsRequest
-    : TwitchHelixRequest<GetExtensionTransactionsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetExtensionTransactionsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/extensions/transactions";
     public override HttpMethod Method => HttpMethod.Get;

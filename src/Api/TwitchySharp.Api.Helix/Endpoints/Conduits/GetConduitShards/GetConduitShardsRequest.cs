@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-conduit-shards">Get Conduit Shards</see> for more information.
 /// </remarks>
 public record GetConduitShardsRequest
-    : TwitchHelixRequest<GetConduitShardsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetConduitShardsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/eventsub/conduits/shards";
     public override HttpMethod Method => HttpMethod.Get;

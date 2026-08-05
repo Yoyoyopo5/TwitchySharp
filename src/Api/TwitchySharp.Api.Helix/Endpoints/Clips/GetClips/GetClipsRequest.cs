@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-clips">Get Clips</see> for more information.
 /// </remarks>
 public record GetClipsRequest
-    : TwitchHelixRequest<GetClipsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetClipsResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Get;
@@ -64,9 +64,7 @@ public record GetClipsRequest
     /// <inheritdoc/>
     public PaginationCursor? After { get; init; }
 
-    /// <summary>
-    /// The cursor of the result to get results before.
-    /// </summary>
+    /// <inheritdoc/>
     public PaginationCursor? Before { get; init; }
 
     /// <summary>

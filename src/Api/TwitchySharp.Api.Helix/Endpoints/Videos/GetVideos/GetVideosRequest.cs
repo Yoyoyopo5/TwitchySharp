@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-videos">Get Videos</see> for more information.
 /// </remarks>
 public record GetVideosRequest
-    : TwitchHelixRequest<GetVideosResponse>, IPageableRequest
+    : TwitchHelixRequest<GetVideosResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Get;

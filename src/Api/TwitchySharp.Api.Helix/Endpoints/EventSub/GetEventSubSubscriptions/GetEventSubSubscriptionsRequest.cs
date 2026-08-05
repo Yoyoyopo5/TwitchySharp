@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</see> for more information.
 /// </remarks>
 public record GetEventSubSubscriptionsRequest
-    : TwitchHelixRequest<GetEventSubSubscriptionsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetEventSubSubscriptionsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;

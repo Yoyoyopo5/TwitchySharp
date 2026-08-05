@@ -19,7 +19,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-chatters">Get Chatters</see> for more information.
 /// </remarks>
 public record GetChattersRequest
-    : TwitchHelixRequest<GetChattersResponse>, IPageableRequest
+    : TwitchHelixRequest<GetChattersResponse>, IForwardPageableRequest
 {
     protected override string Path => "/chat/chatters";
     public override HttpMethod Method => HttpMethod.Get;

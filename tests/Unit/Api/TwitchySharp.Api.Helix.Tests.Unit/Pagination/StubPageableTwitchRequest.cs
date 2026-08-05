@@ -6,9 +6,10 @@ public record StubPageableResponseContent : IPageableResponse
 }
 
 public record StubPageableTwitchRequest
-    : TwitchRequest<StubPageableResponseContent>, IPageableRequest
+    : TwitchRequest<StubPageableResponseContent>, IForwardPageableRequest, IBackwardPageableRequest
 {
     public PaginationCursor? After { get; init; }
+    public PaginationCursor? Before { get; init; }
     public PaginationAmount? First { get; init; }
 
     public override HttpMethod Method => throw new NotImplementedException();

@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions">Get Broadcaster Subscriptions</see> for more information.
 /// </remarks>
 public record GetBroadcasterSubscriptionsRequest
-    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
@@ -52,7 +52,7 @@ public record GetBroadcasterSubscriptionsRequest
     /// </remarks>
     public PaginationAmount? First { get; init; }
     /// <summary>
-    /// The cursor of the result to get results before.
+    /// <inheritdoc/>
     /// </summary>
     /// <remarks>
     /// Do not specify if you set <see cref="UserIds"/>.
@@ -60,10 +60,9 @@ public record GetBroadcasterSubscriptionsRequest
     /// </remarks>
     public PaginationCursor? Before { get; init; }
     /// <summary>
-    /// <inheritdoc cref="IPageableRequest.After"/>
+    /// <inheritdoc />
     /// </summary>
     /// <remarks>
-    /// <inheritdoc cref="IPageableRequest.After"/>
     /// Do not specify if you set <see cref="UserIds"/>.
     /// </remarks>
     public PaginationCursor? After { get; init; }

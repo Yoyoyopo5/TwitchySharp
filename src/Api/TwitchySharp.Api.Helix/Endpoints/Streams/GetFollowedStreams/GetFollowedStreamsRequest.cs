@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-streams">Get Followed Streams</see> for more information.
 /// </remarks>
 public record GetFollowedStreamsRequest
-    : TwitchHelixRequest<GetFollowedStreamsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetFollowedStreamsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/streams/followed";
     public override HttpMethod Method => HttpMethod.Get;

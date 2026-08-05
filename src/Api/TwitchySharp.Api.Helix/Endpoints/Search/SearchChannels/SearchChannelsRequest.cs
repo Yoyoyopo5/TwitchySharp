@@ -8,7 +8,7 @@
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-channels">Search Channels</see> for more information.
 /// </remarks>
 public record SearchChannelsRequest
-    : TwitchHelixRequest<SearchChannelsResponse>, IPageableRequest
+    : TwitchHelixRequest<SearchChannelsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/search/channels";
     public override HttpMethod Method => HttpMethod.Get;

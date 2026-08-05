@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-game-analytics">Get Game Analytics</see> for more information.
 /// </remarks>
 public record GetGameAnalyticsRequest
-    : TwitchHelixRequest<GetGameAnalyticsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetGameAnalyticsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/analytics/games";
     public override HttpMethod Method => HttpMethod.Get;

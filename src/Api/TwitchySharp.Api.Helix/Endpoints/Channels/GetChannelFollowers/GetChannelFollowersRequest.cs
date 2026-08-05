@@ -16,7 +16,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-followers">Get Channel Followers</see> for more information.
 /// </remarks>
 public record GetChannelFollowersRequest
-    : TwitchHelixRequest<GetChannelFollowersResponse>, IPageableRequest
+    : TwitchHelixRequest<GetChannelFollowersResponse>, IForwardPageableRequest
 {
     protected override string Path => "/channels/followers";
     public override HttpMethod Method => HttpMethod.Get;

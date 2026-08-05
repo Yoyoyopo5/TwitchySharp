@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-banned-users">Get Banned Users</see> for more information.
 /// </remarks>
 public record GetBannedUsersRequest
-    : TwitchHelixRequest<GetBannedUsersResponse>, IPageableRequest
+    : TwitchHelixRequest<GetBannedUsersResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/moderation/banned";
     public override HttpMethod Method => HttpMethod.Get;
@@ -55,8 +55,6 @@ public record GetBannedUsersRequest
     /// <inheritdoc/>
     public PaginationCursor? After { get; init; }
 
-    /// <summary>
-    /// The cursor of the result to get results before.
-    /// </summary>
+    /// <inheritdoc/>
     public PaginationCursor? Before { get; init; }
 }
