@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-unban-requests">Get Unban Requests</see> for more information.
 /// </remarks>
 public record GetUnbanRequestsRequest
-    : TwitchHelixRequest<GetUnbanRequestsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetUnbanRequestsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/moderation/unban_requests";
     public override HttpMethod Method => HttpMethod.Get;

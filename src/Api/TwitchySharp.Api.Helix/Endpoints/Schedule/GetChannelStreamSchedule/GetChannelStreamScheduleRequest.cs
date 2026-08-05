@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule">Get Channel Stream Schedule</see> for more information.
 /// </remarks>
 public record GetChannelStreamScheduleRequest
-    : TwitchHelixRequest<GetChannelStreamScheduleResponse>, IPageableRequest
+    : TwitchHelixRequest<GetChannelStreamScheduleResponse>, IForwardPageableRequest
 {
     protected override string Path => "/schedule";
     public override HttpMethod Method => HttpMethod.Get;

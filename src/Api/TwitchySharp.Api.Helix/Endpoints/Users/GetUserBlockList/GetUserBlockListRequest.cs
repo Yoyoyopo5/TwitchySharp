@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-block-list">Get User Block List</see> for more information.
 /// </remarks>
 public record GetUserBlockListRequest
-    : TwitchHelixRequest<GetUserBlockListResponse>, IPageableRequest
+    : TwitchHelixRequest<GetUserBlockListResponse>, IForwardPageableRequest
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Get;

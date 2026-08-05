@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Charity;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations">Get Charity Campaign Donations</see> for more information.
 /// </remarks>
 public record GetCharityCampaignDonationsRequest
-    : TwitchHelixRequest<GetCharityCampaignDonationsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetCharityCampaignDonationsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/charity/donations";
     public override HttpMethod Method => HttpMethod.Get;

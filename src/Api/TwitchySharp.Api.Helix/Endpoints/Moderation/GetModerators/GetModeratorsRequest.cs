@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderators">Get Moderators</see> for more information.
 /// </remarks>
 public record GetModeratorsRequest
-    : TwitchHelixRequest<GetModeratorsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetModeratorsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Get;

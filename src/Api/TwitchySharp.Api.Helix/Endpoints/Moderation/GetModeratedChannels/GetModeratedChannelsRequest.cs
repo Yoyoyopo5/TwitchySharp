@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderated-channels">Get Moderated Channels</see> for more information.
 /// </remarks>
 public record GetModeratedChannelsRequest
-    : TwitchHelixRequest<GetModeratedChannelsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetModeratedChannelsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/moderation/channels";
     public override HttpMethod Method => HttpMethod.Get;

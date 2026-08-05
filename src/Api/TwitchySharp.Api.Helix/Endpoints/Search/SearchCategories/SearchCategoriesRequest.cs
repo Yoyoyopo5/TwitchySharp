@@ -13,7 +13,7 @@
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-categories">Search Categories</see> for more information.
 /// </remarks>
 public record SearchCategoriesRequest
-    : TwitchHelixRequest<SearchCategoriesResponse>, IPageableRequest
+    : TwitchHelixRequest<SearchCategoriesResponse>, IForwardPageableRequest
 {
     protected override string Path => "/search/categories";
     public override HttpMethod Method => HttpMethod.Get;

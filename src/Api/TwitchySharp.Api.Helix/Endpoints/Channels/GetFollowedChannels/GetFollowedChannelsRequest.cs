@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-channels">Get Followed Channels</see> for more information.
 /// </remarks>
 public record GetFollowedChannelsRequest
-    : TwitchHelixRequest<GetFollowedChannelsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetFollowedChannelsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/channels/followed";
     public override HttpMethod Method => HttpMethod.Get;

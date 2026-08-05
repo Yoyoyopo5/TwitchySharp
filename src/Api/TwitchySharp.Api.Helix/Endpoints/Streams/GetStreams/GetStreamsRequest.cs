@@ -11,7 +11,7 @@
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-streams">Get Streams</see> for more information.
 /// </remarks>
 public record GetStreamsRequest
-    : TwitchHelixRequest<GetStreamsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetStreamsResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/streams";
     public override HttpMethod Method => HttpMethod.Get;
@@ -66,8 +66,6 @@ public record GetStreamsRequest
     public PaginationAmount? First { get; init; }
     /// <inheritdoc/>
     public PaginationCursor? After { get; init; }
-    /// <summary>
-    /// The cursor of the result to get results before.
-    /// </summary>
+    /// <inheritdoc/>
     public PaginationCursor? Before { get; init; }
 }

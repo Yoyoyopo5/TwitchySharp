@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-analytics">Get Extension Analytics</see> for more information.
 /// </remarks>
 public record GetExtensionAnalyticsRequest
-    : TwitchHelixRequest<GetExtensionAnalyticsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetExtensionAnalyticsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/analytics/extensions";
     public override HttpMethod Method => HttpMethod.Get;

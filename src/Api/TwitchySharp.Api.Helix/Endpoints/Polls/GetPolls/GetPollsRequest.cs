@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-polls">Get Polls</see> for more information.
 /// </remarks>
 public record GetPollsRequest
-    : TwitchHelixRequest<GetPollsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetPollsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Get;

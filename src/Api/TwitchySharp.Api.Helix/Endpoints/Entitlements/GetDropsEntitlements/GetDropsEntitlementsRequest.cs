@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements">Get Drops Entitlements</see> for more information.
 /// </remarks>
 public record GetDropsEntitlementsRequest
-    : TwitchHelixRequest<GetDropsEntitlementsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetDropsEntitlementsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/entitlements/drops";
     public override HttpMethod Method => HttpMethod.Get;

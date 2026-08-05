@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-blocked-terms">Get Blocked Terms</see> for more information.
 /// </remarks>
 public record GetBlockedTermsRequest
-    : TwitchHelixRequest<GetBlockedTermsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetBlockedTermsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Get;

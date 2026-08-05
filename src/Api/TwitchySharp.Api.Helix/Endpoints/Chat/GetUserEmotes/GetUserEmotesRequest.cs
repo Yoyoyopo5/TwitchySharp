@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-emotes">Get User Emotes</see> for more information.
 /// </remarks>
 public record GetUserEmotesRequest
-    : TwitchHelixRequest<GetUserEmotesResponse>, IPageableRequest
+    : TwitchHelixRequest<GetUserEmotesResponse>, IForwardPageableRequest
 {
     protected override string Path => "/chat/emotes/user";
     public override HttpMethod Method => HttpMethod.Get;
@@ -47,7 +47,7 @@ public record GetUserEmotesRequest
     public PaginationCursor? After { get; init; }
 
     /// <summary>
-    /// Not supported by this endpoint. Present only to satisfy <see cref="IPageableRequest"/>.
+    /// Not supported by this endpoint. Present only to satisfy <see cref="IForwardPageableRequest"/>.
     /// </summary>
     public PaginationAmount? First { get; init; }
 }

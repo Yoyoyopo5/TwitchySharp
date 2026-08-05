@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-predictions">Get Predictions</see> for more information.
 /// </remarks>
 public record GetPredictionsRequest
-    : TwitchHelixRequest<GetPredictionsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetPredictionsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Get;

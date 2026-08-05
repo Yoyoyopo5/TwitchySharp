@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// </para>
 /// </remarks>
 public abstract record GetCustomRewardRedemptionRequest
-    : TwitchHelixRequest<GetCustomRewardRedemptionResponse>, IPageableRequest
+    : TwitchHelixRequest<GetCustomRewardRedemptionResponse>, IForwardPageableRequest
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
     public override HttpMethod Method => HttpMethod.Get;

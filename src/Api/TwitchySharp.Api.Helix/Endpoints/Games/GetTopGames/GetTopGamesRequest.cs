@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Helix.Games;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-top-games">Get Top Games</see> for more information.
 /// </remarks>
 public record GetTopGamesRequest
-    : TwitchHelixRequest<GetTopGamesResponse>, IPageableRequest
+    : TwitchHelixRequest<GetTopGamesResponse>, IForwardPageableRequest, IBackwardPageableRequest
 {
     protected override string Path => "/games/top";
     public override HttpMethod Method => HttpMethod.Get;
@@ -30,8 +30,6 @@ public record GetTopGamesRequest
     /// <inheritdoc/>
     public PaginationCursor? After { get; init; }
 
-    /// <summary>
-    /// The cursor of the result to get results before.
-    /// </summary>
+    /// <inheritdoc/>
     public PaginationCursor? Before { get; init; }
 }

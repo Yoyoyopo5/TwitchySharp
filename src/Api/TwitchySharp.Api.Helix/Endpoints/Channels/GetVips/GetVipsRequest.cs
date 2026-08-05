@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-vips">Get VIPs</see> for more information.
 /// </remarks>
 public record GetVipsRequest
-    : TwitchHelixRequest<GetVipsResponse>, IPageableRequest
+    : TwitchHelixRequest<GetVipsResponse>, IForwardPageableRequest
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Get;
