@@ -113,5 +113,5 @@ public record BroadcastPubSubMessageData
     /// </summary>
     /// <param name="userId">The id of the user to send the PubSub message to.</param>
     public BroadcastPubSubMessageData WhisperTo(UserId userId)
-        => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Whisper(userId)), BroadcasterId = userId };
+        => this with { _target = _target.Add(ExtensionPubSubMessageTarget.Whisper(userId)), BroadcasterId = BroadcasterId ?? userId };
 }
