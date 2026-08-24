@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwitchySharp.Api;
+﻿namespace TwitchySharp.Api;
 /// <summary>
 /// An identity used to set Twitch request authorization headers.
 /// </summary>

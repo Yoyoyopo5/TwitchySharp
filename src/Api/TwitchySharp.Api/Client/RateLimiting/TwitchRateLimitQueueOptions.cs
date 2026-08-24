@@ -15,7 +15,7 @@ public record TwitchRateLimitQueueOptions
     /// The rate limit cache options.
     /// </summary>
     /// <remarks>
-    /// If left <see langword="null"/>, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> is used (fine for most use cases).
+    /// If left <see langword="null"/>, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> scoped to this options instance is used (fine for most use cases).
     /// </remarks>
-    public ITwitchRateLimitCache Cache { get; init; } = new DefaultRateLimitCache();
+    public ITwitchRateLimitCache Cache { get; init; } = new InMemoryRateLimitCache();
 }

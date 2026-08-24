@@ -8,7 +8,11 @@ namespace TwitchySharp.Infrastructure.Functional;
 
 public static class ThreadSafety
 {
-    private class LocalLockProvider<TKey>
+    public static Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> CreateInMemoryLockProvider<TKey>()
+        where TKey : notnull
+        => new InMemoryLockProvider<TKey>().AcquireAsync;
+
+    private class InMemoryLockProvider<TKey>
         where TKey : notnull
     {
         private readonly ConcurrentDictionary<TKey, RefCountingSemaphore> _cache = new();
@@ -68,7 +72,7 @@ public static class ThreadSafety
         )
         where TKey : notnull
     {
-        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> lockFac = lockFactory is not null ? lockFactory : new LocalLockProvider<TKey>().AcquireAsync;
+        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> lockFac = lockFactory is not null ? lockFactory : new InMemoryLockProvider<TKey>().AcquireAsync;
         return next => async (value, ct) =>
         {
             await using IAsyncDisposable lease = await lockFac(keySelector(value), ct).ConfigureAwait(false);

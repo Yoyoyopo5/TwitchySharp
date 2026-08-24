@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -37,9 +31,9 @@ public class TwitchApiException(string? message = null, Exception? innerExceptio
     /// <summary>
     /// The captured response content as a <see langword="byte"/> array.
     /// </summary>
-    public required byte[] Content { get; init; }
+    public required ReadOnlyMemory<byte> Content { get; init; }
 
-    internal static async ValueTask<TwitchApiException> FromRequestResponseAsync(TwitchRequest request, HttpResponseMessage response, CancellationToken ct = default)
+    internal static async Task<TwitchApiException> FromRequestResponse(TwitchRequest request, HttpResponseMessage response, CancellationToken ct = default)
         => new()
         {
             Request = request,

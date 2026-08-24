@@ -11,6 +11,8 @@ public record Error()
     public Error? InnerError { get; init; }
 };
 
+public record ExceptionError(Exception Exception) : Error;
+
 public readonly record struct Validation
 {
     private readonly Error? _error;
@@ -47,10 +49,10 @@ public readonly record struct Validation<T>
 
 public static class AsyncValidationExtensions
 {
-    public static async ValueTask<Validation<TNext>> BindAsync<T, TNext>(this ValueTask<Validation<T>> val, Func<T, CancellationToken, ValueTask<Validation<TNext>>> func, CancellationToken ct)
+    public static async ValueTask<Validation<TNext>> BindAsync<T, TNext>(this ValueTask<Validation<T>> val, Func<T, ValueTask<Validation<TNext>>> func)
         => await (await val).Match(
             onError: e => ValueTask.FromResult<Validation<TNext>>(e),
-            onValid: valid => func(valid, ct)
+            onValid: valid => func(valid)
             );
 
     public static async Task<Validation<TNext>> BindAsync<T, TNext>(this Task<Validation<T>> val, Func<T, CancellationToken, Task<Validation<TNext>>> func, CancellationToken ct)
@@ -100,6 +102,9 @@ public static class AsyncValidationExtensions
             onError: e => onError(e, ct),
             onValid: valid => onValid(valid, ct)
             );
+
+    public static async ValueTask<TNext> MatchAsync<T, TNext>(this ValueTask<Validation<T>> val, Func<Error, TNext> onError, Func<T, TNext> onValid)
+        => (await val).Match(onError, onValid);
 
     public static async Task<TNext> MatchAsync<T, TNext>(this Task<Validation<T>> val, Func<Error, CancellationToken, Task<TNext>> onError, Func<T, CancellationToken, Task<TNext>> onValid, CancellationToken ct)
         => await (await val).Match(

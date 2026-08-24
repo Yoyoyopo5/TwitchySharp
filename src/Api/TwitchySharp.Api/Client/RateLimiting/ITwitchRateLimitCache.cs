@@ -12,5 +12,5 @@ public interface ITwitchRateLimitCache
     /// <summary>
     /// Set the current rate limit for a specific <see cref="ClientId"/>.
     /// </summary>
-    ValueTask SetRateLimitDetails(ClientId clientId, TwitchRateLimitDetails details, CancellationToken ct);
+    ValueTask SetRateLimitDetails(ClientId clientId, TwitchRateLimitDetails? details, CancellationToken ct);
 }
