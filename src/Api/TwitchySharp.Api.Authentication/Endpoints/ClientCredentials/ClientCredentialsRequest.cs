@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Api.Authorization;
+﻿namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to get an app access token from Twitch.
 /// </summary>

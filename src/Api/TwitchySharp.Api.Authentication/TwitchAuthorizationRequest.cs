@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Api.Authorization;
+﻿namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Base class for requests using the <see href="https://dev.twitch.tv/docs/authentication/">Twitch Authentication API</see>.
 /// </summary>

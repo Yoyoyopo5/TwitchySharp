@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains an app access token. 
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#client-credentials-grant-flow">client credentials code flow</see> for more information.

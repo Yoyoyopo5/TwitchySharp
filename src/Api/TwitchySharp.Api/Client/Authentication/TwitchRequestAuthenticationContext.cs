@@ -13,6 +13,10 @@ public interface ITwitchRequestAuthenticationContext<out TIdentity>
     /// </summary>
     TIdentity Identity { get; }
     /// <summary>
+    /// The bearer token type the request should use.
+    /// </summary>
+    BearerTokenType TokenType { get; }
+    /// <summary>
     /// Allows for manually setting an access token.
     /// </summary>
     /// <remarks>
@@ -39,6 +43,14 @@ public record TwitchRequestAuthenticationContext<TIdentity>
     /// for an individual request.
     /// </remarks>
     public BearerToken? BearerToken { get; init; }
+    public virtual BearerTokenType TokenType { get; }
+        = typeof(TIdentity) switch
+        {
+            Type t when t == typeof(TwitchIdentity.Client) => BearerTokenType.AppAccessToken,
+            Type t when t == typeof(TwitchIdentity.User) => BearerTokenType.UserAccessToken,
+            Type t when t == typeof(TwitchIdentity.Extension) => BearerTokenType.ExtensionJwt,
+            _ => new BearerTokenType("unknown")
+        };
     /// <summary>
     /// The identity to use for the request.
     /// </summary>
@@ -52,9 +64,10 @@ public record TwitchRequestAuthenticationContext<TIdentity>
 /// <summary>
 /// A <see cref="TwitchIdentity.User"/> authentication context that requires a specific <see cref="Scope"/>.
 /// </summary>
-public record UserWithScopesAuthenticationContext
-    : IHaveScopes
+public sealed record UserWithScopesAuthenticationContext
+    : TwitchRequestAuthenticationContext<TwitchIdentity.User>, IHaveScopes
 {
+    public override BearerTokenType TokenType => BearerTokenType.UserAccessToken;
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 }
 
@@ -65,11 +78,14 @@ public record UserWithScopesAuthenticationContext
 /// <remarks>
 /// See my <see href="https://discuss.dev.twitch.com/t/questions-about-the-new-api-app-access-token-support-update/64655">Twitch Developers Forum post</see> for more information.
 /// </remarks>
-public record UserSupportingPriorAuthorizationAuthenticationContext
-    : IHaveScopes, ISupportPriorAuthorization
+public sealed record UserSupportingPriorAuthorizationAuthenticationContext
+    : TwitchRequestAuthenticationContext<TwitchIdentity.User>, IHaveScopes, ISupportPriorAuthorization
 {
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
     public bool UsePriorAuthorization { get; init; } = false;
+    public override BearerTokenType TokenType => UsePriorAuthorization
+        ? BearerTokenType.AppAccessToken
+        : BearerTokenType.UserAccessToken;
 }
 
 /// <summary>
@@ -86,6 +102,10 @@ public interface IHaveScopes
 /// <summary>
 /// An authentication context supporting app access tokens for user-authenticated endpoints.
 /// </summary>
+/// <remarks>
+/// These endpoints can use an app access token when the user the request is being made on behalf of
+/// has previously authorized the app with the endpoint's required scope.
+/// </remarks>
 public interface ISupportPriorAuthorization
 {
     /// <summary>

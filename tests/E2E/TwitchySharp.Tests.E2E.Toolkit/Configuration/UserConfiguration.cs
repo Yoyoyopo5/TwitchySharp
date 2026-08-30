@@ -1,13 +1,15 @@
 ﻿using TwitchySharp.Api;
+using TwitchySharp.Api.Authentication;
 
 namespace TwitchySharp.Tests.E2E;
 
-public class UserConfiguration : ITestIdentity
+public class UserConfiguration : ITestIdentity<TwitchIdentity.User>
 {
     public required UserId UserId { get; set; }
     public required UserTokenConfiguration Token { get; set; }
     public required HashSet<TestName> Tests { get; set; }
-    IReadOnlySet<TestName> ITestIdentity.Tests => Tests;
+    IReadOnlySet<TestName> ITestIdentity<TwitchIdentity.User>.Tests => Tests;
+    TwitchIdentity.User ITestIdentity<TwitchIdentity.User>.Identity => new(UserId, Token.ClientId);
 }
 
 public class UserTokenConfiguration

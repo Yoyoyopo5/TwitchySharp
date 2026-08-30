@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Revokes a valid app or user access token so that it is no longer valid.
 /// </summary>
@@ -26,6 +26,6 @@ public record RevokeAccessTokenRequest
     /// </summary>
     public required IAccessToken AccessToken { get; init; }
 
-    protected override ValueTask<RevokeAccessTokenResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new RevokeAccessTokenResponse());
+    public override Func<Stream, CancellationToken, ValueTask<RevokeAccessTokenResponse>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new RevokeAccessTokenResponse());
 }

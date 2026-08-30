@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.JsonWebTokens;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Response containing access and refresh tokens for a user that authorized the app.
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow">authorization code grant flow</see> for more information.

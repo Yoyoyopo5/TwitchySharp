@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.JsonWebTokens;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// An <see href="https://openid.net/">OpenID Connect</see> claims collection used by Twitch to relay user information.
 /// </summary>

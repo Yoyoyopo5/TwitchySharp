@@ -1,13 +1,17 @@
-﻿namespace TwitchySharp.Tests.E2E;
+﻿using TwitchySharp.Api;
 
-public interface ITestIdentity
+namespace TwitchySharp.Tests.E2E;
+
+public interface ITestIdentity<out TIdentity>
+    where TIdentity : TwitchIdentity
 {
+    TIdentity Identity { get; }
     IReadOnlySet<TestName> Tests { get; }
 }
 
 public static class IEnableEndpointsExtensions
 {
     public static T? WithTestName<T>(this IEnumerable<T> users, TestName endpoint)
-        where T : ITestIdentity
+        where T : ITestIdentity<TwitchIdentity>
         => users.FirstOrDefault(u => u.Tests.Contains(endpoint));
 }

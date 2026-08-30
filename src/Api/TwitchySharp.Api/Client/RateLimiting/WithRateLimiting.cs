@@ -34,13 +34,13 @@ public static class TwitchRateLimiting
         => client.Configure<HttpResponseMessage>(next =>
         {
             lockFactory ??= ThreadSafety.CreateInMemoryLockProvider<ClientId>();
-            return async(context, ct) =>
+            return async(scope, ct) =>
             {
-                (ClientId? clientId, RequestDependencyScope nextContext, Error? error)
-                    = await context.GetOrDefault<ClientId?>(ct);
+                (ClientId? clientId, ITwitchRequestDependencyScope nextContext, Error? error)
+                    = await scope.GetOrDefault<ClientId?>(ct);
 
                 if (error is not null)
-                    return new DependencyResult<HttpResponseMessage>(error, nextContext);
+                    return new RequestDependencyResult<HttpResponseMessage>(error, nextContext);
 
                 clientId ??= defaultClientId;
 
@@ -75,16 +75,16 @@ public static class TwitchRateLimiting
         )
         {
             TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
-            return client.Configure<HttpResponseMessage>(next => async (context, ct) =>
+            return client.Configure<HttpResponseMessage>(next => async (scope, ct) =>
             {
-                (ClientId? clientId, RequestDependencyScope nextContext, Error? error)
-                    = await context.GetOrDefault<ClientId?>(ct);
+                (ClientId? clientId, ITwitchRequestDependencyScope nextScope, Error? error)
+                    = await scope.GetOrDefault<ClientId?>(ct);
 
                 if (error is not null)
-                    return new DependencyResult<HttpResponseMessage>(error, nextContext);
+                    return new RequestDependencyResult<HttpResponseMessage>(error, nextScope);
 
                 if (!clientId.HasValue)
-                    return await next(context, ct);
+                    return await next(scope, ct);
 
                 // We queue here
                 if (await options.Cache.GetRateLimitDetails(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails
@@ -92,7 +92,7 @@ public static class TwitchRateLimiting
                     && cachedDetails.Reset.Value > DateTimeOffset.UtcNow)
                         await Task.Delay(cachedDetails.Reset.Value - DateTimeOffset.UtcNow + options.ClockSkew, ct);
 
-                DependencyResult<HttpResponseMessage> responseResult = await next(context, ct);
+                RequestDependencyResult<HttpResponseMessage> responseResult = await next(scope, ct);
 
                 if (responseResult.Error is not null)
                     return responseResult;

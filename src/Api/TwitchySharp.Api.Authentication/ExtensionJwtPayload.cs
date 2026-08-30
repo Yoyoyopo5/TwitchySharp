@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to create a signed JWT for various Extensions API endpoints.
 /// </summary>
@@ -44,10 +44,10 @@ public record ExtensionJwtPayload
     /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
-    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, JsonSerializerOptions? serializerOptions = null)
+    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, Func<ExtensionJwtPayload, string> serialize)
         => new(new JsonWebTokenHandler()
             .CreateToken(
-                JsonSerializer.Serialize(this, serializerOptions ?? JsonConfig.ApiOptions),
+                serialize(this),
                 new SigningCredentials(
                     new SymmetricSecurityKey(
                         Convert.FromBase64String(extensionSecret.Value)

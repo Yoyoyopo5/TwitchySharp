@@ -11,6 +11,6 @@ public static class TwitchApiExceptionExtensions
         Status Code: {ex.StatusCode}
         Headers: {string.Join(", ", ex.Headers)}
         Content Headers: {string.Join(", ", ex.ContentHeaders)}
-        Content: {Encoding.UTF8.GetString(ex.Content)}
+        Content: {ex.Content}
         """;
 }

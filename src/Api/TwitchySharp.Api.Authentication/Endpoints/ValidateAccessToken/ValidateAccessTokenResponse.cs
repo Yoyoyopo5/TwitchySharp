@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains information about a valid user access token.
 /// </summary>

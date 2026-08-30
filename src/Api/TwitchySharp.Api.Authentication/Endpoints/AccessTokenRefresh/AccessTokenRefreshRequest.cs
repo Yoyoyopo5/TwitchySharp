@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Api.Authorization;
+﻿namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Use this request to obtain a new user access token for a previously authorized user.
 /// </summary>

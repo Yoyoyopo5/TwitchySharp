@@ -13,98 +13,32 @@ namespace TwitchySharp.Api;
 /// Provides a default implementation for sending typed <see cref="TwitchRequest"/> commands using an <see cref="System.Net.Http.HttpClient"/>.
 /// Can be further configured using
 /// <see cref="Set{T}(ResolveRequestDependency{T})"/>
-/// <see cref="Remove{T}"/>
 /// and <see cref="Configure{T}(Func{ResolveRequestDependency{T}, ResolveRequestDependency{T}})"/> methods,
 /// as well as various built-in extension methods.
 /// </remarks>
-/// <param name="HttpClient">The <see cref="System.Net.Http.HttpClient"/> to send requests with.</param>
-public record TwitchClient(HttpClient HttpClient) : ITwitchClient
+public record TwitchClient : ITwitchClient
 {
-    private ImmutableDictionary<Type, ResolveRequestDependency> Resolvers { get; init; }
-        = ImmutableDictionary<Type, ResolveRequestDependency>.Empty // Default Pipeline
-            // HttpContent
-            .UseRequestContent()
-            .WithSystemTextJsonRequestContentObjectConverter(JsonConfig.ApiOptions)
-            // HttpRequestMessage
-            .SetResolver<HttpRequestMessage>(async (context, ct) =>
-                await context.GetOrDefault<HttpContent>(ct) switch
-                {
-                    { Error: Error error } result => new DependencyResult<HttpRequestMessage>(error, result.UpdatedScope),
-                    { } result => new DependencyResult<HttpRequestMessage>(new HttpRequestMessage(context.Request.Method, context.Request.RequestUri)
+    public ITwitchRequestDependencyCollection Resolvers { get; init => field = value.SetFixed<ITwitchClient>(this); }
+            = new ImmutableRequestDependencyCollection() // Default Pipeline
+                // HttpContent
+                .UseRequestContent()
+                .WithSystemTextJsonRequestContentObjectConverter(JsonConfig.ApiOptions)
+                // HttpRequestMessage
+                .SetResolver<HttpRequestMessage>(async (context, ct) =>
+                    await context.GetOrDefault<HttpContent>(ct) switch
                     {
-                        Content = result.Value
-                    }, result.UpdatedScope)
-                }
-            )
-            .ConfigureFor<IAuthenticatedTwitchRequest, HttpRequestMessage>(
-                next => next.WithAuthenticationHeaders()
-            )
-            // HttpResponseMessage
-            .WithHttpClient(HttpClient)
-            .WithTwitchApiExceptions();
-            // TwitchResponse<T> is added inside of SendAsync<T>
-
-    /// <summary>
-    /// Set the client's request dependency resolver for <typeparamref name="T"/>.
-    /// </summary>
-    /// <remarks>
-    /// This overwrites the existing resolver for <typeparamref name="T"/>,
-    /// including any configuration applied to it via <see cref="Configure{T}(Func{ResolveRequestDependency{T}, ResolveRequestDependency{T}})"/>.
-    /// </remarks>
-    /// <typeparam name="T">The type of dependency to set a resolver for.</typeparam>
-    /// <param name="resolve">The resolver.</param>
-    /// <returns>
-    /// A new <see cref="TwitchClient"/> that will resolve <typeparamref name="T"/>
-    /// per-request using <paramref name="resolve"/>.
-    /// </returns>
-    public TwitchClient Set<T>(ResolveRequestDependency<T> resolve)
-        => this with { Resolvers = Resolvers.SetResolver(resolve) };
-
-    /// <summary>
-    /// Configure the client's request dependency resolver for <typeparamref name="T"/>.
-    /// </summary>
-    /// <remarks>
-    /// If an existing resolver for <typeparamref name="T"/> is not set, a default resolver
-    /// returning <see langword="default"/> will be added before configuring.
-    /// </remarks>
-    /// <typeparam name="T">The type of dependency to configure the resolver for.</typeparam>
-    /// <param name="configure">
-    /// The configuration function for the resolver.
-    /// Accepts a single parameter of the last configured resolver for <typeparamref name="T"/>
-    /// and returns a new resolver of the same type which will be used to resolve <typeparamref name="T"/> per-request.
-    /// </param>
-    /// <returns>
-    /// A new <see cref="TwitchClient"/> with the resolver configuration applied.
-    /// </returns>
-    public TwitchClient Configure<T>(Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure)
-        => this with { Resolvers = Resolvers.Configure(configure) };
-
-    /// <summary>
-    /// Configure the client's request dependency resolver for <typeparamref name="T"/> for requests of type <typeparamref name="TRequest"/>.
-    /// </summary>
-    /// <remarks>
-    /// The result of <paramref name="configure"/> will only be run against requests of type <typeparamref name="TRequest"/>.
-    /// </remarks>
-    /// <typeparam name="TRequest">The request type to branch resolver configuration for.</typeparam>
-    /// <typeparam name="T">The dependency type to configure the resolver for.</typeparam>
-    /// <param name="configure">
-    /// The configuration function for the resolver.
-    /// Accepts a single parameter of the last configured resolver for <typeparamref name="T"/>
-    /// and returns a new resolver of the same type which will be used to resolve <typeparamref name="T"/> per-request of type <typeparamref name="TRequest"/>.
-    /// </param>
-    /// <returns>
-    /// A new <see cref="TwitchClient"/> with the <typeparamref name="TRequest"/>-specific resolver configuration applied.
-    /// </returns>
-    public TwitchClient ConfigureFor<TRequest, T>(Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure)
-        => this with { Resolvers = Resolvers.ConfigureFor<TRequest, T>(configure) };
-
-    /// <summary>
-    /// Remove the client's request dependency resolver for <typeparamref name="T"/>.
-    /// </summary>
-    /// <typeparam name="T">The dependency typeto remove the resolver for.</typeparam>
-    /// <returns>A new <see cref="TwitchClient"/> without a resolver for <typeparamref name="T"/>.</returns>
-    public TwitchClient Remove<T>()
-        => this with { Resolvers = Resolvers.Remove(typeof(T)) };
+                        { Error: Error error } result => result.UpdatedScope.ToResult<HttpRequestMessage>(error),
+                        { } result => result.UpdatedScope.ToResult(new HttpRequestMessage(context.Request.Method, context.Request.RequestUri)
+                        {
+                            Content = result.Value
+                        })
+                    }
+                )
+                .UseAuthenticatedRequests()
+                .WithHttpClient(new())
+                .UseHttpClientToSendRequests()
+                // HttpResponseMessage
+                .WithTwitchApiExceptions();
 
     private class SystemTextJsonContentConverter : IResponseContentConverter
     {
@@ -172,7 +106,7 @@ public record TwitchClient(HttpClient HttpClient) : ITwitchClient
         using MemoizingRequestDependencyScope requestScope = new()
         {
             Request = request,
-            Resolvers = Resolvers.WithTypedResponse<TResponseContent>(contentConverter)
+            DependencyCollection = Resolvers.WithTypedResponse<TResponseContent>(contentConverter)
         };
 
         return await requestScope.GetOrDefault<TwitchResponse<TResponseContent>>(ct) switch
@@ -191,6 +125,87 @@ public record TwitchClient(HttpClient HttpClient) : ITwitchClient
 public static class TwitchClientExtensions
 {
     /// <summary>
+    /// Set the client's request dependency resolver for <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// This overwrites the existing resolver for <typeparamref name="T"/>,
+    /// including any configuration applied to it via <see cref="Configure{T}(Func{ResolveRequestDependency{T}, ResolveRequestDependency{T}})"/>.
+    /// </remarks>
+    /// <typeparam name="T">The type of dependency to set a resolver for.</typeparam>
+    /// <param name="resolve">The resolver.</param>
+    /// <returns>
+    /// A new <see cref="TwitchClient"/> that will resolve <typeparamref name="T"/>
+    /// per-request using <paramref name="resolve"/>.
+    /// </returns>
+    public static TwitchClient SetResolver<T>(
+        this TwitchClient client,
+        ResolveRequestDependency<T> resolve
+        )
+        => client with { Resolvers = client.Resolvers.SetResolver(resolve) };
+
+    /// <summary>
+    /// Set the client's request dependency resolver for <typeparamref name="T"/>
+    /// to always return a fixed value.
+    /// </summary>
+    /// <remarks>
+    /// <inheritdoc cref="Set{T}(ResolveRequestDependency{T})" path="/remarks"/>
+    /// </remarks>
+    /// <typeparam name="T">The type of dependency to set a fixed value for.</typeparam>
+    /// <param name="fixedValue">The fixed value to use.</param>
+    /// <returns>
+    /// A new <see cref="TwitchClient"/> that will always 
+    /// resolve <typeparamref name="T"/> as <paramref name="fixedValue"/>.
+    /// </returns>
+    public static TwitchClient SetFixed<T>(
+        this TwitchClient client,
+        T fixedValue
+        )
+        => client with { Resolvers = client.Resolvers.SetFixed(fixedValue) };
+
+    /// <summary>
+    /// Configure the client's request dependency resolver for <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// If an existing resolver for <typeparamref name="T"/> is not set, a default resolver
+    /// returning <see langword="default"/> will be added before configuring.
+    /// </remarks>
+    /// <typeparam name="T">The type of dependency to configure the resolver for.</typeparam>
+    /// <param name="configure">
+    /// The configuration function for the resolver.
+    /// Accepts a single parameter of the last configured resolver for <typeparamref name="T"/>
+    /// and returns a new resolver of the same type which will be used to resolve <typeparamref name="T"/> per-request.
+    /// </param>
+    /// <returns>
+    /// A new <see cref="TwitchClient"/> with the resolver configuration applied.
+    /// </returns>
+    public static TwitchClient Configure<T>(
+        this TwitchClient client,
+        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+        )
+        => client with { Resolvers = client.Resolvers.Configure(configure) };
+
+    /// <summary>
+    /// Configure the client's request dependency resolver for <typeparamref name="T"/> for requests of type <typeparamref name="TRequest"/>.
+    /// </summary>
+    /// <remarks>
+    /// The result of <paramref name="configure"/> will only be run against requests of type <typeparamref name="TRequest"/>.
+    /// </remarks>
+    /// <typeparam name="TRequest">The request type to branch resolver configuration for.</typeparam>
+    /// <typeparam name="T">The dependency type to configure the resolver for.</typeparam>
+    /// <param name="configure">
+    /// The configuration function for the resolver.
+    /// Accepts a single parameter of the last configured resolver for <typeparamref name="T"/>
+    /// and returns a new resolver of the same type which will be used to resolve <typeparamref name="T"/> per-request of type <typeparamref name="TRequest"/>.
+    /// </param>
+    /// <returns>
+    /// A new <see cref="TwitchClient"/> with the <typeparamref name="TRequest"/>-specific resolver configuration applied.
+    /// </returns>
+    public static TwitchClient ConfigureForRequestType<TRequest, T>(
+        this TwitchClient client,
+        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure)
+        => client with { Resolvers = client.Resolvers.ConfigureForRequestType<TRequest, T>(configure) };
+
+    /// <summary>
     /// Configure the client's request dependency resolver for <typeparamref name="T"/>
     /// so that the result from the previously configured resolver for <typeparamref name="T"/>
     /// is used unless it is <see langword="null"/>, in which <paramref name="resolver"/> result is used instead.
@@ -203,13 +218,48 @@ public static class TwitchClientExtensions
         this TwitchClient client,
         ResolveRequestDependency<T> resolver
         )
-        => client.Configure<T>(next => async (context, ct) =>
-            await next(context, ct) switch
-            {
-                { Error: Error error } errored => new DependencyResult<T>(error, errored.UpdatedScope),
-                { Value: T value } resolved => new DependencyResult<T>(value, resolved.UpdatedScope),
-                { } none => await resolver(none.UpdatedScope, ct)
-            });
+        => client with { Resolvers = client.Resolvers.ConfigureAsNullCoalesce(resolver) };
+
+    /// <summary>
+    /// Configure the client's request dependency resolver for <typeparamref name="T"/>
+    /// when the <paramref name="predicate"/> returns <see langword="true"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of resolver to configure.</typeparam>
+    /// <param name="predicate">The condition that must be <see langword="true"/> in order to use the configured resolver.</param>
+    /// <param name="configure">The configuration to conditionally apply.</param>
+    /// <returns>A new <see cref="TwitchClient"/> with the configured conditional resolver.</returns>
+    public static TwitchClient ConfigureFor<T>(
+        this TwitchClient client,
+        ResolveRequestDependency<bool> predicate,
+        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+        )
+        => client with { Resolvers = client.Resolvers.ConfigureFor(predicate, configure) };
+
+    internal static TwitchClient ConfigureForTokenType<T>(
+        this TwitchClient client,
+        BearerTokenType tokenType,
+        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+        )
+        => client.ConfigureFor(
+            (scope, ct) => scope.GetOrDefault<BearerTokenType?>(ct)
+                .MapAsync(t => t == tokenType),
+            configure
+            );
+
+    /// <summary>
+    /// Configure the client's request dependency resolver for <typeparamref name="T"/>
+    /// so that it returns a fixed value if the previously configured resolver for <typeparamref name="T"/>
+    /// returned <see langword="null"/>.
+    /// </summary>
+    /// <typeparam name="T"><inheritdoc cref="TwitchClient.Configure{T}(Func{ResolveRequestDependency{T}, ResolveRequestDependency{T}})" path="/typeparam[@name='T']"/></typeparam>
+    /// <param name="client"><inheritdoc cref="ConfigureAsNullCoalesce{T}(TwitchClient, ResolveRequestDependency{T})" path="/param[@name='client']"/></param>
+    /// <param name="defaultValue">The fixed default value to use.</param>
+    /// <returns>A new <see cref="TwitchClient"/> with the configured default value resolver.</returns>
+    public static TwitchClient ConfigureDefault<T>(
+        this TwitchClient client,
+        T defaultValue
+        )
+        => client with { Resolvers = client.Resolvers.ConfigureDefault(defaultValue) };
 
     /// <summary>
     /// Add a specific client converter to the client.
@@ -227,6 +277,12 @@ public static class TwitchClientExtensions
         IResponseContentConverter converter
         )
         => client with { ResponseConverters = client.ResponseConverters.Push(converter) };
+
+    public static TwitchClient WithHttpClient(
+        this TwitchClient client,
+        HttpClient httpClient
+        )
+        => client.SetFixed(httpClient);
 }
 
 /// <summary>
@@ -261,58 +317,93 @@ public interface IResponseContentConverter
 
 internal static class DefaultRequestPipelineExtensions
 {
-    public static ImmutableDictionary<Type, ResolveRequestDependency> WithHttpClient(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers,
-        HttpClient client)
-        => resolvers
-            .SetResolver<HttpClient>((context, ct) => ValueTask.FromResult(new DependencyResult<HttpClient>(client, context)))
-            .SetResolver<HttpResponseMessage>(async (context, ct) =>
-            {
-                DependencyResult<HttpClient> clientResult = await context.GetOrDefault<HttpClient>(ct);
-                (HttpRequestMessage? request, RequestDependencyScope updatedScope, Error? error)
-                    = await clientResult.GetOrDefault<HttpRequestMessage>(ct);
+    public static ITwitchRequestDependencyCollection UseTwitchIdentity(
+        this ITwitchRequestDependencyCollection resolvers
+        )
+        => resolvers.From<TwitchIdentity, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
+                context => context?.Identity
+            )
+            .From<ClientId?, TwitchIdentity>(identity => identity?.ClientId)
+            .As<TwitchIdentity.Client, TwitchIdentity>()
+            .As<TwitchIdentity.User, TwitchIdentity>()
+            .From<UserId?, TwitchIdentity.User>(identity => identity?.UserId)
+            .As<TwitchIdentity.Extension, TwitchIdentity>()
+            .From<ExtensionId?, TwitchIdentity.Extension>(identity => identity?.ExtensionId);
 
-                return error is not null
-                    ? new DependencyResult<HttpResponseMessage>(error, updatedScope)
-                    : clientResult.Value is not HttpClient client
-                    ? new DependencyResult<HttpResponseMessage>(new Error("No HttpClient was configured."), updatedScope)
-                    : request is not HttpRequestMessage message
-                    ? new DependencyResult<HttpResponseMessage>(new Error("No HttpRequestMessage resolver was configured."), updatedScope)
-                    : new DependencyResult<HttpResponseMessage>(await client.SendAsync(message, ct), updatedScope);
-            });
+    public static ITwitchRequestDependencyCollection UseAuthenticatedRequests(
+        this ITwitchRequestDependencyCollection resolvers
+        )
+        => resolvers.As<IAuthenticatedTwitchRequest, TwitchRequest>()
+            .From<ITwitchRequestAuthenticationContext<TwitchIdentity>, IAuthenticatedTwitchRequest>(
+                authenticatedRequest => authenticatedRequest?.AuthenticationContext
+            )
+            .From<BearerToken?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
+                context => context?.BearerToken
+            )
+            .From<BearerTokenType?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
+                context => context?.TokenType
+            )
+            .UseTwitchIdentity()
+            .ConfigureForRequestType<IAuthenticatedTwitchRequest, HttpRequestMessage>(
+                next => next.WithAuthenticationHeaders()
+            );
 
-    public static ImmutableDictionary<Type, ResolveRequestDependency> UseRequestContent(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers
+    public static ITwitchRequestDependencyCollection WithHttpClient(
+        this ITwitchRequestDependencyCollection resolvers,
+        HttpClient client
+        )
+        => resolvers.SetFixed(client);
+
+    public static ITwitchRequestDependencyCollection UseHttpClientToSendRequests(
+        this ITwitchRequestDependencyCollection resolvers
+        )
+        => resolvers.SetResolver<HttpResponseMessage>(async (context, ct) =>
+        {
+            RequestDependencyResult<HttpClient> clientResult = await context.GetOrDefault<HttpClient>(ct);
+            (HttpRequestMessage? request, ITwitchRequestDependencyScope updatedScope, Error? error)
+                = await clientResult.GetOrDefault<HttpRequestMessage>(ct);
+
+            return error is not null
+                ? updatedScope.ToResult<HttpResponseMessage>(error)
+                : clientResult.Value is not HttpClient client
+                ? updatedScope.ToResult<HttpResponseMessage>(new Error("No HttpClient was configured."))
+                : request is not HttpRequestMessage message
+                ? updatedScope.ToResult<HttpResponseMessage>(new Error("No HttpRequestMessage resolver was configured."))
+                : updatedScope.ToResult(await client.SendAsync(message, ct));
+        });
+
+    public static ITwitchRequestDependencyCollection UseRequestContent(
+        this ITwitchRequestDependencyCollection resolvers
         )
         => resolvers.Configure<HttpContent>(next => (context, ct) =>
             context.Request.Content is not null
-                ? ValueTask.FromResult(new DependencyResult<HttpContent>(context.Request.Content, context))
+                ? ValueTask.FromResult(new RequestDependencyResult<HttpContent>(context.Request.Content, context))
                 : next(context, ct));
 
-    public static ImmutableDictionary<Type, ResolveRequestDependency> WithSystemTextJsonRequestContentObjectConverter(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers,
+    public static ITwitchRequestDependencyCollection WithSystemTextJsonRequestContentObjectConverter(
+        this ITwitchRequestDependencyCollection resolvers,
         JsonSerializerOptions options
         )
         => resolvers.Configure<HttpContent>(next => (context, ct) =>
             context.Request.ContentObject is null
             ? next(context, ct)
-            : ValueTask.FromResult(new DependencyResult<HttpContent>(JsonContent.Create(context.Request.ContentObject, options: options), context)));
+            : ValueTask.FromResult(new RequestDependencyResult<HttpContent>(JsonContent.Create(context.Request.ContentObject, options: options), context)));
 
-    public static ImmutableDictionary<Type, ResolveRequestDependency> WithTwitchApiExceptions(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers
+    public static ITwitchRequestDependencyCollection WithTwitchApiExceptions(
+        this ITwitchRequestDependencyCollection resolvers
         )
         => resolvers.Configure<HttpResponseMessage>(next => async (context, ct) =>
         {
-            (HttpResponseMessage? response, RequestDependencyScope nextContext, Error? error)
+            (HttpResponseMessage? response, ITwitchRequestDependencyScope nextContext, Error? error)
                 = await next(context, ct);
 
             return response is null || response.IsSuccessStatusCode
-                ? new DependencyResult<HttpResponseMessage>(response, nextContext)
-                : new DependencyResult<HttpResponseMessage>(new ExceptionError(await response.ToTwitchApiException(context.Request, ct)), nextContext);
+                ? nextContext.ToResult(response)
+                : nextContext.ToResult<HttpResponseMessage>(new ExceptionError(await response.ToTwitchApiException(context.Request, ct)));
         });
 
-    public static ImmutableDictionary<Type, ResolveRequestDependency> WithAuthenticationHeaders(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers
+    public static ITwitchRequestDependencyCollection WithAuthenticationHeaders(
+        this ITwitchRequestDependencyCollection resolvers
         )
         => resolvers.Configure<HttpRequestMessage>(next => next.WithAuthenticationHeaders());
 
@@ -326,14 +417,14 @@ internal static class DefaultRequestPipelineExtensions
         )
         => async (context, ct) =>
         {
-            (HttpRequestMessage? httpRequest, RequestDependencyScope nextContext, Error? error)
+            (HttpRequestMessage? httpRequest, ITwitchRequestDependencyScope nextContext, Error? error)
                 = await resolveHttpRequest(context, ct);
 
             if (error is not null)
-                return new DependencyResult<HttpRequestMessage>(error, nextContext);
+                return nextContext.ToResult<HttpRequestMessage>(error);
 
             if (httpRequest is null)
-                return new DependencyResult<HttpRequestMessage>(httpRequest, nextContext);
+                return nextContext.ToResult(httpRequest);
 
             (ClientId? clientId, nextContext, error)
                 = await nextContext.GetOrDefault<ClientId?>(ct);
@@ -341,7 +432,7 @@ internal static class DefaultRequestPipelineExtensions
             if (clientId.HasValue)
                 httpRequest.Headers.AddOrUpdate("Client-Id", clientId.Value);
 
-            return new DependencyResult<HttpRequestMessage>(httpRequest, nextContext);
+            return nextContext.ToResult(httpRequest);
         };
 
     public static ResolveRequestDependency<HttpRequestMessage> WithAuthorizationBearerHeader(
@@ -349,14 +440,14 @@ internal static class DefaultRequestPipelineExtensions
         )
         => async (context, ct) =>
         {
-            (HttpRequestMessage? httpRequest, RequestDependencyScope nextContext, Error? error)
+            (HttpRequestMessage? httpRequest, ITwitchRequestDependencyScope nextContext, Error? error)
                 = await resolveHttpRequest(context, ct);
 
             if (error is not null)
-                return new DependencyResult<HttpRequestMessage>(error, nextContext);
+                return nextContext.ToResult<HttpRequestMessage>(error);
 
             if (httpRequest is null)
-                return new DependencyResult<HttpRequestMessage>(httpRequest, nextContext);
+                return nextContext.ToResult(httpRequest);
 
             (BearerToken? bearerToken, nextContext, error)
                 = await nextContext.GetOrDefault<BearerToken?>(ct);
@@ -364,29 +455,29 @@ internal static class DefaultRequestPipelineExtensions
             if (bearerToken.HasValue)
                 httpRequest.Headers.Authorization = new("Bearer", bearerToken.Value);
 
-            return new DependencyResult<HttpRequestMessage>(httpRequest, nextContext);
+            return nextContext.ToResult(httpRequest);
         };
 
-    public static ImmutableDictionary<Type, ResolveRequestDependency> WithTypedResponse<TResponseContent>(
-        this ImmutableDictionary<Type, ResolveRequestDependency> resolvers,
+    public static ITwitchRequestDependencyCollection WithTypedResponse<TResponseContent>(
+        this ITwitchRequestDependencyCollection resolvers,
         IResponseContentConverter responseContentConverter
         )
         => resolvers.TrySetResolver<TwitchResponse<TResponseContent>>(async (context, ct) =>
         {
             if (context.Request is not TwitchRequest<TResponseContent> typedRequest)
-                return new DependencyResult<TwitchResponse<TResponseContent>>(new Error("Incongruent request and response content type."), context);
+                return new RequestDependencyResult<TwitchResponse<TResponseContent>>(new Error("Incongruent request and response content type."), context);
 
-            (HttpResponseMessage? response, RequestDependencyScope nextContext, Error? error)
+            (HttpResponseMessage? response, ITwitchRequestDependencyScope nextContext, Error? error)
                 = await context.GetOrDefault<HttpResponseMessage>(ct);
 
             return error is not null
-                ? new DependencyResult<TwitchResponse<TResponseContent>>(error, nextContext)
+                ? nextContext.ToResult<TwitchResponse<TResponseContent>>(error)
                 : response is null
-                ? new DependencyResult<TwitchResponse<TResponseContent>>(new Error("An HttpResponseMessage was unable to be resolved. Did you forget to add an HttpClient?"), nextContext)
-                : new DependencyResult<TwitchResponse<TResponseContent>>(response.ToTwitchResponse(typedRequest, await responseContentConverter.Convert(
+                ? nextContext.ToResult<TwitchResponse<TResponseContent>>(new Error("An HttpResponseMessage was unable to be resolved. Did you forget to add an HttpClient?"))
+                : nextContext.ToResult(response.ToTwitchResponse(typedRequest, await responseContentConverter.Convert(
                     typedRequest,
                     await response.Content.ReadAsStreamAsync(ct),
                     ct
-                    )), nextContext);
+                    )));
         });
 }

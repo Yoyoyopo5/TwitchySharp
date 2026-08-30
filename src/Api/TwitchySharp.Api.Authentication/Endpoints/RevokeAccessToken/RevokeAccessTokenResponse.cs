@@ -1,4 +1,4 @@
-﻿namespace TwitchySharp.Api.Authorization;
+﻿namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Empty response.
 /// </summary>

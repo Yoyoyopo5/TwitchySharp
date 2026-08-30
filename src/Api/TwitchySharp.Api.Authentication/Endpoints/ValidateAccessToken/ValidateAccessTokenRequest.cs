@@ -1,4 +1,6 @@
-namespace TwitchySharp.Api.Authorization;
+using System.Collections.Immutable;
+
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Checks if a given user access token is currently valid.
 /// </summary>
@@ -8,7 +10,8 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/validate-tokens/">Validate Tokens</see> for more information.
 /// </remarks>
 public record ValidateAccessTokenRequest
-    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>, IAuthorizedTwitchRequest
+    : TwitchAuthorizationRequest<ValidateAccessTokenResponse>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     public override HttpMethod Method => HttpMethod.Get;
     protected override string Path => "/validate";
@@ -30,9 +33,17 @@ public record ValidateAccessTokenRequest
     /// </remarks>
     public UserAccessToken? AccessToken { get; init; }
 
-    public TwitchRequestAuthorizationContext AuthorizationContext => new()
-    {
-        Identity = UserId.HasValue ? new TwitchIdentity.User(UserId.Value) : TwitchIdentity.None.Instance,
-        AccessToken = AccessToken
-    };
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext =>
+        UserId.HasValue
+        ? new UserWithScopesAuthenticationContext()
+        {
+            Identity = new TwitchIdentity.User(UserId.Value),
+            ValidScopes = ImmutableHashSet.Create(Scope.OpenId),
+            BearerToken = AccessToken
+        }
+        : new TwitchRequestAuthenticationContext<TwitchIdentity.None>()
+        {
+            Identity = TwitchIdentity.None.Instance,
+            BearerToken = AccessToken
+        };
 }

@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to get a user access token and refresh token.
 /// </summary>

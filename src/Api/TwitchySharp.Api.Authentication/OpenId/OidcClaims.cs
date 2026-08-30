@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 
 /// <summary>
 /// Claims container used when getting <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/">access tokens with OIDC</see>.

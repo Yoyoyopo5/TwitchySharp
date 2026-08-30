@@ -1,6 +1,6 @@
 using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.Api;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// A refresh token for a user access token.
 /// </summary>

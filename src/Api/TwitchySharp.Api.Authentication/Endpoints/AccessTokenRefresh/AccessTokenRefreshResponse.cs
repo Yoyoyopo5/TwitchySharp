@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains a refreshed user access token and the refresh token used to refresh it.
 /// </summary>

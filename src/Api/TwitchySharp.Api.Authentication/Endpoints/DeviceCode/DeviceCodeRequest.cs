@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to get a device code from Twitch which can be used to get a user access token for a specific device.
 /// </summary>

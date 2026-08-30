@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Requests JsonWebKeys from Twitch used to validate JsonWebTokens returned in the OIDC authorization flow (as the <c>IdToken</c>).
 /// </summary>
