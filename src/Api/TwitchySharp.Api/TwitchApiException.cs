@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 
 namespace TwitchySharp.Api;
 /// <summary>
@@ -29,9 +30,9 @@ public class TwitchApiException(string? message = null, Exception? innerExceptio
     /// </summary>
     public required HttpStatusCode StatusCode { get; init; }
     /// <summary>
-    /// The captured response content as a <see langword="byte"/> array.
+    /// The captured response content as a string.
     /// </summary>
-    public required ReadOnlyMemory<byte> Content { get; init; }
+    public required string Content { get; init; }
 
     internal static async Task<TwitchApiException> FromRequestResponse(TwitchRequest request, HttpResponseMessage response, CancellationToken ct = default)
         => new()
@@ -40,6 +41,6 @@ public class TwitchApiException(string? message = null, Exception? innerExceptio
             StatusCode = response.StatusCode,
             Headers = response.Headers.ToDictionary(),
             ContentHeaders = response.Content.Headers.ToDictionary(),
-            Content = await response.Content.ReadAsByteArrayAsync(ct)
+            Content = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync(ct))
         };
 }
