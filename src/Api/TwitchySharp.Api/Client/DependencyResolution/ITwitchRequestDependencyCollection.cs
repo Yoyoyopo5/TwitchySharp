@@ -3,98 +3,130 @@
 namespace TwitchySharp.Api;
 
 public interface ITwitchRequestDependencyCollection
+    : ITwitchRequestDependencyCollection<ITwitchRequestDependencyCollection>;
+
+public interface ITwitchRequestDependencyCollection<out TSelf>
+    where TSelf : ITwitchRequestDependencyCollection<TSelf>
 {
-    ITwitchRequestDependencyCollection SetResolver<T>(ResolveRequestDependency<T> resolve);
+    TSelf SetResolver<T>(ResolveRequestDependency<T> resolve);
     ResolveRequestDependency<T>? GetResolver<T>();
 }
 
 public static class ITwitchRequestDependencyCollectionExtensions
 {
-    public static ITwitchRequestDependencyCollection From<T, TFrom>(
-        this ITwitchRequestDependencyCollection resolvers,
-        Func<TFrom?, T?> select
-        )
-        => resolvers.SetResolver<T>((context, ct) =>
-            context.GetOrDefault<TFrom>(ct).MapAsync(f => select(f)));
+    public static TCollection SetResolver<TCollection, T>(
+        this TCollection dc,
+        Func<ITwitchRequestDependencyScope, Validation<T>> resolve)
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.SetResolver((scope, ct) => ValueTask.FromResult(resolve(scope)));
 
-    public static ITwitchRequestDependencyCollection As<T, TBase>(
-        this ITwitchRequestDependencyCollection resolvers
+    public static TCollection SetResolver<TCollection, T>(
+        this TCollection dc,
+        Func<ITwitchRequestDependencyScope, T> resolve
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.SetResolver((scope, ct) => ValueTask.FromResult<Validation<T>>(resolve(scope)));
+
+    public static TCollection From<TCollection, T, TFrom>(
+        this TCollection resolvers,
+        Func<TFrom?, T> select
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => resolvers.SetResolver<T>((context, ct) =>
+            context.ResolveOrDefault<TFrom>(ct).MapAsync(f => select(f)));
+
+    public static TCollection FromRequest<TCollection, T>(
+        this TCollection resolvers,
+        Func<TwitchRequest, T> select
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => resolvers.SetResolver<T>((scope, ct) => ValueTask.FromResult<Validation<T>>(select(scope.Request)));
+
+    public static TCollection As<TCollection, T, TBase>(
+        this TCollection resolvers
         )
         where T : class
-        => resolvers.SetResolver<T>((context, ct) => context.GetOrDefault<TBase>(ct).MapAsync(b => b as T));
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => resolvers.SetResolver<T?>((context, ct) => context.ResolveOrDefault<TBase>(ct).MapAsync(b => b as T));
 
-    public static ITwitchRequestDependencyCollection SetFixed<T>(
-        this ITwitchRequestDependencyCollection dc,
+    public static TCollection RequestAs<TCollection, T>(
+        this TCollection resolvers
+        )
+        where T : class
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => resolvers.SetResolver<T?>((scope, ct) => ValueTask.FromResult<Validation<T?>>(scope.Request as T));
+
+    public static TCollection SetFixed<TCollection, T>(
+        this TCollection dc,
         T fixedValue
         )
-        => dc.SetResolver((scope, _) => ValueTask.FromResult(scope.ToResult(fixedValue)));
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.SetResolver<T>((scope, _) => ValueTask.FromResult<Validation<T>>(fixedValue));
 
-    public static ITwitchRequestDependencyCollection TrySetResolver<T>(
-        this ITwitchRequestDependencyCollection dc,
+    public static TCollection TrySetResolver<TCollection, T>(
+        this TCollection dc,
         ResolveRequestDependency<T> resolve
         )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => dc.GetResolver<T>() is not null
             ? dc
             : dc.SetResolver(resolve);
 
-    private static ResolveRequestDependency<T> MakeDefaultResolver<T>()
-        => (scope, _) => ValueTask.FromResult(scope.ToResult((T?)default));
+    private static ResolveRequestDependency<T?> MakeDefaultResolver<T>()
+        => (scope, _) => ValueTask.FromResult<Validation<T?>>((T?)default);
 
-    public static ITwitchRequestDependencyCollection Configure<T>(
-        this ITwitchRequestDependencyCollection resolvers,
-        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+    public static TCollection Configure<TCollection, T>(
+        this TCollection resolvers,
+        Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
         )
-        => resolvers.SetResolver(configure(resolvers.GetResolver<T>() ?? MakeDefaultResolver<T>()));
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => resolvers.SetResolver(configure(resolvers.GetResolver<T?>() ?? MakeDefaultResolver<T?>()));
 
-    public static ITwitchRequestDependencyCollection ConfigureForRequestType<TRequest, T>(
-        this ITwitchRequestDependencyCollection dc,
-        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+    public static TCollection ConfigureForRequestType<TCollection, TRequest, T>(
+        this TCollection dc,
+        Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
         )
-        => dc.Configure<T>(next =>
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.Configure<TCollection, T?>(next =>
         {
-            ResolveRequestDependency<T> configured = configure(next);
-            return (context, ct)
-                => context.Request is TRequest
-                    ? configured(context, ct)
-                    : next(context, ct);
+            ResolveRequestDependency<T?> configured = configure(next) as ResolveRequestDependency<T?>;
+            return (scope, ct)
+                => scope.Request is TRequest
+                    ? configured(scope, ct)
+                    : next(scope, ct);
         });
 
-    public static ITwitchRequestDependencyCollection ConfigureFor<T>(
-        this ITwitchRequestDependencyCollection dc,
+    public static TCollection ConfigureFor<TCollection, T>(
+        this TCollection dc,
         ResolveRequestDependency<bool> predicate,
-        Func<ResolveRequestDependency<T>, ResolveRequestDependency<T>> configure
+        Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
         )
-        => dc.Configure<T>(next =>
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.Configure<TCollection, T?>(next =>
         {
-            ResolveRequestDependency<T> configured = configure(next);
-            return async (context, ct) =>
-            {
-                (bool result, ITwitchRequestDependencyScope nextContext, Error? error)
-                    = await predicate(context, ct);
-
-                return error is not null
-                    ? nextContext.ToResult<T>(error)
-                    : result
-                    ? await configured(nextContext, ct)
-                    : await next(nextContext, ct);
-            };
+            ResolveRequestDependency<T?> configured = configure(next) as ResolveRequestDependency<T?>;
+            return (scope, ct) => predicate(scope, ct).BindAsync(useConfigured => useConfigured
+                ? configured(scope, ct)
+                : next(scope, ct));
         });
 
-    public static ITwitchRequestDependencyCollection ConfigureAsNullCoalesce<T>(
-        this ITwitchRequestDependencyCollection dc,
+    public static TCollection ConfigureAsNullCoalesce<TCollection, T>(
+        this TCollection dc,
         ResolveRequestDependency<T> resolver
         )
-        => dc.Configure<T>(next => async (context, ct) =>
-            await next(context, ct) switch
-            {
-                { Error: Error error } errored => new RequestDependencyResult<T>(error, errored.UpdatedScope),
-                { Value: T value } resolved => new RequestDependencyResult<T>(value, resolved.UpdatedScope),
-                { } none => await resolver(none.UpdatedScope, ct)
-            });
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.Configure<TCollection, T?>(next =>
+        {
+            ResolveRequestDependency<T?> configured = resolver as ResolveRequestDependency<T?>;
+            return (scope, ct) => next(scope, ct).BindAsync(value => value is not null
+                ? ValueTask.FromResult<Validation<T?>>(value)
+                : configured(scope, ct));
+        });
 
-    public static ITwitchRequestDependencyCollection ConfigureDefault<T>(
-        this ITwitchRequestDependencyCollection dc,
+    public static TCollection ConfigureDefault<TCollection, T>(
+        this TCollection dc,
         T defaultValue
         )
-        => dc.ConfigureAsNullCoalesce((scope, _) => ValueTask.FromResult(scope.ToResult(defaultValue)));
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.ConfigureAsNullCoalesce((scope, _) => ValueTask.FromResult<Validation<T?>>(defaultValue));
 }

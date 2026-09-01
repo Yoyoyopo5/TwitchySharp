@@ -25,4 +25,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Client\Authentication\" />
+  </ItemGroup>
+
 </Project>

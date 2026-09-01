@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Api;
+﻿using TwitchySharp.Infrastructure.Functional;
+using TwitchySharp.Api;
 using TwitchySharp.Api.Authentication;
 using TwitchySharp.Api.Helix.Streams;
 using Xunit;
@@ -29,21 +30,21 @@ public static class TwitchClientExtensions
         this TwitchClient client,
         IServiceProvider sp
         )
-        => client.Configure<TwitchIdentity>(next => (scope, ct) =>
-            scope.GetOrDefault<TestName>(ct).BindAsync((scope, testName) => next(scope, ct).MapAsync(identity =>
+        => client.Configure<TwitchClient, TwitchIdentity?>(next => (scope, ct) =>
+            scope.ResolveOrDefault<TestName>(ct).BindAsync(testName => next(scope, ct).MapAsync(identity =>
                 identity is not null && sp.GetAuthorizingConfigForEndpoint<ITestIdentity<TwitchIdentity>>(testName)?.Identity is TwitchIdentity configIdentity
                     ? identity with { ClientId = configIdentity.ClientId }
                     : identity
             )))
-            .ConfigureAsNullCoalesce<ClientSecret?>((scope, ct) => scope.GetOrDefault<ClientId?>(ct)
+            .ConfigureAsNullCoalesce<TwitchClient, ClientSecret?>((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct)
                 .MapAsync(clientId => clientId.HasValue ? sp.GetClientConfig(clientId.Value)?.ClientSecret : default));
 
     public static TwitchClient AddExtensionConfiguration(
         this TwitchClient client,
         IServiceProvider sp
         )
-        => client.ConfigureAsNullCoalesce<ExtensionSecret?>((scope, ct) =>
-            scope.GetOrDefault<ExtensionId?>(ct).MapAsync(extensionId => extensionId.HasValue
+        => client.ConfigureAsNullCoalesce<TwitchClient, ExtensionSecret?>((scope, ct) =>
+            scope.ResolveOrDefault<ExtensionId?>(ct).MapAsync(extensionId => extensionId.HasValue
                 ? sp.GetConfig<ExtensionConfiguration>(config => config.ExtensionId == extensionId)?.Secret
                 : default));
 }

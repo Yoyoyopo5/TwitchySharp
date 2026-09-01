@@ -47,24 +47,23 @@ public static class UserAccessTokenResolution
             ? (Validation<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.")
             : await client.RefreshToken(clientId, clientSecret, expiredDetails.Identity.UserId, refreshToken, ct);
 
-    private static ResolveRequestDependency<AccessTokenDetails.User> GetFromCache(
+    private static ResolveRequestDependency<AccessTokenDetails.User?> GetFromCache(
         ITwitchTokenCache<TwitchIdentity.User, AccessTokenDetails.User> cache
         )
-        => (context, ct) => context.GetOrDefault<TwitchIdentity.User>(ct)
+        => (context, ct) => context.ResolveOrDefault<TwitchIdentity.User>(ct)
             .MapAsync(identity => identity is null
                 ? ValueTask.FromResult<AccessTokenDetails.User?>(null)
                 : cache.GetOrDefault(identity, ct));
 
-    private static ResolveRequestDependency<AccessTokenDetails.User> RefreshExpired(
-        this ResolveRequestDependency<AccessTokenDetails.User> next,
+    private static ResolveRequestDependency<AccessTokenDetails.User?> RefreshExpired(
+        this ResolveRequestDependency<AccessTokenDetails.User?> next,
         Func<DateTimeOffset> getNow
         )
-        => (scope, ct) =>
-            next(scope, ct).BindAsync((scope, details) => (details is null || details.ExpiresAt > getNow())
-                ? ValueTask.FromResult(scope.ToResult(details))
-                : scope.GetOrDefault<ITwitchClient>(ct)
-                    .BindRequiredAsync((scope, twitchClient) => scope.GetOrDefault<ClientSecret>(ct)
-                    .BindRequiredAsync((scope, clientSecret) => twitchClient.RefreshToken(details, clientSecret, ct).ToDependencyResultAsync(scope))));
+        => (scope, ct) => next(scope, ct).BindAsync(details => (details is null || details.ExpiresAt > getNow())
+                ? ValueTask.FromResult<Validation<AccessTokenDetails.User?>>(details)
+                : scope.ResolveRequired<ITwitchClient>(ct)
+                    .BindAsync(twitchClient => scope.ResolveRequired<ClientSecret?>(ct)
+                    .BindAsync(clientSecret => twitchClient.RefreshToken(details, clientSecret!.Value, ct).MapAsync<AccessTokenDetails.User, AccessTokenDetails.User?>(details => details))));
 
     public static TwitchClient UseUserAccessTokens(
         this TwitchClient client,
@@ -74,7 +73,7 @@ public static class UserAccessTokenResolution
     {
         getNow ??= () => DateTimeOffset.UtcNow;
 
-        return client.Configure<BearerToken?>(next => next.WhenTokenTypeIs(
+        return client.Configure<TwitchClient, BearerToken?>(next => next.WhenTokenTypeIs(
                 BearerTokenType.UserAccessToken,
                 GetFromCache(cache)
                     .RefreshExpired(getNow)

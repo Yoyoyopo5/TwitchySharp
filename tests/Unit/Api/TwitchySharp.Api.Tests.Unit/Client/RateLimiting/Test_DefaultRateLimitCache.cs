@@ -13,7 +13,7 @@ public class Test_DefaultRateLimitCache
             Reset = new DateTimeOffset(2026, 6, 26, 18, 8, 0, TimeSpan.Zero)
         };
 
-        DefaultRateLimitCache mockCache = new();
+        InMemoryRateLimitCache mockCache = new();
         await mockCache.SetRateLimitDetails(stubClientId, stubDetails, TestContext.Current.CancellationToken);
 
         TwitchRateLimitDetails? result = await mockCache.GetRateLimitDetails(stubClientId, TestContext.Current.CancellationToken);
@@ -32,7 +32,7 @@ public class Test_DefaultRateLimitCache
             Reset = new DateTimeOffset(2026, 6, 26, 18, 8, 0, TimeSpan.Zero)
         };
 
-        DefaultRateLimitCache mockCache = new();
+        InMemoryRateLimitCache mockCache = new();
         await mockCache.SetRateLimitDetails(stubClientId, stubDetails, TestContext.Current.CancellationToken);
 
         TwitchRateLimitDetails? result = await mockCache.GetRateLimitDetails(new("29378"), TestContext.Current.CancellationToken);

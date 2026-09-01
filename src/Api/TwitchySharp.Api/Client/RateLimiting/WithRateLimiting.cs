@@ -8,6 +8,15 @@ namespace TwitchySharp.Api;
 /// </summary>
 public static class TwitchRateLimiting
 {
+    private static async ValueTask<T> AwaitUsing<T>(
+        this ValueTask<IAsyncDisposable> disposable,
+        Func<ValueTask<T>> func
+        )
+    {
+        await using IAsyncDisposable dispose = await disposable;
+        return await func();
+    }
+
     /// <summary>
     /// Send each <see cref="TwitchRequest"/> in series.
     /// </summary>
@@ -31,27 +40,26 @@ public static class TwitchRateLimiting
         this TwitchClient client,
         Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
         ClientId? defaultClientId = null)
-        => client.Configure<HttpResponseMessage>(next =>
+        => client.Configure<TwitchClient, HttpResponseMessage?>(next =>
         {
             lockFactory ??= ThreadSafety.CreateInMemoryLockProvider<ClientId>();
-            return async(scope, ct) =>
-            {
-                (ClientId? clientId, ITwitchRequestDependencyScope nextContext, Error? error)
-                    = await scope.GetOrDefault<ClientId?>(ct);
-
-                if (error is not null)
-                    return new RequestDependencyResult<HttpResponseMessage>(error, nextContext);
-
-                clientId ??= defaultClientId;
-
-                // Skip serialize if no client id for request
-                if (!clientId.HasValue)
-                    return await next(nextContext, ct);
-
-                await using IAsyncDisposable @lock = await lockFactory(clientId.Value, ct);
-                return await next(nextContext, ct);
-            };
+            return (scope, ct) => scope.ResolveOrDefault<ClientId?>(ct)
+                .MapAsync(clientId => clientId ?? defaultClientId)
+                .BindAsync(clientId => clientId.HasValue
+                    ? lockFactory(clientId.Value, ct).AwaitUsing(() => next(scope, ct))
+                    : next(scope, ct));
         });
+
+    private static ValueTask WaitFor(
+        this TwitchRateLimitDetails rateLimitDetails,
+        DateTimeOffset now,
+        CancellationToken ct
+        )
+        => rateLimitDetails is { Remaining: 0, Reset: not null }
+            && rateLimitDetails.Reset.Value > now
+            ? new ValueTask(Task.Delay(rateLimitDetails.Reset.Value - now, ct))
+            : ValueTask.CompletedTask;
+
 
     /// <summary>
     /// Add rate limiting to a <see cref="TwitchClient"/>.
@@ -75,31 +83,25 @@ public static class TwitchRateLimiting
         )
         {
             TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
-            return client.Configure<HttpResponseMessage>(next => async (scope, ct) =>
-            {
-                (ClientId? clientId, ITwitchRequestDependencyScope nextScope, Error? error)
-                    = await scope.GetOrDefault<ClientId?>(ct);
+            return client.Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
+                scope.ResolveOrDefault<ClientId?>(ct)
+                    .BindAsync(async clientId =>
+                    {
+                        if (!clientId.HasValue)
+                            return await next(scope, ct);
 
-                if (error is not null)
-                    return new RequestDependencyResult<HttpResponseMessage>(error, nextScope);
+                        if (await options.Cache.GetRateLimitDetails(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
+                            await cachedDetails.WaitFor(options.GetNow(), ct);
 
-                if (!clientId.HasValue)
-                    return await next(scope, ct);
-
-                // We queue here
-                if (await options.Cache.GetRateLimitDetails(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails
-                    && cachedDetails is { Remaining: 0, Reset: not null }
-                    && cachedDetails.Reset.Value > DateTimeOffset.UtcNow)
-                        await Task.Delay(cachedDetails.Reset.Value - DateTimeOffset.UtcNow + options.ClockSkew, ct);
-
-                RequestDependencyResult<HttpResponseMessage> responseResult = await next(scope, ct);
-
-                if (responseResult.Error is not null)
-                    return responseResult;
-
-                await options.Cache.SetRateLimitDetails(clientId.Value, responseResult.Value?.Headers.ToTwitchRateLimitDetails(), ct);
-
-                return responseResult;
-            });
+                        return await next(scope, ct).MapAsync(async response =>
+                        {
+                            if (response is not null)
+                                await options.Cache.SetRateLimitDetails(
+                                    clientId.Value,
+                                    response.Headers.ToTwitchRateLimitDetails(),
+                                    ct);
+                            return response;
+                        });
+                    }));
         }
 }

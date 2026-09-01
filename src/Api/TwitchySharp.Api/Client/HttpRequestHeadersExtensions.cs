@@ -10,4 +10,16 @@ internal static class HttpRequestHeadersExtensions
         headers.Add(key, value);
         return headers;
     }
+
+    public static HttpRequestMessage AddOrUpdateHeader(this HttpRequestMessage request, string key, string value)
+    {
+        request.Headers.AddOrUpdate(key, value);
+        return request;
+    }
+
+    public static HttpRequestMessage SetAuthorizationBearer(this HttpRequestMessage request, string bearer)
+    {
+        request.Headers.Authorization = new("Bearer", bearer);
+        return request;
+    }
 }

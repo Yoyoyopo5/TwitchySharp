@@ -8,9 +8,9 @@ namespace TwitchySharp.Api;
 public record TwitchRateLimitQueueOptions
 {
     /// <summary>
-    /// The amount of extra time that will be waited after Twitch's rate limit reset time elapses.
+    /// Time provider for comparing rate limit reset times against.
     /// </summary>
-    public TimeSpan ClockSkew { get; init; } = TimeSpan.FromMilliseconds(100);
+    public Func<DateTimeOffset> GetNow { get; init; } = () => DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds(100);
     /// <summary>
     /// The rate limit cache options.
     /// </summary>

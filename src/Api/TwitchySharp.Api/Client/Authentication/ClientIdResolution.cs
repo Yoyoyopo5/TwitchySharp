@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api;
 
 public static class ClientIdResolution
@@ -16,7 +18,7 @@ public static class ClientIdResolution
         this TwitchClient client,
         ClientId defaultClientId
         )
-        => client.Configure<TwitchIdentity>(next => (context, ct) =>
+        => client.Configure<TwitchClient, TwitchIdentity?>(next => (context, ct) =>
             next(context, ct).MapAsync(identity => identity is { ClientId: null } overrideClientId
                 ? overrideClientId with { ClientId = defaultClientId }
                 : identity));

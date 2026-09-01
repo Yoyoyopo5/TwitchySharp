@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Authentication;
@@ -20,11 +21,13 @@ public static class ExtensionJwtResolution
         Func<TwitchIdentity.Extension, DateTimeOffset> nextExpiry,
         Func<ExtensionJwtPayload, string> serializePayload
         )
-        => (scope, ct) => scope.GetOrDefault<TwitchIdentity.Extension>(ct)
-            .BindRequiredAsync((scope, extensionIdentity) => scope.GetOrDefault<ExtensionSecret?>(ct)
-            .MapRequiredAsync(extensionSecret => new AccessTokenDetails.ExtensionJwt(
+        => (scope, ct) => scope.ResolveRequired<TwitchIdentity.Extension>(ct)
+            .BindAsync(extensionIdentity => scope.ResolveRequired<ExtensionSecret?>(ct)
+            .MapAsync(extensionSecret => new AccessTokenDetails.ExtensionJwt(
                 extensionIdentity,
-                extensionIdentity.ToJwtPayload(nextExpiry(extensionIdentity)).Sign(extensionSecret!.Value, serializePayload))
+                extensionIdentity
+                    .ToJwtPayload(nextExpiry(extensionIdentity))
+                    .Sign(extensionSecret!.Value, serializePayload))
                 ));
 
     // Required configured ExtensionSecret resolver
@@ -41,9 +44,10 @@ public static class ExtensionJwtResolution
         getNewTokenExpiry ??= _ => DateTimeOffset.UtcNow + TimeSpan.FromMinutes(120);
         serializePayload ??= payload => JsonSerializer.Serialize(payload, JsonConfig.ApiOptions);
 
-        return client.Configure<BearerToken?>(next => next.WhenTokenTypeIs(
+        return client.Configure<TwitchClient, BearerToken?>(next => next.WhenTokenTypeIs(
             BearerTokenType.ExtensionJwt,
             SignNewJwt(getNewTokenExpiry, serializePayload)
+                .Map(details => details)
                 .WithCache(cache, cached => cached.ExpiresAt > getNow())
                 .Map(details => details?.BearerToken)
             ));
