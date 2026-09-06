@@ -45,4 +45,16 @@ public static class ExtensionJwtResolution
                 .Map(details => details?.BearerToken)
             ));
     }
+
+    public static TwitchClient WithExtension(
+        this TwitchClient client,
+        ExtensionId extensionId,
+        ExtensionOwnerId ownerId,
+        ExtensionSecret secret
+        )
+        => client
+            .When((scope, ct) => scope.ResolveOrDefault<ExtensionId?>(ct).MapAsync(id => id == extensionId))
+            .SetFixed((ExtensionOwnerId?)ownerId)
+            .SetFixed((ExtensionSecret?)secret)
+            .ConfiguredCollection;
 }

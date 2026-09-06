@@ -53,4 +53,14 @@ public static class AppAccessTokenResolution
                     .WithCache(tokenCache, details => details.ExpiresAt > getNow())
                     .Map(details => details?.BearerToken)));
     }
+
+    public static TwitchClient WithClient(
+        this TwitchClient client,
+        ClientId clientId,
+        ClientSecret clientSecret
+        )
+        => client
+            .When((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(id => id == clientId))
+            .SetFixed((ClientSecret?)clientSecret)
+            .ConfiguredCollection;
 }

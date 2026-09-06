@@ -110,6 +110,25 @@ public static class ITwitchRequestDependencyCollectionExtensions
                 : next(scope, ct));
         });
 
+    public static ConditionalConfiguration<TCollection> When<TCollection>(
+        this TCollection dc,
+        ResolveRequestDependency<bool> predicate
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => new(dc, predicate);
+
+    public record ConditionalConfiguration<TCollection>(
+        TCollection ConfiguredCollection,
+        ResolveRequestDependency<bool> Predicate
+        )
+        : ITwitchRequestDependencyCollection<ConditionalConfiguration<TCollection>>
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+    {
+        public ResolveRequestDependency<T>? GetResolver<T>() => ConfiguredCollection.GetResolver<T>();
+        public ConditionalConfiguration<TCollection> SetResolver<T>(ResolveRequestDependency<T> resolve)
+            => this with { ConfiguredCollection = ConfiguredCollection.ConfigureFor<TCollection, T>(Predicate, _ => resolve) };
+    }
+
     public static TCollection ConfigureAsNullCoalesce<TCollection, T>(
         this TCollection dc,
         ResolveRequestDependency<T> resolver
