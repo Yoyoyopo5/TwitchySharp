@@ -5,20 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Removes a single chat message or all chat messages from the broadcaster's chat room.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageChatMessages"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageChatMessages"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageChatMessages"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-chat-messages">Delete Chat Messages</see> for more information.
 /// </remarks>
 public record DeleteChatMessagesRequest
-    : TwitchHelixRequest<DeleteChatMessagesResponse>
+    : TwitchHelixRequest<DeleteChatMessagesResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/chat";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageChatMessages)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -52,6 +60,6 @@ public record DeleteChatMessagesRequest
     /// </remarks>
     public MessageId? MessageId { get; init; }
 
-    protected override ValueTask<DeleteChatMessagesResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteChatMessagesResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteChatMessagesResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new DeleteChatMessagesResponseContent());
 }

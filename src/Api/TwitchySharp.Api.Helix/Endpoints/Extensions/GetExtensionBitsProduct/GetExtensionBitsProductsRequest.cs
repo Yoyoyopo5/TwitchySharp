@@ -11,17 +11,23 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-bits-products">Get Extension Bits Products</see> for more information.
 /// </remarks>
 public record GetExtensionBitsProductsRequest
-    : TwitchHelixRequest<GetExtensionBitsProductsResponse>
+    : TwitchHelixRequest<GetExtensionBitsProductsResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/bits/extensions";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("should_include_all", ShouldIncludeAll?.ToString());
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Client> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Client(ExtensionId)
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     /// <summary>
     /// The client id of the extension to get bits products for.

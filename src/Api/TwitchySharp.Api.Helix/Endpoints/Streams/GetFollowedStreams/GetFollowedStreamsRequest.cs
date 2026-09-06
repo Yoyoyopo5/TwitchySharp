@@ -5,21 +5,27 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// Gets the list of broadcasters that the user follows and that are streaming live.
 /// </summary>
 /// <remarks>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserReadFollows"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-streams">Get Followed Streams</see> for more information.
 /// </remarks>
 public record GetFollowedStreamsRequest
-    : TwitchHelixRequest<GetFollowedStreamsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetFollowedStreamsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/streams/followed";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadFollows)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

@@ -11,7 +11,8 @@
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-streams">Get Streams</see> for more information.
 /// </remarks>
 public record GetStreamsRequest
-    : TwitchHelixRequest<GetStreamsResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetStreamsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/streams";
     public override HttpMethod Method => HttpMethod.Get;
@@ -25,6 +26,8 @@ public record GetStreamsRequest
             .Add("first", First?.ToString())
             .Add("before", Before?.Value)
             .Add("after", After?.Value);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// A list of user ids used to filter the list of streams.

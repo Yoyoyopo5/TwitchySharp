@@ -16,8 +16,12 @@ public sealed record ChannelFollow(UserId BroadcasterUserId, UserId ModeratorUse
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelFollow;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelFollow;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadFollowers);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadFollowers)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

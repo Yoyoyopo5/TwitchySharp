@@ -3,20 +3,16 @@
 /// Gets the broadcaster's streaming schedule as an <see href="https://datatracker.ietf.org/doc/html/rfc5545">iCalendar</see>.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Does not require any access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar">Get Channel iCalendar</see> for more information.
 /// </remarks>
 public record GetChannelICalendarRequest
-    : TwitchHelixRequest<GetChannelICalendarResponse>
+    : TwitchHelixRequest<GetChannelICalendarResponseContent>
 {
     protected override string Path => "/schedule/icalendar";
     public override HttpMethod Method => HttpMethod.Get;
-    // This endpoint does not require any authentication
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
-    {
-        Identity = TwitchIdentity.None.Instance
-    };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -26,9 +22,10 @@ public record GetChannelICalendarRequest
     /// </summary>
     public required UserId BroadcasterId { get; init; }
 
-    protected override async ValueTask<GetChannelICalendarResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-    {
-        using StreamReader sr = new(contentStream);
-        return new GetChannelICalendarResponse(await sr.ReadToEndAsync(ct));
-    }
+    public override Func<Stream, CancellationToken, ValueTask<GetChannelICalendarResponseContent>>? ConvertResponseContent { get; init; }
+        = async (contentStream, ct) =>
+        {
+            using StreamReader sr = new(contentStream);
+            return new GetChannelICalendarResponseContent(await sr.ReadToEndAsync(ct));
+        };
 }

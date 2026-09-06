@@ -13,15 +13,21 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-channel-vip">Remove Channel VIP</see> for more information.
 /// </remarks>
 public record RemoveChannelVipRequest
-    : TwitchHelixRequest<RemoveChannelVipResponse>
+    : TwitchHelixRequest<RemoveChannelVipResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVips)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -44,6 +50,6 @@ public record RemoveChannelVipRequest
     /// </remarks>
     public required UserId UserId { get; init; }
 
-    protected override ValueTask<RemoveChannelVipResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new RemoveChannelVipResponse());
+    public override Func<Stream, CancellationToken, ValueTask<RemoveChannelVipResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new RemoveChannelVipResponseContent());
 }

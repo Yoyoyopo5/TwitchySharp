@@ -19,21 +19,24 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription">Delete EventSub Subscription</see> for more information.
 /// </remarks>
 public record DeleteEventSubSubscriptionRequest()
-    : TwitchHelixRequest<DeleteEventSubSubscriptionResponse>
+    : TwitchHelixRequest<DeleteEventSubSubscriptionResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
+    private ITwitchRequestAuthenticationContext<TwitchIdentity> DefaultAuthenticationContext
         => Subscription is not null
-            ? Subscription.ToAuthorizationContext(_specificationRegistry)
+            ? Subscription.ToSubscriptionTypeSpecification(_specificationRegistry)
                 .Match(
                     onError: e => throw new InvalidOperationException($"An error occurred when determining the identity to make the request with: {e.Message}."),
-                    onValid: ctx => ctx
+                    onValid: spec => spec.ToRequestAuthenticationContext(Subscription.Transport.Method)
                     )
-            : new TwitchRequestAuthorizationContext()
-            {
-                Identity = TwitchIdentity.Client.Default
-            };
+            : TwitchRequestAuthenticationContext.Default;
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
@@ -48,7 +51,7 @@ public record DeleteEventSubSubscriptionRequest()
     /// </remarks>
     public EventSubSubscription? Subscription
     {
-        get => field;
+        get;
         init
         {
             field = value;
@@ -80,6 +83,6 @@ public record DeleteEventSubSubscriptionRequest()
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
 
-    protected override ValueTask<DeleteEventSubSubscriptionResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteEventSubSubscriptionResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteEventSubSubscriptionResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new DeleteEventSubSubscriptionResponseContent());
 }

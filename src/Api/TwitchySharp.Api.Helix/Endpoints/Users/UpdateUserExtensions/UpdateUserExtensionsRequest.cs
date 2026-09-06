@@ -7,22 +7,28 @@ namespace TwitchySharp.Api.Helix.Users;
 /// <remarks>
 /// You can update the extension's activation state, ID, and version number.
 /// If you try to activate an extension under multiple extension types, the last write wins (and there is no guarantee of write order).
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserEditBroadcast"/>.
 /// The broadcaster who created the token is the one whose extensions will be updated.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-user-extensions">Update User Extensions</see> for more information.
 /// </remarks>
 public record UpdateUserExtensionsRequest
-    : TwitchHelixRequest<UpdateUserExtensionsResponse>
+    : TwitchHelixRequest<UpdateUserExtensionsResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserEditBroadcast)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     /// <summary>
     /// The user id of the broadcaster whose extensions will be updated.

@@ -16,6 +16,7 @@ public sealed record DropEntitlementGrant(OrganizationId OrganizationId, GameId?
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.DropEntitlementGrant;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.DropEntitlementGrant;
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; } = new();
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("organization_id"), OrganizationId)

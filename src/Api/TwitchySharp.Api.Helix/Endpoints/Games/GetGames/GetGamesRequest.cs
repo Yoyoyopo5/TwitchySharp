@@ -8,7 +8,8 @@ namespace TwitchySharp.Api.Helix.Games;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-games">Get Games</see> for more information.
 /// </remarks>
 public record GetGamesRequest
-    : TwitchHelixRequest<GetGamesResponse>
+    : TwitchHelixRequest<GetGamesResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/games";
     public override HttpMethod Method => HttpMethod.Get;
@@ -17,6 +18,8 @@ public record GetGamesRequest
             .Add("id", Games.OfType<GameIdQuery>().Select(x => x.GameId.Value))
             .Add("name", Games.OfType<GameNameQuery>().Select(x => x.GameName))
             .Add("igdb_id", Games.OfType<GameIgdbQuery>().Select(x => x.IgdbId.Value));
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The games to get data for.

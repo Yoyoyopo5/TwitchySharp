@@ -7,20 +7,24 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// Starts a commercial on the specified channel.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ChannelEditCommercial"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token that includes <see cref="Scope.ChannelEditCommercial"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ChannelEditCommercial"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#start-commercial">Start Commerical</see> for more information.
 /// </remarks>
 public record StartCommercialRequest
-    : TwitchHelixRequest<StartCommercialResponse>
+    : TwitchHelixRequest<StartCommercialResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/channels/commercial";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Commercial.BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelEditCommercial)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext { get => field ?? DefaultAuthenticationContext; init; }
     public override object? ContentObject => Commercial;
     public required StartCommercialRequestData Commercial { get; init; }
 }

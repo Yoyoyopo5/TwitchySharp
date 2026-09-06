@@ -1,0 +1,11 @@
+﻿namespace TwitchySharp.Api.Helix.GuestStar;
+/// <summary>
+/// Contains details about the session that was ended.
+/// </summary>
+public record EndGuestStarSessionResponseContent
+{
+    /// <summary>
+    /// Contains a single entry of a summary of the session details when the session was ended.
+    /// </summary>
+    public required GuestStarSession[] Data { get; init; }
+}

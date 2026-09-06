@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </summary>
 /// <remarks>
 /// <b>Note:</b> For recurring segments, removing a segment removes all segments in the recurring schedule.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-channel-stream-schedule-segment">Delete Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
 public record DeleteChannelStreamScheduleSegmentRequest
-    : TwitchHelixRequest<DeleteChannelStreamScheduleSegmentResponse>
+    : TwitchHelixRequest<DeleteChannelStreamScheduleSegmentResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -39,6 +45,6 @@ public record DeleteChannelStreamScheduleSegmentRequest
     /// </summary>
     public required StreamScheduleSegmentId SegmentId { get; init; }
 
-    protected override ValueTask<DeleteChannelStreamScheduleSegmentResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteChannelStreamScheduleSegmentResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteChannelStreamScheduleSegmentResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new DeleteChannelStreamScheduleSegmentResponseContent());
 }

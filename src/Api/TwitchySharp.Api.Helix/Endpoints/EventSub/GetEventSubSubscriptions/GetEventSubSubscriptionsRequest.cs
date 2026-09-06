@@ -13,14 +13,21 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</see> for more information.
 /// </remarks>
 public record GetEventSubSubscriptionsRequest
-    : TwitchHelixRequest<GetEventSubSubscriptionsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetEventSubSubscriptionsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private ITwitchRequestAuthenticationContext<TwitchIdentity> DefaultAuthenticationContext
+        => WebsocketIdentity is not null
+        ? new TwitchRequestAuthenticationContext<TwitchIdentity.User>() { Identity = WebsocketIdentity }
+        : TwitchRequestAuthenticationContext.Default;
+
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
     {
-        Identity = WebsocketIdentity ?? TwitchIdentity.Client.Default
-    };
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("status", Status?.Value)

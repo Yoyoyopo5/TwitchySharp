@@ -8,13 +8,16 @@
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-teams">Get Channel Teams</see> for more information.
 /// </remarks>
 public record GetChannelTeamsRequest
-    : TwitchHelixRequest<GetChannelTeamsResponse>
+    : TwitchHelixRequest<GetChannelTeamsResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/teams/channel";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user id of the broadcaster to get teams for.

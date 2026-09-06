@@ -14,18 +14,24 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#set-extension-required-configuration">Set Extension Required Configuration</see> for more information.
 /// </remarks>
 public record SetExtensionRequiredConfigurationRequest
-    : TwitchHelixRequest<SetExtensionRequiredConfigurationResponse>
+    : TwitchHelixRequest<SetExtensionRequiredConfigurationResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/required_configuration";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Extension(
-            ExtensionOwnerId,
+            _,
             BroadcasterId,
             Configuration.ExtensionId
             )
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     /// <summary>
     /// The user id of the owner of the extension.
@@ -46,8 +52,8 @@ public record SetExtensionRequiredConfigurationRequest
     /// </summary>
     public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
 
-    protected override ValueTask<SetExtensionRequiredConfigurationResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SetExtensionRequiredConfigurationResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SetExtensionRequiredConfigurationResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SetExtensionRequiredConfigurationResponseContent());
 }
 
 /// <summary>

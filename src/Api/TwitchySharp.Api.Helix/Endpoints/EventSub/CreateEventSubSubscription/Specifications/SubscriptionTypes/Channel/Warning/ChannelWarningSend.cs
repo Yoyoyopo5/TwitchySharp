@@ -19,8 +19,12 @@ public sealed record ChannelWarningSend(UserId BroadcasterUserId, UserId Moderat
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelWarningSend;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelWarningSend;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("moderator_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadWarnings, Scope.ModeratorManageWarnings);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadWarnings, Scope.ModeratorManageWarnings)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

@@ -8,7 +8,8 @@ namespace TwitchySharp.Api.Helix.Games;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-top-games">Get Top Games</see> for more information.
 /// </remarks>
 public record GetTopGamesRequest
-    : TwitchHelixRequest<GetTopGamesResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetTopGamesResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/games/top";
     public override HttpMethod Method => HttpMethod.Get;
@@ -17,6 +18,8 @@ public record GetTopGamesRequest
             .Add("first", First?.ToString())
             .Add("after", After?.ToString())
             .Add("before", Before?.ToString());
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>

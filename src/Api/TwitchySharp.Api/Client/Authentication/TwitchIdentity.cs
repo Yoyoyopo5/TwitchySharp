@@ -31,7 +31,7 @@ public abstract record TwitchIdentity
         /// <remarks>
         /// Does not carry any information, but signals to the authorization resolver to override with a default identity.
         /// </remarks>
-        public static TwitchIdentity Default { get; } = new Client((ClientId?)null);
+        public static TwitchIdentity.Client Default { get; } = new Client((ClientId?)null);
     }
     /// <summary>
     /// A user to make requests on behalf of.

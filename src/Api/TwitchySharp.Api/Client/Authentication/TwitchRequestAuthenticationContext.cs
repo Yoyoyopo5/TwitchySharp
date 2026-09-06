@@ -26,6 +26,14 @@ public interface ITwitchRequestAuthenticationContext<out TIdentity>
     BearerToken? BearerToken { get; }
 }
 
+internal static class TwitchRequestAuthenticationContext
+{
+    public readonly static TwitchRequestAuthenticationContext<TwitchIdentity.Client> Default = new()
+    {
+        Identity = TwitchIdentity.Client.Default
+    };
+}
+
 /// <summary>
 /// A basic authentication context with a <typeparamref name="TIdentity"/> identity.
 /// </summary>

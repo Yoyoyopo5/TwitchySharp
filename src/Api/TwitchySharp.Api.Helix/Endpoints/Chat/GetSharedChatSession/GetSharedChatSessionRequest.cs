@@ -8,13 +8,16 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-shared-chat-session">Get Shared Chat Session</see> for more information.
 /// </remarks>
 public record GetSharedChatSessionRequest
-    : TwitchHelixRequest<GetSharedChatSessionResponse>
+    : TwitchHelixRequest<GetSharedChatSessionResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/shared_chat/session";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user id of the broadcaster whose shared chat you want to get.

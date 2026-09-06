@@ -14,15 +14,21 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-custom-reward">Delete Custom Reward</see> for more information.
 /// </remarks>
 public record DeleteCustomRewardRequest
-    : TwitchHelixRequest<DeleteCustomRewardResponse>
+    : TwitchHelixRequest<DeleteCustomRewardResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channel_points/custom_rewards";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRedemptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -42,6 +48,6 @@ public record DeleteCustomRewardRequest
     /// </summary>
     public required RewardId RewardId { get; init; }
 
-    protected override ValueTask<DeleteCustomRewardResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteCustomRewardResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteCustomRewardResponseContent>>? ConvertResponseContent { get; init; } =
+        (_, _) => ValueTask.FromResult(new DeleteCustomRewardResponseContent());
 }

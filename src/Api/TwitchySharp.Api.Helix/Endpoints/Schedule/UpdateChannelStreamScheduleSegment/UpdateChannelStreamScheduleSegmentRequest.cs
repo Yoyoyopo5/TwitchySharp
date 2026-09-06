@@ -8,21 +8,27 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </summary>
 /// <remarks>
 /// For recurring segments, updating a segment's title, category, duration, and timezone, changes all segments in the recurring schedule, not just the specified segment.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule-segment">Update Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
 public record UpdateChannelStreamScheduleSegmentRequest
-    : TwitchHelixRequest<UpdateChannelStreamScheduleSegmentResponse>
+    : TwitchHelixRequest<UpdateChannelStreamScheduleSegmentResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

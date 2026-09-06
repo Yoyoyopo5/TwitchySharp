@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-custom-reward">Get Custom Reward</see> for more information.
 /// </remarks>
 public record GetCustomRewardRequest
-    : TwitchHelixRequest<GetCustomRewardResponse>
+    : TwitchHelixRequest<GetCustomRewardResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channel_points/custom_rewards";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

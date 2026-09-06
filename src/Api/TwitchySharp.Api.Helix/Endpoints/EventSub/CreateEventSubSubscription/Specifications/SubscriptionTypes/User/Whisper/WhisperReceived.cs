@@ -14,8 +14,12 @@ public sealed record WhisperReceived(UserId UserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.WhisperReceived;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.WhisperReceived;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadWhispers, Scope.UserManageWhispers);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(UserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(UserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.UserReadWhispers, Scope.UserManageWhispers)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

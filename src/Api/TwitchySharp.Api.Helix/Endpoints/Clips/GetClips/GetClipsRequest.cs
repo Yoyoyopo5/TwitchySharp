@@ -12,7 +12,8 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-clips">Get Clips</see> for more information.
 /// </remarks>
 public record GetClipsRequest
-    : TwitchHelixRequest<GetClipsResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetClipsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Get;
@@ -27,6 +28,8 @@ public record GetClipsRequest
             .Add("before", Before?.ToString())
             .Add("after", After?.ToString())
             .Add("is_featured", IsFeatured?.ToString());
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The query specifying which clips to retrieve.

@@ -4,7 +4,7 @@
 /// </summary>
 /// <typeparam name="TResponseContent">The response content type of the request.</typeparam>
 public abstract record TwitchHelixRequest<TResponseContent>
-    : TwitchRequest<TResponseContent>, IAuthorizedTwitchRequest
+    : TwitchRequest<TResponseContent>
 {
     /// <summary>
     /// The host for the Helix request.
@@ -43,14 +43,14 @@ public abstract record TwitchHelixRequest<TResponseContent>
     /// You may set this to override a request's default context or assign a specific access token the request should use.
     /// </para>
     /// </remarks>
-    public TwitchRequestAuthorizationContext AuthorizationContext
-    {
-        get => _configuredAuthorizationContext ?? DefaultAuthorizationContext;
-        init => _configuredAuthorizationContext = value;
-    }
-    private TwitchRequestAuthorizationContext? _configuredAuthorizationContext = null;
-    protected virtual TwitchRequestAuthorizationContext DefaultAuthorizationContext { get; }
-        = new() { Identity = TwitchIdentity.Client.Default };
+    //public TwitchRequestAuthenticationContext AuthorizationContext
+    //{
+    //    get => _configuredAuthorizationContext ?? DefaultAuthenticationContext;
+    //    init => _configuredAuthorizationContext = value;
+    //}
+    //private TwitchRequestAuthenticationContext? _configuredAuthorizationContext = null;
+    //protected virtual TwitchRequestAuthenticationContext DefaultAuthenticationContext { get; }
+    //    = new() { Identity = TwitchIdentity.Client.Default };
     /// <summary>
     /// Query parameters for the request.
     /// </summary>

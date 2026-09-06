@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.Users;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#unblock-user">Unblock User</see> for more information.
 /// </remarks>
 public record UnblockUserRequest
-    : TwitchHelixRequest<UnblockUserResponse>
+    : TwitchHelixRequest<UnblockUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageBlockedUsers)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId);
@@ -38,6 +44,6 @@ public record UnblockUserRequest
     /// </remarks>
     public required UserId TargetUserId { get; init; }
 
-    protected override ValueTask<UnblockUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UnblockUserResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UnblockUserResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UnblockUserResponseContent());
 }

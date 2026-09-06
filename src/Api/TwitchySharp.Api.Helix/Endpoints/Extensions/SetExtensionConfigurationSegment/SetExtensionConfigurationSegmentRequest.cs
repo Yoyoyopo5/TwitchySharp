@@ -16,23 +16,25 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#set-extension-configuration-segment">Set Extension Configuration Segment</see> for more information.
 /// </remarks>
 public record SetExtensionConfigurationSegmentRequest
-    : TwitchHelixRequest<SetExtensionConfigurationSegmentResponse>
+    : TwitchHelixRequest<SetExtensionConfigurationSegmentResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/configurations";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Extension(
-            ExtensionOwnerId,
+            _,
             Configuration.BroadcasterId,
             Configuration.ExtensionId
             )
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
-    /// <summary>
-    /// The user id of the owner of the extension.
-    /// </summary>
-    public required UserId ExtensionOwnerId { get; init; }
     public override object? ContentObject => Configuration;
 
     /// <summary>
@@ -43,8 +45,8 @@ public record SetExtensionConfigurationSegmentRequest
     /// </summary>
     public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
 
-    protected override ValueTask<SetExtensionConfigurationSegmentResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SetExtensionConfigurationSegmentResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SetExtensionConfigurationSegmentResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SetExtensionConfigurationSegmentResponseContent());
 }
 
 /// <summary>

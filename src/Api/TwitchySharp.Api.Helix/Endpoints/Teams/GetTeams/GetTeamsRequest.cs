@@ -8,7 +8,8 @@ namespace TwitchySharp.Api.Helix.Teams;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-teams">Get Teams</see> for more information.
 /// </remarks>
 public record GetTeamsRequest
-    : TwitchHelixRequest<GetTeamsResponse>
+    : TwitchHelixRequest<GetTeamsResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/teams";
     public override HttpMethod Method => HttpMethod.Get;
@@ -16,6 +17,8 @@ public record GetTeamsRequest
         => new HttpQueryParameters()
             .Add("name", Query.Name)
             .Add("id", Query.Id);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The query specifying which team to retrieve.

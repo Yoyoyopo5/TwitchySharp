@@ -9,22 +9,28 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// For detailed follower information, the access token must be of a user that is either
 /// 1) The broadcaster, or
 /// 2) A moderator in the broadcaster's channel.
-/// Otherwise, only the <see cref="GetChannelFollowersResponse.Total"/> will be provided.
+/// Otherwise, only the <see cref="GetChannelFollowersResponseContent.Total"/> will be provided.
 /// <br/>
 /// Requires a user access token with <see cref="Scope.ModeratorReadFollowers"/>.
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-followers">Get Channel Followers</see> for more information.
 /// </remarks>
 public record GetChannelFollowersRequest
-    : TwitchHelixRequest<GetChannelFollowersResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetChannelFollowersResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channels/followers";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadFollowers)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

@@ -13,15 +13,24 @@ namespace TwitchySharp.Api.Helix.Users;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions">Get User Active Extensions</see> for more information.
 /// </remarks>
 public record GetUserActiveExtensionsRequest
-    : TwitchHelixRequest<GetUserActiveExtensionsResponse>
+    : TwitchHelixRequest<GetUserActiveExtensionsResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/users/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private ITwitchRequestAuthenticationContext<TwitchIdentity> DefaultAuthenticationContext
+        => IncludeUnderDevelopment
+        ? new UserWithScopesAuthenticationContext()
+        {
+            Identity = new(UserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.UserEditBroadcast)
+        }
+        : TwitchRequestAuthenticationContext.Default;
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
     {
-        Identity = UserIdentity ?? TwitchIdentity.Client.Default,
-        ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.UserEditBroadcast)
-    };
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId);
@@ -40,7 +49,7 @@ public record GetUserActiveExtensionsRequest
     /// </remarks>
     /// <returns>A new <see cref="GetUserActiveExtensionsRequest"/> with user identity set.</returns>
     public GetUserActiveExtensionsRequest IncludingUnderDevelopment()
-        => this with { UserIdentity = new TwitchIdentity.User(UserId) };
+        => this with { IncludeUnderDevelopment = true };
 
-    private TwitchIdentity.User? UserIdentity { get; init; }
+    private bool IncludeUnderDevelopment { get; init; }
 }

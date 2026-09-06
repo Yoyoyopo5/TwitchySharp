@@ -7,21 +7,27 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// Updates the broadcaster's schedule settings, such as scheduling a vacation.
 /// </summary>
 /// <remarks>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule">Update Channel Stream Schedule</see> for more information.
 /// </remarks>
 public record UpdateChannelStreamScheduleRequest
-    : TwitchHelixRequest<UpdateChannelStreamScheduleResponse>
+    : TwitchHelixRequest<UpdateChannelStreamScheduleResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/schedule/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Settings.BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", Settings.BroadcasterId)
@@ -35,8 +41,8 @@ public record UpdateChannelStreamScheduleRequest
     /// </summary>
     public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
 
-    protected override ValueTask<UpdateChannelStreamScheduleResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UpdateChannelStreamScheduleResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UpdateChannelStreamScheduleResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UpdateChannelStreamScheduleResponseContent());
 }
 
 /// <summary>
@@ -88,11 +94,11 @@ public record UpdateChannelStreamScheduleRequestParameters
     /// </summary>
     public bool? IsVacationEnabled { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcasterÅfs vacation starts. 
+    /// The date and time of when the broadcasterÔøΩfs vacation starts. 
     /// </summary>
     public DateTimeOffset? VacationStartTime { get; private init; }
     /// <summary>
-    /// The date and time of when the broadcasterÅfs vacation ends.
+    /// The date and time of when the broadcasterÔøΩfs vacation ends.
     /// </summary>
     public DateTimeOffset? VacationEndTime { get; private init; }
     /// <summary>

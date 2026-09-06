@@ -6,24 +6,29 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// </summary>
 /// <remarks>
 /// A new ad cannot be run until 8 minutes after running a previous ad.
-/// <br/>
-/// Requires a user access token with <see cref="Scope.ChannelReadAds"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ChannelReadAds"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ChannelReadAds"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-ad-schedule">Get Ad Schedule</see> for more information.
 /// </remarks>
 public record GetAdScheduleRequest
-    : TwitchHelixRequest<GetAdScheduleResponse>
+    : TwitchHelixRequest<GetAdScheduleResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/channels/ads";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private readonly static ImmutableHashSet<Scope> Scopes = [Scope.ChannelReadAds];
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
-        ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadAds)
+        ValidScopes = Scopes
     };
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
+
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext { get => field ?? DefaultAuthenticationContext; init; }
 
     /// <summary>
     /// The user id of the broadcaster (channel) to get the ad schedule from. 

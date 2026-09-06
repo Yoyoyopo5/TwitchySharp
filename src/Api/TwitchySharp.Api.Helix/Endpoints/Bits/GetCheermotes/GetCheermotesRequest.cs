@@ -4,19 +4,25 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// </summary>
 /// <remarks>
 /// Cheermotes are animated emotes that viewers can assign Bits to.
-/// <br/>
+/// <para>
 /// Requires an app or user access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-cheermotes">Get Cheermotes</see> for more information.
 /// </remarks>
 public record GetCheermotesRequest
-    : TwitchHelixRequest<GetCheermotesResponse>
+    : TwitchHelixRequest<GetCheermotesResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/bits/cheermotes";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
+    {
+        get => field ?? TwitchRequestAuthenticationContext.Default;
+        init;
+    }
 
     /// <summary>
     /// The user id of the broadcaster whose custom Cheermotes you want to get.

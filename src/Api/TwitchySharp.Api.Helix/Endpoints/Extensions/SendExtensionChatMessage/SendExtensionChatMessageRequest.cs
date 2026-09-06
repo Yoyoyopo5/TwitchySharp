@@ -15,23 +15,25 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-extension-chat-message">Send Extension Chat Message</see> for more information.
 /// </remarks>
 public record SendExtensionChatMessageRequest
-    : TwitchHelixRequest<SendExtensionChatMessageResponse>
+    : TwitchHelixRequest<SendExtensionChatMessageResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/chat";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Extension(
-            ExtensionOwnerId,
+            _,
             BroadcasterId,
             Message.ExtensionId
             )
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
-    /// <summary>
-    /// The user id of the owner of the extension.
-    /// </summary>
-    public required UserId ExtensionOwnerId { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -47,8 +49,8 @@ public record SendExtensionChatMessageRequest
     /// </summary>
     public required SendExtensionChatMessageRequestData Message { get; init; }
 
-    protected override ValueTask<SendExtensionChatMessageResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SendExtensionChatMessageResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SendExtensionChatMessageResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SendExtensionChatMessageResponseContent());
 }
 
 /// <summary>

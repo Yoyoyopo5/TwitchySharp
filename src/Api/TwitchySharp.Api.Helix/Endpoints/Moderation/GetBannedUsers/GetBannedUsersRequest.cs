@@ -5,21 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Gets all users that the broadcaster banned or put in a timeout.
 /// </summary>
 /// <remarks>
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModerationRead"/> or <see cref="Scope.ModeratorManageBannedUsers"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModerationRead"/> or <see cref="Scope.ModeratorManageBannedUsers"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModerationRead"/> or <see cref="Scope.ModeratorManageBannedUsers"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-banned-users">Get Banned Users</see> for more information.
 /// </remarks>
 public record GetBannedUsersRequest
-    : TwitchHelixRequest<GetBannedUsersResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetBannedUsersResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/banned";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModerationRead, Scope.ModeratorManageBannedUsers)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

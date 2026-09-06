@@ -2,27 +2,36 @@ using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// <b>BETA</b> Adds a suspicious user status to a chatter on the broadcaster's channel.
+/// Adds a suspicious user status to a chatter on the broadcaster's channel.
 /// </summary>
 /// <remarks>
-/// Requires an app or user access token that includes <see cref="Scope.ModeratorManageSuspiciousUsers"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageSuspiciousUsers"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageSuspiciousUsers"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-suspicious-status-to-chat-user">Add Suspicious Status to Chat User</see> for more information.
 /// </remarks>
 public record AddSuspiciousStatusToChatUserRequest
-    : TwitchHelixRequest<AddSuspiciousStatusToChatUserResponse>
+    : TwitchHelixRequest<AddSuspiciousStatusToChatUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/suspicious_users";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageSuspiciousUsers)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("moderator_id", ModeratorId);
+
     public override object? ContentObject => Data;
 
     /// <summary>
@@ -52,7 +61,7 @@ public record AddSuspiciousStatusToChatUserRequestData
     /// <summary>
     /// The id of the user to add suspicious user status to.
     /// </summary>
-    public required string UserId { get; init; }
+    public required UserId UserId { get; init; }
     /// <summary>
     /// The type of suspicious user status to add.
     /// </summary>

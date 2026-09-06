@@ -8,21 +8,27 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </summary>
 /// <remarks>
 /// The poll begins as soon as it's created. A broadcaster may run only one poll at a time.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManagePolls"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-poll">Create Poll</see> for more information.
 /// </remarks>
 public record CreatePollRequest
-    : TwitchHelixRequest<CreatePollResponse>
+    : TwitchHelixRequest<CreatePollResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Poll.BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePolls)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => Poll;
 
     /// <summary>

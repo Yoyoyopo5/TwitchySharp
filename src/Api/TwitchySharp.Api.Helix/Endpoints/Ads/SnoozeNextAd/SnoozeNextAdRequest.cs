@@ -7,22 +7,25 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// <remarks>
 /// This endpoint duplicates the snooze functionality in the creator dashboard's Ads Manager.
 /// The channel must be live and have an upcoming scheduled ad break.
-/// <br/>
-/// Requires a user access token with <see cref="Scope.ChannelManageAds"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ChannelManageAds"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ChannelManageAds"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#snooze-next-ad">Snooze Next Ad</see> for more information.
 /// </remarks>
 public record SnoozeNextAdRequest
-    : TwitchHelixRequest<SnoozeNextAdResponse>
+    : TwitchHelixRequest<SnoozeNextAdResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/channels/ads/schedule/snooze";
     public override HttpMethod Method => HttpMethod.Post;
 
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageAds)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext { get => field ?? DefaultAuthenticationContext; init; }
 
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()

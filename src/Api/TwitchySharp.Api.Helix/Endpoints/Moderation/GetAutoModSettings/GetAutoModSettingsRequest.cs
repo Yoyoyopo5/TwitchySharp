@@ -6,21 +6,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// The settings are used to automatically block inappropriate or harassing messages from appearing in the broadcaster's chat room.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorReadAutomodSettings"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorReadAutomodSettings"/> or <see cref="Scope.ModeratorManageAutomodSettings"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorReadAutomodSettings"/> or <see cref="Scope.ModeratorManageAutomodSettings"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-automod-settings">Get AutoMod Settings</see> for more information.
 /// </remarks>
 public record GetAutoModSettingsRequest
-    : TwitchHelixRequest<GetAutoModSettingsResponse>
+    : TwitchHelixRequest<GetAutoModSettingsResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/automod/settings";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadAutomodSettings)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

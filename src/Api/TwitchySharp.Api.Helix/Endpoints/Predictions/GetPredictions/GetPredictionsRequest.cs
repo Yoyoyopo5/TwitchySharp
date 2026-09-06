@@ -5,21 +5,27 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// Gets a list of Channel Points Predictions that the broadcaster created.
 /// </summary>
 /// <remarks>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelReadPredictions"/> or <see cref="Scope.ChannelManagePredictions"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-predictions">Get Predictions</see> for more information.
 /// </remarks>
 public record GetPredictionsRequest
-    : TwitchHelixRequest<GetPredictionsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetPredictionsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadPredictions, Scope.ChannelManagePredictions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

@@ -19,8 +19,12 @@ public sealed record ChannelSuspiciousUserMessage(UserId BroadcasterUserId, User
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSuspiciousUserMessage;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelSuspiciousUserMessage;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("moderator_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadSuspiciousUsers);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadSuspiciousUsers)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

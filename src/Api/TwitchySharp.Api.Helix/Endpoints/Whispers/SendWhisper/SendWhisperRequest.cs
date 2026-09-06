@@ -16,21 +16,27 @@ namespace TwitchySharp.Api.Helix.Whispers;
 /// <b>Rate Limits:</b> You may whisper to a maximum of 40 unique recipients per day.
 /// Within the per day limit, you may whisper a maximum of 3 whispers per second and a maximum of 100 whispers per minute.
 /// </para>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserManageWhispers"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-whisper">Send Whisper</see> for more information.
 /// </remarks>
 public record SendWhisperRequest
-    : TwitchHelixRequest<SendWhisperResponse>
+    : TwitchHelixRequest<SendWhisperResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/whispers";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(FromUserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageWhispers)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_user_id", FromUserId)
@@ -53,8 +59,8 @@ public record SendWhisperRequest
     /// </summary>
     public required SendWhisperRequestData Whisper { get; init; }
 
-    protected override ValueTask<SendWhisperResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SendWhisperResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SendWhisperResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SendWhisperResponseContent());
 }
 
 /// <summary>

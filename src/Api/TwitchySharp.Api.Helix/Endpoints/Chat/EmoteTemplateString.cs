@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </summary>
 /// <param name="Value">
 /// The template string for the emote. 
-/// This is returned from the Twitch API in some responses (e.g. <see cref="GetChannelEmotesResponse"/>).
+/// This is returned from the Twitch API in some responses (e.g. <see cref="GetChannelEmotesResponseContent"/>).
 /// </param>
 [Wrapper<string>]
 public readonly partial record struct EmoteImageTemplateString(string Value)

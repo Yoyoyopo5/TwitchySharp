@@ -11,19 +11,25 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-secrets">Get Extension Secrets</see> for more information.
 /// </remarks>
 public record GetExtensionSecretsRequest
-    : TwitchHelixRequest<GetExtensionSecretsResponse>
+    : TwitchHelixRequest<GetExtensionSecretsResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/jwt/secrets";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = new(
+            _,
+            null,
+            ExtensionId
+            )
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
-    /// <summary>
-    /// The extension identity used for JWT authentication.
-    /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId);

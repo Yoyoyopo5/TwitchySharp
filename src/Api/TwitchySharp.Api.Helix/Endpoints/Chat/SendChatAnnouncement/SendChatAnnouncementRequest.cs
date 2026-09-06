@@ -5,20 +5,29 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Sends an announcement to the broadcaster's chat room.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageAnnouncements"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageAnnouncements"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageAnnouncements"/> and <see cref="Scope.UserBot"/> for the <see cref="ModeratorId"/>,
+/// and <see cref="Scope.ChannelBot"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-chat-announcement">Send Chat Announcement</see> for more information.
 /// </remarks>
 public record SendChatAnnouncementRequest
-    : TwitchHelixRequest<SendChatAnnouncementResponse>
+    : TwitchHelixRequest<SendChatAnnouncementResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/chat/announcements";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageAnnouncements)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -44,8 +53,8 @@ public record SendChatAnnouncementRequest
     /// </summary>
     public required SendChatAnnouncementRequestData Announcement { get; init; }
 
-    protected override ValueTask<SendChatAnnouncementResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SendChatAnnouncementResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SendChatAnnouncementResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SendChatAnnouncementResponseContent());
 }
 
 /// <summary>

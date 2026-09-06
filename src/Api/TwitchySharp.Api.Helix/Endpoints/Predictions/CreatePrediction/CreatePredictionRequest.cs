@@ -9,21 +9,27 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// <remarks>
 /// The prediction runs as soon as it's created.
 /// The broadcaster may run only one prediction at a time.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManagePredictions"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-prediction">Create Prediction</see> for more information.
 /// </remarks>
 public record CreatePredictionRequest
-    : TwitchHelixRequest<CreatePredictionResponse>
+    : TwitchHelixRequest<CreatePredictionResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/predictions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Prediction.BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePredictions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => Prediction;
 
     /// <summary>

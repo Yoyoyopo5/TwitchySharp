@@ -18,8 +18,12 @@ public sealed record ChannelVipAdd(UserId BroadcasterUserId)
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelVIPAdd;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelVIPAdd;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadVips, Scope.ChannelManageVips);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadVips, Scope.ChannelManageVips)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

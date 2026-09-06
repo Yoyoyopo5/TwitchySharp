@@ -10,15 +10,21 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot">Assign Guest Star Slot</see> for more information.
 /// </remarks>
 public record AssignGuestStarSlotRequest
-    : TwitchHelixRequest<AssignGuestStarSlotResponse>
+    : TwitchHelixRequest<AssignGuestStarSlotResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/guest_star/slot";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -58,10 +64,10 @@ public record AssignGuestStarSlotRequest
     /// </summary>
     /// <remarks>
     /// Must be a numeric identifier between <c>"1"</c> and <c>"N"</c> where <c>N</c> is the max number of slots for the session.
-    /// The max number of slots allowed for the session is reported by a <see cref="GetChannelGuestStarSettingsResponse"/>.
+    /// The max number of slots allowed for the session is reported by a <see cref="GetChannelGuestStarSettingsResponseContent"/>.
     /// </remarks>
     public required GuestStarSlotId SlotId { get; init; }
 
-    protected override ValueTask<AssignGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new AssignGuestStarSlotResponse());
+    public override Func<Stream, CancellationToken, ValueTask<AssignGuestStarSlotResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new AssignGuestStarSlotResponseContent());
 }

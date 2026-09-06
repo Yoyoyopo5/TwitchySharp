@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// </summary>
 /// <remarks>
 /// A marker is an arbitrary point in a live stream that the broadcaster or editor marked, so they can return to that spot later to create video highlights (see Video Producer, Highlights in the Twitch UX).
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserReadBroadcast"/> or <see cref="Scope.ChannelManageBroadcast"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-stream-markers">Get Stream Markers</see> for more information.
 /// </remarks>
 public record GetStreamMarkersRequest
-    : TwitchHelixRequest<GetStreamMarkersResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetStreamMarkersResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadBroadcast, Scope.ChannelManageBroadcast)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", Query.UserId)

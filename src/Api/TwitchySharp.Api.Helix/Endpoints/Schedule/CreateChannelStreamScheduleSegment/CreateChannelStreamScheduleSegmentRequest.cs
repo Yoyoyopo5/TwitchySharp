@@ -7,20 +7,27 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// Adds a single or recurring broadcast to the broadcaster's streaming schedule.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageSchedule"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment">Create Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
 public record CreateChannelStreamScheduleSegmentRequest
-    : TwitchHelixRequest<CreateChannelStreamScheduleSegmentResponse>
+    : TwitchHelixRequest<CreateChannelStreamScheduleSegmentResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/schedule/segment";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageSchedule)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

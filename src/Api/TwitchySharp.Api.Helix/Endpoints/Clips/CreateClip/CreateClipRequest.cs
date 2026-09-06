@@ -14,29 +14,35 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// </para>
 /// <para>
 /// By default, Twitch publishes up to the last 30 seconds of the 90 seconds window and provides a default title for the clip.
-/// To specify the title and the portion of the 90 seconds window that's used for the clip, use the URL in the response's <see cref="CreateClipResponse.EditUrl"/> property.
+/// To specify the title and the portion of the 90 seconds window that's used for the clip, use the URL in the response's <see cref="CreateClipResponseContent.EditUrl"/> property.
 /// You can specify a clip that's from 5 seconds to 60 seconds in length. The URL is valid for up to 24 hours or until the clip is published, whichever comes first.
 /// </para>
 /// <para>
 /// Creating a clip is an asynchronous process that can take a short amount of time to complete.
-/// To determine whether the clip was successfully created, call Get Clips using the <see cref="CreateClipResponse.Id"/> that this request returned.
+/// To determine whether the clip was successfully created, call Get Clips using the <see cref="CreateClipResponseContent.Id"/> that this request returned.
 /// If Get Clips returns the clip, the clip was successfully created. If after 15 seconds Get Clips hasn't returned the clip, assume it failed.
 /// </para>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ClipsEdit"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-clip">Create Clip</see> for more information.
 /// </remarks>
 public record CreateClipRequest
-    : TwitchHelixRequest<CreateClipResponse>
+    : TwitchHelixRequest<CreateClipResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/clips";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ClipsEdit)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

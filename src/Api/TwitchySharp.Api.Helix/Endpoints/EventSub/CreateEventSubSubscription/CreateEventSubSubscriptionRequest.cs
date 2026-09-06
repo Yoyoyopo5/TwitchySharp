@@ -20,12 +20,16 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription">Create EventSub Subscription</see> for more information.
 /// </remarks>
 public record CreateEventSubSubscriptionRequest
-    : TwitchHelixRequest<CreateEventSubSubscriptionResponse>
+    : TwitchHelixRequest<CreateEventSubSubscriptionResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/eventsub/subscriptions";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
-        => Subscription.GetRequestAuthorizationContext();
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
+    {
+        get => field ?? Subscription.AuthenticationContext;
+        init;
+    }
     public override object? ContentObject => (CreateEventSubSubscriptionRequestData)Subscription;
 
     /// <summary>

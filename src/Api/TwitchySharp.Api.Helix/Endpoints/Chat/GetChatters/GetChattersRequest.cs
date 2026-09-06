@@ -9,25 +9,33 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <remarks>
 /// To determine whether a user is a moderator or VIP, use the <see cref="GetModeratorsRequest"/> and <see cref="GetVipsRequest"/> endpoints.
 /// You can check the roles of up to 100 users.
-/// <br/>
+/// <para>
 /// <b>NOTE:</b> There is a delay between when users join and leave a chat and when the list is updated accordingly.
-/// <b>DEV NOTE:</b> The list is usually not very accurate (in real-time) for this reason.
+/// The list is usually not very accurate (in real-time) for this reason.
 /// Often a user will not be in this list when they are active in chat.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorReadChatters"/>.
-/// <br/>
+/// </para>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorReadChatters"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorReadChatters"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-chatters">Get Chatters</see> for more information.
 /// </remarks>
 public record GetChattersRequest
-    : TwitchHelixRequest<GetChattersResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetChattersResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/chat/chatters";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadChatters)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

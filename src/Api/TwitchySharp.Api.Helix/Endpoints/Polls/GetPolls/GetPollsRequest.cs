@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </summary>
 /// <remarks>
 /// Polls are available for 90 days after they're created.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelReadPolls"/> or <see cref="Scope.ChannelManagePolls"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-polls">Get Polls</see> for more information.
 /// </remarks>
 public record GetPollsRequest
-    : TwitchHelixRequest<GetPollsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetPollsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadPolls, Scope.ChannelManagePolls)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// <b>Rate Limits:</b> A broadcaster may remove a maximum of 10 moderators within a 10-second window.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageModerators"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator">Remove Channel Moderator</see> for more information.
 /// </remarks>
 public record RemoveChannelModeratorRequest
-    : TwitchHelixRequest<RemoveChannelModeratorResponse>
+    : TwitchHelixRequest<RemoveChannelModeratorResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageModerators)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -39,6 +45,6 @@ public record RemoveChannelModeratorRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    protected override ValueTask<RemoveChannelModeratorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new RemoveChannelModeratorResponse());
+    public override Func<Stream, CancellationToken, ValueTask<RemoveChannelModeratorResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new RemoveChannelModeratorResponseContent());
 }

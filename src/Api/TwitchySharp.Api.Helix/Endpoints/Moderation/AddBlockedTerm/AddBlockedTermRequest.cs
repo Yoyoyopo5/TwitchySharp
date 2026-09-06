@@ -6,20 +6,27 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// These are the terms that the broadcaster doesn't want used in their chat room.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageBlockedTerms"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageBlockedTerms"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageBlockedTerms"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-blocked-term">Add Blocked Term</see> for more information.
 /// </remarks>
-public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponse>
+public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBlockedTerms)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

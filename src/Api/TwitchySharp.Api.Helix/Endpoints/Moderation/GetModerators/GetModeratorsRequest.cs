@@ -5,21 +5,27 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Gets all users allowed to moderate the broadcaster's chat room.
 /// </summary>
 /// <remarks>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ModerationRead"/> or <see cref="Scope.ChannelManageModerators"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderators">Get Moderators</see> for more information.
 /// </remarks>
 public record GetModeratorsRequest
-    : TwitchHelixRequest<GetModeratorsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetModeratorsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModerationRead, Scope.ChannelManageModerators)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

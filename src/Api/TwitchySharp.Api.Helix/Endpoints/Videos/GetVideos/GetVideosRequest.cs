@@ -4,13 +4,14 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// </summary>
 /// <remarks>
 /// You may get videos by id, by user, or by game/category.
-/// <br/>
+/// <para>
 /// Requires an app or user access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-videos">Get Videos</see> for more information.
 /// </remarks>
 public record GetVideosRequest
-    : TwitchHelixRequest<GetVideosResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetVideosResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Get;
@@ -26,6 +27,8 @@ public record GetVideosRequest
             .Add("first", First?.ToString())
             .Add("after", After?.Value)
             .Add("before", Before?.Value);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The query specifying which videos to retrieve.

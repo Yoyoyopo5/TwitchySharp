@@ -8,10 +8,13 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-conduits">Create Conduits</see> for more information.
 /// </remarks>
 public record CreateConduitRequest
-    : TwitchHelixRequest<CreateConduitsResponse>
+    : TwitchHelixRequest<CreateConduitsResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Post;
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
     public override object? ContentObject => ConduitData;
 
     /// <summary>

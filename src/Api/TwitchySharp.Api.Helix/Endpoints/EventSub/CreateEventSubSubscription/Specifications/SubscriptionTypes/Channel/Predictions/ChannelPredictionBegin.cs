@@ -18,8 +18,12 @@ public sealed record ChannelPredictionBegin(UserId BroadcasterUserId)
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPredictionBegin;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelPredictionBegin;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("broadcaster_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadPredictions, Scope.ChannelManagePredictions);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadPredictions, Scope.ChannelManagePredictions)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
