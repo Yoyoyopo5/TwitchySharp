@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Authentication;
 /// Response containing access and refresh tokens for a user that authorized the app.
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow">authorization code grant flow</see> for more information.
 /// </summary>
-public record AuthorizationCodeResponse
+public record AuthorizationCodeResponseContent
 {
     /// <summary>
     /// The access token for the user. Use this when accessing API endpoints that require it.
@@ -49,12 +49,12 @@ public static class AuthorizationCodeResponseExtensions
     /// <summary>
     /// Converts the <see cref="IdToken"/> property into a <see cref="JsonWebToken"/> if it exists.
     /// </summary>
-    public static JsonWebToken? GetJwt(this AuthorizationCodeResponse authResponse)
+    public static JsonWebToken? GetJwt(this AuthorizationCodeResponseContent authResponse)
         => authResponse.IdToken is null ? null : new(authResponse.IdToken);
 
     /// <summary>
     /// Converts the <see cref="IdToken"/> property into a <see cref="TwitchOidc"/> if it exists.
     /// </summary>
-    public static TwitchOidc? GetOidc(this AuthorizationCodeResponse authResponse)
+    public static TwitchOidc? GetOidc(this AuthorizationCodeResponseContent authResponse)
         => authResponse.IdToken is null ? null : TwitchOidc.FromJsonWebToken(authResponse.GetJwt()!); // Can safely ignore null here because it will only be null if the IdToken is null.
 }

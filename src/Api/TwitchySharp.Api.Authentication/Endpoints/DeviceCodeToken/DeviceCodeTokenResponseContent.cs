@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains an access and refresh token from the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.
 /// </summary>
-public record DeviceCodeTokenResponse
+public record DeviceCodeTokenResponseContent
 {
     /// <summary>
     /// A user access token that can be used in Twitch API requests that require it.

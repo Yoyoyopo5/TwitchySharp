@@ -31,7 +31,7 @@ public static partial class AccessTokenDetails
     }
 
     public static AccessTokenDetails.User ToAccessTokenDetails(
-        this AccessTokenRefreshResponse refreshResponse,
+        this AccessTokenRefreshResponseContent refreshResponse,
         ClientId clientId,
         UserId userId,
         DateTimeOffset now
@@ -46,7 +46,7 @@ public static partial class AccessTokenDetails
         };
 
     public static AccessTokenDetails.User ToAccessTokenDetails(
-        this AuthorizationCodeResponse authorizationCodeResponse,
+        this AuthorizationCodeResponseContent authorizationCodeResponse,
         ClientId clientId,
         UserId userId,
         DateTimeOffset now
@@ -61,7 +61,7 @@ public static partial class AccessTokenDetails
         };
 
     public static AccessTokenDetails.User ToAccessTokenDetails(
-        this DeviceCodeTokenResponse deviceCodeTokenResponse,
+        this DeviceCodeTokenResponseContent deviceCodeTokenResponse,
         ClientId clientId,
         UserId userId,
         DateTimeOffset now

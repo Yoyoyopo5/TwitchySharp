@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains information about a valid user access token.
 /// </summary>
-public record ValidateAccessTokenResponse
+public record ValidateAccessTokenResponseContent
 {
     /// <summary>
     /// The client ID of the application the user has authorized.

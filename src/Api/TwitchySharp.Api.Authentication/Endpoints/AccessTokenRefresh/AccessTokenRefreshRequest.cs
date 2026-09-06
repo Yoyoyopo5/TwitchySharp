@@ -8,7 +8,7 @@
 /// See <see href="https://dev.twitch.tv/docs/authentication/refresh-tokens/">refresh tokens</see> for more information.
 /// </remarks>
 public record AccessTokenRefreshRequest
-    : TwitchAuthorizationRequest<AccessTokenRefreshResponse>
+    : TwitchAuthorizationRequest<AccessTokenRefreshResponseContent>
 {
     public override HttpMethod Method => HttpMethod.Post;
     protected override string Path => "/token";

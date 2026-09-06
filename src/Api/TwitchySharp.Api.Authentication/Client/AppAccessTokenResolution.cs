@@ -14,7 +14,7 @@ public static class AppAccessTokenResolution
     {
         try
         {
-            TwitchResponse<ClientCredentialsResponse> credentialsResponse =
+            TwitchResponse<ClientCredentialsResponseContent> credentialsResponse =
                 await twitchClient.SendAsync(new ClientCredentialsRequest()
                 {
                     ClientId = clientId,

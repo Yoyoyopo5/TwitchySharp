@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Contains a refreshed user access token and the refresh token used to refresh it.
 /// </summary>
-public record AccessTokenRefreshResponse
+public record AccessTokenRefreshResponseContent
 {
     /// <summary>
     /// The access token for the user. Use this when accessing API endpoints that require it.

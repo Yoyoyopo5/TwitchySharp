@@ -22,7 +22,7 @@ public static class UserAccessTokenResolution
 
         try
         {
-            TwitchResponse<AccessTokenRefreshResponse> response = await twitchClient.SendAsync(request, ct);
+            TwitchResponse<AccessTokenRefreshResponseContent> response = await twitchClient.SendAsync(request, ct);
             return response.Content.ToAccessTokenDetails(
                 clientId,
                 userId,

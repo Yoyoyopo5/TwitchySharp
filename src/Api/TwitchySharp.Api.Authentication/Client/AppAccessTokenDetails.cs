@@ -20,7 +20,7 @@ public static partial class AccessTokenDetails
     }
 
     public static AccessTokenDetails.App ToAccessTokenDetails(
-        this ClientCredentialsResponse credentialsResponse,
+        this ClientCredentialsResponseContent credentialsResponse,
         ClientId clientId,
         DateTimeOffset now
         )

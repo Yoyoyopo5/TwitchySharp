@@ -2,4 +2,4 @@
 /// <summary>
 /// Empty response.
 /// </summary>
-public record RevokeAccessTokenResponse { }
+public record RevokeAccessTokenResponseContent { }

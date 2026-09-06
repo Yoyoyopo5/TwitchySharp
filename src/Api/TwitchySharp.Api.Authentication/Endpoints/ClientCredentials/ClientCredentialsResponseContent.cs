@@ -6,7 +6,7 @@ namespace TwitchySharp.Api.Authentication;
 /// Contains an app access token. 
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#client-credentials-grant-flow">client credentials code flow</see> for more information.
 /// </summary>
-public record ClientCredentialsResponse
+public record ClientCredentialsResponseContent
 {
     /// <summary>
     /// The app access token. Use this to authorize API requests that require an app access token.

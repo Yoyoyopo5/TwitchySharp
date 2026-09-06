@@ -2,7 +2,7 @@
 
 namespace TwitchySharp.Api.Authentication;
 
-public record OidcJwkResponse
+public record OidcJwkResponseContent
 {
     /// <summary>
     /// An array of JWKs used to verify OIDC JWTs obtained as ID tokens during Twitch OIDC authorization flows.
