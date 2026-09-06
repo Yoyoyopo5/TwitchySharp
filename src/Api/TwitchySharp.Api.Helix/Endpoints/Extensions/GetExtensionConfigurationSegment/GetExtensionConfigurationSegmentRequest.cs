@@ -22,7 +22,7 @@ public record GetExtensionConfigurationSegmentRequest
     public override HttpMethod Method => HttpMethod.Get;
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = new(ExtensionId, BroadcasterId)
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
     {
@@ -30,21 +30,11 @@ public record GetExtensionConfigurationSegmentRequest
         init;
     }
 
-    /// <summary>
-    /// The extension identity used for JWT authentication.
-    /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("extension_id", ExtensionId)
             .Add("segment", Segments.Select(x => x.Value));
-
-    public TwitchIdentity.Extension Identity => new(
-        _,
-        BroadcasterId,
-        ExtensionId
-        );
 
     /// <summary>
     /// <inheritdoc cref="ExtensionConfigurationSegmentType.Broadcaster"/>

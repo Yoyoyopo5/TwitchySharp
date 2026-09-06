@@ -18,10 +18,7 @@ public record GetExtensionsRequest
     public override HttpMethod Method => HttpMethod.Get;
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = new(
-            _,
-            null,
-            ExtensionId)
+        Identity = new(ExtensionId)
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
     {

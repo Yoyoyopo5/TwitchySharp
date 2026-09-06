@@ -25,11 +25,7 @@ public record SendExtensionPubSubMessageRequest
     public override HttpMethod Method => HttpMethod.Post;
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = new(
-            _,
-            Message is BroadcastPubSubMessageData broadcast ? broadcast.BroadcasterId : null,
-            _ // Need to figure out where we get this
-            )
+        Identity = new(ExtensionId, Message is BroadcastPubSubMessageData broadcast ? broadcast.BroadcasterId : null)
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
     {
@@ -38,6 +34,11 @@ public record SendExtensionPubSubMessageRequest
     }
 
     public override object? ContentObject => Message;
+
+    /// <summary>
+    /// The id of the extension.
+    /// </summary>
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// Data used to create and send the message.

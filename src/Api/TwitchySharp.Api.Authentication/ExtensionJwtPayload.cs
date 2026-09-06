@@ -23,7 +23,7 @@ public record ExtensionJwtPayload
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    public required UserId UserId { get; init; }
+    public required ExtensionOwnerId UserId { get; init; }
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>

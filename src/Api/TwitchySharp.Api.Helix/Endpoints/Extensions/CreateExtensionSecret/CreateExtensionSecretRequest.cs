@@ -22,11 +22,7 @@ public record CreateExtensionSecretRequest
     public override HttpMethod Method => HttpMethod.Post;
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = new TwitchIdentity.Extension(
-            _,
-            null,
-            ExtensionId
-            )
+        Identity = new TwitchIdentity.Extension(ExtensionId)
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
     {

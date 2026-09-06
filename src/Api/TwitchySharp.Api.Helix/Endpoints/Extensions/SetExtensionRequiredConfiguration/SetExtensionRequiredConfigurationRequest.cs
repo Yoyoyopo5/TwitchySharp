@@ -22,9 +22,8 @@ public record SetExtensionRequiredConfigurationRequest
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Extension(
-            _,
-            BroadcasterId,
-            Configuration.ExtensionId
+            Configuration.ExtensionId,
+            BroadcasterId
             )
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext

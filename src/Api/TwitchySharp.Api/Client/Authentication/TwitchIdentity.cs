@@ -44,24 +44,19 @@ public abstract record TwitchIdentity
     /// </summary>
     /// <remarks>
     /// Extension endpoints use JWT authentication signed with the extension's secret.
-    /// The <paramref name="OwnerId"/> is included in the JWT payload as the <c>user_id</c> field.
     /// </remarks>
-    /// <param name="OwnerId">The Twitch user id of the extension owner/developer.</param>
     /// <param name="BroadcasterId">
     /// The user id of the broadcaster (channel) with the active extension to make requests for.
     /// This is not required for all endpoints. Included as the <c>channel_id</c> field of the JWT payload.
     /// </param>
     /// <param name="ExtensionId">The client id of the extension. Used as the <c>Client-Id</c> header of Helix API requests.</param>
-    public sealed record Extension(UserId OwnerId, UserId? BroadcasterId = null, ExtensionId? ExtensionId = null) : TwitchIdentity(ExtensionId)
+    public sealed record Extension(ExtensionId? ExtensionId, UserId? BroadcasterId = null) : TwitchIdentity(ExtensionId)
     {
         public ExtensionId? ExtensionId
         { 
             get => ClientId.HasValue ? new ExtensionId(ClientId.Value) : default;
             init => ClientId = value;
         }
-        
-        public Extension(UserId OwnerId, ExtensionId? ExtensionId = null)
-            : this(OwnerId, null, ExtensionId) { }
     }
 
     /// <summary>

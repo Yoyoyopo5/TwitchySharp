@@ -22,11 +22,7 @@ public record SendExtensionChatMessageRequest
     public override HttpMethod Method => HttpMethod.Post;
     private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = new TwitchIdentity.Extension(
-            _,
-            BroadcasterId,
-            Message.ExtensionId
-            )
+        Identity = new(Message.ExtensionId, BroadcasterId)
     };
     public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
     {
