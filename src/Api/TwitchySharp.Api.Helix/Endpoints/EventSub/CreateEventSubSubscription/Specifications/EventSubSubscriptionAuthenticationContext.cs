@@ -30,3 +30,20 @@ public abstract record EventSubSubscriptionAuthenticationContext
             => new() { Identity = Identity };
     }
 }
+
+public static class EventSubSubscriptionAuthenticationContextExtensions
+{
+    public static ITwitchRequestAuthenticationContext<TwitchIdentity> ToRequestAuthenticationContext(
+        this EventSubSubscriptionAuthenticationContext context,
+        EventSubTransportMethod transportMethod)
+        => context switch
+        {
+            EventSubSubscriptionAuthenticationContext.ClientAuthorized clientContext => clientContext.ToClientAuthenticationContext(),
+            EventSubSubscriptionAuthenticationContext.UserAuthorized userContext => transportMethod switch
+            {
+                _ when transportMethod == EventSubTransportMethod.Websocket => userContext.ToUserWithScopesAuthenticationContext(),
+                _ => userContext.ToUserSupportingPriorAuthorizationAuthenticationContext(true)
+            },
+            _ => TwitchRequestAuthenticationContext.Default
+        };
+}

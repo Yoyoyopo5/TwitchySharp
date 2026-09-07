@@ -22,6 +22,6 @@ internal static class EventSubSubscriptionSpecificationExtensions
     extension(EventSubSubscriptionSpecification specification)
     {
         public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
-            => specification.Type.ToRequestAuthenticationContext(specification.Transport.Method);
+            => specification.Type.AuthenticationContext.ToRequestAuthenticationContext(specification.Transport.Method);
     }
 }

@@ -43,21 +43,3 @@ public abstract record EventSubSubscriptionTypeSpecification
     /// </summary>
     public abstract EventSubSubscriptionAuthenticationContext AuthenticationContext { get; }
 }
-
-internal static class EventSubSubscriptionTypeSpecificationExtensions
-{
-    extension(EventSubSubscriptionTypeSpecification specification)
-    {
-        public ITwitchRequestAuthenticationContext<TwitchIdentity> ToRequestAuthenticationContext(EventSubTransportMethod transportMethod)
-            => specification.AuthenticationContext switch
-            {
-                EventSubSubscriptionAuthenticationContext.ClientAuthorized clientContext => clientContext.ToClientAuthenticationContext(),
-                EventSubSubscriptionAuthenticationContext.UserAuthorized userContext => transportMethod switch
-                {
-                    _ when transportMethod == EventSubTransportMethod.Websocket => userContext.ToUserWithScopesAuthenticationContext(),
-                    _ => userContext.ToUserSupportingPriorAuthorizationAuthenticationContext(true)
-                },
-                _ => TwitchRequestAuthenticationContext.Default
-            };
-    }
-}

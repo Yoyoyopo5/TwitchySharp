@@ -29,7 +29,7 @@ public record DeleteEventSubSubscriptionRequest()
             ? Subscription.ToSubscriptionTypeSpecification(_specificationRegistry)
                 .Match(
                     onError: e => throw new InvalidOperationException($"An error occurred when determining the identity to make the request with: {e.Message}."),
-                    onValid: spec => spec.ToRequestAuthenticationContext(Subscription.Transport.Method)
+                    onValid: spec => spec.AuthenticationContext.ToRequestAuthenticationContext(Subscription.Transport.Method)
                     )
             : TwitchRequestAuthenticationContext.Default;
     public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext
