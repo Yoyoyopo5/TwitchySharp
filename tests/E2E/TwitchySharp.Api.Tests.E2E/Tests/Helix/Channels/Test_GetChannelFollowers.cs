@@ -20,7 +20,7 @@ public class Test_GetChannelFollowers(TwitchClientFixture fixture)
             First = new(10)
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class Test_GetChannelFollowers(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
         GetChannelFollowersRequest request = new()
         {
@@ -37,13 +37,13 @@ public class Test_GetChannelFollowers(TwitchClientFixture fixture)
             First = new(1)
         };
 
-        TwitchResponse<GetChannelFollowersResponse> response = await client.SendAsync(request, ct);
+        TwitchResponse<GetChannelFollowersResponseContent> response = await client.SendAsync(request, TestName, ct);
 
         Assert.SkipWhen(
             response.Content.Pagination.Cursor is null,
             "Get channel followers request cannot be paged because the cursor was null."
             );
 
-        await client.SendAsync(request with { After = response.Content.Pagination.Cursor }, ct);
+        await client.SendAsync(request with { After = response.Content.Pagination.Cursor }, TestName, ct);
     }
 }

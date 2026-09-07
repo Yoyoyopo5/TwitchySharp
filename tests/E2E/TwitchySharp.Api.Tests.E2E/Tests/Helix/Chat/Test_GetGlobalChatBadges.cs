@@ -11,14 +11,10 @@ public class Test_GetGlobalChatBadges(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetGlobalChatBadgesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        GetGlobalChatBadgesRequest request = new()
-        {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
-        };
+        GetGlobalChatBadgesRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

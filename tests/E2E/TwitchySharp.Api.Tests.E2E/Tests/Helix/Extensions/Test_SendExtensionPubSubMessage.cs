@@ -18,14 +18,14 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
 
         SendExtensionPubSubMessageRequest globalRequest = new()
         {
-            ExtensionIdentity = extensionConfig.ToIdentity(),
+            ExtensionId = extensionConfig.ExtensionId,
             Message = new GlobalPubSubMessageData() { Message = "Test global message." }
         };
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(globalRequest, ct);
+        await client.SendAsync(globalRequest, TestName, ct);
     }
 
     [Fact]
@@ -41,14 +41,14 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
 
         SendExtensionPubSubMessageRequest broadcastRequest = new()
         {
-            ExtensionIdentity = extensionConfig.ToIdentity(),
+            ExtensionId = extensionConfig.ExtensionId,
             Message = new BroadcastPubSubMessageData() { Message = "Test broadcast message." }.To(userConfig.UserId)
         };
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(broadcastRequest, ct);
+        await client.SendAsync(broadcastRequest, TestName, ct);
     }
 
     [Fact]
@@ -64,12 +64,12 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
 
         SendExtensionPubSubMessageRequest whisperRequest = new()
         {
-            ExtensionIdentity = extensionConfig.ToIdentity(),
+            ExtensionId = extensionConfig.ExtensionId,
             Message = new BroadcastPubSubMessageData() { Message = "Test whisper message." }.WhisperTo(userConfig.UserId)
         };
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(whisperRequest, ct);
+        await client.SendAsync(whisperRequest, TestName, ct);
     }
 }

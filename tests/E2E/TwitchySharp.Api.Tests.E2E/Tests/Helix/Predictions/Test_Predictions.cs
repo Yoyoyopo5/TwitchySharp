@@ -15,20 +15,20 @@ public class Test_Predictions(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        TwitchResponse<CreatePredictionResponse> createRespone = await CreatePrediction(client, broadcasterId, ct);
+        TwitchResponse<CreatePredictionResponseContent> createRespone = await CreatePrediction(client, broadcasterId, ct);
         ChatPrediction prediction = createRespone.Content.Data.Single();
         await Task.Delay(250, ct);
 
-        TwitchResponse<GetPredictionsResponse> getResponse = await GetPredictions(client, broadcasterId, prediction.Id, ct);
+        TwitchResponse<GetPredictionsResponseContent> getResponse = await GetPredictions(client, broadcasterId, prediction.Id, ct);
         ChatPredictionOutcome outcome = getResponse.Content.Data.Single().Outcomes.First();
 
         await EndPrediction(client, broadcasterId, prediction.Id, outcome.Id, ct);
     }
 
-    private static Task<TwitchResponse<CreatePredictionResponse>> CreatePrediction(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<CreatePredictionResponseContent>> CreatePrediction(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new CreatePredictionRequest()
         {
             Prediction = new CreatePredictionRequestData()
@@ -48,16 +48,16 @@ public class Test_Predictions(TwitchClientFixture fixture)
                     }
                 ]
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<GetPredictionsResponse>> GetPredictions(ITwitchClient client, UserId broadcasterId, PredictionId predictionId, CancellationToken ct)
+    private static Task<TwitchResponse<GetPredictionsResponseContent>> GetPredictions(TestingTwitchClient client, UserId broadcasterId, PredictionId predictionId, CancellationToken ct)
         => client.SendAsync(new GetPredictionsRequest()
         {
             BroadcasterId = broadcasterId,
             PredictionIds = [predictionId]
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<EndPredictionResponse>> EndPrediction(ITwitchClient client, UserId broadcasterId, PredictionId predictionId, PredictionOutcomeId winningOutcomeId, CancellationToken ct)
+    private static Task<TwitchResponse<EndPredictionResponseContent>> EndPrediction(TestingTwitchClient client, UserId broadcasterId, PredictionId predictionId, PredictionOutcomeId winningOutcomeId, CancellationToken ct)
         => client.SendAsync(new EndPredictionRequest()
         {
             Prediction = new ResolvePrediction(winningOutcomeId)
@@ -65,5 +65,5 @@ public class Test_Predictions(TwitchClientFixture fixture)
                 BroadcasterId = broadcasterId,
                 Id = predictionId,
             }
-        }, ct);
+        }, TestName, ct);
 }

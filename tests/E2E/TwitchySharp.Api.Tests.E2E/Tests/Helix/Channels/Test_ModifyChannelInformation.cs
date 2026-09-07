@@ -14,7 +14,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelInformationRequest getInfoRequest = new()
@@ -23,7 +23,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
         };
 
         // cache original
-        ChannelInformation channelInfo = (await client.SendAsync(getInfoRequest, ct)).Content.Data.First();
+        ChannelInformation channelInfo = (await client.SendAsync(getInfoRequest, TestName, ct)).Content.Data.First();
 
         ModifyChannelInformationRequest modifyRequest = new()
         {
@@ -38,7 +38,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(modifyRequest, ct);
+        await client.SendAsync(modifyRequest, TestName, ct);
         await Task.Delay(250, ct);
 
         // restore original
@@ -52,6 +52,6 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
                 Tags = channelInfo.Tags,
                 Title = channelInfo.Title
             }
-        }, ct);
+        }, TestName, ct);
     }
 }

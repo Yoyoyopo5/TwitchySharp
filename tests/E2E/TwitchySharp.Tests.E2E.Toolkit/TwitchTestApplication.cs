@@ -66,7 +66,8 @@ public record TestingTwitchClient(TwitchClient Client)
     {
         try
         {
-            return await Client.SetResolver<TestName>((scope, _) => ValueTask.FromResult(new RequestDependencyResult<TestName>(testName, scope))).SendAsync(request, ct);
+
+            return await Client.SetFixed(testName).SendAsync(request, ct);
         }
         catch (TwitchApiException ex)
         {
@@ -100,8 +101,8 @@ public static class TwitchTestApplicationExtensions
         return default;
     }
 
-    public static ITwitchClient GetTwitchApiClient(this TwitchTestApplication fixture)
-        => fixture.ApplicationHost.Services.GetRequiredService<ITwitchClient>();
+    public static TestingTwitchClient GetTwitchApiClient(this TwitchTestApplication fixture)
+        => fixture.ApplicationHost.Services.GetRequiredService<TestingTwitchClient>();
 
     public static TConfig? GetConfig<TConfig>(this IServiceProvider sp, Func<TConfig, bool> predicate)
         where TConfig : class, ITestIdentity<TwitchIdentity>

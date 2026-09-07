@@ -18,10 +18,9 @@ public class Test_CreateExtensionSecret(TwitchClientFixture fixture)
 
         CreateExtensionSecretRequest request = new()
         {
-            ExtensionId = extensionConfig.ExtensionId,
-            ExtensionOwnerId = extensionConfig.ExtensionOwnerUserId
+            ExtensionId = extensionConfig.ExtensionId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

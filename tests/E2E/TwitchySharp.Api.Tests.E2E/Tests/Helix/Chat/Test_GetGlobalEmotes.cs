@@ -11,14 +11,10 @@ public class Test_GetGlobalEmotes(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetGlobalEmotesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        GetGlobalEmotesRequest request = new()
-        {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
-        };
+        GetGlobalEmotesRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

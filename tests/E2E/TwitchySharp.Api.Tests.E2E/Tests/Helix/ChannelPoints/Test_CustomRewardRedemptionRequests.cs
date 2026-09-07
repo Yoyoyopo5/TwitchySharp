@@ -17,7 +17,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetCustomRewardRequest getRewardRequest = new()
@@ -26,7 +26,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
             OnlyManageableRewards = true
         };
 
-        TwitchResponse<GetCustomRewardResponse> getRewardResponse = await client.SendAsync(getRewardRequest, ct);
+        TwitchResponse<GetCustomRewardResponseContent> getRewardResponse = await client.SendAsync(getRewardRequest, TestName, ct);
         CustomChannelPointsReward? reward = getRewardResponse.Content.Data.FirstOrDefault(r => r.Title == TEST_REWARD_NAME);
 
         // We can create a custom reward if the test award does not exist yet,
@@ -43,7 +43,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
                     ShouldRedemptionsSkipRequestQueue = false
                 }
             };
-            TwitchResponse<CreateCustomRewardsResponse> createRewardResponse = await client.SendAsync(createRewardRequest, ct);
+            TwitchResponse<CreateCustomRewardsResponseContent> createRewardResponse = await client.SendAsync(createRewardRequest, TestName, ct);
             reward = createRewardResponse.Content.Data.First();
         }
 
@@ -54,7 +54,7 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
             Status = RewardRedemptionStatus.Unfulfilled
         };
 
-        TwitchResponse<GetCustomRewardRedemptionResponse> getRedemptionsResponse = await client.SendAsync(getRedemptionsRequest, ct);
+        TwitchResponse<GetCustomRewardRedemptionResponseContent> getRedemptionsResponse = await client.SendAsync(getRedemptionsRequest, TestName, ct);
         CustomRewardRedemption[] redemptions = getRedemptionsResponse.Content.Data;
         Assert.SkipWhen(redemptions.Length == 0, $"No redemptions exist on the test reward \"{TEST_REWARD_NAME}\".");
 
@@ -66,6 +66,6 @@ public class Test_CustomRewardRedemptionRequests(TwitchClientFixture fixture)
             Status = RewardRedemptionStatus.Fulfilled
         };
 
-        await client.SendAsync(updateRedemptionRequest, ct);
+        await client.SendAsync(updateRedemptionRequest, TestName, ct);
     }
 }

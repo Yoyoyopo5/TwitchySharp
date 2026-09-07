@@ -41,7 +41,7 @@ public abstract record EventSubTest
 
 public sealed record EventSubTest<TRequiredIdentity, TSpecification> : EventSubTest
     where TSpecification : EventSubSubscriptionTypeSpecification, IConditionConstructable<TSpecification>
-    where TRequiredIdentity : ITestIdentity
+    where TRequiredIdentity : ITestIdentity<TwitchIdentity>
 {
     public required Func<TRequiredIdentity, TSpecification> CreateSpecification { get; init; }
     public override EventSubSubscriptionTypeSpecification WithFixture(TwitchClientFixture fixture)

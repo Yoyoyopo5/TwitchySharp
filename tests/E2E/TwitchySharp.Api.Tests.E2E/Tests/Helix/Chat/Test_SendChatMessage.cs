@@ -24,11 +24,11 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task Send_SendChatMessageRequestAsBot_ReturnSuccessResponse()
+    public async Task Send_SendChatMessageRequestUsingPriorAuthorization_ReturnSuccessResponse()
     {
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
@@ -43,6 +43,10 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request.AsBot(userConfig.Token.ClientId), TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request with { AuthenticationContext = request.AuthenticationContext with
+        {
+            UsePriorAuthorization = true,
+            Identity = request.AuthenticationContext.Identity with { ClientId = userConfig.Token.ClientId }
+        }}, TestName, TestContext.Current.CancellationToken);
     }
 }

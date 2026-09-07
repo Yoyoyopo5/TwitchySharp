@@ -11,17 +11,15 @@ public class Test_GetChannelInformation(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetChannelInformationRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        const string TEST_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
+        const string TEST_BROADCASTER_ID = "52137752";
         UserId testBroadcasterId = new(TEST_BROADCASTER_ID);
         GetChannelInformationRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             BroadcasterIds = [testBroadcasterId]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

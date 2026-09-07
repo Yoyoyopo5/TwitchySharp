@@ -14,7 +14,7 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
         ExtensionConfiguration extensionConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<ExtensionConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetExtensionBitsProductsRequest getRequest = new()
@@ -23,7 +23,7 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
             ShouldIncludeAll = true
         };
 
-        TwitchResponse<GetExtensionBitsProductsResponse> getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetExtensionBitsProductsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
         ExtensionBitsProduct product = getResponse.Content.Data.Single(d => d.Sku == extensionConfig.BitsProduct.Sku);
 
         UpdateExtensionBitsProductRequest updateRequest = new()
@@ -40,7 +40,7 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, ct);
+        await client.SendAsync(updateRequest, TestName, ct);
         await Task.Delay(250, ct);
 
         UpdateExtensionBitsProductRequest restoreRequest = new()
@@ -57,6 +57,6 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(restoreRequest, ct);
+        await client.SendAsync(restoreRequest, TestName, ct);
     }
 }

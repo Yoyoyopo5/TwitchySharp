@@ -11,7 +11,7 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_CreateUpdateDeleteCustomRewardRequest_ReturnSuccessResponses()
     {
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         UserConfiguration userConfig
@@ -31,7 +31,7 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
         }
     }
 
-    private static async Task<CustomChannelPointsReward> CreateReward(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static async Task<CustomChannelPointsReward> CreateReward(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
         => (await client.SendAsync(new CreateCustomRewardsRequest
         {
             BroadcasterId = broadcasterId,
@@ -51,10 +51,10 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
                 IsUserInputRequired = true,
                 Prompt = "Share your thoughts."
             }
-        }, ct)).Content.Data.First();
+        }, TestName, ct)).Content.Data.First();
 
-    private static Task<TwitchResponse<UpdateCustomRewardResponse>> UpdateReward(
-        ITwitchClient client,
+    private static Task<TwitchResponse<UpdateCustomRewardResponseContent>> UpdateReward(
+        TestingTwitchClient client,
         UserId broadcasterId,
         CustomChannelPointsReward reward,
         CancellationToken ct)
@@ -73,10 +73,10 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
                 IsMaxPerStreamEnabled = false,
                 IsUserInputRequired = false
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<DeleteCustomRewardResponse>> DeleteReward(
-        ITwitchClient client,
+    private static Task<TwitchResponse<DeleteCustomRewardResponseContent>> DeleteReward(
+        TestingTwitchClient client,
         UserId broadcasterId,
         CustomChannelPointsReward reward,
         CancellationToken ct)
@@ -84,5 +84,5 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
         {
             BroadcasterId = broadcasterId,
             RewardId = reward.Id
-        }, ct);
+        }, TestName, ct);
 }

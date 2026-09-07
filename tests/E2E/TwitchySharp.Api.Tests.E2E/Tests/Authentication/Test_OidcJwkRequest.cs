@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using TwitchySharp.Api.Authentication;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authentication;
@@ -11,8 +11,8 @@ public class Test_OidcJwkRequest(TwitchClientFixture fixture)
     {
         OidcJwkRequest request = new();
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
-        TwitchResponse<OidcJwkResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
+        TwitchResponse<OidcJwkResponseContent> response = await client.SendAsync(request, new(), TestContext.Current.CancellationToken);
 
         Assert.NotEmpty(response.Content.Keys);
     }

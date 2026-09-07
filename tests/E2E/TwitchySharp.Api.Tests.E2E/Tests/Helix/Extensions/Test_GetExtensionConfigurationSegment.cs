@@ -19,13 +19,12 @@ public class Test_GetExtensionConfigurationSegment(TwitchClientFixture fixture)
 
         GetExtensionConfigurationSegmentRequest request = new GetExtensionConfigurationSegmentRequest()
         {
-            ExtensionId = extensionConfig.ExtensionId,
-            ExtensionIdentity = extensionConfig.ToIdentity() with { BroadcasterId = userConfig.UserId }
+            ExtensionId = extensionConfig.ExtensionId
         }
             .WithGlobal()
             .WithDeveloper(userConfig.UserId)
             .WithBroadcaster(userConfig.UserId);
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

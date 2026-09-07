@@ -14,7 +14,7 @@ public class Test_ResolveUnbanRequests(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
         UserId broadcasterId = userConfig.UserId;
 
@@ -25,7 +25,7 @@ public class Test_ResolveUnbanRequests(TwitchClientFixture fixture)
             ModeratorId = broadcasterId
         };
 
-        TwitchResponse<GetUnbanRequestsResponse> getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetUnbanRequestsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
         if (getResponse.Content.Data.FirstOrDefault() is not UnbanRequest unbanRequest)
             return; // Can only test this if we have pending request.
 
@@ -38,6 +38,6 @@ public class Test_ResolveUnbanRequests(TwitchClientFixture fixture)
             ResolutionText = "test resolution"
         };
 
-        await client.SendAsync(resolveRequest, ct);
+        await client.SendAsync(resolveRequest, TestName, ct);
     }
 };

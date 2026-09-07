@@ -14,7 +14,7 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChatSettingsRequest getSettingsRequest = new()
@@ -23,7 +23,7 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
             ModeratorId = userConfig.UserId,
         };
 
-        TwitchResponse<GetChatSettingsResponse> getSettingsResponse = await client.SendAsync(getSettingsRequest, ct);
+        TwitchResponse<GetChatSettingsResponseContent> getSettingsResponse = await client.SendAsync(getSettingsRequest, TestName, ct);
         ChatSettings? settings = getSettingsResponse.Content.Data.FirstOrDefault();
 
         UpdateChatSettingsRequest updateSettingsRequest = new()
@@ -44,7 +44,7 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateSettingsRequest, ct);
+        await client.SendAsync(updateSettingsRequest, TestName, ct);
         await Task.Delay(100, ct);
 
         if (settings is not null) // restore
@@ -62,6 +62,6 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
                     SubscriberMode = settings.SubscriberMode,
                     UniqueChatMode = settings.UniqueChatMode
                 }
-            }, ct);
+            }, TestName, ct);
     }
 }

@@ -11,18 +11,16 @@ public class Test_GetAuthorizationByUser(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetAuthorizationByUserRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         const string TEST_USER_ID = "52137752";
         UserId userId = new(TEST_USER_ID);
 
         GetAuthorizationByUserRequest request = new()
         {
-            UserIds = [userId],
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
+            UserIds = [userId]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

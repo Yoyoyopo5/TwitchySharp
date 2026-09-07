@@ -20,6 +20,6 @@ public class Test_UpdateUser(TwitchClientFixture fixture)
             Description = "On Vacation"
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

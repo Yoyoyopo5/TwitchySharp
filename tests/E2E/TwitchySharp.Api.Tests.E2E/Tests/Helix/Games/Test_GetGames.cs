@@ -11,8 +11,7 @@ public class Test_GetGames(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetGamesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         const string GAME_NAME = "Fortnite";
         const string GAME_ID = "2627";
@@ -22,10 +21,9 @@ public class Test_GetGames(TwitchClientFixture fixture)
 
         GetGamesRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Games = [new GameNameQuery(GAME_NAME), new GameIdQuery(gameId), new GameIgdbQuery(igdbId)]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

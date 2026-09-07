@@ -46,5 +46,10 @@ public static class TwitchClientExtensions
         => client.ConfigureAsNullCoalesce<TwitchClient, ExtensionSecret?>((scope, ct) =>
             scope.ResolveOrDefault<ExtensionId?>(ct).MapAsync(extensionId => extensionId.HasValue
                 ? sp.GetConfig<ExtensionConfiguration>(config => config.ExtensionId == extensionId)?.Secret
-                : default));
+                : default))
+            .ConfigureAsNullCoalesce<TwitchClient, ExtensionOwnerId?>((scope, ct) =>
+            scope.ResolveOrDefault<ExtensionId?>(ct).MapAsync(extensionId => extensionId.HasValue
+                ? sp.GetConfig<ExtensionConfiguration>(config => config.ExtensionId == extensionId)?.ExtensionOwnerUserId
+                : default)
+            );
 }

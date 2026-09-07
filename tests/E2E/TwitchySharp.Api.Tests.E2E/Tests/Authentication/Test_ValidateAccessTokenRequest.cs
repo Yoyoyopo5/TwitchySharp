@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using TwitchySharp.Api.Authentication;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authentication;
@@ -20,8 +20,8 @@ public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
             UserId = userConfig.UserId
         };
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
-        TwitchResponse<ValidateAccessTokenResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
+        TwitchResponse<ValidateAccessTokenResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);
         Assert.False(string.IsNullOrEmpty(response.Content.Login));

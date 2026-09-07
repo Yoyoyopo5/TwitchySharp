@@ -14,7 +14,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetChannelGuestStarSettingsRequest getRequest = new()
@@ -23,7 +23,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
             ModeratorId = userConfig.UserId
         };
 
-        TwitchResponse<GetChannelGuestStarSettingsResponse> getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetChannelGuestStarSettingsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
         ChannelGuestStarSettings cachedSettings = getResponse.Content.Data.Single();
 
         UpdateChannelGuestStarSettingsRequest updateRequest = new()
@@ -39,7 +39,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, ct);
+        await client.SendAsync(updateRequest, TestName, ct);
         await Task.Delay(100, ct);
 
         UpdateChannelGuestStarSettingsRequest restoreRequest = new()
@@ -54,6 +54,6 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(restoreRequest, ct);
+        await client.SendAsync(restoreRequest, TestName, ct);
     }
 }

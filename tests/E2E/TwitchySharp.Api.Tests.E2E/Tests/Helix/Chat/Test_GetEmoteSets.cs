@@ -11,21 +11,19 @@ public class Test_GetEmoteSets(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetEmoteSetsRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         UserId broadcasterId = new("52137752");
 
         GetChannelEmotesRequest getEmotesRequest = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             BroadcasterId = broadcasterId
         };
 
-        TwitchResponse<GetChannelEmotesResponse> getEmotesResponse = await client.SendAsync(getEmotesRequest, ct);
+        TwitchResponse<GetChannelEmotesResponseContent> getEmotesResponse = await client.SendAsync(getEmotesRequest, TestName, ct);
         if (getEmotesResponse.Content.Data.FirstOrDefault()?.EmoteSetId is not EmoteSetId id)
             return;
 
@@ -34,6 +32,6 @@ public class Test_GetEmoteSets(TwitchClientFixture fixture)
             EmoteSetIds = [id]
         };
 
-        await client.SendAsync(request, ct);
+        await client.SendAsync(request, TestName, ct);
     }
 }
