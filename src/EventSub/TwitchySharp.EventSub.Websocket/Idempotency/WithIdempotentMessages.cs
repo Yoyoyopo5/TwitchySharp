@@ -25,8 +25,8 @@ public static class ProcessWebsocketMessageExtensions
         Func<WebsocketMessageId, CancellationToken, ValueTask<bool>> isRepeated
         )
         => (message, ct) => pipeline(message, ct)
-            .BindAsync(async (message, ct) => await isRepeated(message.Metadata.MessageId, ct)
+            .BindAsync(async message => await isRepeated(message.Metadata.MessageId, ct)
                 ? new Validation<EventSubWebsocketMessage>(new IdempotencyError(message.Metadata.MessageId))
-                : message,
-            ct);
+                : message
+            );
 }
