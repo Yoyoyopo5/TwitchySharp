@@ -31,11 +31,6 @@ public record SetExtensionRequiredConfigurationRequest
         get => field ?? DefaultAuthenticationContext;
         init;
     }
-
-    /// <summary>
-    /// The user id of the owner of the extension.
-    /// </summary>
-    public required UserId ExtensionOwnerId { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
