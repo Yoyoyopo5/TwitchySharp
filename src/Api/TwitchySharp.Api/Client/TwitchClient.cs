@@ -238,7 +238,7 @@ internal static class DefaultRequestPipelineExtensions
         this ITwitchRequestDependencyCollection resolvers
         )
         => resolvers.Configure<ITwitchRequestDependencyCollection, HttpResponseMessage?>(
-            next => (scope, ct) => scope.ResolveOrDefault<HttpResponseMessage>(ct)
+            next => (scope, ct) => next(scope, ct)
                 .BindAsync<HttpResponseMessage?, HttpResponseMessage?>(async response => response is null || response.IsSuccessStatusCode
                     ? response
                     : new ExceptionError(await response.ToTwitchApiException(scope.Request, ct))));
