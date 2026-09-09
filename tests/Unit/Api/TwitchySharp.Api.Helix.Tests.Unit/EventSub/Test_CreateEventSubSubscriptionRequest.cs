@@ -41,7 +41,7 @@ public class Test_CreateEventSubSubscriptionRequest
     }
 
     [Fact]
-    public void DefaultIdentity_WithWebhookUserAuthorizedType_ReturnsDefault()
+    public void AuthenticationContextTokenType_WithWebhookUserAuthorizedType_IsApp()
     {
         ChannelFollow subscriptionType = new(
             BroadcasterUserId: new UserId(FAKE_BROADCASTER_ID),
@@ -56,9 +56,7 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        TwitchIdentity identity = request.AuthenticationContext.Identity;
-
-        Assert.Equal(TwitchIdentity.Client.Default, identity);
+        Assert.Equal(BearerTokenType.AppAccessToken, request.AuthenticationContext.TokenType);
     }
 
     [Fact]
