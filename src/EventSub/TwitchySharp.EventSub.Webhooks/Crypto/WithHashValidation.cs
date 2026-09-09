@@ -23,7 +23,7 @@ public static partial class ProcessWebhookRequestExtensions
             // open to potential DoS attacks. Could be mitigated with something
             // like fail2ban since we can return back 401 if verification fails.
             return await process(nextRequest, ct)
-                .BindAsync((result, ct) =>
+                .BindAsync(result =>
                 {
                     // We assume the next function read the tee stream to completion,
                     // which copies it into the cryptoStream, then we can reset it to position 0
@@ -35,6 +35,6 @@ public static partial class ProcessWebhookRequestExtensions
                     onError: (e, _) => ValueTask.FromResult(new Validation<WebhookRequestContent>(e)),
                     onValid: _ => ValueTask.FromResult<Validation<WebhookRequestContent>>(result),
                     ct);
-                }, ct);
+                });
         };
 }
