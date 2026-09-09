@@ -97,13 +97,14 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// <returns><inheritdoc/></returns>
     /// <exception cref="TwitchApiException">When the HTTP response is a non-success status code.</exception>
     /// <exception cref="InvalidOperationException">When another error occurred.</exception>
-    public Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
+    public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
     {
         // We have to get the typed content converter per request.
         IResponseContentConverter contentConverter = ResponseConverters.FirstOrDefault(rc => rc.CanConvert(request)) ?? DefaultResponseConverter;
 
+        // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
         using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTypedResponse<TResponseContent>(contentConverter));
-        return requestScope.ResolveOrDefault<TwitchResponse<TResponseContent>>(ct).MatchAsync(
+        return await requestScope.ResolveOrDefault<TwitchResponse<TResponseContent>>(ct).MatchAsync(
             e => e switch
             {
                 ExceptionError exceptionError => throw exceptionError.Exception,
