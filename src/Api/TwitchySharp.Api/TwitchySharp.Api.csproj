@@ -25,6 +25,8 @@
     <InternalsVisibleTo Include="$(AssemblyName).Authentication" />
     <InternalsVisibleTo Include="$(AssemblyName).Helix" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+    <InternalsVisibleTo Include="$(AssemblyName).Helix.Tests.Unit" />
+    <InternalsVisibleTo Include="$(AssemblyName).Authentication.Tests.Unit" />
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
 	</ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Authentication;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 

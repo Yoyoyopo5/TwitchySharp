@@ -192,7 +192,7 @@ public class Test_UpdateUserExtensionsRequest
         }
         """;
 
-        UpdateUserExtensionsResponse? response = JsonSerializer.Deserialize<UpdateUserExtensionsResponse>(responseJson, JsonOptions);
+        UpdateUserExtensionsResponseContent? response = JsonSerializer.Deserialize<UpdateUserExtensionsResponseContent>(responseJson, JsonOptions);
 
         Assert.NotNull(response);
         Assert.NotNull(response.Data);

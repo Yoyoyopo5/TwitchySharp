@@ -10,7 +10,7 @@ public class Test_DeleteEventSubSubscriptionRequest
     private const string MOCK_SUBSCRIPTION_ID = "sub_123";
 
     [Fact]
-    public void DefaultIdentity_WithWebsocketUserAuthorizedSubscription_ReturnsUserIdentity()
+    public void AuthenticationContext_WithWebsocketUserAuthorizedSubscription_IsUserAuthenticationContext()
     {
         EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
@@ -23,14 +23,12 @@ public class Test_DeleteEventSubSubscriptionRequest
         );
         DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        TwitchIdentity identity = request.AuthorizationContext.Identity;
-
-        TwitchIdentity.User userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
-        Assert.Equal(new UserId(MOCK_USER_ID), userIdentity.UserId);
+        ITwitchRequestAuthenticationContext<TwitchIdentity.User> context = Assert.IsType<ITwitchRequestAuthenticationContext<TwitchIdentity.User>>(request.AuthenticationContext, false);
+        Assert.Equal(new UserId(MOCK_USER_ID), context.Identity.UserId);
     }
 
     [Fact]
-    public void DefaultIdentity_WithWebhookSubscription_ReturnsDefault()
+    public void AuthenticationContextTokenType_WithWebhookSubscription_IsApp()
     {
         EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
@@ -43,13 +41,11 @@ public class Test_DeleteEventSubSubscriptionRequest
         );
         DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        TwitchIdentity identity = request.AuthorizationContext.Identity;
-
-        Assert.Equal(TwitchIdentity.Client.Default, identity);
+        Assert.Equal(BearerTokenType.AppAccessToken, request.AuthenticationContext.TokenType);
     }
 
     [Fact]
-    public void DefaultIdentity_WithConduitSubscription_ReturnsDefault()
+    public void AuthenticationContextTokenType_WithConduitSubscription_IsApp()
     {
         EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.StreamOnline,
@@ -61,26 +57,22 @@ public class Test_DeleteEventSubSubscriptionRequest
         );
         DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        TwitchIdentity identity = request.AuthorizationContext.Identity;
-
-        Assert.Equal(TwitchIdentity.Client.Default, identity);
+        Assert.Equal(BearerTokenType.AppAccessToken, request.AuthenticationContext.TokenType);
     }
 
     [Fact]
-    public void DefaultIdentity_WithSubscriptionIdOnly_ReturnsDefault()
+    public void AuthenticationContext_WithSubscriptionIdOnly_IsDefaultContext()
     {
         DeleteEventSubSubscriptionRequest request = new()
         {
             SubscriptionId = new EventSubSubscriptionId(MOCK_SUBSCRIPTION_ID)
         };
 
-        TwitchIdentity identity = request.AuthorizationContext.Identity;
-
-        Assert.Equal(TwitchIdentity.Client.Default, identity);
+        Assert.Equal(TwitchRequestAuthenticationContext.Default, request.AuthenticationContext);
     }
 
     [Fact]
-    public void DefaultIdentity_WithWebsocketUserAuthorizedMissingCondition_ThrowsInvalidOperationException()
+    public void AuthenticationContext_WithWebsocketUserAuthorizedMissingCondition_ThrowsInvalidOperationException()
     {
         EventSubSubscription subscription = CreateSubscription(
             EventSubSubscriptionType.ChannelFollow,
@@ -93,7 +85,7 @@ public class Test_DeleteEventSubSubscriptionRequest
         );
         DeleteEventSubSubscriptionRequest request = new(subscription);
 
-        Assert.Throws<InvalidOperationException>(() => request.AuthorizationContext.Identity);
+        Assert.Throws<InvalidOperationException>(() => request.AuthenticationContext);
     }
 
     [Fact]

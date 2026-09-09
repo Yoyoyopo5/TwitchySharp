@@ -1,4 +1,4 @@
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Authentication;
 using TwitchySharp.Infrastructure.Http;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
