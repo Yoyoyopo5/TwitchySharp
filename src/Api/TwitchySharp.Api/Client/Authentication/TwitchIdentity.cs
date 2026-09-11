@@ -58,23 +58,4 @@ public abstract record TwitchIdentity
             init => ClientId = value;
         }
     }
-
-    /// <summary>
-    /// Create a new <see cref="TwitchIdentity"/> with a set <c>ClientId</c>.
-    /// </summary>
-    /// <param name="clientId">The client id to use.</param>
-    /// <returns>
-    /// A new <see cref="TwitchIdentity"/> of the same dervied type with <c>ClientId</c> set to <paramref name="clientId"/>.
-    /// If <see cref="None"/> or <see cref="Default"/>, a <see cref="TwitchIdentity.Client"/> is returned.
-    /// </returns>
-    /// <exception cref="NotSupportedException"></exception>
-    public TwitchIdentity WithClientId(ClientId clientId)
-        => this switch
-        {
-            None => new Client(clientId),
-            Client client => client with { ClientId = clientId },
-            User user => user with { ClientId = clientId },
-            Extension extension => extension with { ClientId = clientId },
-            _ => throw new NotSupportedException("Unsupported identity type.")
-        };
 }
