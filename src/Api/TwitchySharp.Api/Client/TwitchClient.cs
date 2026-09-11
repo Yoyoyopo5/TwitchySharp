@@ -200,9 +200,11 @@ internal static class DefaultRequestPipelineExtensions
                 context => context?.TokenType
             )
             .UseTwitchIdentity()
-            .ConfigureForRequestType<ITwitchRequestDependencyCollection, IAuthenticatedTwitchRequest, HttpRequestMessage?>(
+            .When(scope => scope.Request is IAuthenticatedTwitchRequest)
+            .Configure<RequestDependencyConditionalConfiguration<ITwitchRequestDependencyCollection>, HttpRequestMessage?>(
                 next => next.WithAuthenticationHeaders()
-            );
+            )
+            .EndWhen();
 
     public static ITwitchRequestDependencyCollection WithHttpClient(
         this ITwitchRequestDependencyCollection resolvers,

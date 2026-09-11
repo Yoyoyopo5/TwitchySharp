@@ -37,13 +37,14 @@ public static class ExtensionJwtResolution
         getNewTokenExpiry ??= _ => DateTimeOffset.UtcNow + TimeSpan.FromMinutes(120);
         serializePayload ??= payload => JsonSerializer.Serialize(payload, JsonConfig.ApiOptions);
 
-        return client.Configure<TwitchClient, BearerToken?>(next => next.WhenTokenTypeIs(
-            BearerTokenType.ExtensionJwt,
-            SignNewJwt(getNewTokenExpiry, serializePayload)
-                .Map(details => details)
-                .WithCache(cache, cached => cached.ExpiresAt > getNow())
-                .Map(details => details?.BearerToken)
-            ));
+        return client.WhenTokenTypeIs(BearerTokenType.ExtensionJwt)
+            .ConfigureAsNullCoalesce(
+                SignNewJwt(getNewTokenExpiry, serializePayload)
+                    .Map(details => details)
+                    .WithCache(cache, cached => cached.ExpiresAt > getNow())
+                    .Map(details => details?.BearerToken)
+            )
+            .EndWhen();
     }
 
     public static TwitchClient WithExtension(
@@ -56,5 +57,5 @@ public static class ExtensionJwtResolution
             .When((scope, ct) => scope.ResolveOrDefault<ExtensionId?>(ct).MapAsync(id => id == extensionId))
             .SetFixed((ExtensionOwnerId?)ownerId)
             .SetFixed((ExtensionSecret?)secret)
-            .ConfiguredCollection;
+            .EndWhen();
 }

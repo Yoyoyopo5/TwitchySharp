@@ -36,6 +36,12 @@ public static class AppAccessTokenResolution
             .BindAsync(clientSecret => scope.ResolveRequired<ITwitchClient>(ct)
             .BindAsync(twitchClient => twitchClient.GetNewAppAccessToken(clientId!.Value, clientSecret!.Value, getNow(), ct))));
 
+    internal static RequestDependencyConditionalConfiguration<TwitchClient> WhenTokenTypeIs(
+        this TwitchClient client,
+        BearerTokenType tokenType
+        )
+        => client.When((scope, ct) => scope.ResolveOrDefault<BearerTokenType?>(ct).MapAsync(type => type == tokenType));
+
     // Requires configured ClientSecret resolver
     public static TwitchClient UseAppAccessTokens(
         this TwitchClient client,
@@ -46,12 +52,13 @@ public static class AppAccessTokenResolution
         tokenCache ??= new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>();
         getNow ??= () => DateTimeOffset.UtcNow;
 
-        return client.Configure<TwitchClient, BearerToken?>(next => next.WhenTokenTypeIs(
-                BearerTokenType.AppAccessToken,
+        return client.WhenTokenTypeIs(BearerTokenType.AppAccessToken)
+            .ConfigureAsNullCoalesce(
                 GetTokenFromTwitch(getNow)
                     .Map(details => details) // map to nullable
                     .WithCache(tokenCache, details => details.ExpiresAt > getNow())
-                    .Map(details => details?.BearerToken)));
+                    .Map(details => details?.BearerToken))
+            .EndWhen();
     }
 
     public static TwitchClient WithClient(
@@ -62,5 +69,5 @@ public static class AppAccessTokenResolution
         => client
             .When((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(id => id == clientId))
             .SetFixed((ClientSecret?)clientSecret)
-            .ConfiguredCollection;
+            .EndWhen();
 }

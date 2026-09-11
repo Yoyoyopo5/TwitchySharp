@@ -73,12 +73,13 @@ public static class UserAccessTokenResolution
     {
         getNow ??= () => DateTimeOffset.UtcNow;
 
-        return client.Configure<TwitchClient, BearerToken?>(next => next.WhenTokenTypeIs(
-                BearerTokenType.UserAccessToken,
+        return client.WhenTokenTypeIs(BearerTokenType.UserAccessToken)
+            .ConfigureAsNullCoalesce(
                 GetFromCache(cache)
                     .RefreshExpired(getNow)
                     .WithCache(cache, cached => cached.ExpiresAt > getNow())
                     .Map(details => details?.BearerToken)
-            ));
+            )
+            .EndWhen();
     }
 }

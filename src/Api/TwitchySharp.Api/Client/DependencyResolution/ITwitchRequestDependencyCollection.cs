@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Infrastructure.Functional;
+﻿using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api;
 
@@ -18,14 +19,21 @@ public static class ITwitchRequestDependencyCollectionExtensions
         this TCollection dc,
         Func<ITwitchRequestDependencyScope, Validation<T>> resolve)
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver((scope, ct) => ValueTask.FromResult(resolve(scope)));
+        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult(resolve(scope)));
 
     public static TCollection SetResolver<TCollection, T>(
         this TCollection dc,
         Func<ITwitchRequestDependencyScope, T> resolve
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver((scope, ct) => ValueTask.FromResult<Validation<T>>(resolve(scope)));
+        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult<Validation<T>>(resolve(scope)));
+
+    public static TCollection SetResolver<TCollection, T>(
+        this TCollection dc,
+        Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<T>> resolve
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.SetResolver<T>(async (scope, ct) => await resolve(scope, ct));
 
     public static TCollection From<TCollection, T, TFrom>(
         this TCollection resolvers,
@@ -82,52 +90,19 @@ public static class ITwitchRequestDependencyCollectionExtensions
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => resolvers.SetResolver(configure(resolvers.GetResolver<T?>() ?? MakeDefaultResolver<T?>()));
 
-    public static TCollection ConfigureForRequestType<TCollection, TRequest, T>(
-        this TCollection dc,
-        Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
-        )
-        where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.Configure<TCollection, T?>(next =>
-        {
-            ResolveRequestDependency<T?> configured = configure(next) as ResolveRequestDependency<T?>;
-            return (scope, ct)
-                => scope.Request is TRequest
-                    ? configured(scope, ct)
-                    : next(scope, ct);
-        });
-
-    public static TCollection ConfigureFor<TCollection, T>(
-        this TCollection dc,
-        ResolveRequestDependency<bool> predicate,
-        Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
-        )
-        where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.Configure<TCollection, T?>(next =>
-        {
-            ResolveRequestDependency<T?> configured = configure(next) as ResolveRequestDependency<T?>;
-            return (scope, ct) => predicate(scope, ct).BindAsync(useConfigured => useConfigured
-                ? configured(scope, ct)
-                : next(scope, ct));
-        });
-
-    public static ConditionalConfiguration<TCollection> When<TCollection>(
+    public static RequestDependencyConditionalConfiguration<TCollection> When<TCollection>(
         this TCollection dc,
         ResolveRequestDependency<bool> predicate
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => new(dc, predicate);
 
-    public record ConditionalConfiguration<TCollection>(
-        TCollection ConfiguredCollection,
-        ResolveRequestDependency<bool> Predicate
+    public static RequestDependencyConditionalConfiguration<TCollection> When<TCollection>(
+        this TCollection dc,
+        Func<ITwitchRequestDependencyScope, bool> predicate
         )
-        : ITwitchRequestDependencyCollection<ConditionalConfiguration<TCollection>>
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-    {
-        public ResolveRequestDependency<T>? GetResolver<T>() => ConfiguredCollection.GetResolver<T>();
-        public ConditionalConfiguration<TCollection> SetResolver<T>(ResolveRequestDependency<T> resolve)
-            => this with { ConfiguredCollection = ConfiguredCollection.ConfigureFor<TCollection, T>(Predicate, _ => resolve) };
-    }
+        => new(dc, (scope, ct) => ValueTask.FromResult<Validation<bool>>(predicate(scope)));
 
     public static TCollection ConfigureAsNullCoalesce<TCollection, T>(
         this TCollection dc,
@@ -148,4 +123,86 @@ public static class ITwitchRequestDependencyCollectionExtensions
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => dc.ConfigureAsNullCoalesce((scope, _) => ValueTask.FromResult<Validation<T?>>(defaultValue));
+
+    public static TCollection ConfigureConditional<TCollection, T>(
+        this TCollection dc,
+        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Validation<bool>>> predicate,
+        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Validation<T>>> conditionalResolve
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.Configure<TCollection, T?>(next => (scope, ct) =>
+        {
+            return next(scope, ct)
+                .BindAsync(t => predicate(t, scope, ct)
+                .BindAsync(async result => result
+                    ? await conditionalResolve(t, scope, ct).MapAsync(t => (T?)t)
+                    : t));
+        });
 }
+
+// Want to be able to configure the same type that we use for the predicate
+
+// .When((scope, ct) => scope.Resolve<HttpRequestMessage>(ct).IsBlockedRequest)
+// .Configure<HttpResponseMessage?>(next => (scope, ct) => null)
+// .EndWhen()
+
+// .ConfigureConditional<HttpRequestMessage>(
+// predicate: (request, scope, ct) => request.Host == "badhost.com",
+// (request, scope, ct) =>
+// {
+//      request.Host = "goodhost.com";
+//      return request;
+// });
+
+// Infinite loops:
+// client.SetResolver<HttpRequestMessage>((scope, ct) => scope.ResolveOrDefault<HttpRequestMessage>())
+// client.Configure<HttpRequestMessage>(next => (scope, ct) => scope.ResolveOrDefault<HttpRequestMessage>())
+// client.When((scope, ct) => scope.ResolveOrDefault<HttpRequestMessage>() is GoodRequest)
+//  .Configure<HttpRequestMessage>(next => )
+
+
+public record RequestDependencyConditionalConfiguration<TCollection>(
+    TCollection Collection,
+    ResolveRequestDependency<bool> Predicate
+    )
+    : ITwitchRequestDependencyCollection<RequestDependencyConditionalConfiguration<TCollection>>
+    where TCollection : ITwitchRequestDependencyCollection<TCollection>
+{
+    private ImmutableDictionary<Type, Delegate> ConditionalResolvers { get; init; }
+        = ImmutableDictionary.Create<Type, Delegate>();
+    private ImmutableDictionary<Type, Func<TCollection, TCollection>> ConfigurationApplicators { get; init; }
+        = ImmutableDictionary.Create<Type, Func<TCollection, TCollection>>();
+
+    public TCollection EndWhen()
+        => ConfigurationApplicators.Values.Aggregate(Collection, (configured, nextApplicator) => nextApplicator(configured));
+
+    public ResolveRequestDependency<T>? GetResolver<T>()
+        => ConditionalResolvers.GetValueOrDefault(typeof(T)) as ResolveRequestDependency<T> ?? Collection.GetResolver<T>();
+    public RequestDependencyConditionalConfiguration<TCollection> SetResolver<T>(ResolveRequestDependency<T> resolve)
+        => this with
+        {
+            ConditionalResolvers = ConditionalResolvers.SetItem(typeof(T), resolve),
+            ConfigurationApplicators = ConfigurationApplicators.SetIfKeyNotPresent(
+                typeof(T),
+                collection => collection.Configure<TCollection, T?>(next => (scope, ct) => Predicate(scope, ct).BindAsync(result => result
+                    ? resolve.Map(t => t)(scope, ct)
+                    : next(scope, ct)
+                )))
+        };
+}
+
+//       Makes Http Request
+//              |
+//          Conditional
+//          /          \
+//   True Branch      False Branch
+//   calls next       calls next
+//          \          /
+//            Resolver
+//               |
+//          Conditional
+//          /          \
+//   True Branch      False Branch
+//   calls next       calls next
+//          \          /
+//            Resolver
