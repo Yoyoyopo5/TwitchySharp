@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Api;
 
+/// <summary>
+/// Immutable default implementation of <see cref="ITwitchRequestDependencyCollection"/>.
+/// </summary>
 internal record ImmutableRequestDependencyCollection
     : ITwitchRequestDependencyCollection<ImmutableRequestDependencyCollection>,
     ITwitchRequestDependencyCollection

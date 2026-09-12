@@ -2,6 +2,12 @@
 
 namespace TwitchySharp.Api;
 
+/// <summary>
+/// A <see cref="ITwitchRequestDependencyScope"/> implementation that
+/// memoizes resolved values, and disposes those values upon scope disposal.
+/// </summary>
+/// <param name="request"></param>
+/// <param name="dependencyCollection"></param>
 internal class MemoizingRequestDependencyScope(
     TwitchRequest request,
     ITwitchRequestDependencyCollection dependencyCollection
@@ -10,8 +16,17 @@ internal class MemoizingRequestDependencyScope(
 {
     public TwitchRequest Request { get; } = request;
     private readonly Dictionary<Type, Validation<object?>> _memos = [];
+    /// <summary>
+    /// The underlying <see cref="ITwitchRequestDependencyCollection"/> to resolve dependency values from.
+    /// </summary>
     public ITwitchRequestDependencyCollection DependencyCollection { get; private set; } = dependencyCollection;
 
+    /// <summary>
+    /// Sets the resolver for <typeparamref name="T"/>, invalidating the existing memo if it exists.
+    /// </summary>
+    /// <typeparam name="T">The type to set the resolver for.</typeparam>
+    /// <param name="resolve">The resolver function.</param>
+    /// <returns><see langword="this"/> with the new resolver for <typeparamref name="T"/>.</returns>
     public MemoizingRequestDependencyScope SetResolver<T>(ResolveRequestDependency<T> resolve)
     {
         DependencyCollection = DependencyCollection.SetResolver<T>(resolve);
@@ -33,13 +48,7 @@ internal class MemoizingRequestDependencyScope(
                     d.Dispose();
                 return memo;
             });
-        return this;
     }
-    ITwitchRequestDependencyScope ITwitchRequestDependencyCollection<ITwitchRequestDependencyScope>.SetResolver<T>(ResolveRequestDependency<T> resolve)
-        => SetResolver(resolve);
-    ITwitchRequestDependencyCollection ITwitchRequestDependencyCollection<ITwitchRequestDependencyCollection>.SetResolver<T>(ResolveRequestDependency<T> resolve)
-        => SetResolver(resolve);
-    public ResolveRequestDependency<T>? GetResolver<T>() => GetResolver<T>();
 
     public ValueTask<Validation<T?>> ResolveOrDefault<T>(CancellationToken ct)
         => _memos.TryGetValue(typeof(T), out Validation<object?> memo)

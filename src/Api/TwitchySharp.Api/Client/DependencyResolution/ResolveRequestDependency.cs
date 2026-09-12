@@ -12,14 +12,26 @@ public delegate ValueTask<Validation<T>> ResolveRequestDependency<T>(
     ITwitchRequestDependencyScope scope,
     CancellationToken ct);
 
+/// <summary>
+/// Collection of extensions for <see cref="ResolveRequestDependency{T}"/>.
+/// </summary>
 public static class ResolveRequestDependencyExtensions
 {
+    /// <summary>
+    /// Create a resolver for <typeparamref name="T"/> from a resolver for <typeparamref name="TFrom"/> to using a map function.
+    /// </summary>
+    /// <typeparam name="T">The dependency type to create a resolver for.</typeparam>
+    /// <typeparam name="TFrom">The resolver type to map.</typeparam>
+    /// <param name="resolve">The resolver function to map.</param>
+    /// <param name="map">A function mapping the <typeparamref name="TFrom"/> resolver's output to <typeparamref name="T"/>.</param>
+    /// <returns>A new resolver for <typeparamref name="T"/>.</returns>
     public static ResolveRequestDependency<T?> Map<T, TFrom>(
         this ResolveRequestDependency<TFrom> resolve,
         Func<TFrom?, T?> map
         )
         => (scope, ct) => resolve(scope, ct).MapAsync(f => map(f));
 
+    /// <inheritdoc cref="Map"/>
     public static ResolveRequestDependency<T?> Map<T, TFrom>(
         this ResolveRequestDependency<TFrom> resolve,
         Func<TFrom?, ValueTask<T?>> map
