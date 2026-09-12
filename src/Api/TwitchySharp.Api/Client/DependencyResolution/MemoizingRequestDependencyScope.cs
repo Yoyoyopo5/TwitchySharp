@@ -15,7 +15,24 @@ internal class MemoizingRequestDependencyScope(
     public MemoizingRequestDependencyScope SetResolver<T>(ResolveRequestDependency<T> resolve)
     {
         DependencyCollection = DependencyCollection.SetResolver<T>(resolve);
-        _memos.Remove(typeof(T));
+        InvalidateMemo<T>();
+        return this;
+    }
+    ITwitchRequestDependencyScope ITwitchRequestDependencyCollection<ITwitchRequestDependencyScope>.SetResolver<T>(ResolveRequestDependency<T> resolve)
+        => SetResolver(resolve);
+    ITwitchRequestDependencyCollection ITwitchRequestDependencyCollection<ITwitchRequestDependencyCollection>.SetResolver<T>(ResolveRequestDependency<T> resolve)
+        => SetResolver(resolve);
+    public ResolveRequestDependency<T>? GetResolver<T>() => GetResolver<T>();
+
+    private void InvalidateMemo<T>()
+    {
+        if (_memos.Remove(typeof(T), out Validation<object?> memo))
+            memo.Map(memo =>
+            {
+                if (memo is IDisposable d)
+                    d.Dispose();
+                return memo;
+            });
         return this;
     }
     ITwitchRequestDependencyScope ITwitchRequestDependencyCollection<ITwitchRequestDependencyScope>.SetResolver<T>(ResolveRequestDependency<T> resolve)
