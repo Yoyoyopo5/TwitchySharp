@@ -41,9 +41,8 @@ public class Test_NotificationDeserializer
         NotificationPayloadStream payloadStream = new(fakeStream);
 
         await _deserialize(payloadStream, TestContext.Current.CancellationToken).MatchAsync(
-            onError: (e, ct) => throw new InvalidOperationException(e.Message),
-            onValid: (notification, ct) => { Assert.IsType<StubNotification>(notification); return ValueTask.CompletedTask; },
-            TestContext.Current.CancellationToken
+            onError: e => throw new InvalidOperationException(e.Message),
+            onValid: notification => { Assert.IsType<StubNotification>(notification); return ValueTask.CompletedTask; }
             );
     }
 }

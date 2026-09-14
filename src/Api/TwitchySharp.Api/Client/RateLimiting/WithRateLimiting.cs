@@ -81,7 +81,7 @@ public static class TwitchRateLimiting
         this TwitchClient client,
         Func<TwitchRateLimitQueueOptions, TwitchRateLimitQueueOptions>? configure = null
         )
-        {
+    {
             TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
             return client.Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
                 scope.ResolveOrDefault<ClientId?>(ct)

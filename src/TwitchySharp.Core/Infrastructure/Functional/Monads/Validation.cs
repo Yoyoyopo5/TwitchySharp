@@ -131,10 +131,10 @@ public static class AsyncValidationExtensions
             onValid: valid => onValid(valid, ct)
             );
 
-    public static async ValueTask MatchAsync<T>(this ValueTask<Validation<T>> val, Func<Error, CancellationToken, ValueTask> onError, Func<T, CancellationToken, ValueTask> onValid, CancellationToken ct)
+    public static async ValueTask MatchAsync<T>(this ValueTask<Validation<T>> val, Func<Error, ValueTask> onError, Func<T, ValueTask> onValid)
         => await (await val).Match(
-            onError: e => onError(e, ct),
-            onValid: valid => onValid(valid, ct)
+            onError: e => onError(e),
+            onValid: valid => onValid(valid)
             );
 
     public static async Task MatchAsync<T>(this Task<Validation<T>> val, Func<Error, CancellationToken, Task> onError, Func<T, CancellationToken, Task> onValid, CancellationToken ct)

@@ -67,14 +67,13 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(WELCOME_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
-            (message, _) =>
+            e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
+            message =>
             {
                 EventSubWebsocketMessage<WelcomeMessagePayload> welcome = Assert.IsType<EventSubWebsocketMessage<WelcomeMessagePayload>>(message);
                 Assert.Equal(expectedMessage, welcome);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -97,14 +96,13 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(KEEPALIVE_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
-            (message, _) =>
+            e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
+            message =>
             {
                 EventSubWebsocketMessage<KeepaliveMessagePayload> keepalive = Assert.IsType<EventSubWebsocketMessage<KeepaliveMessagePayload>>(message);
                 Assert.Equal(expectedMessage, keepalive);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -135,14 +133,13 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(RECONNECT_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
-            (message, _) =>
+            e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
+            message =>
             {
                 EventSubWebsocketMessage<ReconnectMessagePayload> reconnect = Assert.IsType<EventSubWebsocketMessage<ReconnectMessagePayload>>(message);
                 Assert.Equal(expectedMessage, reconnect);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -182,14 +179,13 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(REVOCATION_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
-            (message, _) =>
+            e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
+            message =>
             {
                 EventSubWebsocketMessage<RevocationMessagePayload> revocation = Assert.IsType<EventSubWebsocketMessage<RevocationMessagePayload>>(message);
                 Assert.Equal(expectedMessage, revocation);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -243,14 +239,13 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(NOTIFICATION_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
-            (message, _) =>
+            e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
+            message =>
             {
                 EventSubWebsocketMessage<NotificationMessagePayload> notification = Assert.IsType<EventSubWebsocketMessage<NotificationMessagePayload>>(message);
                 Assert.Equal(expectedMessage, notification);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -270,13 +265,12 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(UNSUPPORTED_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) =>
+            e =>
             {
                 Assert.IsType<WebsocketMessageDeserializer.DeserializationError>(e);
                 return ValueTask.CompletedTask;
             },
-            (message, _) => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error)."),
-            CancellationToken.None
+            message => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error).")
             );
     }
 
@@ -304,13 +298,12 @@ public class Test_WebsocketMessageDeserializer
 
         await MockProcess(new(INVALID_WELCOME_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
             .MatchAsync(
-            (e, _) =>
+            e =>
             {
                 Assert.IsType<WebsocketMessageDeserializer.DeserializationError>(e);
                 return ValueTask.CompletedTask;
             },
-            (message, _) => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error)."),
-            CancellationToken.None
+            message => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error).")
             );
     }
 }

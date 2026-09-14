@@ -15,13 +15,12 @@ public class Test_WithIdempotentRequests
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
-            onError: (e, _) =>
+            onError: e =>
             {
                 Assert.IsType<IdempotencyError>(e);
                 return ValueTask.CompletedTask;
             },
-            onValid: (_, _) => throw new NotSupportedException("Process returned Validation (expected Error)."),
-            CancellationToken.None
+            onValid: _ => throw new NotSupportedException("Process returned Validation (expected Error).")
             );
     }
 
@@ -34,9 +33,8 @@ public class Test_WithIdempotentRequests
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
-            onError: (e, _) => throw new NotSupportedException("Process returned Error (expected Validation)."),
-            onValid: (_, _) => ValueTask.CompletedTask,
-            CancellationToken.None
+            onError: e => throw new NotSupportedException("Process returned Error (expected Validation)."),
+            onValid: _ => ValueTask.CompletedTask
             );
     }
 }

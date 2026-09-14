@@ -22,9 +22,8 @@ public class Test_WithIdempotentMessages
         ProcessWebsocketMessage mockProcess = MockProcess.WithIdempotentMessages((_, _) => ValueTask.FromResult(true));
 
         await mockProcess(new(), TestContext.Current.CancellationToken).MatchAsync(
-            onError: (e, ct) => ValueTask.CompletedTask,
-            onValid: (message, ct) => throw new InvalidOperationException("Process returned Validation (expected Error)."),
-            CancellationToken.None
+            onError: e => ValueTask.CompletedTask,
+            onValid: message => throw new InvalidOperationException("Process returned Validation (expected Error).")
             );
     }
 
@@ -34,9 +33,8 @@ public class Test_WithIdempotentMessages
         ProcessWebsocketMessage mockProcess = MockProcess.WithIdempotentMessages((_, _) => ValueTask.FromResult(false));
 
         await mockProcess(new(), TestContext.Current.CancellationToken).MatchAsync(
-            onError: (e, ct) => throw new InvalidOperationException("Process returned Error (expected Validation)."),
-            onValid: (message, ct) => ValueTask.CompletedTask,
-            CancellationToken.None
+            onError: e => throw new InvalidOperationException("Process returned Error (expected Validation)."),
+            onValid: message => ValueTask.CompletedTask
             );
     }
 }
