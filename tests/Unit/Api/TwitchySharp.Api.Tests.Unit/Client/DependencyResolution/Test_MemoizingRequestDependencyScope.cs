@@ -11,6 +11,68 @@ public class Test_MemoizingRequestDependencyScope
     }
 
     [Fact]
+    public void GetResolver_AfterSetResolver_ReturnsSetResolver()
+    {
+        ResolveRequestDependency<string> expected = (scope, ct)
+            => ValueTask.FromResult<Validation<string>>("hello");
+
+        ImmutableRequestDependencyCollection dc = new();
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+        scope.SetResolver(expected);
+
+        ResolveRequestDependency<string>? actual = scope.GetResolver<string>();
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void GetResolver_WithoutSetResolver_ReturnsNull()
+    {
+        ImmutableRequestDependencyCollection dc = new();
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+
+        ResolveRequestDependency<string>? actual = scope.GetResolver<string>();
+
+        Assert.Null(actual);
+    }
+
+    [Fact]
+    public async Task SetResolver_AfterResolvingDisposable_MemoizedValueDisposed()
+    {
+        StubDisposable disposable = new();
+
+        ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
+            .SetFixed(disposable);
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+        await scope.ResolveOrDefault<StubDisposable?>(TestContext.Current.CancellationToken);
+        scope.SetResolver<ITwitchRequestDependencyCollection, StubDisposable>(scope => new StubDisposable());
+
+        Assert.True(disposable.Disposed);
+    }
+
+    [Fact]
+    public async Task ResolveOrDefault_WithResolverOnCollection_ReturnsResolverValue()
+    {
+        const string EXPECTED = "test_string";
+
+        ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
+            .SetFixed(EXPECTED);
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+
+        await scope.ResolveOrDefault<string>(TestContext.Current.CancellationToken).MatchAsync(
+            e => throw new Exception(e.Message),
+            v =>
+            {
+                Assert.Equal(EXPECTED, v);
+                return v;
+            });
+    }
+
+    [Fact]
     public async Task ResolveOrDefault_DisposableResult_ThenDispose_DisposesMemoizedResult()
     {
         StubDisposable disposable = new();
@@ -69,5 +131,20 @@ public class Test_MemoizingRequestDependencyScope
 
         Assert.Equal(RESOLVER_VALUE, result);
         Assert.Equal(1, resolverCalledCount);
+    }
+
+    [Fact]
+    public async Task Dispose_WithDisposableMemoizedValues_DisposesMemoizedValues()
+    {
+        StubDisposable disposable = new();
+        ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
+            .SetFixed(disposable);
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+        await scope.ResolveOrDefault<StubDisposable>(TestContext.Current.CancellationToken);
+
+        scope.Dispose();
+
+        Assert.True(disposable.Disposed);
     }
 }
