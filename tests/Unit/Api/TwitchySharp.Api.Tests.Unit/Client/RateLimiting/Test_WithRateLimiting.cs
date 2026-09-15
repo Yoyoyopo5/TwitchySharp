@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.Api.Tests.Unit.Client.RateLimiting;
 
@@ -52,17 +53,18 @@ public class Test_WithRateLimiting
     }
 
     [Fact]
-    public async Task SendTwitchRequest_NoneRemaining_RequestWaitsForReset()
+    public async Task SendAsync_NoneRemaining_RequestWaitsForReset()
     {
-        const int RESET_SECONDS = 1;
+        const int RESET_MS = 100;
         DateTimeOffset now = DateTimeOffset.MinValue;
+        TimeSpan reset = TimeSpan.FromMilliseconds(RESET_MS);
 
         TestRateLimitCache mockCache = new()
         {
             Get = (_, _) => ValueTask.FromResult<TwitchRateLimitDetails?>(new TwitchRateLimitDetails()
             {
                 Remaining = 0,
-                Reset = now.AddSeconds(RESET_SECONDS)
+                Reset = now + reset
             })
         };
 
@@ -78,11 +80,11 @@ public class Test_WithRateLimiting
         await client.SendAsync(new TestTwitchRequest(), TestContext.Current.CancellationToken);
         sw.Stop();
 
-        Assert.True(sw.ElapsedMilliseconds > (RESET_SECONDS * 1000));
+        Assert.True(sw.Elapsed >= reset - TimeSpan.FromMilliseconds(20));
     }
 
     [Fact]
-    public async Task SendTwitchRequest_WithConfiguredClientId_CacheSeesClientId()
+    public async Task SendAsync_WithClientId_CacheSeesClientId()
     {
         ClientId? expectedClientId = new("12345");
         ClientId? cacheClientId = null;
@@ -112,19 +114,21 @@ public class Test_WithRateLimiting
     }
 
     [Fact]
-    public async Task SendTwitchRequestWithRateLimiting_InParallel_OneRemaining_OneRequestWaits()
+    public async Task SendAsync_InParallel_OneRemaining_OneRequestWaits()
     {
         DateTimeOffset now = DateTimeOffset.MinValue;
-        const int RESET_SECONDS = 1;
+        const int RESET_MS = 200;
+        TimeSpan reset = TimeSpan.FromMilliseconds(RESET_MS);
 
         int remaining = 1;
+        CancellationToken ct = TestContext.Current.CancellationToken;
 
         TestRateLimitCache mockCache = new()
         {
             Get = (clientId, _) => ValueTask.FromResult<TwitchRateLimitDetails?>(new()
             {
                 Remaining = remaining--,
-                Reset = now.AddSeconds(RESET_SECONDS)
+                Reset = now + reset
             })
         };
 
@@ -137,19 +141,14 @@ public class Test_WithRateLimiting
             })
             .SerializeRequestsByClientId();
 
-        ManualResetEventSlim gate = new(false);
+        DateTime[] requestCompletions = new DateTime[2];
 
-        Task[] tasks = Enumerable.Range(0, 2).Select(_ => Task.Run(async () =>
+        await Concurrency.RunConcurrently(2, async i =>
         {
-            gate.Wait(TestContext.Current.CancellationToken);
-            await client.SendAsync(new TestTwitchRequest(), TestContext.Current.CancellationToken);
-        }, TestContext.Current.CancellationToken)).ToArray();
+            await client.SendAsync(new TestTwitchRequest(), ct);
+            requestCompletions[i] = DateTime.UtcNow;
+        }, ct);
 
-        Stopwatch sw = Stopwatch.StartNew();
-        gate.Set();
-        await Task.WhenAll(tasks);
-        sw.Stop();
-
-        Assert.True(sw.ElapsedMilliseconds > (RESET_SECONDS * 1000));
+        Assert.True((requestCompletions[1] - requestCompletions[0]).Duration() >= reset - TimeSpan.FromMilliseconds(50));
     }
 }
