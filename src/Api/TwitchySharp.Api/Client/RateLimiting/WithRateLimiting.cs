@@ -21,8 +21,15 @@ public static class TwitchRateLimiting
     /// Send each <see cref="TwitchRequest"/> in series.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This disables parallel request sending through the configured <see cref="HttpClient"/>.
     /// Can be useful for strict rate limiting situations (in that case, call this after configuring rate limiting).
+    /// </para>
+    /// <para>
+    /// This will only serialize up to resolving <see cref="HttpResponseMessage"/>.
+    /// The final response conversion from <see cref="HttpResponseMessage"/> to <see cref="TwitchResponse{TResponseContent}"/>
+    /// is not serialized.
+    /// </para>
     /// </remarks>
     /// <param name="client">The client to seriazlize requests for.</param>
     /// <param name="lockFactory">
