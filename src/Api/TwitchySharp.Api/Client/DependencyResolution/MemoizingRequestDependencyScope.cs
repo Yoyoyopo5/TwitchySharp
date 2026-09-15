@@ -37,7 +37,7 @@ internal class MemoizingRequestDependencyScope(
         => SetResolver(resolve);
     ITwitchRequestDependencyCollection ITwitchRequestDependencyCollection<ITwitchRequestDependencyCollection>.SetResolver<T>(ResolveRequestDependency<T> resolve)
         => SetResolver(resolve);
-    public ResolveRequestDependency<T>? GetResolver<T>() => GetResolver<T>();
+    public ResolveRequestDependency<T>? GetResolver<T>() => DependencyCollection.GetResolver<T>();
 
     private void InvalidateMemo<T>()
     {
