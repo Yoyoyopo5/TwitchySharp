@@ -3,12 +3,9 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api;
 
-/// <summary>
-/// Contains <see cref="TwitchClient"/> extensions for rate limiting.
-/// </summary>
-public static class TwitchRateLimiting
+internal static class IAsyncDisposableExtensions
 {
-    private static async ValueTask<T> AwaitUsing<T>(
+    public static async ValueTask<T> AwaitUsing<T>(
         this ValueTask<IAsyncDisposable> disposable,
         Func<ValueTask<T>> func
         )
@@ -16,7 +13,29 @@ public static class TwitchRateLimiting
         await using IAsyncDisposable dispose = await disposable;
         return await func();
     }
+}
 
+internal static class ResolveRequestDependencyConcurrencyExtensions
+{
+    public static ResolveRequestDependency<T> SerializeBy<T, TKey>(
+        this ResolveRequestDependency<T> next,
+        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
+        )
+        where TKey : struct
+    {
+        lockFactory ??= ThreadSafety.CreateInMemoryLockProvider<TKey>();
+        return (scope, ct) => scope.ResolveOrDefault<TKey?>(ct)
+            .BindAsync(key => key is null
+                ? next(scope, ct)
+                : lockFactory(key.Value, ct).AwaitUsing(() => next(scope, ct)));
+    }
+}
+
+/// <summary>
+/// Contains <see cref="TwitchClient"/> extensions for rate limiting.
+/// </summary>
+public static class TwitchRateLimiting
+{
     /// <summary>
     /// Send each <see cref="TwitchRequest"/> in series.
     /// </summary>
@@ -31,7 +50,7 @@ public static class TwitchRateLimiting
     /// is not serialized.
     /// </para>
     /// </remarks>
-    /// <param name="client">The client to seriazlize requests for.</param>
+    /// <param name="client">The client to serialize requests for.</param>
     /// <param name="lockFactory">
     /// The lock provider to use.
     /// Each request waits for an <see cref="IAsyncDisposable"/> before resolving <see cref="HttpResponseMessage"/>,
@@ -45,17 +64,8 @@ public static class TwitchRateLimiting
     /// <returns>A new <see cref="TwitchClient"/> configured to serialize requests by their resolved <see cref="ClientId"/>.</returns>
     public static TwitchClient SerializeRequestsByClientId(
         this TwitchClient client,
-        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
-        ClientId? defaultClientId = null)
-        => client.Configure<TwitchClient, HttpResponseMessage?>(next =>
-        {
-            lockFactory ??= ThreadSafety.CreateInMemoryLockProvider<ClientId>();
-            return (scope, ct) => scope.ResolveOrDefault<ClientId?>(ct)
-                .MapAsync(clientId => clientId ?? defaultClientId)
-                .BindAsync(clientId => clientId.HasValue
-                    ? lockFactory(clientId.Value, ct).AwaitUsing(() => next(scope, ct))
-                    : next(scope, ct));
-        });
+        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
+        => client.Configure<TwitchClient, HttpResponseMessage?>(next => next.SerializeBy(lockFactory));
 
     private static ValueTask WaitFor(
         this TwitchRateLimitDetails rateLimitDetails,
