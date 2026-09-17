@@ -26,10 +26,10 @@ public static class ExtensionJwtResolution
     // Required configured ExtensionSecret resolver
     public static TwitchClient UseExtensionJwts(
         this TwitchClient client,
-        ITwitchTokenCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>? cache = null,
-        Func<DateTimeOffset>? getNow = null,
+        IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>? cache = null,
         Func<TwitchIdentity.Extension, DateTimeOffset>? getNewTokenExpiry = null,
-        Func<ExtensionJwtPayload, string>? serializePayload = null
+        Func<ExtensionJwtPayload, string>? serializePayload = null,
+        Func<DateTimeOffset>? getNow = null
         )
     {
         cache ??= new InMemoryConcurrentCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>();

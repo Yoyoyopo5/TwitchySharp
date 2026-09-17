@@ -44,12 +44,16 @@ public class Test_WithRateLimiting
         Reset = DateTimeOffset.MaxValue
     };
 
-    private record TestRateLimitCache : ITwitchRateLimitCache
+    private record TestRateLimitCache : IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>
     {
         public Func<ClientId, CancellationToken, ValueTask<TwitchRateLimitDetails?>> Get { get; init; } = (_, _) => ValueTask.FromResult<TwitchRateLimitDetails?>(null);
-        public Func<ClientId, TwitchRateLimitDetails?, CancellationToken, ValueTask> Set { get; init; } = (_, _, _) => ValueTask.CompletedTask;
-        public ValueTask<TwitchRateLimitDetails?> GetRateLimitDetails(ClientId clientId, CancellationToken ct) => Get(clientId, ct);
-        public ValueTask SetRateLimitDetails(ClientId clientId, TwitchRateLimitDetails? details, CancellationToken ct) => Set(clientId, details, ct);
+        public Func<ClientId, TwitchRateLimitDetails?, CancellationToken, ValueTask<IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>>> Set
+        {
+            get => field ??= (_, _, _) => ValueTask.FromResult<IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>>(this);
+            init;
+        }
+        ValueTask<TwitchRateLimitDetails?> IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>.GetOrDefault(ClientId clientId, CancellationToken ct) => Get(clientId, ct);
+        ValueTask<IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>> IRequestDependencyCache<ClientId, TwitchRateLimitDetails?>.Set(ClientId clientId, TwitchRateLimitDetails? details, CancellationToken ct) => Set(clientId, details, ct);
     }
 
     [Fact]

@@ -17,5 +17,5 @@ public record TwitchRateLimitQueueOptions
     /// <remarks>
     /// If left <see langword="null"/>, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> scoped to this options instance is used (fine for most use cases).
     /// </remarks>
-    public ITwitchRateLimitCache Cache { get; init; } = new InMemoryRateLimitCache();
+    public IRequestDependencyCache<ClientId, TwitchRateLimitDetails?> Cache { get; init; } = new InMemoryConcurrentCache<ClientId, TwitchRateLimitDetails?>();
 }

@@ -45,7 +45,7 @@ public static class AppAccessTokenResolution
     // Requires configured ClientSecret resolver
     public static TwitchClient UseAppAccessTokens(
         this TwitchClient client,
-        ITwitchTokenCache<ClientId, AccessTokenDetails.App>? tokenCache = null,
+        IRequestDependencyCache<ClientId, AccessTokenDetails.App>? tokenCache = null,
         Func<DateTimeOffset>? getNow = null
         )
     {

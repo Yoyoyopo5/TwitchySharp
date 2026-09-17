@@ -97,13 +97,13 @@ public static class TwitchRateLimiting
                         if (!clientId.HasValue)
                             return await next(scope, ct);
 
-                        if (await options.Cache.GetRateLimitDetails(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
+                        if (await options.Cache.GetOrDefault(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
                             await cachedDetails.WaitFor(options.GetNow(), ct);
 
                         return await next(scope, ct).MapAsync(async response =>
                         {
                             if (response is not null)
-                                await options.Cache.SetRateLimitDetails(
+                                await options.Cache.Set(
                                     clientId.Value,
                                     response.Headers.ToTwitchRateLimitDetails(),
                                     ct);

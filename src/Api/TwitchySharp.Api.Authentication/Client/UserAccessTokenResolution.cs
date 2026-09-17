@@ -48,7 +48,7 @@ public static class UserAccessTokenResolution
             : await client.RefreshToken(clientId, clientSecret, expiredDetails.Identity.UserId, refreshToken, ct);
 
     private static ResolveRequestDependency<AccessTokenDetails.User?> GetFromCache(
-        ITwitchTokenCache<TwitchIdentity.User, AccessTokenDetails.User> cache
+        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache
         )
         => (context, ct) => context.ResolveOrDefault<TwitchIdentity.User>(ct)
             .MapAsync(identity => identity is null
@@ -67,7 +67,7 @@ public static class UserAccessTokenResolution
 
     public static TwitchClient UseUserAccessTokens(
         this TwitchClient client,
-        ITwitchTokenCache<TwitchIdentity.User, AccessTokenDetails.User> cache,
+        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache,
         Func<DateTimeOffset>? getNow = null
         )
     {
