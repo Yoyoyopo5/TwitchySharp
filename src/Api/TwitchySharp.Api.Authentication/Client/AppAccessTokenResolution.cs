@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Api.Authentication;
 
+/// <summary>
+/// <see cref="TwitchClient"/> extensions for resolving <see cref="AppAccessToken"/>s for requests.
+/// </summary>
 public static class AppAccessTokenResolution
 {
     private static async ValueTask<Validation<AccessTokenDetails.App>> GetNewAppAccessToken(
@@ -42,7 +45,35 @@ public static class AppAccessTokenResolution
         )
         => client.When((scope, ct) => scope.ResolveOrDefault<BearerTokenType?>(ct).MapAsync(type => type == tokenType));
 
-    // Requires configured ClientSecret resolver
+    /// <summary>
+    /// Configure a <see cref="TwitchClient"/> to resolve <see cref="AppAccessToken"/>s for requests requiring them
+    /// using a default token acquisition flow and caching strategy.
+    /// </summary>
+    /// <remarks>
+    /// Using this feature requires a <see cref="ClientSecret"/> resolver to be configured
+    /// in order to acquire new <see cref="AppAccessToken"/>s from Twitch.
+    /// You can use <see cref="WithClient"/> to configure a mapping between a <see cref="ClientId"/>
+    /// and a <see cref="ClientSecret"/>, or configure a <see cref="ClientSecret"/> resolver manually.
+    /// </remarks>
+    /// <param name="client">The client to configure.</param>
+    /// <param name="tokenCache">
+    /// The app access token cache to use.
+    /// Tokens are preferentially pulled from this cache.
+    /// If the requested token is not in the cache, or if it is expired,
+    /// a new token will be acquired from Twitch using <see cref="ClientCredentialsRequest"/>
+    /// and stored in the cache.
+    /// <para>
+    /// If <see langword="null"/>, a default in-memory cache is used.
+    /// </para>
+    /// </param>
+    /// <param name="getNow">
+    /// A function that returns the current time.
+    /// This is used for evaluating token expiry.
+    /// <para>
+    /// If <see langword="null"/>, a function returning <see cref="DateTimeOffset.UtcNow"/> is used.
+    /// </para>
+    /// </param>
+    /// <returns>The configured client.</returns>
     public static TwitchClient UseAppAccessTokens(
         this TwitchClient client,
         IRequestDependencyCache<ClientId, AccessTokenDetails.App>? tokenCache = null,
@@ -51,6 +82,12 @@ public static class AppAccessTokenResolution
     {
         tokenCache ??= new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>();
         getNow ??= () => DateTimeOffset.UtcNow;
+
+        // potential for concurrency issues:
+        // Request A and B occur in parallel
+        // No app access token is found
+        // Both request A and request B acquire a new token
+        // To fix, requests asking for the same client credential must serialize app access token resolution
 
         return client.WhenTokenTypeIs(BearerTokenType.AppAccessToken)
             .ConfigureAsNullCoalesce(
@@ -61,6 +98,17 @@ public static class AppAccessTokenResolution
             .EndWhen();
     }
 
+    /// <summary>
+    /// Configure a <see cref="TwitchClient"/> to resolve a <see cref="ClientSecret"/> for a specific <see cref="ClientId"/>.
+    /// </summary>
+    /// <remarks>
+    /// This can be used in conjunction with <see cref="UseAppAccessTokens"/> to configure a
+    /// default flow for acquiring and caching app access tokens.
+    /// </remarks>
+    /// <param name="client">The client to configure.</param>
+    /// <param name="clientId">The <see cref="ClientId"/> to configure a <see cref="ClientSecret"/> for.</param>
+    /// <param name="clientSecret">The <see cref="ClientSecret"/> that the <paramref name="clientId"/> should use.</param>
+    /// <returns>The configured client.</returns>
     public static TwitchClient WithClient(
         this TwitchClient client,
         ClientId clientId,

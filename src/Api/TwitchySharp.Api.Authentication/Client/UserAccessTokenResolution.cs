@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Api.Authentication;
 
+/// <summary>
+/// <see cref="TwitchClient"/> extensions for resolving <see cref="UserAccessToken"/>s for requests.
+/// </summary>
 public static class UserAccessTokenResolution
 {
     private static async ValueTask<Validation<AccessTokenDetails.User>> RefreshToken(
@@ -65,6 +68,19 @@ public static class UserAccessTokenResolution
                     .BindAsync(twitchClient => scope.ResolveRequired<ClientSecret?>(ct)
                     .BindAsync(clientSecret => twitchClient.RefreshToken(details, clientSecret!.Value, ct).MapAsync<AccessTokenDetails.User, AccessTokenDetails.User?>(details => details))));
 
+    /// <summary>
+    /// Configure a <see cref="TwitchClient"/> to resolve <see cref="UserAccessToken"/>s
+    /// for requests requiring them using a specified token cache.
+    /// </summary>
+    /// <param name="client">The client to configure.</param>
+    /// <param name="cache">The user token cache to use.</param>
+    /// <param name="getNow">
+    /// A function that returns the time that token expiry should be compared against.
+    /// <para>
+    /// If <see langword="null"/>, a function returning <see cref="DateTimeOffset.UtcNow"/>.
+    /// </para>
+    /// </param>
+    /// <returns>The configured client.</returns>
     public static TwitchClient UseUserAccessTokens(
         this TwitchClient client,
         IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache,
