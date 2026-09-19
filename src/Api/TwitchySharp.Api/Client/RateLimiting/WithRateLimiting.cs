@@ -15,22 +15,6 @@ internal static class IAsyncDisposableExtensions
     }
 }
 
-internal static class ResolveRequestDependencyConcurrencyExtensions
-{
-    public static ResolveRequestDependency<T> SerializeBy<T, TKey>(
-        this ResolveRequestDependency<T> next,
-        Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
-        )
-        where TKey : struct
-    {
-        lockFactory ??= ThreadSafety.CreateInMemoryLockProvider<TKey>();
-        return (scope, ct) => scope.ResolveOrDefault<TKey?>(ct)
-            .BindAsync(key => key is null
-                ? next(scope, ct)
-                : lockFactory(key.Value, ct).AwaitUsing(() => next(scope, ct)));
-    }
-}
-
 /// <summary>
 /// Contains <see cref="TwitchClient"/> extensions for rate limiting.
 /// </summary>
@@ -65,7 +49,7 @@ public static class TwitchRateLimiting
     public static TwitchClient SerializeRequestsByClientId(
         this TwitchClient client,
         Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
-        => client.Configure<TwitchClient, HttpResponseMessage?>(next => next.SerializeBy(lockFactory));
+        => client.Configure<TwitchClient, HttpResponseMessage?>(next => next.SerializeByValue(lockFactory));
 
     private static ValueTask WaitFor(
         this TwitchRateLimitDetails rateLimitDetails,

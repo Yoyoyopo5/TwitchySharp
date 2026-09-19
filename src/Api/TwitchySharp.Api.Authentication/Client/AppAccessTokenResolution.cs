@@ -66,6 +66,20 @@ public static class AppAccessTokenResolution
     /// If <see langword="null"/>, a default in-memory cache is used.
     /// </para>
     /// </param>
+    /// <param name="lockFactory">
+    /// <para>
+    /// By default, checking the cache, acquiring a new token, and updating the cache are performed
+    /// in serial with other requests using the same identity to avoid two parallel requests
+    /// from both acquiring new tokens.
+    /// </para>
+    /// <para>
+    /// Each request waits for an <see cref="IAsyncDisposable"/> from this function before performing cache operations,
+    /// disposing it once the access token is resolved.
+    /// </para>
+    /// <para>
+    /// If <see langword="null"/>, a default in-memory lock provider is used.
+    /// </para>
+    /// </param>
     /// <param name="getNow">
     /// A function that returns the current time.
     /// This is used for evaluating token expiry.
@@ -77,23 +91,19 @@ public static class AppAccessTokenResolution
     public static TwitchClient UseAppAccessTokens(
         this TwitchClient client,
         IRequestDependencyCache<ClientId, AccessTokenDetails.App>? tokenCache = null,
+        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
         Func<DateTimeOffset>? getNow = null
         )
     {
         tokenCache ??= new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>();
         getNow ??= () => DateTimeOffset.UtcNow;
 
-        // potential for concurrency issues:
-        // Request A and B occur in parallel
-        // No app access token is found
-        // Both request A and request B acquire a new token
-        // To fix, requests asking for the same client credential must serialize app access token resolution
-
         return client.WhenTokenTypeIs(BearerTokenType.AppAccessToken)
             .ConfigureAsNullCoalesce(
                 GetTokenFromTwitch(getNow)
                     .Map(details => details) // map to nullable
                     .WithCache(tokenCache, details => details.ExpiresAt > getNow())
+                    .SerializeByValue(lockFactory)
                     .Map(details => details?.BearerToken))
             .EndWhen();
     }

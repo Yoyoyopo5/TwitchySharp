@@ -50,6 +50,9 @@ public static class ExtensionJwtResolution
     /// If <see langword="null"/>, a default expiry of 120 minutes from <paramref name="getNow"/> is used.
     /// </para>
     /// </param>
+    /// <param name="lockFactory">
+    /// <inheritdoc cref="AppAccessTokenResolution.UseAppAccessTokens" path="/param[@name = 'lockFactory']"/>
+    /// </param>
     /// <param name="serializePayload">
     /// A function mapping the <see cref="ExtensionJwtPayload"/> to a <see langword="string"/> before signing the JWT.
     /// <para>
@@ -62,6 +65,7 @@ public static class ExtensionJwtResolution
         this TwitchClient client,
         IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>? cache = null,
         Func<TwitchIdentity.Extension, DateTimeOffset>? getNewTokenExpiry = null,
+        Func<TwitchIdentity.Extension, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
         Func<ExtensionJwtPayload, string>? serializePayload = null,
         Func<DateTimeOffset>? getNow = null
         )
@@ -76,6 +80,7 @@ public static class ExtensionJwtResolution
                 SignNewJwt(getNewTokenExpiry, serializePayload)
                     .Map(details => details)
                     .WithCache(cache, cached => cached.ExpiresAt > getNow())
+                    .SerializeBy(lockFactory)
                     .Map(details => details?.BearerToken)
             )
             .EndWhen();

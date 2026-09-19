@@ -74,6 +74,9 @@ public static class UserAccessTokenResolution
     /// </summary>
     /// <param name="client">The client to configure.</param>
     /// <param name="cache">The user token cache to use.</param>
+    /// <param name="lockFactory">
+    /// <inheritdoc cref="AppAccessTokenResolution.UseAppAccessTokens" path="/param[@name = 'lockFactory']"/>
+    /// </param>
     /// <param name="getNow">
     /// A function that returns the time that token expiry should be compared against.
     /// <para>
@@ -84,6 +87,7 @@ public static class UserAccessTokenResolution
     public static TwitchClient UseUserAccessTokens(
         this TwitchClient client,
         IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache,
+        Func<TwitchIdentity.User, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
         Func<DateTimeOffset>? getNow = null
         )
     {
@@ -94,6 +98,7 @@ public static class UserAccessTokenResolution
                 GetFromCache(cache)
                     .RefreshExpired(getNow)
                     .WithCache(cache, cached => cached.ExpiresAt > getNow())
+                    .SerializeBy(lockFactory)
                     .Map(details => details?.BearerToken)
             )
             .EndWhen();

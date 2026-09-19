@@ -49,7 +49,7 @@ public static class ResolveRequestDependencyCacheExtensions
         IRequestDependencyCache<TKey, TDetails> cache,
         Func<TDetails, bool> isValid
         )
-        => (scope, ct) => scope.ResolveOrDefault<TKey>(ct)
+        => (scope, ct) => scope.ResolveOrDefault<TKey?>(ct)
             .BindAsync(async key => key is null
                 ? (TDetails?)default
                 : await cache.GetOrDefault(key, ct) is TDetails cachedDetails && isValid(cachedDetails)
