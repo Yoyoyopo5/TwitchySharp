@@ -112,8 +112,14 @@ public static class AppAccessTokenResolution
     /// Configure a <see cref="TwitchClient"/> to resolve a <see cref="ClientSecret"/> for a specific <see cref="ClientId"/>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This can be used in conjunction with <see cref="UseAppAccessTokens"/> to configure a
     /// default flow for acquiring and caching app access tokens.
+    /// </para>
+    /// <para>
+    /// Also configures the <paramref name="clientId"/> as a default <see cref="ClientId"/>,
+    /// if no other previously configured <see cref="ClientId"/> resolver matches.
+    /// </para>
     /// </remarks>
     /// <param name="client">The client to configure.</param>
     /// <param name="clientId">The <see cref="ClientId"/> to configure a <see cref="ClientSecret"/> for.</param>
@@ -125,6 +131,7 @@ public static class AppAccessTokenResolution
         ClientSecret clientSecret
         )
         => client
+            .ConfigureAsNullCoalesce((_, _) => ValueTask.FromResult<Validation<ClientId?>>(clientId))
             .When((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(id => id == clientId))
             .SetFixed((ClientSecret?)clientSecret)
             .EndWhen();
