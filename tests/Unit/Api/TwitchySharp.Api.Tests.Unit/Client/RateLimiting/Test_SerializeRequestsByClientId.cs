@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Tests.Unit.Toolkit;
+using static TwitchySharp.Tests.Unit.Toolkit.Concurrency;
 
 namespace TwitchySharp.Api.Tests.Unit.Client.RateLimiting;
 
@@ -8,10 +9,10 @@ public class Test_SerializeRequestsByClientId
 {
     private static TwitchClient CreateStubClient()
         => new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchClient, HttpResponseMessage?>(scope =>
+            .SetResolver<TwitchClient, HttpResponseMessage?>(async (scope, ct) =>
             {
                 if (scope.Request is ConcurrentRequest cr)
-                    cr.Effect();
+                    await cr.Effect();
                 return null;
             })
             .SetResolver<TwitchClient, TwitchResponse<object>>(async (scope, ct) =>
@@ -25,32 +26,40 @@ public class Test_SerializeRequestsByClientId
                 };
             });
 
-    private record ConcurrentRequest(Action Effect) : StubTwitchRequest;
+    private record ConcurrentRequest(Func<Task> Effect) : StubTwitchRequest;
 
     [Fact]
     public async Task SendAsync_WithNoClientId_RequestsRunInParallel()
     {
-        const int WORKER_COUNT = 512;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMilliseconds(10);
         CancellationToken ct = TestContext.Current.CancellationToken;
-        int count = 0;
+        Concurrency.Probe probe = new();
 
         TwitchClient stubClient = CreateStubClient()
             .SerializeRequestsByClientId();
 
         await Concurrency.RunConcurrently(WORKER_COUNT, async i =>
         {
-            await stubClient.SendAsync(new ConcurrentRequest(() => count++), ct);
+            await stubClient.SendAsync(new ConcurrentRequest(async () =>
+            {
+                using IDisposable serializationBoundary = probe.Enter();
+                await Task.Delay(workerDelay);
+            }), ct);
         }, ct);
 
-        Assert.NotEqual(WORKER_COUNT, count);
+        probe.AssertParallelExecution();
     }
 
     [Fact]
     public async Task SendAsync_WithSameClientId_RequestsRunInSerial()
     {
-        const int WORKER_COUNT = 512;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMicroseconds(100);
         CancellationToken ct = TestContext.Current.CancellationToken;
-        int count = 0;
+        Concurrency.Probe probe = new();
 
         TwitchClient stubClient = CreateStubClient()
             .SetFixed<TwitchClient, ClientId?>(new ClientId("12345"))
@@ -58,18 +67,24 @@ public class Test_SerializeRequestsByClientId
 
         await Concurrency.RunConcurrently(WORKER_COUNT, async i =>
         {
-            await stubClient.SendAsync(new ConcurrentRequest(() => count++), ct);
+            await stubClient.SendAsync(new ConcurrentRequest(async () =>
+            {
+                using IDisposable serializationBoundary = probe.Enter();
+                await Task.Delay(workerDelay);
+            }), ct);
         }, ct);
 
-        Assert.Equal(WORKER_COUNT, count);
+        probe.AssertSerialExecution();
     }
 
     [Fact]
     public async Task SendAsync_WithDifferentClientIds_RequestsRunInParallel()
     {
-        const int WORKER_COUNT = 512;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMilliseconds(10);
         CancellationToken ct = TestContext.Current.CancellationToken;
-        int count = 0;
+        Concurrency.Probe probe = new();
 
         TwitchClient stubClient = CreateStubClient()
             .SerializeRequestsByClientId();
@@ -78,10 +93,14 @@ public class Test_SerializeRequestsByClientId
         {
             await stubClient
                 .SetFixed<TwitchClient, ClientId?>(new ClientId(i.ToString()))
-                .SendAsync(new ConcurrentRequest(() => count++), ct);
+                .SendAsync(new ConcurrentRequest(async () =>
+                {
+                    using IDisposable serializationBoundary = probe.Enter();
+                    await Task.Delay(workerDelay);
+                }), ct);
         }, ct);
 
-        Assert.NotEqual(WORKER_COUNT, count);
+        probe.AssertParallelExecution();
     }
 
     private class StubAsyncDisposable : IAsyncDisposable

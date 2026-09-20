@@ -8,13 +8,16 @@ public class Test_SerializeByValue
     [Fact]
     public async Task ResolveOrDefault_MultipleWithSameValueKey_EvaluatedInSerial()
     {
-        const int WORKER_COUNT = 256;
-        int count = 0;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMicroseconds(100);
+        Concurrency.Probe probe = new();
 
-        ResolveRequestDependency<string> stubResolver = (scope, ct) =>
+        ResolveRequestDependency<string> stubResolver = async (scope, ct) =>
         {
-            count++;
-            return ValueTask.FromResult<Validation<string>>(string.Empty);
+            using IDisposable serializationBoundary = probe.Enter();
+            await Task.Delay(workerDelay, ct);
+            return string.Empty;
         };
         stubResolver = stubResolver.SerializeByValue<string, int>();
 
@@ -28,19 +31,23 @@ public class Test_SerializeByValue
             await stubResolver(scope, TestContext.Current.CancellationToken);
         }, TestContext.Current.CancellationToken);
 
-        Assert.Equal(WORKER_COUNT, count);
+        probe.AssertSerialExecution();
     }
 
     [Fact]
     public async Task ResolveOrDefault_MultipleWithUniqueKeys_EvaluatedInParallel()
     {
-        const int WORKER_COUNT = 256;
-        int count = 0;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMilliseconds(100);
 
-        ResolveRequestDependency<string> stubResolver = (scope, ct) =>
+        Concurrency.Probe probe = new();
+
+        ResolveRequestDependency<string> stubResolver = async (scope, ct) =>
         {
-            count++;
-            return ValueTask.FromResult<Validation<string>>(string.Empty);
+            using IDisposable serializationBoundary = probe.Enter();
+            await Task.Delay(workerDelay, ct);
+            return string.Empty;
         };
         stubResolver = stubResolver.SerializeByValue<string, int>();
 
@@ -52,7 +59,7 @@ public class Test_SerializeByValue
             await stubResolver(scope, TestContext.Current.CancellationToken);
         }, TestContext.Current.CancellationToken);
 
-        Assert.NotEqual(WORKER_COUNT, count);
+        probe.AssertParallelExecution();
     }
 }
 
@@ -61,13 +68,16 @@ public class Test_SerializeBy
     [Fact]
     public async Task ResolveOrDefault_MultipleWithSameReferenceKey_EvaluatedInSerial()
     {
-        const int WORKER_COUNT = 256;
-        int count = 0;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMicroseconds(100);
+        Concurrency.Probe probe = new();
 
-        ResolveRequestDependency<int> stubResolver = (scope, ct) =>
+        ResolveRequestDependency<int> stubResolver = async (scope, ct) =>
         {
-            count++;
-            return ValueTask.FromResult<Validation<int>>(0);
+            using IDisposable serializationBoundary = probe.Enter();
+            await Task.Delay(workerDelay, ct);
+            return 0;
         };
         stubResolver = stubResolver.SerializeBy<int, object>();
 
@@ -81,19 +91,22 @@ public class Test_SerializeBy
             await stubResolver(scope, TestContext.Current.CancellationToken);
         }, TestContext.Current.CancellationToken);
 
-        Assert.Equal(WORKER_COUNT, count);
+        probe.AssertSerialExecution();
     }
 
     [Fact]
     public async Task ResolveOrDefault_MultipleWithUniqueKeys_EvaluatedInParallel()
     {
-        const int WORKER_COUNT = 256;
-        int count = 0;
+        const int WORKER_COUNT = 64;
+        Assert.True(WORKER_COUNT > 1);
+        TimeSpan workerDelay = TimeSpan.FromMilliseconds(100);
+        Concurrency.Probe probe = new();
 
-        ResolveRequestDependency<string> stubResolver = (scope, ct) =>
+        ResolveRequestDependency<string> stubResolver = async (scope, ct) =>
         {
-            count++;
-            return ValueTask.FromResult<Validation<string>>(string.Empty);
+            using IDisposable serializationBoundary = probe.Enter();
+            await Task.Delay(workerDelay, ct);
+            return string.Empty;
         };
         stubResolver = stubResolver.SerializeBy<string, object>();
 
@@ -105,6 +118,6 @@ public class Test_SerializeBy
             await stubResolver(scope, TestContext.Current.CancellationToken);
         }, TestContext.Current.CancellationToken);
 
-        Assert.NotEqual(WORKER_COUNT, count);
+        probe.AssertParallelExecution();
     }
 }
