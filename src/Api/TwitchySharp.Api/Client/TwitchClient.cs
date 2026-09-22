@@ -27,6 +27,7 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
                 .SetResolver<HttpRequestMessage>((scope, ct) => scope.ResolveOrDefault<HttpContent>(ct)
                     .MapAsync(content => new HttpRequestMessage(scope.Request.Method, scope.Request.RequestUri) { Content = content })
                 )
+                .ConfigureDispose<ITwitchRequestDependencyCollection, HttpRequestMessage>(request => request.Dispose())
                 .UseAuthenticatedRequests()
                 .WithHttpClient(new())
                 .UseHttpClientToSendRequests()
@@ -103,7 +104,7 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
         IResponseContentConverter contentConverter = ResponseConverters.FirstOrDefault(rc => rc.CanConvert(request)) ?? DefaultResponseConverter;
 
         // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
-        using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTypedResponse<TResponseContent>(contentConverter));
+        await using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTypedResponse<TResponseContent>(contentConverter));
         return await requestScope.ResolveOrDefault<TwitchResponse<TResponseContent>>(ct).MatchAsync(
             e => e switch
             {
@@ -218,7 +219,8 @@ internal static class DefaultRequestPipelineExtensions
         => resolvers.SetResolver<HttpResponseMessage>((scope, ct) =>
             scope.ResolveRequired<HttpClient>(ct)
                 .BindAsync(httpClient => scope.ResolveRequired<HttpRequestMessage>(ct)
-                .BindAsync<HttpRequestMessage, HttpResponseMessage>(async httpRequestMessage => await httpClient.SendAsync(httpRequestMessage, ct))));
+                .BindAsync<HttpRequestMessage, HttpResponseMessage>(async httpRequestMessage => await httpClient.SendAsync(httpRequestMessage, ct))))
+            .ConfigureDispose<ITwitchRequestDependencyCollection, HttpResponseMessage>(response => response.Dispose());
 
     public static ITwitchRequestDependencyCollection UseRequestContent(
         this ITwitchRequestDependencyCollection resolvers
