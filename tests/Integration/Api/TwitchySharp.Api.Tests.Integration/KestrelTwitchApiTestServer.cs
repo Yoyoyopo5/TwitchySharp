@@ -132,8 +132,9 @@ public class KestrelTwitchApiTestServer
                         {
                             if (e is ExceptionError { Exception: TwitchApiException ex })
                             {
-                                TestContext.Current.AddAttachment("ApiExceptionStatusCode", ex.StatusCode.ToString());
-                                TestContext.Current.AddAttachment("ApiExceptionContent", ex.Content);
+                                string id = Guid.CreateVersion7().ToString();
+                                TestContext.Current.AddAttachment($"ApiExceptionStatusCode-{id}", ex.StatusCode.ToString());
+                                TestContext.Current.AddAttachment($"ApiExceptionContent-{id}", ex.Content);
                             }
                             return e;
                         },
