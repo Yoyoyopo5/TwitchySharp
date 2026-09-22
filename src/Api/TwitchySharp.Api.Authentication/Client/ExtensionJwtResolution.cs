@@ -36,54 +36,68 @@ public static class ExtensionJwtResolution
     /// You can use <see cref="WithExtension"/> to configure an <see cref="ExtensionSecret"/>
     /// </remarks>
     /// <param name="client">The client to configure.</param>
-    /// <param name="cache">
-    /// The token cache to use.
-    /// If a token for the specific <see cref="TwitchIdentity.Extension"/> is not in the cache,
-    /// or if it is expired, a new one is signed and added to the cache.
-    /// <para>
-    /// If <see langword="null"/>, a default in-memory cache is used.
-    /// </para>
-    /// </param>
-    /// <param name="getNewTokenExpiry">
-    /// A function that determines when a newly signed token should expire.
-    /// <para>
-    /// If <see langword="null"/>, a default expiry of 120 minutes from <paramref name="getNow"/> is used.
-    /// </para>
-    /// </param>
-    /// <param name="lockFactory">
-    /// <inheritdoc cref="AppAccessTokenResolution.UseAppAccessTokens" path="/param[@name = 'lockFactory']"/>
-    /// </param>
-    /// <param name="serializePayload">
-    /// A function mapping the <see cref="ExtensionJwtPayload"/> to a <see langword="string"/> before signing the JWT.
-    /// <para>
-    /// If <see langword="null"/>, <see cref="JsonSerializer"/> is used.
-    /// </para>
-    /// </param>
-    /// <param name="getNow"><inheritdoc cref="AppAccessTokenResolution.UseAppAccessTokens" path="/param[@name = 'getNow']"/></param>
+    /// <param name="configureOptions">A function that configures extension JWT options.</param>
     /// <returns>The configured client.</returns>
     public static TwitchClient UseExtensionJwts(
         this TwitchClient client,
-        IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>? cache = null,
-        Func<TwitchIdentity.Extension, DateTimeOffset>? getNewTokenExpiry = null,
-        Func<TwitchIdentity.Extension, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
-        Func<ExtensionJwtPayload, string>? serializePayload = null,
-        Func<DateTimeOffset>? getNow = null
+        Func<Options, Options>? configureOptions = null
         )
     {
-        cache ??= new InMemoryConcurrentCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>();
-        getNow ??= () => DateTimeOffset.UtcNow;
-        getNewTokenExpiry ??= _ => DateTimeOffset.UtcNow + TimeSpan.FromMinutes(120);
-        serializePayload ??= payload => JsonSerializer.Serialize(payload, JsonConfig.ApiOptions);
+        Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.ExtensionJwt)
             .ConfigureAsNullCoalesce(
-                SignNewJwt(getNewTokenExpiry, serializePayload)
+                SignNewJwt(opts.GetNewTokenExpiry, opts.SerializePayload)
                     .Map(details => details)
-                    .WithCache(cache, cached => cached.ExpiresAt > getNow())
-                    .SerializeBy(lockFactory)
+                    .WithCache(opts.JwtCache, cached => cached.ExpiresAt > opts.GetNow())
+                    .SerializeBy(opts.LockFactory)
                     .Map(details => details?.BearerToken)
             )
             .EndWhen();
+    }
+
+    /// <summary>
+    /// Contains optional configuration for <see cref="UseExtensionJwts"/>
+    /// </summary>
+    public record Options
+    {
+        /// <summary>
+        /// The JWT cache to use.
+        /// </summary>
+        /// <remarks>
+        /// If a JWT for the specific <see cref="TwitchIdentity.Extension"/> is not in the cache,
+        /// or if it is expired, a new one is signed and added to the cache.
+        /// <para>
+        /// By default, an in-memory cache is used.
+        /// </para>
+        /// </remarks>
+        public IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt> JwtCache { get; init; }
+            = new InMemoryConcurrentCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>();
+
+        /// <summary>
+        /// A function that determines when a newly signed token should expire.
+        /// </summary>
+        /// <remarks>
+        /// By default, an expiry of 120 minutes from <see cref="DateTimeOffset.UtcNow"/> is used.
+        /// </remarks>
+        public Func<TwitchIdentity.Extension, DateTimeOffset> GetNewTokenExpiry { get; init; }
+            = _ => DateTimeOffset.UtcNow + TimeSpan.FromMinutes(120);
+
+        /// <inheritdoc cref="AppAccessTokenResolution.Options.LockFactory"/>
+        public Func<TwitchIdentity.Extension, CancellationToken, ValueTask<IAsyncDisposable>>? LockFactory { get; init; }
+
+        /// <summary>
+        /// A function mapping the <see cref="ExtensionJwtPayload"/> to a <see langword="string"/> before signing the JWT.
+        /// </summary>
+        /// <remarks>
+        /// By default, <see cref="JsonSerializer"/> is used.
+        /// </remarks>
+        public Func<ExtensionJwtPayload, string> SerializePayload { get; init; }
+            = payload => JsonSerializer.Serialize(payload, JsonConfig.ApiOptions);
+
+        /// <inheritdoc cref="AppAccessTokenResolution.Options.GetNow"/>
+        public Func<DateTimeOffset> GetNow { get; init; }
+            = () => DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
     }
 
     /// <summary>

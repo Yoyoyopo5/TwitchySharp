@@ -47,9 +47,9 @@ public class TwitchTestApplication
                     .WithHttpClient(sp.GetRequiredService<HttpClient>())
                     .AddClientConfiguration(sp)
                     .AddExtensionConfiguration(sp)
-                    .UseAppAccessTokens(sp.GetService<TokenStore>())
+                    .UseAppAccessTokens(options => options with { TokenCache = sp.GetRequiredService<TokenStore>() })
                     .UseUserAccessTokens(sp.GetRequiredService<TokenStore>())
-                    .UseExtensionJwts(sp.GetRequiredService<TokenStore>()))
+                    .UseExtensionJwts(options => options with { JwtCache = sp.GetRequiredService<TokenStore>() }))
             .AddTransient<TestingTwitchClient>(sp => new(sp.GetRequiredService<TwitchClient>()))
             .AddTransient<ITwitchClient>(sp => sp.GetRequiredService<TwitchClient>());
 

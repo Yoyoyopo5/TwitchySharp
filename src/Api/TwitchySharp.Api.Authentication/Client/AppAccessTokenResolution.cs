@@ -56,56 +56,76 @@ public static class AppAccessTokenResolution
     /// and a <see cref="ClientSecret"/>, or configure a <see cref="ClientSecret"/> resolver manually.
     /// </remarks>
     /// <param name="client">The client to configure.</param>
-    /// <param name="tokenCache">
-    /// The app access token cache to use.
-    /// Tokens are preferentially pulled from this cache.
-    /// If the requested token is not in the cache, or if it is expired,
-    /// a new token will be acquired from Twitch using <see cref="ClientCredentialsRequest"/>
-    /// and stored in the cache.
-    /// <para>
-    /// If <see langword="null"/>, a default in-memory cache is used.
-    /// </para>
-    /// </param>
-    /// <param name="lockFactory">
-    /// <para>
-    /// By default, checking the cache, acquiring a new token, and updating the cache are performed
-    /// in serial with other requests using the same identity to avoid two parallel requests
-    /// from both acquiring new tokens.
-    /// </para>
-    /// <para>
-    /// Each request waits for an <see cref="IAsyncDisposable"/> from this function before performing cache operations,
-    /// disposing it once the access token is resolved.
-    /// </para>
-    /// <para>
-    /// If <see langword="null"/>, a default in-memory lock provider is used.
-    /// </para>
-    /// </param>
-    /// <param name="getNow">
-    /// A function that returns the current time.
-    /// This is used for evaluating token expiry.
-    /// <para>
-    /// If <see langword="null"/>, a function returning <see cref="DateTimeOffset.UtcNow"/> is used.
-    /// </para>
-    /// </param>
+    /// <param name="configureOptions">A function that configures app access token options.</param>
     /// <returns>The configured client.</returns>
     public static TwitchClient UseAppAccessTokens(
         this TwitchClient client,
-        IRequestDependencyCache<ClientId, AccessTokenDetails.App>? tokenCache = null,
-        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
-        Func<DateTimeOffset>? getNow = null
+        Func<Options, Options>? configureOptions = null
         )
     {
-        tokenCache ??= new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>();
-        getNow ??= () => DateTimeOffset.UtcNow;
+        Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.AppAccessToken)
             .ConfigureAsNullCoalesce(
-                GetTokenFromTwitch(getNow)
+                GetTokenFromTwitch(opts.GetNow)
                     .Map(details => details) // map to nullable
-                    .WithCache(tokenCache, details => details.ExpiresAt > getNow())
-                    .SerializeByValue(lockFactory)
+                    .WithCache(opts.TokenCache, details => details.ExpiresAt > opts.GetNow())
+                    .SerializeByValue(opts.LockFactory)
                     .Map(details => details?.BearerToken))
             .EndWhen();
+    }
+
+    /// <summary>
+    /// Contains optional configuration for <see cref="UseAppAccessTokens"/>
+    /// </summary>
+    public record Options
+    {
+        /// <summary>
+        /// The app access token cache to use.
+        /// </summary>
+        /// <remarks>
+        /// Tokens are preferentially pulled from this cache.
+        /// If the requested token is not in the cache, or if it is expired,
+        /// a new token will be acquired from Twitch using <see cref="ClientCredentialsRequest"/>
+        /// and stored in the cache.
+        /// <para>
+        /// By default, an in-memory cache is used.
+        /// </para>
+        /// </remarks>
+        public IRequestDependencyCache<ClientId, AccessTokenDetails.App> TokenCache { get; init; }
+            = new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>();
+
+        /// <summary>
+        /// A function determining how cache operations should be serialized.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// By default, checking the cache, acquiring a new token, and updating the cache are performed
+        /// in serial with other requests using the same identity to avoid two parallel requests
+        /// from both acquiring new tokens.
+        /// </para>
+        /// <para>
+        /// Each request waits for an <see cref="IAsyncDisposable"/> from this function before performing cache operations,
+        /// disposing it once the access token is resolved.
+        /// </para>
+        /// <para>
+        /// By default, an in-memory lock provider is used.
+        /// </para>
+        /// </remarks>
+        public Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? LockFactory { get; init; }
+
+        /// <summary>
+        /// A function that returns the time that token expiry should be compared against.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This can be used to adjust clock skew.
+        /// </para>
+        /// Defaults to a function returning <see cref="DateTimeOffset.UtcNow"/> minus one second
+        /// (so that tokens are considered expired one second before they actually do).
+        /// </remarks>
+        public Func<DateTimeOffset> GetNow { get; init; }
+            = () => DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
     }
 
     /// <summary>

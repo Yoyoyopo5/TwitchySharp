@@ -73,34 +73,37 @@ public static class UserAccessTokenResolution
     /// for requests requiring them using a specified token cache.
     /// </summary>
     /// <param name="client">The client to configure.</param>
-    /// <param name="cache">The user token cache to use.</param>
-    /// <param name="lockFactory">
-    /// <inheritdoc cref="AppAccessTokenResolution.UseAppAccessTokens" path="/param[@name = 'lockFactory']"/>
-    /// </param>
-    /// <param name="getNow">
-    /// A function that returns the time that token expiry should be compared against.
-    /// <para>
-    /// If <see langword="null"/>, a function returning <see cref="DateTimeOffset.UtcNow"/>.
-    /// </para>
-    /// </param>
+    /// <param name="tokenCache">The user token cache to use.</param>
+    /// <param name="configureOptions">A function that configures user access token options.</param>
     /// <returns>The configured client.</returns>
     public static TwitchClient UseUserAccessTokens(
         this TwitchClient client,
-        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache,
-        Func<TwitchIdentity.User, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null,
-        Func<DateTimeOffset>? getNow = null
+        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> tokenCache,
+        Func<Options, Options>? configureOptions = null
         )
     {
-        getNow ??= () => DateTimeOffset.UtcNow;
+        Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.UserAccessToken)
             .ConfigureAsNullCoalesce(
-                GetFromCache(cache)
-                    .RefreshExpired(getNow)
-                    .WithCache(cache, cached => cached.ExpiresAt > getNow())
-                    .SerializeBy(lockFactory)
+                GetFromCache(tokenCache)
+                    .RefreshExpired(opts.GetNow)
+                    .WithCache(tokenCache, cached => cached.ExpiresAt > opts.GetNow())
+                    .SerializeBy(opts.LockFactory)
                     .Map(details => details?.BearerToken)
             )
             .EndWhen();
+    }
+
+    /// <summary>
+    /// Contains optional configuration for <see cref="UseUserAccessTokens"/>
+    /// </summary>
+    public record Options
+    {
+        /// <inheritdoc cref="AppAccessTokenResolution.Options.LockFactory"/>
+        public Func<TwitchIdentity.User, CancellationToken, ValueTask<IAsyncDisposable>>? LockFactory { get; init; }
+
+        /// <inheritdoc cref="AppAccessTokenResolution.Options.GetNow"/>
+        public Func<DateTimeOffset> GetNow { get; init; } = () => DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
     }
 }
