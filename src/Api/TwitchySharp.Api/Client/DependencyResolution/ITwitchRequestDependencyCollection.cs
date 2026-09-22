@@ -86,6 +86,18 @@ public static class ITwitchRequestDependencyCollectionExtensions
             context.ResolveOrDefault<TFrom>(ct).MapAsync(f => select(f)));
 
     /// <summary>
+    /// Map a <see cref="Nullable{TStruct}"/> to <typeparamref name="TStruct"/>,
+    /// using the <paramref name="defaultValue"/> if <see langword="null"/>.
+    /// </summary>
+    internal static TCollection MapNullableStruct<TCollection, TStruct>(
+        this TCollection dc,
+        TStruct defaultValue = default
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        where TStruct : struct
+        => dc.From<TCollection, TStruct, TStruct?>(nullable => nullable ?? defaultValue);
+
+    /// <summary>
     /// Set a resolver for <typeparamref name="T"/> that resolves its value from the <see cref="ITwitchRequestDependencyScope.Request"/>
     /// using the provided <paramref name="select"/> function.
     /// </summary>

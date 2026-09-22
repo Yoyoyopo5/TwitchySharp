@@ -181,11 +181,14 @@ internal static class DefaultRequestPipelineExtensions
                 context => context?.Identity
             )
             .From<ITwitchRequestDependencyCollection, ClientId?, TwitchIdentity>(identity => identity?.ClientId)
+            .MapNullableStruct<ITwitchRequestDependencyCollection, ClientId>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.Client, TwitchIdentity>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.User, TwitchIdentity>()
             .From<ITwitchRequestDependencyCollection, UserId?, TwitchIdentity.User>(identity => identity?.UserId)
+            .MapNullableStruct<ITwitchRequestDependencyCollection, UserId>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.Extension, TwitchIdentity>()
-            .From<ITwitchRequestDependencyCollection, ExtensionId?, TwitchIdentity.Extension>(identity => identity?.ExtensionId);
+            .From<ITwitchRequestDependencyCollection, ExtensionId?, TwitchIdentity.Extension>(identity => identity?.ExtensionId)
+            .MapNullableStruct<ITwitchRequestDependencyCollection, ExtensionId>();
 
     public static ITwitchRequestDependencyCollection UseAuthenticatedRequests(
         this ITwitchRequestDependencyCollection resolvers
@@ -197,9 +200,11 @@ internal static class DefaultRequestPipelineExtensions
             .From<ITwitchRequestDependencyCollection, BearerToken?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
                 context => context?.BearerToken
             )
+            .MapNullableStruct<ITwitchRequestDependencyCollection, BearerToken>()
             .From<ITwitchRequestDependencyCollection, BearerTokenType?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
                 context => context?.TokenType
             )
+            .MapNullableStruct<ITwitchRequestDependencyCollection, BearerTokenType>()
             .UseTwitchIdentity()
             .When(scope => scope.Request is IAuthenticatedTwitchRequest)
             .Configure<RequestDependencyConditionalConfiguration<ITwitchRequestDependencyCollection>, HttpRequestMessage?>(
