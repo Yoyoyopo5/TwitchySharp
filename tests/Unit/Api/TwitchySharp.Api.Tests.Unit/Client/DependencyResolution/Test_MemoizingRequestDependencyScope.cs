@@ -73,22 +73,6 @@ public class Test_MemoizingRequestDependencyScope
     }
 
     [Fact]
-    public async Task ResolveOrDefault_DisposableResult_ThenDispose_DisposesMemoizedResult()
-    {
-        StubDisposable disposable = new();
-
-        ITwitchRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
-            .SetFixed(disposable);
-
-        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
-
-        await scope.ResolveOrDefault<StubDisposable>(TestContext.Current.CancellationToken);
-        scope.Dispose();
-
-        Assert.True(disposable.Disposed);
-    }
-
-    [Fact]
     public async Task ResolveOrDefault_ThenSetResolver_ThenResolveOrDefault_EvaluatesNewResolver()
     {
         const string FIRST_VALUE = "first";
@@ -134,17 +118,45 @@ public class Test_MemoizingRequestDependencyScope
     }
 
     [Fact]
-    public async Task Dispose_WithDisposableMemoizedValues_DisposesMemoizedValues()
+    public async Task Dispose_WithConfigureDispose_WithResolvedDependency_DisposesDependency()
     {
-        StubDisposable disposable = new();
+        bool disposed = false;
+
+        object stubDependency = new();
+
+        void dispose(object o)
+        {
+            Assert.Equal(stubDependency, o);
+            disposed = true;
+        }
+
         ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
-            .SetFixed(disposable);
+            .SetFixed(stubDependency)
+            .ConfigureDispose<ImmutableRequestDependencyCollection, object>(dispose);
 
         MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
-        await scope.ResolveOrDefault<StubDisposable>(TestContext.Current.CancellationToken);
 
-        scope.Dispose();
+        await scope.ResolveOrDefault<object>(TestContext.Current.CancellationToken);
+        await scope.DisposeAsync();
 
-        Assert.True(disposable.Disposed);
+        Assert.True(disposed);
+    }
+
+    [Fact]
+    public async Task Dispose_WithConfigureDispose_WithoutResolvingDependency_DependencyNotResolved()
+    {
+        bool disposed = false;
+
+        void dispose(object o) => disposed = true;
+
+        ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
+            .SetResolver<object>((scope, ct) => throw new Exception("Resolver was evaluated."))
+            .ConfigureDispose<ImmutableRequestDependencyCollection, object>(dispose);
+
+        MemoizingRequestDependencyScope scope = new(new StubTwitchRequest(), dc);
+
+        await scope.DisposeAsync();
+
+        Assert.False(disposed);
     }
 }

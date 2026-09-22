@@ -1,6 +1,39 @@
-﻿using TwitchySharp.Infrastructure.Functional;
+﻿using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api;
+
+internal record DependencyDisposalDictionary
+{
+    public ImmutableDictionary<Type, Action<object>> Disposers { get; init; }
+        = ImmutableDictionary.Create<Type, Action<object>>();
+
+    public DependencyDisposalDictionary Add<T>(Action<T> dispose)
+    {
+        void boxedDispose(object o) { if (o is T t) dispose(t); }
+        return this with { Disposers = Disposers.Add(typeof(T), boxedDispose) };
+    }
+
+    public Action<object>? GetOrDefault(Type dependencyType)
+        => Disposers.GetValueOrDefault(dependencyType);
+}
+
+/// <summary>
+/// Extensions relating to dependency lifetimes and disposal.
+/// </summary>
+public static class ITwitchRequestDependencyCollectionDisposeExtensions
+{
+    public static TCollection ConfigureDispose<TCollection, T>(
+        this TCollection dc,
+        Action<T> dispose
+        )
+        where TCollection : ITwitchRequestDependencyCollection<TCollection>
+        => dc.Configure<TCollection, DependencyDisposalDictionary>(next => (scope, ct) =>
+            next(scope, ct).MapAsync(d =>
+                d is not null
+                ? d.Add(dispose)
+                : new DependencyDisposalDictionary().Add(dispose)));
+}
 
 /// <summary>
 /// A <see cref="ITwitchRequestDependencyScope"/> implementation that
@@ -12,10 +45,12 @@ internal class MemoizingRequestDependencyScope(
     TwitchRequest request,
     ITwitchRequestDependencyCollection dependencyCollection
     )
-    : ITwitchRequestDependencyScope, IDisposable
+    : ITwitchRequestDependencyScope, IAsyncDisposable
 {
     public TwitchRequest Request { get; } = request;
     private readonly Dictionary<Type, Validation<object?>> _memos = [];
+    public IReadOnlyDictionary<Type, Validation<object?>> Memos => _memos;
+
     /// <summary>
     /// The underlying <see cref="ITwitchRequestDependencyCollection"/> to resolve dependency values from.
     /// </summary>
@@ -62,16 +97,24 @@ internal class MemoizingRequestDependencyScope(
                 return (T?)value;
             });
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        foreach (Validation<object?> memo in _memos.Values)
-        {
-            memo.Match(e => false, val =>
+        await ResolveOrDefault<DependencyDisposalDictionary>(default)
+            .MapAsync(async d =>
             {
-                if (val is IDisposable disposable)
-                    disposable.Dispose();
-                return true;
+                if (d is null)
+                    return d;
+
+                foreach ((Type t, Validation<object?> v) in _memos)
+                    if (d.GetOrDefault(t) is Action<object> dispose)
+                        v.Map(memo =>
+                        {
+                            if (memo is not null)
+                                dispose(memo);
+                            return memo;
+                        });
+
+                return d;
             });
-        }
     }
 }
