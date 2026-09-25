@@ -180,7 +180,7 @@ internal static class DefaultRequestPipelineExtensions
         => resolvers.From<ITwitchRequestDependencyCollection, TwitchIdentity?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(
                 context => context?.Identity
             )
-            .From<ITwitchRequestDependencyCollection, ClientId?, TwitchIdentity>(identity => identity?.ClientId)
+            .From<ITwitchRequestDependencyCollection, ClientId?, ITwitchRequestAuthenticationContext<TwitchIdentity>>(ctx => ctx?.Identity?.ClientId)
             .MapNullableStruct<ITwitchRequestDependencyCollection, ClientId>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.Client, TwitchIdentity>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.User, TwitchIdentity>()
@@ -188,7 +188,11 @@ internal static class DefaultRequestPipelineExtensions
             .MapNullableStruct<ITwitchRequestDependencyCollection, UserId>()
             .As<ITwitchRequestDependencyCollection, TwitchIdentity.Extension, TwitchIdentity>()
             .From<ITwitchRequestDependencyCollection, ExtensionId?, TwitchIdentity.Extension>(identity => identity?.ExtensionId)
-            .MapNullableStruct<ITwitchRequestDependencyCollection, ExtensionId>();
+            .MapNullableStruct<ITwitchRequestDependencyCollection, ExtensionId>()
+            .ConfigureConditional<ITwitchRequestDependencyCollection, TwitchIdentity>(
+                (identity, scope, ct) => ValueTask.FromResult<Validation<bool>>(identity is { ClientId: null }),
+                (identity, scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(clientId => identity! with { ClientId = clientId })
+                );
 
     public static ITwitchRequestDependencyCollection UseAuthenticatedRequests(
         this ITwitchRequestDependencyCollection resolvers
