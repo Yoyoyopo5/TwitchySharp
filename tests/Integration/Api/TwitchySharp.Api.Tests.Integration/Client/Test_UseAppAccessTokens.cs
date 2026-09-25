@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TwitchySharp.Api.Authentication;
+using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.Api.Tests.Integration.Client;
@@ -49,7 +50,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
                 ? Results.BadRequest("No token was used.")
                 : Results.Ok(token.Replace("Bearer ", string.Empty).ToString());
         }))
-        .Add(fixture.TestServer.Map(HttpMethod.Post, "/oauth2/token", ([FromForm] ClientCredentialsRequestFormData formData) =>
+        .Add(fixture.TestServer.Map(HttpMethod.Post, "/app-access-tokens/oauth2/token", ([FromForm] ClientCredentialsRequestFormData formData) =>
         {
             return formData.ClientId != _fakeClientId.Value
                 ? Results.BadRequest("ClientId did not match.")
@@ -72,6 +73,25 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
         return ValueTask.CompletedTask;
     }
 
+    private TwitchClient CreateTestClient()
+        => fixture.TestServer.GetDefaultTwitchClient()
+            .When(scope => scope.Request is ClientCredentialsRequest)
+            .Configure<RequestDependencyConditionalConfiguration<TwitchClient>, HttpRequestMessage?>(next => (scope, ct) =>
+            {
+                return next(scope, ct).MapAsync(requestMessage =>
+                {
+                    if (requestMessage is not { RequestUri: not null })
+                        return requestMessage;
+
+                    requestMessage.RequestUri = new UriBuilder(requestMessage.RequestUri)
+                    {
+                        Path = "/app-access-tokens/oauth2/token"
+                    }.Uri;
+                    return requestMessage;
+                });
+            })
+            .EndWhen();
+
     [Fact]
     public async Task SendAsync_RequestUsingAppAccessTokens_NoCachedToken_AcquiresNewTokenAndCachesToken()
     {
@@ -79,7 +99,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
 
         InMemoryConcurrentCache<ClientId, AccessTokenDetails.App> cache = new();
 
-        TwitchClient client = fixture.TestServer.GetDefaultTwitchClient()
+        TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with { TokenCache = cache })
             .WithClient(_fakeClientId, _fakeClientSecret);
 
@@ -108,7 +128,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
                 Identity = new(_fakeClientId)
             }, ct);
 
-        TwitchClient client = fixture.TestServer.GetDefaultTwitchClient()
+        TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with
             {
                 TokenCache = cache,
@@ -135,7 +155,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
                 Identity = new(_fakeClientId)
             }, ct);
 
-        TwitchClient client = fixture.TestServer.GetDefaultTwitchClient()
+        TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with
             {
                 TokenCache = cache,
@@ -158,7 +178,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        TwitchClient client = fixture.TestServer.GetDefaultTwitchClient()
+        TwitchClient client = CreateTestClient()
             .UseAppAccessTokens()
             .WithClient(_fakeClientId, _fakeClientSecret);
 
@@ -168,13 +188,41 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
     }
 
     [Fact]
+    public async Task SendAsync_WithDefaultTokenAndCachedToken_UsesCachedAppAccessToken()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        AppAccessToken fakeAccessToken = new("219471709");
+
+        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>()
+            .Set(_fakeClientId, new()
+            {
+                AccessToken = fakeAccessToken,
+                ExpiresAt = DateTimeOffset.MinValue + TimeSpan.FromDays(2),
+                Identity = new(_fakeClientId)
+            }, ct);
+
+        TwitchClient client = CreateTestClient()
+            .SetFixed<TwitchClient, BearerToken?>(new BearerToken("default_token"))
+            .UseAppAccessTokens(options => options with
+            {
+                TokenCache = cache,
+                GetNow = () => DateTimeOffset.MinValue + TimeSpan.FromDays(1)
+            })
+            .WithClient(_fakeClientId, _fakeClientSecret);
+
+        TwitchResponse<BearerToken> response = await client.SendAsync(new StubAppAccessTokenRequest(), ct);
+
+        Assert.Equal(fakeAccessToken.Value, response.Content.Value);
+    }
+
+    [Fact]
     public async Task SendAsync_ConcurrentRequests_NoCachedToken_AcquiresNewTokenOnceAndBothRequestUseNewToken()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         InMemoryConcurrentCache<ClientId, AccessTokenDetails.App> cache = new();
 
-        TwitchClient client = fixture.TestServer.GetDefaultTwitchClient()
+        TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with { TokenCache = cache })
             .WithClient(_fakeClientId, _fakeClientSecret);
 
