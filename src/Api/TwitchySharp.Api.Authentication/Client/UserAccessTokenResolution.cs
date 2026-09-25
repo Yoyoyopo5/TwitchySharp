@@ -85,7 +85,7 @@ public static class UserAccessTokenResolution
         Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.UserAccessToken)
-            .ConfigureAsNullCoalesce(
+            .SetResolver(
                 GetFromCache(tokenCache)
                     .RefreshExpired(opts.GetNow)
                     .WithCache(tokenCache, cached => cached.ExpiresAt > opts.GetNow())

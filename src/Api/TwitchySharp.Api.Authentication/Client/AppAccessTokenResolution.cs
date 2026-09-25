@@ -66,7 +66,7 @@ public static class AppAccessTokenResolution
         Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.AppAccessToken)
-            .ConfigureAsNullCoalesce(
+            .SetResolver(
                 GetTokenFromTwitch(opts.GetNow)
                     .Map(details => details) // map to nullable
                     .WithCache(opts.TokenCache, details => details.ExpiresAt > opts.GetNow())

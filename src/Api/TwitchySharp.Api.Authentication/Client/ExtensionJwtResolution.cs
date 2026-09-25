@@ -46,7 +46,7 @@ public static class ExtensionJwtResolution
         Options opts = configureOptions is null ? new() : configureOptions(new());
 
         return client.WhenTokenTypeIs(BearerTokenType.ExtensionJwt)
-            .ConfigureAsNullCoalesce(
+            .SetResolver(
                 SignNewJwt(opts.GetNewTokenExpiry, opts.SerializePayload)
                     .Map(details => details)
                     .WithCache(opts.JwtCache, cached => cached.ExpiresAt > opts.GetNow())
