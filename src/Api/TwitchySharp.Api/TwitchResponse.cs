@@ -6,6 +6,9 @@ namespace TwitchySharp.Api;
 /// </summary>
 public record TwitchResponse
 {
+    // Consider making this implement IDisposable and compose HttpResponseMessage
+    // This will allow easy support for SSE in the future.
+
     /// <summary>
     /// The request resulting in this response.
     /// </summary>
@@ -26,5 +29,8 @@ public record TwitchResponse
 /// <typeparam name="TResponseContent">The response content type.</typeparam>
 public record TwitchResponse<TResponseContent> : TwitchResponse
 {
+    // Consider making Content a nullable property
+    // to avoid needing to throw exceptions for non-success status codes
+
     public required TResponseContent Content { get; init; }
 }
