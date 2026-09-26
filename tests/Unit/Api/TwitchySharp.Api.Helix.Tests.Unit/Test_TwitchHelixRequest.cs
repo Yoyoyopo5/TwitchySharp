@@ -51,43 +51,6 @@ public class Test_TwitchHelixRequest
         Assert.Equal("/custom/test", uri.AbsolutePath);
     }
 
-    [Fact]
-    public void Identity_WhenNotSet_FallsBackToDefaultIdentity()
-    {
-        const string FAKE_USER_ID = "default_user";
-
-        TwitchIdentity.User defaultIdentity = new(new UserId(FAKE_USER_ID));
-        StubHelixRequest request = new()
-        {
-            StubDefaultIdentity = defaultIdentity
-        };
-
-        Assert.Equal(defaultIdentity, request.AuthorizationContext.Identity);
-    }
-
-    [Fact]
-    public void Identity_WhenSet_OverridesDefaultIdentity()
-    {
-        TwitchIdentity.User defaultIdentity = new(new UserId("default_user"));
-        TwitchIdentity.User overrideIdentity = new(new UserId("override_user"));
-        StubHelixRequest request = new()
-        {
-            StubDefaultIdentity = defaultIdentity,
-            AuthorizationContext = new TwitchRequestAuthorizationContext() { Identity = overrideIdentity }
-        };
-
-        Assert.Equal(overrideIdentity, request.AuthorizationContext.Identity);
-        Assert.NotEqual(defaultIdentity, request.AuthorizationContext.Identity);
-    }
-
-    [Fact]
-    public void Identity_WhenDefaultIdentityNotOverridden_UsesStaticDefault()
-    {
-        StubHelixRequest request = new();
-
-        Assert.Equal(TwitchIdentity.Client.Default, request.AuthorizationContext.Identity);
-    }
-
     private record StubHelixRequest : TwitchHelixRequest<object>
     {
         public string FakePath { get; init; } = "/stub";
@@ -96,11 +59,6 @@ public class Test_TwitchHelixRequest
 
         protected override string Path => FakePath;
         public override HttpMethod Method => HttpMethod.Get;
-
-        protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext
-            => StubDefaultIdentity is null
-                ? base.DefaultAuthorizationContext
-                : new TwitchRequestAuthorizationContext() { Identity = StubDefaultIdentity };
         protected override HttpQueryParameters? QueryParameters => StubQueryParameters;
     }
 }

@@ -16,12 +16,12 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
 
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await UpdateShieldModeStatus(client, broadcasterId, true, ct);
+        await UpdateShieldModeStatus(client, testName, broadcasterId, true, ct);
         await Task.Delay(250, ct);
-        await UpdateShieldModeStatus(client, broadcasterId, false, ct);
+        await UpdateShieldModeStatus(client, testName, broadcasterId, false, ct);
     }
 
     [Fact]
@@ -32,21 +32,21 @@ public class Test_ShieldMode(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
 
-        await GetShieldModeStatus(_fixture.GetTwitchApiClient(), userConfig.UserId, TestContext.Current.CancellationToken);
+        await GetShieldModeStatus(_fixture.GetTwitchApiClient(), testName, userConfig.UserId, TestContext.Current.CancellationToken);
     }
 
-    private static Task<TwitchResponse<UpdateShieldModeStatusResponse>> UpdateShieldModeStatus(ITwitchClient client, UserId broadcasterId, bool isActive, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateShieldModeStatusResponseContent>> UpdateShieldModeStatus(TestingTwitchClient client, TestName testName, UserId broadcasterId, bool isActive, CancellationToken ct)
         => client.SendAsync(new UpdateShieldModeStatusRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             ShieldModeStatus = new() { IsActive = isActive }
-        }, ct);
+        }, testName, ct);
 
-    private static Task<TwitchResponse<GetShieldModeStatusResponse>> GetShieldModeStatus(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<GetShieldModeStatusResponseContent>> GetShieldModeStatus(TestingTwitchClient client, TestName testName, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new GetShieldModeStatusRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId
-        }, ct);
+        }, testName, ct);
 }

@@ -33,8 +33,12 @@ public sealed record ChannelModerateV2(UserId BroadcasterUserId, UserId Moderato
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelModerateV2;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelModerateV2;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("moderator_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadBlockedTerms, Scope.ModeratorReadChatSettings, Scope.ModeratorReadUnbanRequests, Scope.ModeratorReadBannedUsers, Scope.ModeratorReadChatMessages, Scope.ModeratorReadWarnings, Scope.ModeratorReadModerators, Scope.ModeratorReadVips);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadBlockedTerms, Scope.ModeratorReadChatSettings, Scope.ModeratorReadUnbanRequests, Scope.ModeratorReadBannedUsers, Scope.ModeratorReadChatMessages, Scope.ModeratorReadWarnings, Scope.ModeratorReadModerators, Scope.ModeratorReadVips)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

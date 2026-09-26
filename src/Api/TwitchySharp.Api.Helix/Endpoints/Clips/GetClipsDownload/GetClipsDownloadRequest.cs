@@ -6,21 +6,28 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// </summary>
 /// <remarks>
 /// <b>Rate Limits:</b> Limited to 100 requests per minute.
-/// <br/>
-/// Requires an app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.EditorManageClips"/> for the <see cref="EditorId"/> or <see cref="Scope.ChannelManageClips"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-clips-download">Get Clips Download</see> for more information.
 /// </remarks>
 public record GetClipsDownloadRequest
-    : TwitchHelixRequest<GetClipsDownloadResponse>
+    : TwitchHelixRequest<GetClipsDownloadResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/clips/downloads";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(EditorId),
         ValidScopes = ImmutableHashSet.Create(Scope.EditorManageClips, Scope.ChannelManageClips)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("editor_id", EditorId)

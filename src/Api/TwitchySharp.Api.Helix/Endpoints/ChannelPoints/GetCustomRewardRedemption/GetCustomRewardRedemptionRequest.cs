@@ -17,15 +17,21 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// </para>
 /// </remarks>
 public abstract record GetCustomRewardRedemptionRequest
-    : TwitchHelixRequest<GetCustomRewardRedemptionResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetCustomRewardRedemptionResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

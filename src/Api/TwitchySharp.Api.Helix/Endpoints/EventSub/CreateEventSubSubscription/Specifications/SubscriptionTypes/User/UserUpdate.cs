@@ -14,7 +14,7 @@ public sealed record UserUpdate(UserId UserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserUpdate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserUpdate;
-
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; } = new();
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("user_id"), UserId);

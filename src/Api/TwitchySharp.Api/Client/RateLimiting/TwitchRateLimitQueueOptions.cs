@@ -8,14 +8,14 @@ namespace TwitchySharp.Api;
 public record TwitchRateLimitQueueOptions
 {
     /// <summary>
-    /// The amount of extra time that will be waited after Twitch's rate limit reset time elapses.
+    /// Time provider for comparing rate limit reset times against.
     /// </summary>
-    public TimeSpan ClockSkew { get; init; } = TimeSpan.FromMilliseconds(100);
+    public Func<DateTimeOffset> GetNow { get; init; } = () => DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds(100);
     /// <summary>
     /// The rate limit cache options.
     /// </summary>
     /// <remarks>
-    /// If left <see langword="null"/>, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> is used (fine for most use cases).
+    /// If left <see langword="null"/>, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> scoped to this options instance is used (fine for most use cases).
     /// </remarks>
-    public ITwitchRateLimitCache Cache { get; init; } = new DefaultRateLimitCache();
+    public IRequestDependencyCache<ClientId, TwitchRateLimitDetails?> Cache { get; init; } = new InMemoryConcurrentCache<ClientId, TwitchRateLimitDetails?>();
 }

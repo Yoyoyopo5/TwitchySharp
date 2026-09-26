@@ -15,8 +15,12 @@ public sealed record ChannelPointsAutomaticRewardRedemptionAddV2(UserId Broadcas
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelPointsAutomaticRewardRedemptionAddV2;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadRedemptions, Scope.ChannelManageRedemptions)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

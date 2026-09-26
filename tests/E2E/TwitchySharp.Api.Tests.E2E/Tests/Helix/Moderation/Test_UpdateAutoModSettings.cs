@@ -15,7 +15,7 @@ public class Test_UpdateAutoModSettings(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
 
-        await UpdateAutoModSettings(_fixture.GetTwitchApiClient(), userConfig.UserId, new UpdateAutoModOverallLevelData(AutomodFilteringLevel.Less), TestContext.Current.CancellationToken);
+        await UpdateAutoModSettings(_fixture.GetTwitchApiClient(), testName, userConfig.UserId, new UpdateAutoModOverallLevelData(AutomodFilteringLevel.Less), TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -26,18 +26,18 @@ public class Test_UpdateAutoModSettings(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(testName);
 
-        await UpdateAutoModSettings(_fixture.GetTwitchApiClient(), userConfig.UserId, new UpdateAutoModCustomLevelsData()
+        await UpdateAutoModSettings(_fixture.GetTwitchApiClient(), testName, userConfig.UserId, new UpdateAutoModCustomLevelsData()
         {
             Aggression = AutomodFilteringLevel.Less,
             Swearing = AutomodFilteringLevel.None
         }, TestContext.Current.CancellationToken);
     }
 
-    private static Task<TwitchResponse<UpdateAutoModSettingsResponse>> UpdateAutoModSettings(ITwitchClient client, UserId broadcasterId, UpdateAutoModSettingsRequestData settings, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateAutoModSettingsResponseContent>> UpdateAutoModSettings(TestingTwitchClient client, TestName testName, UserId broadcasterId, UpdateAutoModSettingsRequestData settings, CancellationToken ct)
         => client.SendAsync(new UpdateAutoModSettingsRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             Settings = settings
-        }, ct);
+        }, testName, ct);
 }

@@ -11,15 +11,14 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_DropsEntitlementRequests_ReturnSuccessResponses()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetDropsEntitlementsRequest getRequest = new();
 
-        if ((await client.SendAsync(getRequest, ct)).Content.Data.FirstOrDefault()?.Id is not DropsEntitlementId id)
+        if ((await client.SendAsync(getRequest, TestName, ct)).Content.Data.FirstOrDefault()?.Id is not DropsEntitlementId id)
         {
             Assert.Skip("There are no drops entitlements associated with the client.");
             return;
@@ -27,7 +26,6 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
 
         UpdateDropsEntitlementsRequest updateRequest = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Updates = new()
             {
                 EntitlementIds = [],
@@ -35,6 +33,6 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, ct);
+        await client.SendAsync(updateRequest, TestName, ct);
     }
 }

@@ -13,7 +13,7 @@ public class Test_ChannelChatMessage(EventSubWebsocketFixture fixture)
 
     protected override EventSubSubscriptionTypeSpecification CreateSubscription(UserConfiguration identityConfig)
         => new Api.Helix.EventSub.Subscriptions.ChannelChatMessage(identityConfig.UserId, identityConfig.UserId);
-    protected override Task RaiseNotification(ITwitchClient client, UserConfiguration identityConfig, CancellationToken ct = default)
+    protected override Task RaiseNotification(TestingTwitchClient client, UserConfiguration identityConfig, CancellationToken ct = default)
     {
         const string TEST_MESSAGE = "test message pls ignore";
 
@@ -25,6 +25,6 @@ public class Test_ChannelChatMessage(EventSubWebsocketFixture fixture)
                 SenderId = identityConfig.UserId,
                 Message = TEST_MESSAGE
             }
-        }, ct);
+        }, TestName, ct);
     }
 }

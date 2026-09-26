@@ -10,7 +10,8 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-transactions">Get Extension Transactions</see> for more information.
 /// </remarks>
 public record GetExtensionTransactionsRequest
-    : TwitchHelixRequest<GetExtensionTransactionsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetExtensionTransactionsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/extensions/transactions";
     public override HttpMethod Method => HttpMethod.Get;
@@ -21,10 +22,15 @@ public record GetExtensionTransactionsRequest
             .Add("after", After?.ToString())
             .Add("id", TransactionIds?.Select(x => x.ToString()));
 
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Client> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Client(ExtensionId)
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     /// <summary>
     /// The id of the extension whose list of transactions you want to get.

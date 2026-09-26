@@ -7,21 +7,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// For information about AutoMod, see <see href="https://help.twitch.tv/s/article/how-to-use-automod">How to Use AutoMod</see>.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageAutomod"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageAutomod"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageAutomod"/> for the <see cref="ManageHeldAutoModMessagesRequestData.UserId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages">Manage Held AutoMod Messages</see> for more information.
 /// </remarks>
 public record ManageHeldAutoModMessagesRequest
-    : TwitchHelixRequest<ManageHeldAutoModMessagesResponse>
+    : TwitchHelixRequest<ManageHeldAutoModMessagesResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/automod/message";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(MessageAction.UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageAutomod)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => MessageAction;
 
     /// <summary>
@@ -29,8 +36,8 @@ public record ManageHeldAutoModMessagesRequest
     /// </summary>
     public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
 
-    protected override ValueTask<ManageHeldAutoModMessagesResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new ManageHeldAutoModMessagesResponse());
+    public override Func<Stream, CancellationToken, ValueTask<ManageHeldAutoModMessagesResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new ManageHeldAutoModMessagesResponseContent());
 }
 
 /// <summary>

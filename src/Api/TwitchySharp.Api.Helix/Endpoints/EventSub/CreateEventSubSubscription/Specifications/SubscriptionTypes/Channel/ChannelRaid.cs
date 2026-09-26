@@ -41,6 +41,7 @@ public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadc
 
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelRaid;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelRaid;
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; } = new();
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

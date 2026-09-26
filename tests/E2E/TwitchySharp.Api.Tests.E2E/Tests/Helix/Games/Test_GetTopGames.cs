@@ -11,14 +11,10 @@ public class Test_GetTopGames(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetTopGamesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        GetTopGamesRequest request = new()
-        {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
-        };
+        GetTopGamesRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

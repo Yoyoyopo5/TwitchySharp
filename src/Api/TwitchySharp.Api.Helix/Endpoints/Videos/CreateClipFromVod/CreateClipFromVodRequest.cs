@@ -2,27 +2,35 @@ using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Videos;
 /// <summary>
-/// <b>BETA</b> Creates a clip from a broadcaster's VOD on behalf of the broadcaster or an editor of the channel.
+/// Creates a clip from a broadcaster's VOD on behalf of the broadcaster or an editor of the channel.
 /// </summary>
 /// <remarks>
 /// <para>
 /// Since a live stream is actively creating a VOD, this endpoint can also be used to create a clip from earlier in the current stream.
 /// The <see cref="CreatedVodClip.EditUrl"/> allows you to edit the clip's title, feature the clip, create a portrait version of the clip, download the clip media, and share the clip directly to social platforms.
 /// </para>
-/// Requires an app or user access token that includes <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.EditorManageClips"/> or <see cref="Scope.ChannelManageClips"/> for the <see cref="EditorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference#create-clip-from-vod">Create Clip From VOD</see> for more information.
 /// </remarks>
 public record CreateClipFromVodRequest
-    : TwitchHelixRequest<CreateClipFromVodResponse>
+    : TwitchHelixRequest<CreateClipFromVodResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/videos/clips";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(EditorId),
         ValidScopes = ImmutableHashSet.Create(Scope.EditorManageClips, Scope.ChannelManageClips)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("editor_id", EditorId)

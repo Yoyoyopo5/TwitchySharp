@@ -10,7 +10,8 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-chat-settings">Get Chat Settings</see> for more information.
 /// </remarks>
 public record GetChatSettingsRequest
-    : TwitchHelixRequest<GetChatSettingsResponse>
+    : TwitchHelixRequest<GetChatSettingsResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/chat/settings";
     public override HttpMethod Method => HttpMethod.Get;
@@ -18,6 +19,8 @@ public record GetChatSettingsRequest
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
             .Add("moderator_id", ModeratorId);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user id of the broadcaster whose chat settings you want to get.

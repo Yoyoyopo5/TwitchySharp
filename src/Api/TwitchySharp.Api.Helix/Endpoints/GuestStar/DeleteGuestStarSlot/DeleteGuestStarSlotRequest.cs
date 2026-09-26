@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot">Delete Guest Star Slot</see> for more information.
 /// </remarks>
 public record DeleteGuestStarSlotRequest
-    : TwitchHelixRequest<DeleteGuestStarSlotResponse>
+    : TwitchHelixRequest<DeleteGuestStarSlotResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/guest_star/slot";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -63,6 +69,6 @@ public record DeleteGuestStarSlotRequest
     /// </summary>
     public bool? ShouldReinviteGuest { get; init; }
 
-    protected override ValueTask<DeleteGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteGuestStarSlotResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteGuestStarSlotResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new DeleteGuestStarSlotResponseContent());
 }

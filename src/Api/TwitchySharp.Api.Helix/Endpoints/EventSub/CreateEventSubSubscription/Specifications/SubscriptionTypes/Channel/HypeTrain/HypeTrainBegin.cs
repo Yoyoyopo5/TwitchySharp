@@ -18,8 +18,12 @@ public sealed record HypeTrainBegin(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.HypeTrainBegin;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.HypeTrainBegin;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadHypeTrain)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

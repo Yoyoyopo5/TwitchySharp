@@ -17,7 +17,7 @@ public class Test_AddRemoveModerator(TwitchClientFixture fixture)
         const string TEST_MODERATOR_ID = "159571771";
         UserId moderatorId = new(TEST_MODERATOR_ID);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await AddChannelModerator(client, userConfig.UserId, moderatorId, ct);
@@ -25,17 +25,17 @@ public class Test_AddRemoveModerator(TwitchClientFixture fixture)
         await RemoveChannelModerator(client, userConfig.UserId, moderatorId, ct);
     }
 
-    private static Task<TwitchResponse<AddChannelModeratorResponse>> AddChannelModerator(ITwitchClient client, UserId broadcasterId, UserId moderatorId, CancellationToken ct)
+    private static Task<TwitchResponse<AddChannelModeratorResponseContent>> AddChannelModerator(TestingTwitchClient client, UserId broadcasterId, UserId moderatorId, CancellationToken ct)
         => client.SendAsync(new AddChannelModeratorRequest()
         {
             BroadcasterId = broadcasterId,
             UserId = moderatorId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<RemoveChannelModeratorResponse>> RemoveChannelModerator(ITwitchClient client, UserId broadcasterId, UserId moderatorId, CancellationToken ct)
+    private static Task<TwitchResponse<RemoveChannelModeratorResponseContent>> RemoveChannelModerator(TestingTwitchClient client, UserId broadcasterId, UserId moderatorId, CancellationToken ct)
         => client.SendAsync(new RemoveChannelModeratorRequest()
         {
             BroadcasterId = broadcasterId,
             UserId = moderatorId
-        }, ct);
+        }, TestName, ct);
 }

@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-channel-vip">Add Channel VIP</see> for more information.
 /// </remarks>
 public record AddChannelVipRequest
-    : TwitchHelixRequest<AddChannelVipResponse>
+    : TwitchHelixRequest<AddChannelVipResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channels/vips";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVips)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -40,6 +46,6 @@ public record AddChannelVipRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    protected override ValueTask<AddChannelVipResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new AddChannelVipResponse());
+    public override Func<Stream, CancellationToken, ValueTask<AddChannelVipResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new AddChannelVipResponseContent());
 }

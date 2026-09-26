@@ -11,60 +11,54 @@ public class Test_GetClips(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetClipsRequestBroadcasterId_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         UserId broadcasterId = new("52137752");
 
         GetClipsRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Query = new BroadcasterClipsQuery()
             {
                 BroadcasterId = broadcasterId
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Send_GetClipsRequestGameId_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         const string TEST_GAME_ID = "33214"; // Fortnite
         GameId testGameId = new(TEST_GAME_ID);
         GetClipsRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Query = new GameClipsQuery()
             {
                 GameId = testGameId
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Send_GetClipsRequestClipId_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         const string TEST_CLIP_ID = "ObservantVictoriousButterOSfrog-Uur1-ZdwTmNRzuQ7";
         ClipId testClipId = new(TEST_CLIP_ID);
         GetClipsRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Query = new ClipsIdQuery()
             {
                 Ids = [testClipId]
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

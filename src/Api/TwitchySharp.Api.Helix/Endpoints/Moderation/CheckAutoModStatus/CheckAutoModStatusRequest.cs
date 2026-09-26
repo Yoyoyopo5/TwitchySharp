@@ -24,21 +24,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// <br/>
 /// The above limits are in <b>addition to</b> the standard <see href="https://dev.twitch.tv/docs/api/guide#twitch-rate-limits">Twitch API rate limits</see>.
 /// The rate limit headers in the response represent the Twitch rate limits and not the above limits.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModerationRead"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModerationRead"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModerationRead"/> for the <see cref="BroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#check-automod-status">Check AutoMod Status</see> for more information.
 /// </remarks>
 public record CheckAutoModStatusRequest
-    : TwitchHelixRequest<CheckAutoModStatusResponse>
+    : TwitchHelixRequest<CheckAutoModStatusResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/enforcements/status";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModerationRead)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

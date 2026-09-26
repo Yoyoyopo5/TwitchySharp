@@ -10,10 +10,13 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-conduit">Delete Conduit</see> for more information.
 /// </remarks>
 public record DeleteConduitRequest
-    : TwitchHelixRequest<DeleteConduitResponse>
+    : TwitchHelixRequest<DeleteConduitResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Delete;
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", ConduitId);
@@ -23,6 +26,6 @@ public record DeleteConduitRequest
     /// </summary>
     public required ConduitId ConduitId { get; init; }
 
-    protected override ValueTask<DeleteConduitResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new DeleteConduitResponse());
+    public override Func<Stream, CancellationToken, ValueTask<DeleteConduitResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new DeleteConduitResponseContent());
 }

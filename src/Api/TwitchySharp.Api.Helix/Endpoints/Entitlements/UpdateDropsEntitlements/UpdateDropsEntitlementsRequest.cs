@@ -8,10 +8,13 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements">Update Drops Entitlements</see> for more information.
 /// </remarks>
 public record UpdateDropsEntitlementsRequest
-    : TwitchHelixRequest<UpdateDropsEntitlementsResponse>
+    : TwitchHelixRequest<UpdateDropsEntitlementsResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/entitlements/drops";
     public override HttpMethod Method => HttpMethod.Patch;
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
     public override object? ContentObject => Updates;
 
     /// <summary>

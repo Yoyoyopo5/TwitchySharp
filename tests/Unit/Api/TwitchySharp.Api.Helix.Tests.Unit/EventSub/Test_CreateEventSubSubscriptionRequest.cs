@@ -34,14 +34,14 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        TwitchIdentity identity = GetDefaultIdentity(request);
+        TwitchIdentity identity = request.AuthenticationContext.Identity;
 
         TwitchIdentity.User userIdentity = Assert.IsType<TwitchIdentity.User>(identity);
         Assert.Equal(new UserId(FAKE_USER_ID), userIdentity.UserId);
     }
 
     [Fact]
-    public void DefaultIdentity_WithWebhookUserAuthorizedType_ReturnsDefault()
+    public void AuthenticationContextTokenType_WithWebhookUserAuthorizedType_IsApp()
     {
         ChannelFollow subscriptionType = new(
             BroadcasterUserId: new UserId(FAKE_BROADCASTER_ID),
@@ -56,9 +56,7 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        TwitchIdentity identity = GetDefaultIdentity(request);
-
-        Assert.Equal(TwitchIdentity.Client.Default, identity);
+        Assert.Equal(BearerTokenType.AppAccessToken, request.AuthenticationContext.TokenType);
     }
 
     [Fact]
@@ -74,7 +72,7 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        TwitchIdentity identity = GetDefaultIdentity(request);
+        TwitchIdentity identity = request.AuthenticationContext.Identity;
 
         Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
@@ -92,7 +90,7 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        TwitchIdentity identity = GetDefaultIdentity(request);
+        TwitchIdentity identity = request.AuthenticationContext.Identity;
 
         Assert.Equal(TwitchIdentity.Client.Default, identity);
     }
@@ -113,13 +111,12 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        IEnumerable<Scope> scopes = request.AuthorizationContext.ValidScopes;
-
+        IReadOnlySet<Scope> scopes = Assert.IsType<IHaveScopes>(request.AuthenticationContext, false).ValidScopes;
         Assert.Contains(Scope.ModeratorReadFollowers, scopes);
     }
 
     [Fact]
-    public void ValidScopes_WithAppOnlyType_ReturnsEmpty()
+    public void AuthenticationContext_WithClientAuthorizedType_IsClientAuthenticationContext()
     {
         StreamOnline subscriptionType = new(new UserId(FAKE_BROADCASTER_ID));
         CreateEventSubSubscriptionRequest request = new()
@@ -131,14 +128,6 @@ public class Test_CreateEventSubSubscriptionRequest
             }
         };
 
-        IEnumerable<Scope> scopes = request.AuthorizationContext.ValidScopes;
-
-        Assert.Empty(scopes);
+        Assert.IsType<ITwitchRequestAuthenticationContext<TwitchIdentity.Client>>(request.AuthenticationContext, false);
     }
-
-    /// <summary>
-    /// Helper to access the protected DefaultIdentity property through the public interface.
-    /// </summary>
-    private static TwitchIdentity GetDefaultIdentity(CreateEventSubSubscriptionRequest request)
-        => request.AuthorizationContext.Identity;
 }

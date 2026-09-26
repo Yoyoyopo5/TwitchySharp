@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+    <InternalsVisibleTo Include="TwitchySharp.Tests.Unit.Toolkit" />
   </ItemGroup>
 
   <ItemGroup>

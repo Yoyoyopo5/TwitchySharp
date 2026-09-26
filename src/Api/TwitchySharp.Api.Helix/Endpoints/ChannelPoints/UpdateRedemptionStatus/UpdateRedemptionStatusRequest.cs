@@ -14,15 +14,21 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-redemption-status">update redemption status</see> for more information.
 /// </remarks>
 public record UpdateRedemptionStatusRequest
-    : TwitchHelixRequest<UpdateRedemptionStatusResponse>
+    : TwitchHelixRequest<UpdateRedemptionStatusResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channel_points/custom_rewards/redemptions";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRedemptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("id", Ids.Select(x => x.ToString()))

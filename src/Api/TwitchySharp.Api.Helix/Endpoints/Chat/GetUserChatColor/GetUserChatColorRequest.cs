@@ -8,13 +8,16 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-chat-color">Get User Chat Color</see> for more information.
 /// </remarks>
 public record GetUserChatColorRequest
-    : TwitchHelixRequest<GetUserChatColorResponse>
+    : TwitchHelixRequest<GetUserChatColorResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/chat/color";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserIds.Select(x => x.ToString()));
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user ids of the users whose username colors you want to get.

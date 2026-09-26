@@ -14,7 +14,7 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         UserId testUser = new("12345");
@@ -23,7 +23,7 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
         {
             BroadcasterId = userConfig.UserId
         };
-        TwitchResponse<GetVipsResponse> getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetVipsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
 
         Assert.SkipWhen(
             getResponse.Content.Data.Any(vip => vip.UserId == testUser),
@@ -35,7 +35,7 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId,
             UserId = testUser
         };
-        await client.SendAsync(addRequest, ct);
+        await client.SendAsync(addRequest, TestName, ct);
         await Task.Delay(250, ct);
 
         RemoveChannelVipRequest removeRequest = new()
@@ -43,6 +43,6 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId,
             UserId = testUser
         };
-        await client.SendAsync(removeRequest, ct);
+        await client.SendAsync(removeRequest, TestName, ct);
     }
 }

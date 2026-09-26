@@ -20,7 +20,8 @@ public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitI
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ConduitShardDisabled;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ConduitShardDisabled;
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; }
+        = new() { Identity = new TwitchIdentity.Client(ClientId) };
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId)

@@ -5,20 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Removes the ban or timeout that was placed on the specified user.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageBannedUsers"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageBannedUsers"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageBannedUsers"/> and <see cref="Scope.UserBot"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#unban-user">Unban User</see> for more information.
 /// </remarks>
 public record UnbanUserRequest
-    : TwitchHelixRequest<UnbanUserResponse>
+    : TwitchHelixRequest<UnbanUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/bans";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBannedUsers)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -43,6 +51,6 @@ public record UnbanUserRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    protected override ValueTask<UnbanUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UnbanUserResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UnbanUserResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UnbanUserResponseContent());
 }

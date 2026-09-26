@@ -5,20 +5,27 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// Gets the channel's stream key.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelReadStreamKey"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-stream-key">Get Stream Key</see> for more information.
 /// </remarks>
 public record GetStreamKeyRequest
-    : TwitchHelixRequest<GetStreamKeyResponse>
+    : TwitchHelixRequest<GetStreamKeyResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/streams/key";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadStreamKey)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

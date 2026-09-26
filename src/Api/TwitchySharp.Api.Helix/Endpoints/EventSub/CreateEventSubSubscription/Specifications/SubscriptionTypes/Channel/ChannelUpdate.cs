@@ -13,6 +13,7 @@ public sealed record ChannelUpdate(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUpdate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelUpdate;
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; } = new();
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

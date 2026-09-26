@@ -15,7 +15,7 @@ public class Test_StartCommercial(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await client.SkipIfBroadcasterIsNotStreaming(userConfig.UserId, ct);
@@ -25,7 +25,7 @@ public class Test_StartCommercial(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        TwitchResponse<GetAdScheduleResponse> getAdScheduleResponse = await client.SendAsync(getAdScheduleRequest, ct);
+        TwitchResponse<GetAdScheduleResponseContent> getAdScheduleResponse = await client.SendAsync(getAdScheduleRequest, TestName, ct);
         AdSchedule? schedule = getAdScheduleResponse.Content.Data.SingleOrDefault();
 
         // This may not be required to test StartCommercial
@@ -49,6 +49,6 @@ public class Test_StartCommercial(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(request, ct);
+        await client.SendAsync(request, TestName, ct);
     }
 }

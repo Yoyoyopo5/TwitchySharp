@@ -11,15 +11,21 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-channels">Get Followed Channels</see> for more information.
 /// </remarks>
 public record GetFollowedChannelsRequest
-    : TwitchHelixRequest<GetFollowedChannelsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetFollowedChannelsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channels/followed";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadFollows)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

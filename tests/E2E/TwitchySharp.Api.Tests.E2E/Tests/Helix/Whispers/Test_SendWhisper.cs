@@ -24,6 +24,6 @@ public class Test_SendWhisper(TwitchClientFixture fixture)
             Whisper = new() { Message = "test whisper pls ignore" }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

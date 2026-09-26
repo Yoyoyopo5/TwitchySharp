@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// A redirect URI used in authorization client URLs.
 /// </summary>

@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Gets a set of OIDC claims associated with the user access token used to make the request.
 /// </summary>
@@ -10,7 +10,8 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">getting claims information from an access token</see> for more information.
 /// </remarks>
 public record UserInfoRequest
-    : TwitchAuthorizationRequest<TwitchOidc>, IAuthorizedTwitchRequest
+    : TwitchAuthorizationRequest<TwitchOidc>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/userinfo";
     public override HttpMethod Method => HttpMethod.Get;
@@ -32,10 +33,17 @@ public record UserInfoRequest
     /// </remarks>
     public UserAccessToken? AccessToken { get; init; }
 
-    public TwitchRequestAuthorizationContext AuthorizationContext => new()
-    {
-        Identity = UserId.HasValue ? new TwitchIdentity.User(UserId.Value) : TwitchIdentity.None.Instance,
-        ValidScopes = ImmutableHashSet.Create(Scope.OpenId),
-        AccessToken = AccessToken
-    };
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext =>
+        UserId.HasValue
+        ? new UserWithScopesAuthenticationContext()
+        {
+            Identity = new TwitchIdentity.User(UserId.Value),
+            ValidScopes = ImmutableHashSet.Create(Scope.OpenId),
+            BearerToken = AccessToken
+        }
+        : new TwitchRequestAuthenticationContext<TwitchIdentity.None>()
+        {
+            Identity = TwitchIdentity.None.Instance,
+            BearerToken = AccessToken
+        };
 }

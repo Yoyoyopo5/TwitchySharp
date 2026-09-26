@@ -8,7 +8,7 @@ using TwitchySharp.Tests.E2E;
 namespace TwitchySharp.EventSub.Tests.E2E.NotificationTests;
 
 public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>(EventSubWebsocketFixture fixture)
-    where TRequiredIdentity : ITestIdentity
+    where TRequiredIdentity : ITestIdentity<TwitchIdentity>
     where TNotification : IEventSubNotification
 {
     protected abstract TestName TestName { get; }
@@ -16,12 +16,13 @@ public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>
     private readonly EventSubWebsocketFixture _fixture = fixture;
 
     private record DeleteSubscription(
-        ITwitchClient Client,
-        Api.Helix.EventSub.EventSubSubscription Subscription
+        TestingTwitchClient Client,
+        Api.Helix.EventSub.EventSubSubscription Subscription,
+        TestName testName
         ) : IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
-            => await Client.SendAsync(new DeleteEventSubSubscriptionRequest(Subscription), TestContext.Current.CancellationToken);
+            => await Client.SendAsync(new DeleteEventSubSubscriptionRequest(Subscription), testName, TestContext.Current.CancellationToken);
     }
 
     private record DisposeWebsocketClient(
@@ -33,17 +34,17 @@ public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>
     }
 
     protected abstract EventSubSubscriptionTypeSpecification CreateSubscription(TRequiredIdentity identityConfig);
-    protected abstract Task RaiseNotification(ITwitchClient client, TRequiredIdentity identityConfig, CancellationToken ct = default);
+    protected abstract Task RaiseNotification(TestingTwitchClient client, TRequiredIdentity identityConfig, CancellationToken ct = default);
     protected virtual void AssertNotification(IEventSubNotification notification) { }
     
     private async Task<IAsyncDisposable> CreateSubscription(
-        ITwitchClient client,
+        TestingTwitchClient client,
         TRequiredIdentity identityConfig,
         EventSubWebsocketSession session,
         CancellationToken ct = default
         )
     {
-        TwitchResponse<CreateEventSubSubscriptionResponse> response
+        TwitchResponse<CreateEventSubSubscriptionResponseContent> response
             = await client.SendAsync(new CreateEventSubSubscriptionRequest()
             {
                 Subscription = new()
@@ -51,9 +52,9 @@ public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>
                     Type = CreateSubscription(identityConfig),
                     Transport = new WebsocketSubscriptionTransport(session.Id)
                 }
-            }, ct);
+            }, TestName, ct);
 
-        return new DeleteSubscription(client, response.Content.Data.Single());
+        return new DeleteSubscription(client, response.Content.Data.Single(), TestName);
     }
 
     [Fact]
@@ -62,7 +63,7 @@ public abstract class EventSubNotificationTest<TRequiredIdentity, TNotification>
         TRequiredIdentity identityConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<TRequiredIdentity>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
         cts.CancelAfter(TimeSpan.FromSeconds(5));
         CancellationToken ct = cts.Token;

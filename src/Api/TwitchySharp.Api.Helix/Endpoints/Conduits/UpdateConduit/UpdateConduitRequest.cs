@@ -7,15 +7,19 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// To delete shards, update the count to a lower number, and the shards above the count will be deleted.
 /// For example, if the existing shard count is 100, by resetting shard count to 50, shards 50-99 are disabled.
 /// </para>
+/// <para>
 /// Requires an app access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</see> for more information.
 /// </remarks>
 public record UpdateConduitRequest
-    : TwitchHelixRequest<UpdateConduitResponse>
+    : TwitchHelixRequest<UpdateConduitResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/eventsub/conduits";
     public override HttpMethod Method => HttpMethod.Patch;
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
     public override object? ContentObject => ConduitData;
 
     /// <summary>

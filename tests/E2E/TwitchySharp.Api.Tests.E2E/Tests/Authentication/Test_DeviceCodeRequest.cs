@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using TwitchySharp.Api.Authentication;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authentication;
@@ -20,9 +20,9 @@ public class Test_DeviceCodeRequest(TwitchClientFixture fixture)
             ClientId = new(clientConfig.ClientId),
             Scopes = scopes
         };
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
 
-        TwitchResponse<DeviceCodeResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        TwitchResponse<DeviceCodeResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
         Assert.False(string.IsNullOrEmpty(response.Content.DeviceCode.Value));
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);

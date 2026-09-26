@@ -15,11 +15,11 @@ public class Test_GetStreamMarkers(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetVideosRequest getVideosRequest = new() { Query = new VideoUserQuery() { UserId = userConfig.UserId } };
-        TwitchResponse<GetVideosResponse> getVideosResponse = await client.SendAsync(getVideosRequest, ct);
+        TwitchResponse<GetVideosResponseContent> getVideosResponse = await client.SendAsync(getVideosRequest, TestName, ct);
 
         Assert.SkipWhen(
             getVideosResponse.Content.Data.Length == 0,
@@ -35,6 +35,6 @@ public class Test_GetStreamMarkers(TwitchClientFixture fixture)
             UserId = userConfig.UserId,
         };
 
-        await client.SendAsync(request, ct);
+        await client.SendAsync(request, TestName, ct);
     }
 }

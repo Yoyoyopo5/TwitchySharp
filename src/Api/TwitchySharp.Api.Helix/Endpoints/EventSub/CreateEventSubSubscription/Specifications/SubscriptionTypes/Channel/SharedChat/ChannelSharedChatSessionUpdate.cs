@@ -13,7 +13,8 @@ public sealed record ChannelSharedChatSessionUpdate(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelSharedChatSessionUpdate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelSharedChatSessionUpdate;
-
+    public override EventSubSubscriptionAuthenticationContext.None AuthenticationContext
+        => EventSubSubscriptionAuthenticationContext.None.Instance;
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);

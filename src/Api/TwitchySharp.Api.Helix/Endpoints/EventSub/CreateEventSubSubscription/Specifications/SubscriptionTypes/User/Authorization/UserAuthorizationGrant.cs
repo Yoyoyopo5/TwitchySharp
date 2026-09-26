@@ -17,7 +17,8 @@ public sealed record UserAuthorizationGrant(ClientId ClientId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationGrant;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserAuthorizationGrant;
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; }
+        = new() { Identity = new TwitchIdentity.Client(ClientId) };
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);

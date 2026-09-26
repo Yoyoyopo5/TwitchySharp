@@ -6,20 +6,27 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// Gets the Bits leaderboard for the authenticated broadcaster.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.BitsRead"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard">Get Bits Leaderboard</see> for more information.
 /// </remarks>
 public record GetBitsLeaderboardRequest
-    : TwitchHelixRequest<GetBitsLeaderboardResponse>
+    : TwitchHelixRequest<GetBitsLeaderboardResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/bits/leaderboard";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.BitsRead)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("count", Count?.ToString())

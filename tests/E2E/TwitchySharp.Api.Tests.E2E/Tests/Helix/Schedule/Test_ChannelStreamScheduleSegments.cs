@@ -17,10 +17,10 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
         const string TEST_SEGMENT_TITLE = "Test Stream";
 
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        TwitchResponse<CreateChannelStreamScheduleSegmentResponse> createResponse
+        TwitchResponse<CreateChannelStreamScheduleSegmentResponseContent> createResponse
             = await CreateSegment(client, broadcasterId, TEST_SEGMENT_TITLE, ct);
         ChannelStreamScheduleSegment segment = createResponse.Content.Data.Segments.Where(s => s.Title == TEST_SEGMENT_TITLE).First();
 
@@ -28,7 +28,7 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
         await DeleteSegment(client, broadcasterId, segment.Id, ct);
     }
 
-    private static Task<TwitchResponse<CreateChannelStreamScheduleSegmentResponse>> CreateSegment(ITwitchClient client, UserId broadcasterId, string title, CancellationToken ct)
+    private static Task<TwitchResponse<CreateChannelStreamScheduleSegmentResponseContent>> CreateSegment(TestingTwitchClient client, UserId broadcasterId, string title, CancellationToken ct)
         => client.SendAsync(new CreateChannelStreamScheduleSegmentRequest()
         {
             BroadcasterId = broadcasterId,
@@ -40,9 +40,9 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
                 Title = title,
                 IsRecurring = false
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<UpdateChannelStreamScheduleSegmentResponse>> UpdateSegment(ITwitchClient client, UserId broadcasterId, StreamScheduleSegmentId segmentId, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateChannelStreamScheduleSegmentResponseContent>> UpdateSegment(TestingTwitchClient client, UserId broadcasterId, StreamScheduleSegmentId segmentId, CancellationToken ct)
         => client.SendAsync(new UpdateChannelStreamScheduleSegmentRequest()
         {
             BroadcasterId = broadcasterId,
@@ -56,12 +56,12 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
                 Timezone = TimeZoneInfo.Local,
                 Title = "Cancelled Test Stream"
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<DeleteChannelStreamScheduleSegmentResponse>> DeleteSegment(ITwitchClient client, UserId broadcasterId, StreamScheduleSegmentId segmentId, CancellationToken ct)
+    private static Task<TwitchResponse<DeleteChannelStreamScheduleSegmentResponseContent>> DeleteSegment(TestingTwitchClient client, UserId broadcasterId, StreamScheduleSegmentId segmentId, CancellationToken ct)
         => client.SendAsync(new DeleteChannelStreamScheduleSegmentRequest()
         {
             BroadcasterId = broadcasterId,
             SegmentId = segmentId
-        }, ct);
+        }, TestName, ct);
 }

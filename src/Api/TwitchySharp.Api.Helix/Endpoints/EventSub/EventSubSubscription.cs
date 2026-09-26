@@ -72,7 +72,7 @@ public static class EventSubSubscriptionExtensions
         => new(subscription.Type, subscription.Version);
 
     /// <summary>
-    /// The default set of <see cref="EventSubSubscriptionType"/> mapped to a function creating the respective <see cref="EventSubSubscriptionTypeSpecification"/> from an <see cref="EventSubSubscription.Condition"/>.
+    /// The default set of <see cref="EventSubSubscriptionType"/> mapped to a function creating the respective <see cref="IEventSubSubscriptionTypeSpecification"/> from an <see cref="EventSubSubscription.Condition"/>.
     /// </summary>
     public static ImmutableDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> DefaultSubscriptionTypeSpecificationRegistry { get; }
         = new Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>()
@@ -170,12 +170,12 @@ public static class EventSubSubscriptionExtensions
     }
 
     /// <summary>
-    /// Create a <see cref="EventSubSubscriptionTypeSpecification"/> from an existing <see cref="EventSubSubscription"/>.
+    /// Create a <see cref="IEventSubSubscriptionTypeSpecification"/> from an existing <see cref="EventSubSubscription"/>.
     /// </summary>
-    /// <param name="subscription">The <see cref="EventSubSubscription"/> to create the <see cref="EventSubSubscriptionTypeSpecification"/> from.</param>
+    /// <param name="subscription">The <see cref="EventSubSubscription"/> to create the <see cref="IEventSubSubscriptionTypeSpecification"/> from.</param>
     /// <param name="registry">
     /// The <see cref="EventSubSubscriptionType"/> registry to use.
-    /// This represents a mapping between the <see cref="EventSubSubscription.Condition"/> and a derived <see cref="EventSubSubscriptionTypeSpecification"/> factory function.
+    /// This represents a mapping between the <see cref="EventSubSubscription.Condition"/> and a derived <see cref="IEventSubSubscriptionTypeSpecification"/> factory function.
     /// Leave <see langword="null"/> to use the <see cref="DefaultSubscriptionTypeSpecificationRegistry"/>.
     /// You may extend the default with your own types that implement <see cref="IConditionConstructable{T}"/>.
     /// </param>
@@ -189,15 +189,4 @@ public static class EventSubSubscriptionExtensions
             ? fromCondition(subscription.Condition)
             : new MissingEventSubSubscriptionTypeError(subscriptionType);
     }
-
-    public static Validation<TwitchRequestAuthorizationContext> ToAuthorizationContext(
-        this EventSubSubscription subscription,
-        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? registry = null
-        )
-        => subscription.ToSubscriptionTypeSpecification(registry)
-            .Map(typeSpec => new TwitchRequestAuthorizationContext()
-                {
-                    Identity = typeSpec.GetRequestIdentity(subscription.Transport.Method),
-                    ValidScopes = typeSpec.ValidScopes
-                });
 }

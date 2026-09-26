@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="../../../../src/Api/TwitchySharp.Api.Authentication/TwitchySharp.Api.Authentication.csproj" />
     <ProjectReference Include="../../../../src/Api/TwitchySharp.Api.Helix/TwitchySharp.Api.Helix.csproj" />
+    <ProjectReference Include="../../../Unit/TwitchySharp.Tests.Unit.Toolkit/TwitchySharp.Tests.Unit.Toolkit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

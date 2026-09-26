@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// <b>Rate Limits:</b> A broadcaster may add a maximum of 10 moderators within a 10-second window.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageModerators"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-channel-moderator">Add Channel Moderator</see> for more information.
 /// </remarks>
 public record AddChannelModeratorRequest
-    : TwitchHelixRequest<AddChannelModeratorResponse>
+    : TwitchHelixRequest<AddChannelModeratorResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/moderation/moderators";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageModerators)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -39,6 +45,6 @@ public record AddChannelModeratorRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    protected override ValueTask<AddChannelModeratorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new AddChannelModeratorResponse());
+    public override Func<Stream, CancellationToken, ValueTask<AddChannelModeratorResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new AddChannelModeratorResponseContent());
 }

@@ -2,23 +2,31 @@ using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
 /// <summary>
-/// <b>BETA</b> Remove a suspicious user status from a chatter on broadcaster's channel.
+/// Remove a suspicious user status from a chatter on broadcaster's channel.
 /// </summary>
 /// <remarks>
-/// Requires an app or user access token that includes <see cref="Scope.ModeratorManageSuspiciousUsers"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageSuspiciousUsers"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageSuspiciousUsers"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-suspicious-status-from-chat-user">Remove Suspicious Status from Chat User</see> for more information.
 /// </remarks>
 public record RemoveSuspiciousStatusFromChatUserRequest
-    : TwitchHelixRequest<RemoveSuspiciousStatusFromChatUserResponse>
+    : TwitchHelixRequest<RemoveSuspiciousStatusFromChatUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/suspicious_users";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageSuspiciousUsers)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

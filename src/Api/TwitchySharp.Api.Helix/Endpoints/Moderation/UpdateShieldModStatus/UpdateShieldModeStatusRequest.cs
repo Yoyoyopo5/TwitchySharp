@@ -5,21 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Activates or deactivates the broadcaster's Shield Mode.
 /// </summary>
 /// <remarks>
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageShieldMode"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageShieldMode"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageShieldMode"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status">Update Shield Mode Status</see> for more information.
 /// </remarks>
 public record UpdateShieldModeStatusRequest
-    : TwitchHelixRequest<UpdateShieldModeStatusResponse>
+    : TwitchHelixRequest<UpdateShieldModeStatusResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/shield_mode";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageShieldMode)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

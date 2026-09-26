@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Yoyoyopo5.ValueWrapper" Version="1.1.1" />
+    <PackageVersion Include="Yoyoyopo5.ValueWrapper" Version="1.1.2" />
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.1.2" />
     <PackageVersion Include="System.Threading.RateLimiting" Version="8.0.0" />

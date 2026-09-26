@@ -5,20 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Removes the word or phrase from the broadcaster's list of blocked terms.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageBlockedTerms"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageBlockedTerms"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageBlockedTerms"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-blocked-term">Remove Blocked Term</see> for more information.
 /// </remarks>
 public record RemoveBlockedTermRequest
-    : TwitchHelixRequest<RemoveBlockedTermResponse>
+    : TwitchHelixRequest<RemoveBlockedTermResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBlockedTerms)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -43,6 +51,6 @@ public record RemoveBlockedTermRequest
     /// </summary>
     public required AutomodBlockedTermId BlockedTermId { get; init; }
 
-    protected override ValueTask<RemoveBlockedTermResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new RemoveBlockedTermResponse());
+    public override Func<Stream, CancellationToken, ValueTask<RemoveBlockedTermResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new RemoveBlockedTermResponseContent());
 }

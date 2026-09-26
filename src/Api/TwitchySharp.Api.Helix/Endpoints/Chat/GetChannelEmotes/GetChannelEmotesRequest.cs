@@ -12,13 +12,16 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-emotes">Get Channel Emotes</see> for more information.
 /// </remarks>
 public record GetChannelEmotesRequest
-    : TwitchHelixRequest<GetChannelEmotesResponse>
+    : TwitchHelixRequest<GetChannelEmotesResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/chat/emotes";
     public override HttpMethod Method => HttpMethod.Get;
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user id of the broadcaster (channel) whose emotes you want to get.

@@ -17,7 +17,7 @@ public class Test_BlockUnblockUser(TwitchClientFixture fixture)
         const string TEST_USER_ID = "12345";
         UserId userToBlock = new(TEST_USER_ID);
         UserId userId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await BlockUser(client, userId, userToBlock, ct);
@@ -25,17 +25,17 @@ public class Test_BlockUnblockUser(TwitchClientFixture fixture)
         await UnblockUser(client, userId, userToBlock, ct);
     }
 
-    private static Task<TwitchResponse<BlockUserResponse>> BlockUser(ITwitchClient client, UserId userId, UserId blockUserId, CancellationToken ct)
+    private static Task<TwitchResponse<BlockUserResponseContent>> BlockUser(TestingTwitchClient client, UserId userId, UserId blockUserId, CancellationToken ct)
         => client.SendAsync(new BlockUserRequest()
         {
             TargetUserId = blockUserId,
             UserId = userId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<UnblockUserResponse>> UnblockUser(ITwitchClient client, UserId userId, UserId blockedUserId, CancellationToken ct)
+    private static Task<TwitchResponse<UnblockUserResponseContent>> UnblockUser(TestingTwitchClient client, UserId userId, UserId blockedUserId, CancellationToken ct)
         => client.SendAsync(new UnblockUserRequest()
         {
             UserId = userId,
             TargetUserId = blockedUserId
-        }, ct);
+        }, TestName, ct);
 }

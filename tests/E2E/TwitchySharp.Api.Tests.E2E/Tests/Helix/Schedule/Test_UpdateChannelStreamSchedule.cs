@@ -30,11 +30,11 @@ public class Test_UpdateChannelStreamSchedule(TwitchClientFixture fixture)
             }.DisableVacationMode()
         };
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(request, ct);
+        await client.SendAsync(request, TestName, ct);
         await Task.Delay(250, ct);
-        await client.SendAsync(restoreRequest, ct);
+        await client.SendAsync(restoreRequest, TestName, ct);
     }
 }

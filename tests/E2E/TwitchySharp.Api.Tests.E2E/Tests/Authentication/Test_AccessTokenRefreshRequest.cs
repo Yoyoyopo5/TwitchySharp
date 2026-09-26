@@ -1,4 +1,4 @@
-﻿using TwitchySharp.Api.Authorization;
+﻿using TwitchySharp.Api.Authentication;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Authentication;
@@ -32,8 +32,8 @@ public class Test_AccessTokenRefreshRequest(TwitchClientFixture fixture)
             RefreshToken = userTokenDetails.RefreshToken.Value
         };
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
-        TwitchResponse<AccessTokenRefreshResponse> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
+        TwitchResponse<AccessTokenRefreshResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
         AccessTokenDetails.User refreshedTokenDetails = userTokenDetails with
         {

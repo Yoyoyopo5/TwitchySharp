@@ -14,10 +14,10 @@ public class Test_Raid(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        const string TO_BROADCASTER_ID = "141879576"; // dreadbreadcrumb
+        const string TO_BROADCASTER_ID = "56648155";
         UserId toBroadcasterId = new(TO_BROADCASTER_ID);
         UserId fromBroadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         StartRaidRequest startRaidRequest = new()
@@ -31,8 +31,8 @@ public class Test_Raid(TwitchClientFixture fixture)
             BroadcasterId = fromBroadcasterId,
         };
 
-        await client.SendAsync(startRaidRequest, ct);
+        await client.SendAsync(startRaidRequest, TestName, ct);
         await Task.Delay(250, ct);
-        await client.SendAsync(cancelRaidRequest, ct);
+        await client.SendAsync(cancelRaidRequest, TestName, ct);
     }
 }

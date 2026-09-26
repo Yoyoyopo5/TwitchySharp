@@ -10,15 +10,21 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-emotes">Get User Emotes</see> for more information.
 /// </remarks>
 public record GetUserEmotesRequest
-    : TwitchHelixRequest<GetUserEmotesResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetUserEmotesResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/chat/emotes/user";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadEmotes)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

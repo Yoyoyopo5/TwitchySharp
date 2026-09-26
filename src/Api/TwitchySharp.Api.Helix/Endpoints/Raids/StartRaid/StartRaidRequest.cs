@@ -5,20 +5,28 @@ namespace TwitchySharp.Api.Helix.Raids;
 /// Raid another channel by sending the broadcaster's viewers to the targeted channel.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageRaids"/>.
+/// </para>
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#start-a-raid">Start A Raid</see> for more information.
 /// </remarks>
 public record StartRaidRequest
-    : TwitchHelixRequest<StartRaidResponse>
+    : TwitchHelixRequest<StartRaidResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/raids";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(FromBroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRaids)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_broadcaster_id", FromBroadcasterId)

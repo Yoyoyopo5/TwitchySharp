@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// </summary>
 /// <remarks>
 /// You may delete past broadcasts, highlights, or uploads.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageVideos"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-videos">Delete Videos</see> for more information.
 /// </remarks>
 public record DeleteVideosRequest
-    : TwitchHelixRequest<DeleteVideosResponse>
+    : TwitchHelixRequest<DeleteVideosResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/videos";
     public override HttpMethod Method => HttpMethod.Delete;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageVideos)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     /// <summary>
     /// The user id of the broadcaster who owns the videos to delete.
     /// </summary>

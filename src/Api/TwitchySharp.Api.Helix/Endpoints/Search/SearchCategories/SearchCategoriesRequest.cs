@@ -3,17 +3,20 @@
 /// Gets the games or categories that match the specified query.
 /// </summary>
 /// <remarks>
+/// <para>
 /// To match, the category's name must contain all parts of the query string.
 /// For example, if the query string is 42, the response includes any category name that contains 42 in the title.
 /// If the query string is a phrase like love computer, the response includes any category name that contains the words love and computer anywhere in the name.
 /// The comparison is case insensitive.
-/// <br/>
+/// </para>
+/// <para>
 /// Requires an app or user access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-categories">Search Categories</see> for more information.
 /// </remarks>
 public record SearchCategoriesRequest
-    : TwitchHelixRequest<SearchCategoriesResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<SearchCategoriesResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/search/categories";
     public override HttpMethod Method => HttpMethod.Get;
@@ -22,6 +25,8 @@ public record SearchCategoriesRequest
             .Add("query", Query)
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The search string.

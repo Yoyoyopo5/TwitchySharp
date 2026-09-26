@@ -12,11 +12,6 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_CheckUserSubscriptionRequest_ReturnSuccessResponse()
     {
-        // I dislike how this endpoint uses an error code to indicate non-subscription status.
-        // We should not encourage using exceptions for control flow, but I don't see a much better option at the moment.
-        // If discriminated unions are added to C#, we could use those, or we could wrap every response in a monad object.
-        // Both of these solutions will likely add significant pattern matching boilerplate for consumers, even when error codes indicate exceptionality.
-
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
@@ -30,7 +25,7 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
 
         try
         {
-            await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+            await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
         }
         catch (TwitchApiException ex)
         {

@@ -11,15 +11,13 @@ public class Test_SearchCategories(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_SearchCategoriesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         SearchCategoriesRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Query = "Fortnite"
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

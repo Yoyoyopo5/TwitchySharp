@@ -3,15 +3,19 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// Updates shard(s) for a conduit.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires an app access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-conduit-shards">Update Conduit Shards</see> for more information.
 /// </remarks>
 public record UpdateConduitShardsRequest
-    : TwitchHelixRequest<UpdateConduitShardsResponse>
+    : TwitchHelixRequest<UpdateConduitShardsResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/eventsub/conduits/shards";
     public override HttpMethod Method => HttpMethod.Patch;
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
     public override object? ContentObject => ShardUpdates;
 
     /// <summary>

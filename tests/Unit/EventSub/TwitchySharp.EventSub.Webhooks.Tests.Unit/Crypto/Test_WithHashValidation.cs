@@ -20,13 +20,12 @@ public class Test_WithHashValidation
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
-            onError: (_, _) => throw new NotImplementedException(),
-            onValid: (result, _) =>
+            onError: _ => throw new NotImplementedException(),
+            onValid: result =>
             {
                 Assert.Equal(((FakeWebhookRequestContent)result).Body, verifyInputBody);
                 return ValueTask.CompletedTask;
-            },
-            CancellationToken.None
+            }
             );
     }
 
@@ -37,9 +36,8 @@ public class Test_WithHashValidation
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
-            onError: (e, _) => ValueTask.CompletedTask,
-            onValid: (result, _) => throw new Exception("Verify hash returned Validation (expected Error)."),
-            CancellationToken.None
+            onError: e => ValueTask.CompletedTask,
+            onValid: result => throw new Exception("Verify hash returned Validation (expected Error).")
             );
     }
 
@@ -50,9 +48,8 @@ public class Test_WithHashValidation
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
-            onError: (e, _) => throw new Exception("Verify hash returned Error (expected Validation)."),
-            onValid: (result, _) => ValueTask.CompletedTask,
-            CancellationToken.None
+            onError: e => throw new Exception("Verify hash returned Error (expected Validation)."),
+            onValid: result => ValueTask.CompletedTask
             );
     }
 }

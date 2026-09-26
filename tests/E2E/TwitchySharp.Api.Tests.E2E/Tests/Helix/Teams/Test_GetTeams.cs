@@ -11,18 +11,16 @@ public class Test_GetTeams(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetTeamsRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         GetTeamsRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             Query = new TeamsQueryByName()
             {
                 Name = "StreamTeam"
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

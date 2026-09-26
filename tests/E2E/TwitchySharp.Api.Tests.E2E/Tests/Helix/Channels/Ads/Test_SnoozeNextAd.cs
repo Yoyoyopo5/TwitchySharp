@@ -14,7 +14,7 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetAdScheduleRequest adScheduleRequest = new()
@@ -22,7 +22,7 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        TwitchResponse<GetAdScheduleResponse> adScheduleResponse = await client.SendAsync(adScheduleRequest, ct);
+        TwitchResponse<GetAdScheduleResponseContent> adScheduleResponse = await client.SendAsync(adScheduleRequest, TestName, ct);
         AdSchedule? schedule = adScheduleResponse.Content.Data.SingleOrDefault();
 
         Assert.SkipWhen(
@@ -45,6 +45,6 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        await client.SendAsync(request, ct);
+        await client.SendAsync(request, TestName, ct);
     }
 }

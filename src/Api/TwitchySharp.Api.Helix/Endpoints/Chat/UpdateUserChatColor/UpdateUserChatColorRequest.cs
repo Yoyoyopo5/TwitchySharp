@@ -5,20 +5,27 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Updates the color used for the user's name in chat.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserManageChatColor"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-user-chat-color">Update User Chat Color</see> for more information.
 /// </remarks>
 public record UpdateUserChatColorRequest
-    : TwitchHelixRequest<UpdateUserChatColorResponse>
+    : TwitchHelixRequest<UpdateUserChatColorResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/chat/color";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageChatColor)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)
@@ -38,6 +45,6 @@ public record UpdateUserChatColorRequest
     /// </summary>
     public required ChatColor Color { get; init; }
 
-    protected override ValueTask<UpdateUserChatColorResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UpdateUserChatColorResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UpdateUserChatColorResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UpdateUserChatColorResponseContent());
 }

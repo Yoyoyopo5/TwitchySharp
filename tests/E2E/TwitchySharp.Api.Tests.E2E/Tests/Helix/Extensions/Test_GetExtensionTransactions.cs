@@ -19,6 +19,6 @@ public class Test_GetExtensionTransactions(TwitchClientFixture fixture)
             ExtensionId = extensionConfig.ExtensionId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

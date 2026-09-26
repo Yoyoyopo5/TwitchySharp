@@ -14,7 +14,8 @@ public sealed record ExtensionBitsTransactionCreate(ExtensionId ExtensionClientI
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ExtensionBitsTransactionCreate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ExtensionBitsTransactionCreate;
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ExtensionClientId);
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; }
+        = new() { Identity = new TwitchIdentity.Client(ExtensionClientId) };
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("extension_client_id"), ExtensionClientId);

@@ -7,20 +7,28 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// Updates the broadcaster's chat settings.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageChatSettings"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageChatSettings"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageChatSettings"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-chat-settings">Update Chat Settings</see> for more information.
 /// </remarks>
 public record UpdateChatSettingsRequest
-    : TwitchHelixRequest<UpdateChatSettingsResponse>
+    : TwitchHelixRequest<UpdateChatSettingsResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/chat/settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageChatSettings)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

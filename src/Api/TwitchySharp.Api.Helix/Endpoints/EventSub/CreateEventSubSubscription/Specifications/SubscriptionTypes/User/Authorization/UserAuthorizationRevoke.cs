@@ -18,7 +18,8 @@ public sealed record UserAuthorizationRevoke(ClientId ClientId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.UserAuthorizationRevoke;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.UserAuthorizationRevoke;
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.Client(ClientId);
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; }
+        = new() { Identity = new TwitchIdentity.Client(ClientId) };
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);

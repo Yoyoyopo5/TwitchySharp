@@ -10,15 +10,21 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites">Get Guest Star Invites</see> for more information.
 /// </remarks>
 public record GetGuestStarInvitesRequest
-    : TwitchHelixRequest<GetGuestStarInvitesResponse>
+    : TwitchHelixRequest<GetGuestStarInvitesResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/guest_star/invites";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

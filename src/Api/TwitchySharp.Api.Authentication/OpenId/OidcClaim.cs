@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Represents additional OIDC claims that can be requested from a <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/">Twitch OIDC authorization flow</see> or the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">UserInfo</see> endpoint.
 /// </summary>

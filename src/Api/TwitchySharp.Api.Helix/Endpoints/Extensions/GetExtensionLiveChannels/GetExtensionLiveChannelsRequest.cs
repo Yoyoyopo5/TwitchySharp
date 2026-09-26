@@ -10,7 +10,8 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-live-channels">Get Extension Live Channels</see> for more information.
 /// </remarks>
 public record GetExtensionLiveChannelsRequest
-    : TwitchHelixRequest<GetExtensionLiveChannelsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetExtensionLiveChannelsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/extensions/live";
     public override HttpMethod Method => HttpMethod.Get;
@@ -19,6 +20,8 @@ public record GetExtensionLiveChannelsRequest
             .Add("extension_id", ExtensionId)
             .Add("first", First?.ToString())
             .Add("after", After?.ToString());
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The id of the extension to get.

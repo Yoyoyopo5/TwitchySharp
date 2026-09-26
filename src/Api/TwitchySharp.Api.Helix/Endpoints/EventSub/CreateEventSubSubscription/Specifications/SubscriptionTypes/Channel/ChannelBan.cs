@@ -17,8 +17,12 @@ public sealed record ChannelBan(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelBan;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelBan;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelModerate);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelModerate)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

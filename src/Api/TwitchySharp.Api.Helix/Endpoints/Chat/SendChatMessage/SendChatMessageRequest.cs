@@ -6,42 +6,29 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Requires a user access token with <see cref="Scope.UserWriteChat"/> or an app access token where the sending user has <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/> on another user access token granted to this client id.
-/// <br/>
-/// Defaults to using a <see cref="TwitchIdentity.User"/> based on the message sender (requires <see cref="Scope.UserWriteChat"/>).
-/// <br/>
-/// If you want to use the <see cref="Scope.ChannelBot"/> and <see cref="Scope.UserBot"/> scopes with a <see cref="TwitchIdentity.Client"/> (app access token),
-/// you should use the <see cref="AsBot(ClientId?)"/> method to configure the <see cref="TwitchIdentity.Client"/>.
+/// Requires a user access token with <see cref="Scope.UserWriteChat"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.UserWriteChat"/> and <see cref="Scope.UserBot"/> for the <see cref="SendChatMessageRequestData.SenderId"/>,
+/// and <see cref="Scope.ChannelBot"/> for the <see cref="SendChatMessageRequestData.BroadcasterId"/>, unless the <see cref="SendChatMessageRequestData.SenderId"/> is a moderator of the broadcaster's chat.
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-chat-message">Send Chat Message</see> for more information.
 /// </remarks>
 public record SendChatMessageRequest
-    : TwitchHelixRequest<SendChatMessageResponse>
+    : TwitchHelixRequest<SendChatMessageResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/chat/messages";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
-        Identity = BotIdentity ?? new TwitchIdentity.User(Message.SenderId),
-        ValidScopes = ImmutableHashSet.Create(Scope.UserWriteChat) // We leave out Scope.UserBot and Scope.ChannelBot here because they would not be used with a user identity anyway.
+        Identity = new TwitchIdentity.User(Message.SenderId),
+        ValidScopes = ImmutableHashSet.Create(Scope.UserWriteChat)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => Message;
-
-    /// <summary>
-    /// Allows for sending the request using an app access token with a user that has authorized the <paramref name="clientId"/> with <see cref="Scope.UserBot"/> and <see cref="Scope.ChannelBot"/>.
-    /// </summary>
-    /// <param name="clientId">
-    /// The client to use.
-    /// Leave this <see cref="null"/> to use <see cref="TwitchIdentity.Client.Default"/>, which is set to a fallback by the <see cref="DefaultRequestAuthorizer"/>.
-    /// </param>
-    /// <returns>A new <see cref="SendChatMessageRequest"/> with the identity override configured.</returns>
-    public SendChatMessageRequest AsBot(ClientId? clientId = null)
-        => this with
-        {
-            BotIdentity = clientId is null ? TwitchIdentity.Client.Default : new TwitchIdentity.Client(clientId)
-        };
-
-    private TwitchIdentity? BotIdentity { get; init; }
 
     /// <summary>
     /// The message to send.

@@ -10,15 +10,21 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings">Update Channel Guest Star Settings</see> for more information.
 /// </remarks>
 public record UpdateChannelGuestStarSettingsRequest
-    : TwitchHelixRequest<UpdateChannelGuestStarSettingsResponse>
+    : TwitchHelixRequest<UpdateChannelGuestStarSettingsResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/guest_star/channel_settings";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);
@@ -37,8 +43,8 @@ public record UpdateChannelGuestStarSettingsRequest
     /// </summary>
     public required UpdateChannelGuestStarSettingsRequestData Settings { get; init; }
 
-    protected override ValueTask<UpdateChannelGuestStarSettingsResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UpdateChannelGuestStarSettingsResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UpdateChannelGuestStarSettingsResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UpdateChannelGuestStarSettingsResponseContent());
 }
 
 /// <summary>

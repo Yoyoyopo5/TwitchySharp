@@ -10,12 +10,14 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// To retrieve entitlements for a specific game, use the <see cref="GameId"/> property to filter results.
 /// Parameter use varies based on the type of token used.
 /// </para>
+/// <para>
 /// Requires an app or user access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements">Get Drops Entitlements</see> for more information.
 /// </remarks>
 public record GetDropsEntitlementsRequest
-    : TwitchHelixRequest<GetDropsEntitlementsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetDropsEntitlementsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/entitlements/drops";
     public override HttpMethod Method => HttpMethod.Get;
@@ -27,6 +29,8 @@ public record GetDropsEntitlementsRequest
             .Add("fulfillment_status", FulfillmentStatus?.Value)
             .Add("after", After?.ToString())
             .Add("first", First?.ToString());
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The ids of the specific entitlements to get.

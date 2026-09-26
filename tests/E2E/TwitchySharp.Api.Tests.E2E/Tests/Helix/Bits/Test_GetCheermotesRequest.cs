@@ -11,17 +11,15 @@ public class Test_GetCheermotesRequest(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetCheermotesRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         const string BROADCASTER_ID = "52137752";
         UserId broadcasterId = new(BROADCASTER_ID);
         GetCheermotesRequest request = new()
         {
             BroadcasterId = broadcasterId,
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

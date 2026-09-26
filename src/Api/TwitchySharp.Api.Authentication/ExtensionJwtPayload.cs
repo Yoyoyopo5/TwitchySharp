@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TwitchySharp.Serialization;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to create a signed JWT for various Extensions API endpoints.
 /// </summary>
@@ -23,7 +23,7 @@ public record ExtensionJwtPayload
     /// <summary>
     /// The user id of the owner of the extension.
     /// </summary>
-    public required UserId UserId { get; init; }
+    public required ExtensionOwnerId UserId { get; init; }
     /// <summary>
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
@@ -44,16 +44,12 @@ public record ExtensionJwtPayload
     /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
-    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, JsonSerializerOptions? serializerOptions = null)
+    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, Func<ExtensionJwtPayload, string>? serialize = null)
         => new(new JsonWebTokenHandler()
             .CreateToken(
-                JsonSerializer.Serialize(this, serializerOptions ?? JsonConfig.ApiOptions),
-                new SigningCredentials(
-                    new SymmetricSecurityKey(
-                        Convert.FromBase64String(extensionSecret.Value)
-                    ),
-                    "HS256"
-            )));
+                serialize is not null ? serialize(this) : JsonSerializer.Serialize(this, JsonConfig.ApiOptions),
+                new SigningCredentials(new SymmetricSecurityKey(extensionSecret.Bytes), "HS256"))
+            );
 }
 
 public readonly record struct ExtensionPubSubPermissions

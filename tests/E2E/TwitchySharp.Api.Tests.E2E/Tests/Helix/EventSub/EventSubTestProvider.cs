@@ -98,7 +98,7 @@ public static class EventSubTestRegistry
         Func<TRequiredIdentity, TSpecification> create
         )
         where TSpecification : EventSubSubscriptionTypeSpecification, IConditionConstructable<TSpecification>
-        where TRequiredIdentity : ITestIdentity
+        where TRequiredIdentity : ITestIdentity<TwitchIdentity>
     {
         registry.Add(TSpecification.SubscriptionType, new EventSubTest<TRequiredIdentity, TSpecification>()
         {

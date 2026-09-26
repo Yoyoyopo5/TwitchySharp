@@ -11,14 +11,10 @@ public class Test_GetContentClassificationLabelsRequest(TwitchClientFixture fixt
     [Fact]
     public async Task Send_GetContentClassificationLabelsRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
-        GetContentClassificationLabelsRequest request = new()
-        {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() }
-        };
+        GetContentClassificationLabelsRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

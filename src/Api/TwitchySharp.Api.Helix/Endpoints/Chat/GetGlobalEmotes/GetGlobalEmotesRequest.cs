@@ -10,8 +10,11 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-global-emotes">Get Global Emotes</see> for more information.
 /// </remarks>
 public record GetGlobalEmotesRequest
-    : TwitchHelixRequest<GetGlobalEmotesResponse>
+    : TwitchHelixRequest<GetGlobalEmotesResponseContent>,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/chat/emotes/global";
     public override HttpMethod Method => HttpMethod.Get;
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 }

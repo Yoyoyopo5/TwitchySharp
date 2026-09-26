@@ -15,7 +15,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetUserExtensionsRequest getRequest = new()
@@ -23,8 +23,8 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             UserId = broadcasterId
         };
 
-        TwitchResponse<GetUserExtensionsResponse> getResponse = await client.SendAsync(getRequest, ct);
-        if (getResponse.Content.Data.Where(ext => ext.Type.Contains(UserExtensionType.Panel)).FirstOrDefault() is not InstalledExtension extension)
+        TwitchResponse<GetUserExtensionsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        if (getResponse.Content.Data.FirstOrDefault(ext => ext.Type.Contains(UserExtensionType.Panel)) is not InstalledExtension extension)
             return;
 
         UpdateUserExtensionsRequest enableRequest = new()
@@ -36,7 +36,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(enableRequest, ct);
+        await client.SendAsync(enableRequest, TestName, ct);
         await Task.Delay(100, ct);
 
         UpdateUserExtensionsRequest disableRequest = enableRequest with
@@ -47,6 +47,6 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(disableRequest, ct);
+        await client.SendAsync(disableRequest, TestName, ct);
     }
 }

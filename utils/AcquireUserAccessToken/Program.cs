@@ -5,7 +5,7 @@ using AcquireUserAccessToken;
 using Microsoft.Extensions.Configuration;
 using TwitchySharp;
 using TwitchySharp.Api;
-using TwitchySharp.Api.Authorization;
+using TwitchySharp.Api.Authentication;
 using TwitchySharp.Api.Tests.E2E.AcquireUserAccessToken;
 
 IConfiguration config = new ConfigurationBuilder()
@@ -24,7 +24,7 @@ JsonSerializerOptions serializerOptions = new()
     WriteIndented = true,
 };
 
-TwitchClient client = TwitchClient.CreateDefault(new());
+TwitchClient client = new TwitchClient();
 
 string state = Guid.NewGuid().ToString();
 string nonce = Guid.NewGuid().ToString();
@@ -137,7 +137,7 @@ try
     Console.WriteLine("Access token details were copied to the clipboard.");
 }
 catch (OperationCanceledException cancelEx) { Console.WriteLine(cancelEx.Message); }
-catch (TwitchApiException apiEx) { Console.WriteLine($"An error occurred when requesting the token: {apiEx.StatusCode} {apiEx.Message} {Encoding.UTF8.GetString(apiEx.Content)} {((FormUrlEncodedContent)apiEx.Request.Content!).ReadAsStringAsync().Result}"); }
+catch (TwitchApiException apiEx) { Console.WriteLine($"An error occurred when requesting the token: {apiEx.StatusCode} {apiEx.Message} {apiEx.Content} {((FormUrlEncodedContent)apiEx.Request.Content!).ReadAsStringAsync().Result}"); }
 catch (Exception ex) { Console.WriteLine($"An error occurred when waiting for the code: {ex.Message}"); }
 
 Console.WriteLine();

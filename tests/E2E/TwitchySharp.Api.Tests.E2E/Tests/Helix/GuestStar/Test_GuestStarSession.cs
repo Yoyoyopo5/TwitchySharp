@@ -19,10 +19,10 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
         const string GUEST_USER_ID = "52137752"; // Yoyoyopo5
         UserId guestUserId = new(GUEST_USER_ID);
 
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        TwitchResponse<CreateGuestStarSessionResponse> createResponse
+        TwitchResponse<CreateGuestStarSessionResponseContent> createResponse
             = await CreateGuestStarSession(client, userConfig.UserId, ct);
         GuestStarSessionId sessionId = createResponse.Content.Data.Single().Id;
 
@@ -121,46 +121,46 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
         }
     }
 
-    private static Task<TwitchResponse<CreateGuestStarSessionResponse>> CreateGuestStarSession(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<CreateGuestStarSessionResponseContent>> CreateGuestStarSession(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new CreateGuestStarSessionRequest()
         {
             BroadcasterId = broadcasterId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<GetGuestStarSessionResponse>> GetGuestStarSession(ITwitchClient client, UserId broadcasterId, CancellationToken ct)
+    private static Task<TwitchResponse<GetGuestStarSessionResponseContent>> GetGuestStarSession(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
         => client.SendAsync(new GetGuestStarSessionRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<SendGuestStarInviteResponse>> SendGuestStarInvite(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, CancellationToken ct)
+    private static Task<TwitchResponse<SendGuestStarInviteResponseContent>> SendGuestStarInvite(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, CancellationToken ct)
         => client.SendAsync(new SendGuestStarInviteRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             SessionId = sessionId,
             GuestId = guestId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<GetGuestStarInvitesResponse>> GetGuestStarInvites(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, CancellationToken ct)
+    private static Task<TwitchResponse<GetGuestStarInvitesResponseContent>> GetGuestStarInvites(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, CancellationToken ct)
         => client.SendAsync(new GetGuestStarInvitesRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             SessionId = sessionId,
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<DeleteGuestStarInviteResponse>> DeleteGuestStarInvite(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, CancellationToken ct)
+    private static Task<TwitchResponse<DeleteGuestStarInviteResponseContent>> DeleteGuestStarInvite(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, CancellationToken ct)
         => client.SendAsync(new DeleteGuestStarInviteRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             SessionId = sessionId,
             GuestId = guestId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<AssignGuestStarSlotResponse>> AssignGuestStarSlot(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, GuestStarSlotId slotId, CancellationToken ct)
+    private static Task<TwitchResponse<AssignGuestStarSlotResponseContent>> AssignGuestStarSlot(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, GuestStarSlotId slotId, CancellationToken ct)
         => client.SendAsync(new AssignGuestStarSlotRequest()
         {
             BroadcasterId = broadcasterId,
@@ -168,9 +168,9 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
             SessionId = sessionId,
             GuestId = guestId,
             SlotId = slotId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<UpdateGuestStarSlotSettingsResponse>> UpdateGuestStarSlotSettings(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, GuestStarSlotId slotId, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateGuestStarSlotSettingsResponseContent>> UpdateGuestStarSlotSettings(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, GuestStarSlotId slotId, CancellationToken ct)
         => client.SendAsync(new UpdateGuestStarSlotSettingsRequest()
         {
             BroadcasterId = broadcasterId,
@@ -184,9 +184,9 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
                 IsVideoEnabled = true,
                 Volume = new(50)
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<UpdateGuestStarSlotResponse>> UpdateGuestStarSlot(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, GuestStarSlotId fromSlotId, GuestStarSlotId toSlotId, CancellationToken ct)
+    private static Task<TwitchResponse<UpdateGuestStarSlotResponseContent>> UpdateGuestStarSlot(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, GuestStarSlotId fromSlotId, GuestStarSlotId toSlotId, CancellationToken ct)
         => client.SendAsync(new UpdateGuestStarSlotRequest()
         {
             BroadcasterId = broadcasterId,
@@ -194,9 +194,9 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
             SessionId = sessionId,
             SourceSlotId = fromSlotId,
             DestinationSlotId = toSlotId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<DeleteGuestStarSlotResponse>> DeleteGuestStarSlot(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, GuestStarSlotId slotId, CancellationToken ct)
+    private static Task<TwitchResponse<DeleteGuestStarSlotResponseContent>> DeleteGuestStarSlot(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, UserId guestId, GuestStarSlotId slotId, CancellationToken ct)
         => client.SendAsync(new DeleteGuestStarSlotRequest()
         {
             BroadcasterId = broadcasterId,
@@ -204,12 +204,12 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
             SessionId = sessionId,
             GuestId = guestId,
             SlotId = slotId
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<EndGuestStarSessionResponse>> EndGuestStarSession(ITwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, CancellationToken ct)
+    private static Task<TwitchResponse<EndGuestStarSessionResponseContent>> EndGuestStarSession(TestingTwitchClient client, UserId broadcasterId, GuestStarSessionId sessionId, CancellationToken ct)
         => client.SendAsync(new EndGuestStarSessionRequest()
         {
             BroadcasterId = broadcasterId,
             SessionId = sessionId
-        }, ct);
+        }, TestName, ct);
 }

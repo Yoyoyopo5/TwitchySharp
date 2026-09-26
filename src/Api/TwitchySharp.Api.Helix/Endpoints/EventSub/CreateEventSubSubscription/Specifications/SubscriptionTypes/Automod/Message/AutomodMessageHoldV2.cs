@@ -7,8 +7,7 @@ namespace TwitchySharp.Api.Helix.EventSub.Subscriptions;
 /// Only public blocked terms trigger notifications, not private ones.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageAutomod"/>.
-/// The user who created the access token must be the same user as the <paramref name="ModeratorUserId"/>.
+/// Requires a user access token that includes <see cref="Scope.ModeratorManageAutomod"/> for <paramref name="ModeratorUserId"/>.
 /// </remarks>
 /// <param name="BroadcasterUserId">User id of the broadcaster (channel).</param>
 /// <param name="ModeratorUserId">User id of a moderator in the broadcaster's chat. This can also be the broadcaster.</param>
@@ -17,8 +16,12 @@ public sealed record AutomodMessageHoldV2(UserId BroadcasterUserId, UserId Moder
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.AutomodMessageHoldV2;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.AutomodMessageHoldV2;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorManageAutomod);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageAutomod)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

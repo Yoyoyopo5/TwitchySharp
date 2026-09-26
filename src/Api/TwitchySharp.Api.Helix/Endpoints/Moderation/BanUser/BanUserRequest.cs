@@ -7,20 +7,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Bans a user from participating in the specified broadcaster's chat room or puts them in a timeout.
 /// </summary>
 /// <remarks>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageBannedUsers"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageBannedUsers"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageBannedUsers"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#ban-user">Ban User</see> for more information.
 /// </remarks>
 public record BanUserRequest
-    : TwitchHelixRequest<BanUserResponse>
+    : TwitchHelixRequest<BanUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/bans";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageBannedUsers)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

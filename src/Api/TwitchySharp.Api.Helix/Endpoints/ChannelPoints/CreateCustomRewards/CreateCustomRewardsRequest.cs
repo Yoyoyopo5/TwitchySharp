@@ -8,21 +8,27 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// </summary>
 /// <remarks>
 /// The maximum number of custom rewards per channel is 50, which includes both enabled and disabled rewards.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageRedemptions"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-custom-rewards">Create Custom Rewards</see> for more information.
 /// </remarks>
 public record CreateCustomRewardsRequest
-    : TwitchHelixRequest<CreateCustomRewardsResponse>
+    : TwitchHelixRequest<CreateCustomRewardsResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/channel_points/custom_rewards";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageRedemptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId);

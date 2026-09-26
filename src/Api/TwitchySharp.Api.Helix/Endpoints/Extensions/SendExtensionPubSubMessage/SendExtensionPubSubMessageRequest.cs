@@ -18,23 +18,27 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-extension-pubsub-message">Send Extension PubSub Message</see> for more information.
 /// </remarks>
 public record SendExtensionPubSubMessageRequest
-    : TwitchHelixRequest<SendExtensionPubSubMessageResponse>
+    : TwitchHelixRequest<SendExtensionPubSubMessageResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/pubsub";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = ExtensionIdentity with
-        {
-            BroadcasterId = Message is BroadcastPubSubMessageData broadcast ? broadcast.BroadcasterId : null
-        }
+        Identity = new(ExtensionId, Message is BroadcastPubSubMessageData broadcast ? broadcast.BroadcasterId : null)
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
+
+    public override object? ContentObject => Message;
 
     /// <summary>
-    /// The extension identity used for JWT authentication.
+    /// The id of the extension.
     /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
-    public override object? ContentObject => Message;
+    public required ExtensionId ExtensionId { get; init; }
 
     /// <summary>
     /// Data used to create and send the message.
@@ -42,8 +46,8 @@ public record SendExtensionPubSubMessageRequest
     /// </summary>
     public required SendExtensionPubSubMessageRequestData Message { get; init; }
 
-    protected override ValueTask<SendExtensionPubSubMessageResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SendExtensionPubSubMessageResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SendExtensionPubSubMessageResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SendExtensionPubSubMessageResponseContent());
 }
 
 /// <summary>

@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.EventSub;
@@ -11,9 +10,9 @@ public record ConditionMissingRequiredKeyError(ConditionKey MissingKey)
     : Error("The condition was missing a required key");
 
 /// <summary>
-/// An <see cref="EventSubSubscriptionTypeSpecification"/> that can be created via a <see cref="EventSubSubscription.Condition"/>.
+/// An <see cref="IEventSubSubscriptionTypeSpecification"/> that can be created via a <see cref="EventSubSubscription.Condition"/>.
 /// </summary>
-/// <typeparam name="T">The <see cref="EventSubSubscriptionTypeSpecification"/> type.</typeparam>
+/// <typeparam name="T">The <see cref="IEventSubSubscriptionTypeSpecification"/> type.</typeparam>
 public interface IConditionConstructable<T>
     where T : EventSubSubscriptionTypeSpecification
 {
@@ -40,12 +39,7 @@ public abstract record EventSubSubscriptionTypeSpecification
     public abstract IReadOnlyDictionary<ConditionKey, object> Condition { get; }
 
     /// <summary>
-    /// The identity that must authorize this subscription.
+    /// The authentication context that requests using this specification should be made under.
     /// </summary>
-    public virtual TwitchIdentity Identity { get; } = TwitchIdentity.Client.Default;
-
-    /// <summary>
-    /// The scopes required for user authentication.
-    /// </summary>
-    public virtual IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet<Scope>.Empty;
+    public abstract EventSubSubscriptionAuthenticationContext AuthenticationContext { get; }
 }

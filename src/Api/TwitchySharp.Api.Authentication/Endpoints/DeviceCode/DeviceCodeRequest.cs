@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to get a device code from Twitch which can be used to get a user access token for a specific device.
 /// </summary>
@@ -6,7 +6,7 @@ namespace TwitchySharp.Api.Authorization;
 /// Uses the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.
 /// </remarks>
 public record DeviceCodeRequest
-    : TwitchAuthorizationRequest<DeviceCodeResponse>
+    : TwitchAuthorizationRequest<DeviceCodeResponseContent>
 {
     protected override string Path => "/device";
     public override HttpMethod Method => HttpMethod.Post;

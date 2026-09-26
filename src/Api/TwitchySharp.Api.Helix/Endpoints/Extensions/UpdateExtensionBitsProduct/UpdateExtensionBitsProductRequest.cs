@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-extension-bits-product">Update Extension Bits Product</see> for more information.
 /// </remarks>
 public record UpdateExtensionBitsProductRequest
-    : TwitchHelixRequest<UpdateExtensionBitsProductResponse>
+    : TwitchHelixRequest<UpdateExtensionBitsProductResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/bits/extensions";
     public override HttpMethod Method => HttpMethod.Put;
     public override object? ContentObject => Product;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Client> DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.Client(ExtensionId)
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
     /// <summary>
     /// The client id of the extension to update bits products for.

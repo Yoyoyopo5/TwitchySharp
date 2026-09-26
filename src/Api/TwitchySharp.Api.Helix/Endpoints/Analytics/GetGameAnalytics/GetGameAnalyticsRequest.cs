@@ -7,21 +7,24 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// </summary>
 /// <remarks>
 /// The response contains the URLs used to download the reports (CSV files).
-/// <br/>
+/// <para>
 /// Requires a user access token with <see cref="Scope.AnalyticsReadGames"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-game-analytics">Get Game Analytics</see> for more information.
 /// </remarks>
 public record GetGameAnalyticsRequest
-    : TwitchHelixRequest<GetGameAnalyticsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetGameAnalyticsResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>,
+    IForwardPageableRequest
 {
     protected override string Path => "/analytics/games";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadGames)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext { get => field ?? DefaultAuthenticationContext; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("game_id", GameId?.Value)

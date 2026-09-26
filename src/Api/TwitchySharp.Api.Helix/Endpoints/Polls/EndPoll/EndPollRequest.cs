@@ -6,21 +6,27 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </summary>
 /// <remarks>
 /// You have the option to end it or end it and archive it.
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManagePolls"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#end-poll">End Poll</see> for more information.
 /// </remarks>
 public record EndPollRequest
-    : TwitchHelixRequest<EndPollResponse>
+    : TwitchHelixRequest<EndPollResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/polls";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Poll.BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManagePolls)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => Poll;
 
     /// <summary>

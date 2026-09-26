@@ -17,8 +17,12 @@ public sealed record ChannelPollEnd(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelPollEnd;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelPollEnd;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadPolls, Scope.ChannelManagePolls);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadPolls, Scope.ChannelManagePolls)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

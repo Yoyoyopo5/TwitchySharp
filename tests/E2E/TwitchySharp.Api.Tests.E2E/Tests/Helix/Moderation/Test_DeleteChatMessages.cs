@@ -16,17 +16,17 @@ public class Test_DeleteChatMessages(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         const string TEST_MESSAGE = "test message pls delete";
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
         UserId broadcasterId = userConfig.UserId;
 
-        TwitchResponse<SendChatMessageResponse> sendResponse = await SendChatMessage(client, broadcasterId, TEST_MESSAGE, ct);
+        TwitchResponse<SendChatMessageResponseContent> sendResponse = await SendChatMessage(client, broadcasterId, TEST_MESSAGE, ct);
         MessageId messageId = sendResponse.Content.Data.Single().MessageId;
         await Task.Delay(250, ct);
         await DeleteChatMessage(client, broadcasterId, messageId, ct); // Technically can't delete broadcaster's message but this call still succeeds.
     }
 
-    private static Task<TwitchResponse<SendChatMessageResponse>> SendChatMessage(ITwitchClient client, UserId broadcasterId, string message, CancellationToken ct)
+    private static Task<TwitchResponse<SendChatMessageResponseContent>> SendChatMessage(TestingTwitchClient client, UserId broadcasterId, string message, CancellationToken ct)
         => client.SendAsync(new SendChatMessageRequest()
         {
             Message = new()
@@ -35,13 +35,13 @@ public class Test_DeleteChatMessages(TwitchClientFixture fixture)
                 SenderId = broadcasterId,
                 Message = message
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<DeleteChatMessagesResponse>> DeleteChatMessage(ITwitchClient client, UserId broadcasterId, MessageId messageId, CancellationToken ct)
+    private static Task<TwitchResponse<DeleteChatMessagesResponseContent>> DeleteChatMessage(TestingTwitchClient client, UserId broadcasterId, MessageId messageId, CancellationToken ct)
         => client.SendAsync(new DeleteChatMessagesRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             MessageId = messageId
-        }, ct);
+        }, TestName, ct);
 }

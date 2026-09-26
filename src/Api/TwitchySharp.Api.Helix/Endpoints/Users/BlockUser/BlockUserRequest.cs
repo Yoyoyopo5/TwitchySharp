@@ -5,21 +5,28 @@ namespace TwitchySharp.Api.Helix.Users;
 /// Blocks the specified user from interacting with or having contact with the user.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.UserManageBlockedUsers"/>.
 /// The user that created the access token identifies who is blocking the target user.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#block-user">Block User</see> for more information.
 /// </remarks>
 public record BlockUserRequest
-    : TwitchHelixRequest<BlockUserResponse>
+    : TwitchHelixRequest<BlockUserResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/users/blocks";
     public override HttpMethod Method => HttpMethod.Put;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserManageBlockedUsers)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("target_user_id", TargetUserId)
@@ -47,6 +54,6 @@ public record BlockUserRequest
     /// </summary>
     public BlockUserReason? Reason { get; init; }
 
-    protected override ValueTask<BlockUserResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new BlockUserResponse());
+    public override Func<Stream, CancellationToken, ValueTask<BlockUserResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new BlockUserResponseContent());
 }

@@ -20,7 +20,6 @@ public class Test_SetExtensionRequiredConfiguration(TwitchClientFixture fixture)
         SetExtensionRequiredConfigurationRequest request = new()
         {
             BroadcasterId = userConfig.UserId,
-            ExtensionOwnerId = extensionConfig.ExtensionOwnerUserId,
             Configuration = new()
             {
                 ExtensionId = extensionConfig.ExtensionId,
@@ -29,6 +28,6 @@ public class Test_SetExtensionRequiredConfiguration(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

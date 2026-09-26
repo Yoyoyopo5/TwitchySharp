@@ -23,20 +23,27 @@ namespace TwitchySharp.Api.Helix.Streams;
 ///     </item>
 /// </list>
 /// </para>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ChannelManageBroadcast"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-stream-marker">Create Stream Marker</see> for more information.
 /// </remarks>
 public record CreateStreamMarkerRequest
-    : TwitchHelixRequest<CreateStreamMarkerResponse>
+    : TwitchHelixRequest<CreateStreamMarkerResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/streams/markers";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(Marker.UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageBroadcast)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     public override object? ContentObject => Marker;
 
     /// <summary>

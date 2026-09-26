@@ -17,8 +17,12 @@ public sealed record ChannelCheer(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelCheer;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelCheer;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.BitsRead);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(BroadcasterUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(BroadcasterUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.BitsRead)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

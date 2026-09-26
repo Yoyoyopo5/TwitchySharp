@@ -16,7 +16,7 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetVideosRequest getRequest = new()
@@ -27,7 +27,7 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
             }
         };
 
-        TwitchResponse<GetVideosResponse> getResponse = await client.SendAsync(getRequest, ct);
+        TwitchResponse<GetVideosResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
         if (getResponse.Content.Data.FirstOrDefault() is not TwitchVideo video)
             return;
 
@@ -37,6 +37,6 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
             Ids = [video.Id]
         };
 
-        await client.SendAsync(deleteRequest, ct);
+        await client.SendAsync(deleteRequest, TestName, ct);
     }
 }

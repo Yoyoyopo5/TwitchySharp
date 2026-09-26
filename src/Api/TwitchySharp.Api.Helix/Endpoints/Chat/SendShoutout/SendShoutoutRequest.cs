@@ -6,21 +6,29 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </summary>
 /// <remarks>
 /// A broadcaster may send a Shoutout once every 2 minutes. They may send the same broadcaster a Shoutout once every 60 minutes.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorManageShoutouts"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorManageShoutouts"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorManageShoutouts"/> and <see cref="Scope.UserBot"/> for the <see cref="ModeratorId"/>,
+/// and <see cref="Scope.ChannelBot"/> for the <see cref="FromBroadcasterId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-a-shoutout">Send a Shoutout</see> for more information.
 /// </remarks>
 public record SendShoutoutRequest
-    : TwitchHelixRequest<SendShoutoutResponse>
+    : TwitchHelixRequest<SendShoutoutResponseContent>,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/chat/shoutouts";
     public override HttpMethod Method => HttpMethod.Post;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorManageShoutouts)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("from_broadcaster_id", FromBroadcasterId)
@@ -46,6 +54,6 @@ public record SendShoutoutRequest
     /// </remarks>
     public required UserId ModeratorId { get; init; }
 
-    protected override ValueTask<SendShoutoutResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new SendShoutoutResponse());
+    public override Func<Stream, CancellationToken, ValueTask<SendShoutoutResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new SendShoutoutResponseContent());
 }

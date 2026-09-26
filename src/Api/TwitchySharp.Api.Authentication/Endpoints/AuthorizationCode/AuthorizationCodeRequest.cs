@@ -1,4 +1,4 @@
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to get a user access token and refresh token.
 /// </summary>
@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Authorization;
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow">Authorization Code Grant Flow</see> for more information.
 /// </remarks>
 public record AuthorizationCodeRequest
-    : TwitchAuthorizationRequest<AuthorizationCodeResponse>
+    : TwitchAuthorizationRequest<AuthorizationCodeResponseContent>
 {
     protected override string Path => "/token";
     public override HttpMethod Method => HttpMethod.Post;

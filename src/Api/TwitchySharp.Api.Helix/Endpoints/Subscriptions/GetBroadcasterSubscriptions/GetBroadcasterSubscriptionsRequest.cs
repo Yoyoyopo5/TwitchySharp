@@ -12,15 +12,21 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions">Get Broadcaster Subscriptions</see> for more information.
 /// </remarks>
 public record GetBroadcasterSubscriptionsRequest
-    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponse>, IForwardPageableRequest, IBackwardPageableRequest
+    : TwitchHelixRequest<GetBroadcasterSubscriptionsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/subscriptions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(BroadcasterId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadSubscriptions)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

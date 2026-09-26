@@ -12,7 +12,8 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-conduit-shards">Get Conduit Shards</see> for more information.
 /// </remarks>
 public record GetConduitShardsRequest
-    : TwitchHelixRequest<GetConduitShardsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetConduitShardsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {
     protected override string Path => "/eventsub/conduits/shards";
     public override HttpMethod Method => HttpMethod.Get;
@@ -21,6 +22,8 @@ public record GetConduitShardsRequest
             .Add("conduit_id", ConduitId)
             .Add("status", Status?.Value)
             .Add("after", After?.ToString());
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Client> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The conduit id of the conduit you want to get shards for.

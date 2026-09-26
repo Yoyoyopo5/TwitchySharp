@@ -17,8 +17,12 @@ public sealed record ChannelChatUserMessageUpdate(UserId BroadcasterUserId, User
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelChatUserMessageUpdate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelChatUserMessageUpdate;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.UserReadChat);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(UserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(UserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.UserReadChat)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

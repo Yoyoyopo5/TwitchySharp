@@ -7,21 +7,24 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// </summary>
 /// <remarks>
 /// The response contains the URLs used to download the reports (CSV files).
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.AnalyticsReadExtensions"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-analytics">Get Extension Analytics</see> for more information.
 /// </remarks>
 public record GetExtensionAnalyticsRequest
-    : TwitchHelixRequest<GetExtensionAnalyticsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetExtensionAnalyticsResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>,
+    IForwardPageableRequest
 {
     protected override string Path => "/analytics/extensions";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.AnalyticsReadExtensions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext { get => field ?? DefaultAuthenticationContext; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("extension_id", ExtensionId)

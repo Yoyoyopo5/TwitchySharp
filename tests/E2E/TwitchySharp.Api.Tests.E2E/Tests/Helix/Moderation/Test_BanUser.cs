@@ -17,7 +17,7 @@ public class Test_BanUser(TwitchClientFixture fixture)
         const string TEST_BANNED_USER_ID = "52137750";
         UserId bannedUserId = new(TEST_BANNED_USER_ID);
         UserId broadcasterId = userConfig.UserId;
-        ITwitchClient client = _fixture.GetTwitchApiClient();
+        TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         await BanUser(client, broadcasterId, bannedUserId, ct);
@@ -25,7 +25,7 @@ public class Test_BanUser(TwitchClientFixture fixture)
         await UnbanUser(client, broadcasterId, bannedUserId, ct);
     }
 
-    private static Task<TwitchResponse<BanUserResponse>> BanUser(ITwitchClient client, UserId broadcasterId, UserId userId, CancellationToken ct)
+    private static Task<TwitchResponse<BanUserResponseContent>> BanUser(TestingTwitchClient client, UserId broadcasterId, UserId userId, CancellationToken ct)
         => client.SendAsync(new BanUserRequest()
         {
             BroadcasterId = broadcasterId,
@@ -39,13 +39,13 @@ public class Test_BanUser(TwitchClientFixture fixture)
                     Reason = "test timeout"
                 }
             }
-        }, ct);
+        }, TestName, ct);
 
-    private static Task<TwitchResponse<UnbanUserResponse>> UnbanUser(ITwitchClient client, UserId broadcasterId, UserId userId, CancellationToken ct)
+    private static Task<TwitchResponse<UnbanUserResponseContent>> UnbanUser(TestingTwitchClient client, UserId broadcasterId, UserId userId, CancellationToken ct)
         => client.SendAsync(new UnbanUserRequest()
         {
             BroadcasterId = broadcasterId,
             ModeratorId = broadcasterId,
             UserId = userId,
-        }, ct);
+        }, TestName, ct);
 }

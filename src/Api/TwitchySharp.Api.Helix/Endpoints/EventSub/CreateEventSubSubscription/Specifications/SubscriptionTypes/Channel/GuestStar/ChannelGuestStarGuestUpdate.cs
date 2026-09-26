@@ -15,8 +15,12 @@ public sealed record ChannelGuestStarGuestUpdate(UserId BroadcasterUserId, UserI
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelGuestStarGuestUpdate;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelGuestStarGuestUpdate;
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ChannelReadGuestStar, Scope.ChannelManageGuestStar, Scope.ModeratorReadGuestStar, Scope.ModeratorManageGuestStar)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

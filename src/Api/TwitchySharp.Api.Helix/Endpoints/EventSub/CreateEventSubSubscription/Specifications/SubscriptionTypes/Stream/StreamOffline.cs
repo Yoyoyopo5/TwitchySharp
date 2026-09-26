@@ -13,7 +13,7 @@ public sealed record StreamOffline(UserId BroadcasterUserId)
 {
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.StreamOffline;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.StreamOffline;
-
+    public override EventSubSubscriptionAuthenticationContext.ClientAuthorized AuthenticationContext { get; } = new();
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);

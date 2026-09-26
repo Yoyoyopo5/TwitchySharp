@@ -3,105 +3,106 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api;
 
+internal static class IAsyncDisposableExtensions
+{
+    public static async ValueTask<T> AwaitUsing<T>(
+        this ValueTask<IAsyncDisposable> disposable,
+        Func<ValueTask<T>> func
+        )
+    {
+        await using IAsyncDisposable dispose = await disposable;
+        return await func();
+    }
+}
+
 /// <summary>
-/// Contains pipeline extensions for adding rate limiting to a Twitch API request pipeline.
+/// Contains <see cref="TwitchClient"/> extensions for rate limiting.
 /// </summary>
 public static class TwitchRateLimiting
 {
-    private readonly static ClientId EmptyClientId = new("");
-    private static SendTwitchRequest SerializeRequestsByClientId(this SendTwitchRequest send, Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
-    {
-        var sendConcurrently = ThreadSafety.Serialize<TwitchRequestContext, ClientId, TwitchResponse>(ctx => ctx switch
-        {
-            TwitchAuthorizationRequestContext authContext => authContext.AuthorizationHeaders.ClientId ?? EmptyClientId,
-            TwitchRequestContext context => (context.Request is IAuthorizedTwitchRequest authorizedRequest ? authorizedRequest.AuthorizationContext.Identity.ClientId : null) ?? EmptyClientId,
-            _ => EmptyClientId
-        }, lockFactory)(async (context, ct) => await send(context, ct));
-
-        return (context, ct) => sendConcurrently(context, ct).AsTask();
-    }
-
     /// <summary>
-    /// Add rate limiting to a <see cref="SendTwitchRequest"/> pipeline.
+    /// Send each <see cref="TwitchRequest"/> in series.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Rate Limiting is not concurrent by default and does not guarantee an HTTP 429 Too Many Requests error will never be returned.
-    /// Use <see cref="WithStrictRateLimiting(SendTwitchRequest, TwitchRateLimitQueueOptions, Func{ClientId, CancellationToken, ValueTask{IAsyncDisposable}}?)"/> to serialize requests based on <see cref="ClientId"/>.
+    /// This disables parallel request sending through the configured <see cref="HttpClient"/>.
+    /// Can be useful for strict rate limiting situations (in that case, call this after configuring rate limiting).
     /// </para>
     /// <para>
-    /// You may define your own rate limit cache via the <paramref name="options"/>.
-    /// If you do not define a cache, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> is used (fine for most use cases).
+    /// This will only serialize up to resolving <see cref="HttpResponseMessage"/>.
+    /// The final response conversion from <see cref="HttpResponseMessage"/> to <see cref="TwitchResponse{TResponseContent}"/>
+    /// is not serialized.
     /// </para>
     /// </remarks>
-    /// <param name="send">The send pipeline to apply rate limiting to.</param>
-    /// <param name="options">The rate limiter options.</param>
-    /// <returns>A <see cref="SendTwitchRequest"/> function composed of <paramref name="send"/> and the rate limiter.</returns>
-    public static SendTwitchRequest WithRateLimiting(
-        this SendTwitchRequest send,
-        TwitchRateLimitQueueOptions? options = null
+    /// <param name="client">The client to serialize requests for.</param>
+    /// <param name="lockFactory">
+    /// The lock provider to use.
+    /// Each request waits for an <see cref="IAsyncDisposable"/> before resolving <see cref="HttpResponseMessage"/>,
+    /// disposing it once the response is resolved.
+    /// If <see langword="null"/>, uses a default in-memory lock provider scoped to the client.
+    /// </param>
+    /// <param name="defaultClientId">
+    /// The fallback <see cref="ClientId"/> to use if the request does not resolve a <see cref="ClientId"/>.
+    /// If <see langword="null"/>, does not serialize requests that do not resolve a <see cref="ClientId"/>.
+    /// </param>
+    /// <returns>A new <see cref="TwitchClient"/> configured to serialize requests by their resolved <see cref="ClientId"/>.</returns>
+    public static TwitchClient SerializeRequestsByClientId(
+        this TwitchClient client,
+        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
+        => client.Configure<TwitchClient, HttpResponseMessage?>(next => next.SerializeByValue(lockFactory));
+
+    private static ValueTask WaitFor(
+        this TwitchRateLimitDetails rateLimitDetails,
+        DateTimeOffset now,
+        CancellationToken ct
         )
-    {
-        options ??= new();
-        return async (context, ct) =>
-        {
-            ClientId clientId = (context is TwitchAuthorizationRequestContext authorizationContext
-                ? authorizationContext.AuthorizationHeaders.ClientId
-                : context.Request is IAuthorizedTwitchRequest authorizedRequest
-                ? authorizedRequest.AuthorizationContext.Identity.ClientId
-                : null)
-                ?? EmptyClientId;
+        => rateLimitDetails is { Remaining: 0, Reset: not null }
+            && rateLimitDetails.Reset.Value > now
+            ? new ValueTask(Task.Delay(rateLimitDetails.Reset.Value - now, ct))
+            : ValueTask.CompletedTask;
 
-            if (await options.Cache.GetRateLimitDetails(clientId, ct) is TwitchRateLimitDetails cachedDetails
-                && cachedDetails is { Remaining: 0, Reset: not null }
-                && cachedDetails.Reset.Value > DateTimeOffset.UtcNow)
-                await Task.Delay(cachedDetails.Reset.Value - DateTimeOffset.UtcNow + options.ClockSkew, ct);
 
-            TwitchResponse response = await send(context, ct);
-            if (response.RateLimitDetails is not null)
-                await options.Cache.SetRateLimitDetails(
-                    clientId,
-                    response.RateLimitDetails.Value,
-                    ct
-                    );
-
-            return response;
-        };
-    }
-
-    /// <inheritdoc cref="WithRateLimiting(SendTwitchRequest, TwitchRateLimitQueueOptions?)"/>
-    /// <param name="client">The client to add rate limiting to.</param>
+    /// <summary>
+    /// Add rate limiting to a <see cref="TwitchClient"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Rate Limiting is not thread-safe by default and does not guarantee an HTTP 429 Too Many Requests error will never be returned.
+    /// Call <see cref="SerializeRequestsByClientId(TwitchClient, Func{ClientId, CancellationToken, ValueTask{IAsyncDisposable}}?, ClientId?)"/> after this to serialize requests based on <see cref="ClientId"/>, if necessary.
+    /// </para>
+    /// <para>
+    /// You may define your own rate limit cache via the <paramref name="configure"/>.
+    /// If you do not define a cache, a default in-memory <see cref="ConcurrentDictionary{TKey, TValue}"/> scoped to the client is used (fine for most use cases).
+    /// </para>
+    /// </remarks>
+    /// <param name="client">The <see cref="TwitchClient"/> to apply rate limiting to.</param>
+    /// <param name="configure">Configure the rate limiter options.</param>
+    /// <returns>A <see cref="TwitchClient"/> with rate limiting configured.</returns>
     public static TwitchClient WithRateLimiting(
         this TwitchClient client,
-        TwitchRateLimitQueueOptions? options = null
+        Func<TwitchRateLimitQueueOptions, TwitchRateLimitQueueOptions>? configure = null
         )
-        => client.With(send => send.WithRateLimiting(options));
+    {
+            TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
+            return client.Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
+                scope.ResolveOrDefault<ClientId?>(ct)
+                    .BindAsync(async clientId =>
+                    {
+                        if (!clientId.HasValue)
+                            return await next(scope, ct);
 
-    /// <summary>
-    /// Add strict (concurrent) rate limiting to a <see cref="SendTwitchRequest"/> pipeline.
-    /// </summary>
-    /// <remarks>
-    /// Requests will be serialized by <see cref="ClientId"/> to ensure the next request is not sent before rate limits are checked from the previous request.
-    /// This incurs a throughput performance penalty but may be useful if you are receiving many HTTP 429 Too Many Requests errors.
-    /// </remarks>
-    /// <param name="send">The send pipeline to apply strict rate limiting to.</param>
-    /// <param name="options">The rate limiter options.</param>
-    /// <param name="lockFactory">The concurrency lock factory to use. If left <see langword="null"/>, a default in-memory provider is used.</param>
-    public static SendTwitchRequest WithStrictRateLimiting(
-        this SendTwitchRequest send,
-        TwitchRateLimitQueueOptions options,
-        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
-        )
-        => send
-            .WithRateLimiting(options)
-            .SerializeRequestsByClientId(lockFactory);
+                        if (await options.Cache.GetOrDefault(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
+                            await cachedDetails.WaitFor(options.GetNow(), ct);
 
-    /// <inheritdoc cref="WithStrictRateLimiting(SendTwitchRequest, TwitchRateLimitQueueOptions, Func{ClientId, CancellationToken, ValueTask{IAsyncDisposable}}?)"/>
-    /// <param name="client">The client to add strict rate limiting to.</param>
-    public static TwitchClient WithStrictRateLimiting(
-        this TwitchClient client,
-        TwitchRateLimitQueueOptions options,
-        Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null
-        )
-        => client.With(send => send.WithStrictRateLimiting(options, lockFactory));
+                        return await next(scope, ct).MapAsync(async response =>
+                        {
+                            if (response is not null)
+                                await options.Cache.Set(
+                                    clientId.Value,
+                                    response.Headers.ToTwitchRateLimitDetails(),
+                                    ct);
+                            return response;
+                        });
+                    }));
+        }
 }

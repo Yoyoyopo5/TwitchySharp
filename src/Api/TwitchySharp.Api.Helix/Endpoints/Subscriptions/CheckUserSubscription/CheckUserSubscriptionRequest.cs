@@ -11,20 +11,25 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// </para>
 /// <para>
 /// Requires a user access token that includes <see cref="Scope.UserReadSubscriptions"/>.
-/// A Twitch extension may use an app access token if the broadcaster has granted <see cref="Scope.UserReadSubscriptions"/> from within the Twitch Extensions manager.
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#check-user-subscription">Check User Subscription</see> for more information.
 /// </remarks>
 public record CheckUserSubscriptionRequest
-    : TwitchHelixRequest<CheckUserSubscriptionResponse>
+    : TwitchHelixRequest<CheckUserSubscriptionResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/subscriptions/user";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadSubscriptions)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

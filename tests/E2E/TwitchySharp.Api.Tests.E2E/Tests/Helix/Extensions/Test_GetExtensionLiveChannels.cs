@@ -18,9 +18,8 @@ public class Test_GetExtensionLiveChannels(TwitchClientFixture fixture)
         GetExtensionLiveChannelsRequest request = new()
         {
             ExtensionId = extensionConfig.ExtensionId
-            // We may need a custom ClientIdentity here with the ExtensionId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

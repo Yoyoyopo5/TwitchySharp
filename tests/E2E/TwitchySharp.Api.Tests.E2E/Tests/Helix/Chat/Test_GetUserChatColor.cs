@@ -11,17 +11,15 @@ public class Test_GetUserChatColor(TwitchClientFixture fixture)
     [Fact]
     public async Task Send_GetUserChatColorRequest_ReturnSuccessResponse()
     {
-        ClientConfiguration clientConfig
-            = _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
+        _fixture.GetAuthorizingConfigForTestOrSkip<ClientConfiguration>(TestName);
 
         UserId broadcasterId = new("52137752");
 
         GetUserChatColorRequest request = new()
         {
-            AuthorizationContext = new() { Identity = clientConfig.ToIdentity() },
             UserIds = [broadcasterId]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestContext.Current.CancellationToken);
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

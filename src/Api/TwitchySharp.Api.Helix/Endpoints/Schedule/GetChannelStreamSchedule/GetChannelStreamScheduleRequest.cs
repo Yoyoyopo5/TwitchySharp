@@ -12,7 +12,8 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule">Get Channel Stream Schedule</see> for more information.
 /// </remarks>
 public record GetChannelStreamScheduleRequest
-    : TwitchHelixRequest<GetChannelStreamScheduleResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetChannelStreamScheduleResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/schedule";
     public override HttpMethod Method => HttpMethod.Get;
@@ -23,6 +24,8 @@ public record GetChannelStreamScheduleRequest
             .Add("start_time", StartTime?.UtcDateTime.ToRfc3339())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The user id of the broadcaster to get the streaming schedule for.

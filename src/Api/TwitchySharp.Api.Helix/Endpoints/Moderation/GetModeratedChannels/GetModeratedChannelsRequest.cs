@@ -5,21 +5,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Gets a list of channels that the specified user has moderator privileges in.
 /// </summary>
 /// <remarks>
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.UserReadModeratedChannels"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.UserReadModeratedChannels"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.UserReadModeratedChannels"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderated-channels">Get Moderated Channels</see> for more information.
 /// </remarks>
 public record GetModeratedChannelsRequest
-    : TwitchHelixRequest<GetModeratedChannelsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetModeratedChannelsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/channels";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(UserId),
         ValidScopes = ImmutableHashSet.Create(Scope.UserReadModeratedChannels)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("user_id", UserId)

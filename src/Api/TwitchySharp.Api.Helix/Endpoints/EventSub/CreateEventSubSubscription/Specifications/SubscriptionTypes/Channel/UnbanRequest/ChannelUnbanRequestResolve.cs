@@ -19,8 +19,12 @@ public sealed record ChannelUnbanRequestResolve(UserId BroadcasterUserId, UserId
     public override EventSubSubscriptionType Type => EventSubSubscriptionType.ChannelUnbanRequestResolve;
     public static EventSubSubscriptionType SubscriptionType => EventSubSubscriptionType.ChannelUnbanRequestResolve;
     public static ConditionKey AuthorizingUserConditionKey { get; } = new ConditionKey("moderator_user_id");
-    public override IReadOnlySet<Scope> ValidScopes { get; } = ImmutableHashSet.Create(Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests);
-    public override TwitchIdentity Identity { get; } = new TwitchIdentity.User(ModeratorUserId);
+    public override EventSubSubscriptionAuthenticationContext.UserAuthorized AuthenticationContext
+        => new()
+        {
+            Identity = new TwitchIdentity.User(ModeratorUserId),
+            ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests)
+        };
 
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()

@@ -3,12 +3,14 @@
 /// Gets the channels that match the specified query and have streamed content within the past 6 months.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Requires an app or user access token.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-channels">Search Channels</see> for more information.
 /// </remarks>
 public record SearchChannelsRequest
-    : TwitchHelixRequest<SearchChannelsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<SearchChannelsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
     protected override string Path => "/search/channels";
     public override HttpMethod Method => HttpMethod.Get;
@@ -18,6 +20,8 @@ public record SearchChannelsRequest
             .Add("live_only", LiveOnly?.ToString())
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
+    public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; init; }
+        = TwitchRequestAuthenticationContext.Default;
 
     /// <summary>
     /// The query string to search channels with.

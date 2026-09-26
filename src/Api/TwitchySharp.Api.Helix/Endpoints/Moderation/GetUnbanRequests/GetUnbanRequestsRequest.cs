@@ -5,21 +5,27 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// Gets a list of unban requests for a broadcaster's channel.
 /// </summary>
 /// <remarks>
-/// <br/>
+/// <para>
 /// Requires a user access token that includes <see cref="Scope.ModeratorReadUnbanRequests"/> or <see cref="Scope.ModeratorManageUnbanRequests"/>.
-/// <br/>
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-unban-requests">Get Unban Requests</see> for more information.
 /// </remarks>
 public record GetUnbanRequestsRequest
-    : TwitchHelixRequest<GetUnbanRequestsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetUnbanRequestsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/moderation/unban_requests";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadUnbanRequests, Scope.ModeratorManageUnbanRequests)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

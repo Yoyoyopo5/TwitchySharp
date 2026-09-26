@@ -10,15 +10,21 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot">Update Guest Star Slot</see> for more information.
 /// </remarks>
 public record UpdateGuestStarSlotRequest
-    : TwitchHelixRequest<UpdateGuestStarSlotResponse>
+    : TwitchHelixRequest<UpdateGuestStarSlotResponseContent>,
+    IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
     protected override string Path => "/guest_star/slot";
     public override HttpMethod Method => HttpMethod.Patch;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserWithScopesAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ChannelManageGuestStar, Scope.ModeratorManageGuestStar)
     };
+    public UserWithScopesAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
@@ -58,6 +64,6 @@ public record UpdateGuestStarSlotRequest
     /// </remarks>
     public GuestStarSlotId? DestinationSlotId { get; init; }
 
-    protected override ValueTask<UpdateGuestStarSlotResponse> ConvertResponseContent(Stream contentStream, CancellationToken ct = default)
-        => ValueTask.FromResult(new UpdateGuestStarSlotResponse());
+    public override Func<Stream, CancellationToken, ValueTask<UpdateGuestStarSlotResponseContent>>? ConvertResponseContent { get; init; }
+        = (_, _) => ValueTask.FromResult(new UpdateGuestStarSlotResponseContent());
 }

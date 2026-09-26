@@ -6,21 +6,28 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </summary>
 /// <remarks>
 /// These are the terms that the broadcaster or moderator added manually or that were denied by AutoMod.
-/// <br/>
-/// Requires a user access token that includes <see cref="Scope.ModeratorReadBlockedTerms"/> or <see cref="Scope.ModeratorManageBlockedTerms"/>.
-/// <br/>
+/// <para>
+/// Requires a user access token with <see cref="Scope.ModeratorReadBlockedTerms"/> or <see cref="Scope.ModeratorManageBlockedTerms"/>, or
+/// an app access token where the application, through a prior authorization, has <see cref="Scope.ModeratorReadBlockedTerms"/> or <see cref="Scope.ModeratorManageBlockedTerms"/> for the <see cref="ModeratorId"/>.
+/// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-blocked-terms">Get Blocked Terms</see> for more information.
 /// </remarks>
 public record GetBlockedTermsRequest
-    : TwitchHelixRequest<GetBlockedTermsResponse>, IForwardPageableRequest
+    : TwitchHelixRequest<GetBlockedTermsResponseContent>, IForwardPageableRequest,
+    IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/blocked_terms";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private UserSupportingPriorAuthorizationAuthenticationContext DefaultAuthenticationContext => new()
     {
         Identity = new TwitchIdentity.User(ModeratorId),
         ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadBlockedTerms, Scope.ModeratorManageBlockedTerms)
     };
+    public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

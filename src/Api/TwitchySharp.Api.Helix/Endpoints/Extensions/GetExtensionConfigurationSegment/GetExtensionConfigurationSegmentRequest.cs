@@ -15,19 +15,21 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-configuration-segment">Get Extension Configuration Segment</see> for more information.
 /// </remarks>
 public record GetExtensionConfigurationSegmentRequest
-    : TwitchHelixRequest<GetExtensionConfigurationSegmentResponse>
+    : TwitchHelixRequest<GetExtensionConfigurationSegmentResponseContent>,
+    IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
     protected override string Path => "/extensions/configurations";
     public override HttpMethod Method => HttpMethod.Get;
-    protected override TwitchRequestAuthorizationContext DefaultAuthorizationContext => new()
+    private TwitchRequestAuthenticationContext<TwitchIdentity.Extension> DefaultAuthenticationContext => new()
     {
-        Identity = ExtensionIdentity
+        Identity = new(ExtensionId, BroadcasterId)
     };
+    public TwitchRequestAuthenticationContext<TwitchIdentity.Extension> AuthenticationContext
+    {
+        get => field ?? DefaultAuthenticationContext;
+        init;
+    }
 
-    /// <summary>
-    /// The extension identity used for JWT authentication.
-    /// </summary>
-    public required TwitchIdentity.Extension ExtensionIdentity { get; init; }
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using TwitchySharp.Api;
 
-namespace TwitchySharp.Api.Authorization;
+namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// An abstract class used to format client-side authorization urls for users of your application.
 /// </summary>
