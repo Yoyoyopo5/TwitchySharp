@@ -48,6 +48,10 @@ public record TwitchStream
     /// </summary>
     public required string[] Tags { get; init; }
     /// <summary>
+    /// The number of users watching the stream.
+    /// </summary>
+    public required int ViewerCount { get; init; }
+    /// <summary>
     /// The date and time when the broadcast began.
     /// </summary>
     public required DateTimeOffset StartedAt { get; init; }

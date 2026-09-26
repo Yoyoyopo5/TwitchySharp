@@ -19,7 +19,7 @@ public class Test_GetStreams(TwitchClientFixture fixture)
         {
             UserIds = [userConfig.UserId],
             GameIds = [new GameId("33214")],
-            UserLogins = [new UserLogin("dreadbreadcrumb")],
+            UserLogins = [new UserLogin("slothissin")],
             Languages = [new LanguageCode(CultureInfo.CurrentCulture.TwoLetterISOLanguageName)],
             Type = StreamType.All
         };
