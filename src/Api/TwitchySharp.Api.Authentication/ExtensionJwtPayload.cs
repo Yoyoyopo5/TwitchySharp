@@ -44,16 +44,12 @@ public record ExtensionJwtPayload
     /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
-    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, Func<ExtensionJwtPayload, string> serialize)
+    public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, Func<ExtensionJwtPayload, string>? serialize = null)
         => new(new JsonWebTokenHandler()
             .CreateToken(
-                serialize(this),
-                new SigningCredentials(
-                    new SymmetricSecurityKey(
-                        Convert.FromBase64String(extensionSecret.Value)
-                    ),
-                    "HS256"
-            )));
+                serialize is not null ? serialize(this) : JsonSerializer.Serialize(this, JsonConfig.ApiOptions),
+                new SigningCredentials(new SymmetricSecurityKey(extensionSecret.Bytes), "HS256"))
+            );
 }
 
 public readonly record struct ExtensionPubSubPermissions
