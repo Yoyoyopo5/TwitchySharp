@@ -110,19 +110,12 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
     private static ValueTask<IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User>> CreateCache(
         params AccessTokenDetails.User[] tokens
         )
-        => tokens.Aggregate(
-            ValueTask.FromResult<IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User>>(new InMemoryConcurrentCache<TwitchIdentity.User, AccessTokenDetails.User>()),
-            async (current, next) => await (await current).Set(
-                next.Identity,
-                next,
-                TestContext.Current.CancellationToken
-                ));
+        => RequestDependencyCache.Create(tokens.Select(token => KeyValuePair.Create(token.Identity, token)));
 
     [Fact]
     public async Task SendAsync_WithNoCachedToken_ReturnsBadRequest()
     {
-        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache
-            = await CreateCache();
+        IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache = await CreateCache();
 
         TwitchClient client = CreateTestClient()
             .WithClient(_fakeClientId, _fakeClientSecret)

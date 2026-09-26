@@ -120,13 +120,13 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
         DateTimeOffset fakeNow = DateTime.MinValue + TimeSpan.FromDays(1);
         Assert.True(fakeExpiry > fakeNow);
 
-        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>()
-            .Set(_fakeClientId, new()
+        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache
+            = await RequestDependencyCache.Create([ KeyValuePair.Create(_fakeClientId, new AccessTokenDetails.App()
             {
                 AccessToken = fakeAccessToken,
                 ExpiresAt = fakeExpiry,
                 Identity = new(_fakeClientId)
-            }, ct);
+            }) ]);
 
         TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with
@@ -147,13 +147,12 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
         CancellationToken ct = TestContext.Current.CancellationToken;
         AppAccessToken fakeExpiredAccessToken = new("219471709");
 
-        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>()
-            .Set(_fakeClientId, new()
-            {
-                AccessToken = fakeExpiredAccessToken,
-                ExpiresAt = DateTime.MinValue + TimeSpan.FromDays(1),
-                Identity = new(_fakeClientId)
-            }, ct);
+        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await RequestDependencyCache.Create([ KeyValuePair.Create(_fakeClientId, new AccessTokenDetails.App()
+        {
+            AccessToken = fakeExpiredAccessToken,
+            ExpiresAt = DateTime.MinValue + TimeSpan.FromDays(1),
+            Identity = new(_fakeClientId)
+        }) ]);
 
         TwitchClient client = CreateTestClient()
             .UseAppAccessTokens(options => options with
@@ -193,13 +192,12 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
         CancellationToken ct = TestContext.Current.CancellationToken;
         AppAccessToken fakeAccessToken = new("219471709");
 
-        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await new InMemoryConcurrentCache<ClientId, AccessTokenDetails.App>()
-            .Set(_fakeClientId, new()
-            {
-                AccessToken = fakeAccessToken,
-                ExpiresAt = DateTimeOffset.MinValue + TimeSpan.FromDays(2),
-                Identity = new(_fakeClientId)
-            }, ct);
+        IRequestDependencyCache<ClientId, AccessTokenDetails.App> cache = await RequestDependencyCache.Create([ KeyValuePair.Create(_fakeClientId, new AccessTokenDetails.App()
+        {
+            AccessToken = fakeAccessToken,
+            ExpiresAt = DateTimeOffset.MinValue + TimeSpan.FromDays(2),
+            Identity = new(_fakeClientId)
+        }) ]);
 
         TwitchClient client = CreateTestClient()
             .SetFixed<TwitchClient, BearerToken?>(new BearerToken("default_token"))
