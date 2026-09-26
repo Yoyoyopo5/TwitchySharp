@@ -20,7 +20,7 @@ public class Test_WithExtension
     public async Task SendAsync_ResolveExtensionSecret_WithSameExtensionId_ReturnsSecret()
     {
         ExtensionId fakeId = new("mclovin");
-        ExtensionSecret fakeSecret = new("26");
+        ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
@@ -43,7 +43,7 @@ public class Test_WithExtension
     public async Task SendAsync_ResolveExtensionOwnerId_WithSameExtensionId_ReturnsOwnerId()
     {
         ExtensionId fakeId = new("mclovin");
-        ExtensionSecret fakeSecret = new("26");
+        ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
@@ -66,7 +66,7 @@ public class Test_WithExtension
     public async Task SendAsync_ResolveExtensionSecret_WithDifferentExtensionId_ReturnsNull()
     {
         ExtensionId fakeId = new("mclovin");
-        ExtensionSecret fakeSecret = new("26");
+        ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
@@ -89,7 +89,7 @@ public class Test_WithExtension
     public async Task SendAsync_ResolveExtensionOwnerId_WithDifferentExtensionId_ReturnsNull()
     {
         ExtensionId fakeId = new("mclovin");
-        ExtensionSecret fakeSecret = new("26");
+        ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
