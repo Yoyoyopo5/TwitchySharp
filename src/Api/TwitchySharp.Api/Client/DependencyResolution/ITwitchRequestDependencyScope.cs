@@ -26,8 +26,13 @@ public interface ITwitchRequestDependencyScope
 /// </summary>
 /// <param name="DependencyType">The missing dependency type.</param>
 public record MissingRequiredDependencyError(Type DependencyType)
-    : Error($"Failed to resolve required dependency {DependencyType.Name}.")
+    : Error($"Failed to resolve required dependency {GetName(DependencyType)}.")
 {
+    private static string GetName(Type type)
+        => type.IsGenericType
+        ? $"{type.Name[..type.Name.IndexOf('`')]}<{string.Join(", ", type.GetGenericArguments().Select(t => t.Name))}>"
+        : type.Name;
+
     /// <summary>
     /// Create an instance of <see cref="MissingRequiredDependencyError"/>
     /// for dependency type <typeparamref name="T"/>.
