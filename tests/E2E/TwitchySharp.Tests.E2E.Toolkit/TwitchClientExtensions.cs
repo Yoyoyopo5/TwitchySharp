@@ -30,12 +30,8 @@ public static class TwitchClientExtensions
         this TwitchClient client,
         IServiceProvider sp
         )
-        => client.Configure<TwitchClient, TwitchIdentity?>(next => (scope, ct) =>
-            scope.ResolveOrDefault<TestName>(ct).BindAsync(testName => next(scope, ct).MapAsync(identity =>
-                identity is not null && sp.GetAuthorizingConfigForEndpoint<ITestIdentity<TwitchIdentity>>(testName)?.Identity is TwitchIdentity configIdentity
-                    ? identity with { ClientId = configIdentity.ClientId }
-                    : identity
-            )))
+        => client.ConfigureAsNullCoalesce<TwitchClient, ClientId?>((scope, ct) =>
+            scope.ResolveOrDefault<TestName>(ct).MapAsync(testName => sp.GetAuthorizingConfigForEndpoint<ITestIdentity<TwitchIdentity>>(testName)?.Identity?.ClientId))
             .ConfigureAsNullCoalesce<TwitchClient, ClientSecret?>((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct)
                 .MapAsync(clientId => clientId.HasValue ? sp.GetClientConfig(clientId.Value)?.ClientSecret : default));
 
