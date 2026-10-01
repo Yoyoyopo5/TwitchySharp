@@ -1,30 +1,32 @@
 ﻿using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Functional;
-using TwitchySharp.EventSub.Webhooks.Serialization;
 using TwitchySharp.Infrastructure.Functional;
-using TwitchySharp.Serialization;
+using System.Text.Json;
 using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Serialization;
 
 public class Test_WebhookRequestDeserializer
 {
-    private static ValueTask<Validation<IEventSubNotification>> FakeDeserializeNotification(
-        NotificationPayloadStream payload,
-        CancellationToken ct
-        )
-        => ValueTask.FromResult<Validation<IEventSubNotification>>(new StubEventSubNotification());
+    private const string StubSubscriptionTypeName = "fake.subscription";
+    private const string StubSubscriptionVersion = "1";
+    private readonly static EventSubSubscriptionType StubSubscriptionType = new(new(StubSubscriptionTypeName), new(StubSubscriptionVersion));
 
     private static ProcessWebhookRequest CreateStubProcess()
-        => WebhookRequestDeserializer.Create(FakeDeserializeNotification, JsonConfig.ApiOptions);
+        => ProcessWebhookRequest.ByJsonDeserialization(options => options with
+        {
+            DeserializeNotification = DeserializeNotification.ByPolymorphicJsonDeserialization(getDeserializer => type => type == StubSubscriptionType
+                ? json => JsonSerializer.Deserialize<StubEventSubNotification>(json)!
+                : getDeserializer(type))
+        });
 
-    private const string FAKE_SUBSCRIPTION_JSON = """
+    private const string FAKE_SUBSCRIPTION_JSON = $$"""
         {
             "id": "0b7f3361-672b-4d39-b307-dd5b576c9b27",
             "status": "enabled",
-            "type": "fake.subscription",
-            "version": "1",
+            "type": "{{StubSubscriptionTypeName}}",
+            "version": "{{StubSubscriptionVersion}}",
             "condition": {
                 "broadcaster_user_id": "1971641",
                 "user_id": "2914196"
@@ -67,7 +69,7 @@ public class Test_WebhookRequestDeserializer
             """;
 
         using MemoryStream bodyStream = FAKE_BODY.ToMemoryStream();
-        NotificationPayloadStream payloadStream = new(bodyStream);
+        WebhookRequestContentStream payloadStream = new(bodyStream);
 
         EventSubWebhookRequest fakeRequest = new()
         {
@@ -77,7 +79,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<WebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Validation<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content => Assert.IsType<RevocationRequestContent>(content)
@@ -96,7 +98,7 @@ public class Test_WebhookRequestDeserializer
             """;
 
         using MemoryStream bodyStream = FAKE_BODY.ToMemoryStream();
-        NotificationPayloadStream payloadStream = new(bodyStream);
+        WebhookRequestContentStream payloadStream = new(bodyStream);
 
         EventSubWebhookRequest fakeRequest = new()
         {
@@ -106,7 +108,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<WebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Validation<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content =>
@@ -128,7 +130,7 @@ public class Test_WebhookRequestDeserializer
             }
             """;
         using MemoryStream bodyStream = FAKE_BODY.ToMemoryStream();
-        NotificationPayloadStream payloadStream = new(bodyStream);
+        WebhookRequestContentStream payloadStream = new(bodyStream);
 
         EventSubWebhookRequest fakeRequest = new()
         {
@@ -138,7 +140,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<WebhookRequestContent> actualResponse = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Validation<IWebhookRequestContent> actualResponse = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         actualResponse.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content =>
@@ -154,7 +156,7 @@ public class Test_WebhookRequestDeserializer
     public async Task ProcessWebhookRequest_InvalidMessageType_ReturnsError()
     {
         using MemoryStream bodyStream = string.Empty.ToMemoryStream();
-        NotificationPayloadStream payloadStream = new(bodyStream);
+        WebhookRequestContentStream payloadStream = new(bodyStream);
 
         EventSubWebhookRequest fakeRequest = new()
         {
@@ -164,7 +166,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest process = CreateStubProcess();
 
-        Validation<WebhookRequestContent> result = await process(fakeRequest, TestContext.Current.CancellationToken);
+        Validation<IWebhookRequestContent> result = await process(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => e,
             onValid: _ => throw new Exception("The process result was valid (expected error).")

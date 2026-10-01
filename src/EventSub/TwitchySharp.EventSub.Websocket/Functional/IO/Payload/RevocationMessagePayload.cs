@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.EventSub.Websocket.Functional;
+﻿using System.Collections.Immutable;
+
+namespace TwitchySharp.EventSub.Websocket.Functional;
 /// <summary>
 /// A subscription revocation message payload.
 /// </summary>
@@ -10,5 +12,6 @@ public readonly record struct RevocationMessagePayload
     /// <summary>
     /// The subscription being revoked.
     /// </summary>
-    public required EventSubSubscription Subscription { get; init; }
+    // We use ImmutableDictionary vs FrozenDictionary because STJ won't deserialize Frozen natively.
+    public required EventSubSubscription<ImmutableDictionary<string, string>> Subscription { get; init; }
 }

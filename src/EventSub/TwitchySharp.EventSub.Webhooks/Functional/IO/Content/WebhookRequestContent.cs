@@ -3,10 +3,10 @@
 /// <summary>
 /// The content of an EventSub webhook request.
 /// </summary>
-public abstract record WebhookRequestContent
+public interface IWebhookRequestContent
 {
     /// <summary>
     /// The EventSub subscription that this webhook request content pertains to.
     /// </summary>
-    public required EventSubSubscription Subscription { get; init; }
+    IEventSubSubscription Subscription { get; }
 }

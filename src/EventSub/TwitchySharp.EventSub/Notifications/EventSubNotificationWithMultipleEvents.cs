@@ -16,12 +16,10 @@ public record EventSubNotificationWithMultipleEvents<TEvent, TCondition> : IEven
     /// Contains information about the subscription that the notification is for.
     /// </summary>
     public required EventSubSubscription<TCondition> Subscription { get; init; }
-    /// <summary>
-    /// <inheritdoc cref="IEventSubNotification.Subscription"/>
-    /// </summary>
-    EventSubSubscription IEventSubNotification.Subscription => Subscription;
+    IEventSubSubscription IEventSubNotification.Subscription => Subscription;
     /// <summary>
     /// Contains information about the event that triggered the notification.
     /// </summary>
     public required TEvent[] Events { get; init; }
+    object? IEventSubNotification.Event => Events;
 }

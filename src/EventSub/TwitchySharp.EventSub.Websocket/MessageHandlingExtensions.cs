@@ -1,7 +1,8 @@
-﻿using TwitchySharp.EventSub.Notifications;
+﻿using System.Collections.Immutable;
+using TwitchySharp.EventSub.Notifications;
+using TwitchySharp.EventSub.Websocket.Clients;
 using TwitchySharp.EventSub.Websocket.Functional;
 using TwitchySharp.Infrastructure.Functional;
-using TwitchySharp.EventSub.Websocket.Clients;
 
 namespace TwitchySharp.EventSub.Websocket;
 
@@ -71,7 +72,7 @@ public static class MessageHandlingExtensions
     /// <param name="process"><inheritdoc cref="Map{T}(ProcessWebsocketMessage, Func{EventSubWebsocketMessage{T}, CancellationToken, ValueTask})"/></param>
     /// <param name="handleSubscriptionRevoked">The function to call when a subscription is revoked.</param>
     /// <returns><inheritdoc cref="Map{T}(ProcessWebsocketMessage, Func{EventSubWebsocketMessage{T}, CancellationToken, ValueTask})"/></returns>
-    public static ProcessWebsocketMessage MapSubscriptionRevoked(this ProcessWebsocketMessage process, Func<EventSubSubscription, CancellationToken, ValueTask> handleSubscriptionRevoked)
+    public static ProcessWebsocketMessage MapSubscriptionRevoked(this ProcessWebsocketMessage process, Func<EventSubSubscription<ImmutableDictionary<string, string>>, CancellationToken, ValueTask> handleSubscriptionRevoked)
         => process.Map<RevocationMessagePayload>((message, ct) => handleSubscriptionRevoked(message.Payload.Subscription, ct));
 
     /// <summary>

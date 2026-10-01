@@ -5,62 +5,115 @@ using TwitchySharp.Serialization;
 
 namespace TwitchySharp.EventSub.Serialization;
 
+/// <summary>
+/// Polymorphically deserializes a <see cref="NotificationPayloadStream"/> into specific notification type implementing <see cref="IEventSubNotification"/>.
+/// </summary>
+/// <remarks>
+/// Use <see cref="DeserializeNotificationExtensions.ByPolymorphicJsonDeserialization"/> to create a default deserializer.
+/// </remarks>
+/// <param name="payload">The notification payload, as a <see cref="Stream"/>.</param>
+/// <param name="ct">Cancellation token.</param>
+/// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> of the deserialized notification.</returns>
 public delegate ValueTask<Validation<IEventSubNotification>> DeserializeNotification(NotificationPayloadStream payload, CancellationToken ct);
 
 /// <summary>
-/// Contains static methods for polymorphically deserializing JSON EventSub notifications.
+/// Creation helpers for <see cref="DeserializeNotification"/>.
 /// </summary>
-public static class NotificationDeserializer
+public static class DeserializeNotificationExtensions
 {
     /// <summary>
-    /// Contains an error message and exception (if applicable) regarding notification deserialization failures.
+    /// The notification JSON is invalid.
     /// </summary>
-    /// <param name="Message">The error message.</param>
-    /// <param name="Exception">The exception associated with the error, if any</param>
-    public record NotificationDeserializerError(string Message, Exception? Exception = null) : Error(Message);
-
+    /// <param name="Message">The reason for the invalid notification JSON.</param>
+    public record InvalidJsonError(string Message) : Error(Message);
     /// <summary>
-    /// Create an EventSub notification deserializer function with the given <paramref name="map"/> and <paramref name="serializerOptions"/>.
+    /// An exception was thrown during JSON parsing.
     /// </summary>
-    /// <param name="map">
-    /// The subscription type map to use.
-    /// Uses the output of <see cref="CreateDefaultMap"/> if left <see langword="null"/>.
-    /// You can use this parameter to define your own deserialization logic or (more commonly) extend the default set of subscription types supported by the default map.
-    /// </param>
-    /// <param name="serializerOptions">The serializer options to use. Defaults to <see cref="JsonConfig.ApiOptions"/> if left <see langword="null"/>.</param>
-    /// <returns></returns>
-    public static DeserializeNotification CreateDeserializer(
-        Func<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification>>? map = null,
-        JsonSerializerOptions? serializerOptions = null
-        )
-    {
-        serializerOptions ??= JsonConfig.ApiOptions;
-        if (serializerOptions.GetConverter(typeof(IEventSubNotification)) is not NotificationConverter)
-            serializerOptions.Converters.Add(new NotificationConverter(map ?? CreateDefaultMap()));
+    /// <param name="Exception">The exception that was thrown.</param>
+    public record JsonParserExceptionError(Exception Exception) : Error(Exception.Message);
+    /// <summary>
+    /// An exception occurred during notification deserialization.
+    /// </summary>
+    /// <param name="JsonSerializerException">The exception.</param>
+    public record DeserializationExceptionError(Exception JsonSerializerException)
+        : Error(JsonSerializerException.Message);
+    /// <summary>
+    /// A notification deserializer was not found for a specific subscription type.
+    /// </summary>
+    /// <param name="SubscriptionType">The subscription type that the notification was for.</param>
+    public record MissingDeserializerError(EventSubSubscriptionType SubscriptionType) :
+        Error($"Missing notification deserializer for {SubscriptionType}");
 
-        return (payload, ct) => Deserialize(payload, serializerOptions, ct);
+    extension (DeserializeNotification d)
+    {
+        /// <summary>
+        /// Create a <see cref="DeserializeNotification"/> function that uses a set of
+        /// notification deserializer functions corresponding to specific <see cref="EventSubSubscriptionType"/>s.
+        /// </summary>
+        /// <param name="configureDeserializers">
+        /// A function that takes the default set of deserializers and returns a
+        /// configured set of deserializers (represented as a function taking the
+        /// <see cref="EventSubSubscriptionType"/> and returning the deserializer function).
+        /// </param>
+        /// <returns>A <see cref="DeserializeNotification"/> function using polymorphic JSON deserialization.</returns>
+        public static DeserializeNotification ByPolymorphicJsonDeserialization(
+            Func<
+                Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?>,
+                Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?>
+                >? configureDeserializers = null
+            )
+        {
+            Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?> getDeserializer
+                = configureDeserializers is null
+                    ? CreateDefaultMap()
+                    : configureDeserializers(CreateDefaultMap());
+
+            return async (payload, ct) =>
+            {
+                try
+                {
+                    using JsonDocument d = await JsonDocument.ParseAsync(payload, default, ct);
+                    string json = d.RootElement.ToString();
+                    return d.RootElement.GetSubscriptionType()
+                        .Bind(subscriptionType => getDeserializer(subscriptionType) is not { } deserialize
+                            ? new MissingDeserializerError(subscriptionType)
+                            : deserialize(d));
+                }
+                catch (Exception ex)
+                {
+                    return new JsonParserExceptionError(ex);
+                }
+            };
+        }
     }
 
-    private async static ValueTask<Validation<IEventSubNotification>> Deserialize(
-        this NotificationPayloadStream payload,
-        JsonSerializerOptions? options = null,
-        CancellationToken ct = default
+    private static Validation<EventSubSubscriptionType> GetSubscriptionType(
+        this JsonElement notification
         )
     {
-        try
-        {
-            return await JsonSerializer.DeserializeAsync<IEventSubNotification>(payload, options, ct) is { } notification
-                ? new Validation<IEventSubNotification>(notification)
-                : new NotificationDeserializerError("The notification was null.");
-        }
-        catch (Exception ex)
-        {
-            return new NotificationDeserializerError(ex.Message, ex);
-        }
+        const string SUBSCRIPTION_PROPERTY_NAME = "subscription";
+        const string SUBSCRIPTION_TYPE_PROPERTY_NAME = "type";
+        const string SUBSCRIPTION_VERSION_PROPERTY_NAME = "version";
+
+        return notification.ValueKind != JsonValueKind.Object
+            ? new InvalidJsonError($"Notification is JSON {notification.ValueKind} (must be JSON object).")
+            : !notification.TryGetProperty(SUBSCRIPTION_PROPERTY_NAME, out JsonElement subscriptionElement)
+            ? new InvalidJsonError("Notification does not have a subscription property.")
+            : !subscriptionElement.TryGetProperty(SUBSCRIPTION_TYPE_PROPERTY_NAME, out JsonElement subscriptionTypeElement)
+            ? new InvalidJsonError("Notification does not have a type property.")
+            : !subscriptionElement.TryGetProperty(SUBSCRIPTION_VERSION_PROPERTY_NAME, out JsonElement subscriptionVersionElement)
+            ? new InvalidJsonError("Notification does not have a version property.")
+            : subscriptionTypeElement.ValueKind != JsonValueKind.String || subscriptionTypeElement.GetString() is not string subscriptionType
+            ? new InvalidJsonError($"Notification type property is {subscriptionTypeElement.ValueKind} (Expected {nameof(JsonValueKind.String)}).")
+            : subscriptionVersionElement.ValueKind != JsonValueKind.String || subscriptionVersionElement.GetString() is not string subscriptionVersion
+            ? new InvalidJsonError($"Notification version property is {subscriptionTypeElement.ValueKind} (Expected {nameof(JsonValueKind.String)}).")
+            : new EventSubSubscriptionType(new(subscriptionType), new(subscriptionVersion));
     }
 
-    private readonly static Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> _defaultMap
-        = new Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>>()
+    // We could add a static abstract interface to point notification types to subscription types,
+    // but we will still need to register each type, so I'm just leaving the mapping here for now.
+    private readonly static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> _defaultMap
+        = new Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>>()
             .Register<AutomodMessageHoldNotification>(EventSubSubscriptionType.AutomodMessageHold)
             .Register<AutomodMessageHoldV2Notification>(EventSubSubscriptionType.AutomodMessageHoldV2)
             .Register<AutomodMessageUpdateNotification>(EventSubSubscriptionType.AutomodMessageUpdate)
@@ -144,13 +197,25 @@ public static class NotificationDeserializer
             .Register<UserUpdateNotification>(EventSubSubscriptionType.UserUpdate)
             .Register<WhisperReceivedNotification>(EventSubSubscriptionType.WhisperReceived);
 
-    private static Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> Register<T>(
-        this Dictionary<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>> map,
+    private static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> Register<T>(
+        this Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> map,
         EventSubSubscriptionType subscriptionType
         )
         where T : IEventSubNotification
     {
-        map.Add(subscriptionType, (options, document) => JsonSerializer.Deserialize<T>(document, options));
+        map.Add(subscriptionType, document =>
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<T>(document, JsonConfig.ApiOptions) is T value
+                    ? value
+                    : new InvalidJsonError("Notification was null literal JSON.");
+            }
+            catch (Exception ex)
+            {
+                return new DeserializationExceptionError(ex);
+            }
+        });
         return map;
     }
 
@@ -161,6 +226,6 @@ public static class NotificationDeserializer
     /// You may need to use the output of this method if you want to extend the default subscription type list (e.g. if a specific subscription type is not yet implemented by default). 
     /// </remarks>
     /// <returns>A function mapping <see cref="EventSubSubscriptionType"/> to a specific deserialization function returning <see cref="IEventSubNotification"/> for that subscription type.</returns>
-    public static Func<EventSubSubscriptionType, Func<JsonSerializerOptions, JsonDocument, IEventSubNotification?>?> CreateDefaultMap()
+    private static Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?> CreateDefaultMap()
         => subscriptionType => _defaultMap.GetValueOrDefault(subscriptionType);
 }

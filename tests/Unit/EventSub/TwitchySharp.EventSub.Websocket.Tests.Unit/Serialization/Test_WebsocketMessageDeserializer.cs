@@ -1,11 +1,9 @@
-﻿using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Serialization;
+﻿using System.Text.Json;
+using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Websocket.Functional;
 using TwitchySharp.Infrastructure.Functional;
-using TwitchySharp.EventSub.Websocket.Serialization;
-using TwitchySharp.Tests.Unit;
 using TwitchySharp.Serialization;
-using System.Text.Json;
+using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Unit.Serialization;
 
@@ -13,13 +11,14 @@ public class Test_WebsocketMessageDeserializer
 {
     private record StubNotification : IEventSubNotification
     {
-        public EventSubSubscription Subscription { get; }
-            = new EventSubSubscription()
+        public IEventSubSubscription Subscription { get; }
+            = new EventSubSubscription<int>()
             {
                 Id = new("12345"),
                 Status = EventSubSubscriptionStatus.Enabled,
                 Cost = 1,
                 CreatedAt = DateTime.MinValue,
+                Condition = 0,
                 Transport = new EventSubTransport()
                 {
                     Method = EventSubTransportMethod.Websocket,
@@ -28,14 +27,12 @@ public class Test_WebsocketMessageDeserializer
                 Type = EventSubSubscriptionType.ChannelBan.Type,
                 Version = EventSubSubscriptionType.ChannelBan.Version
             };
+        public int Event { get; } = 0;
+        object IEventSubNotification.Event => Event;
     }
 
-    private readonly static DeserializeNotification StubNotificationDeserializer
-        = (_, _) => ValueTask.FromResult<Validation<IEventSubNotification>>(new StubNotification());
-
-    private readonly static ProcessWebsocketMessage MockProcess = WebsocketMessageDeserializer.Create(
-        StubNotificationDeserializer,
-        SerializerOptions
+    private readonly static ProcessWebsocketMessage MockProcess = ProcessWebsocketMessage.ByJsonDeserialization(
+        options => options with { DeserializeNotification = (stream, ct) => ValueTask.FromResult<Validation<IEventSubNotification>>(new StubNotification()) }
         );
 
     private readonly static JsonSerializerOptions SerializerOptions = JsonConfig.ApiOptions;
@@ -230,11 +227,12 @@ public class Test_WebsocketMessageDeserializer
             }
             """;
 
+        StubNotification expectedNotification = new();
         EventSubWebsocketMessage<NotificationMessagePayload>? expectedMessage
             = new()
             {
                 Metadata = JsonSerializer.Deserialize<EventSubWebsocketMessage>(NOTIFICATION_MESSAGE, SerializerOptions)!.Metadata,
-                Payload = new(new StubNotification())
+                Payload = new(expectedNotification)
             };
 
         await MockProcess(new(NOTIFICATION_MESSAGE.ToMemoryStream()), TestContext.Current.CancellationToken)
@@ -242,15 +240,16 @@ public class Test_WebsocketMessageDeserializer
             e => throw new NotSupportedException("Process returned Error (expected EventSubWebsocketMessage)."),
             message =>
             {
-                EventSubWebsocketMessage<NotificationMessagePayload> notification = Assert.IsType<EventSubWebsocketMessage<NotificationMessagePayload>>(message);
-                Assert.Equal(expectedMessage, notification);
+                EventSubWebsocketMessage<NotificationMessagePayload> notificationMessage = Assert.IsType<EventSubWebsocketMessage<NotificationMessagePayload>>(message);
+                Assert.Equal(expectedMessage.Metadata, notificationMessage.Metadata);
+                StubNotification notification = Assert.IsType<StubNotification>(notificationMessage.Payload.Value);
+                Assert.Equal(expectedNotification, notification);
                 return ValueTask.CompletedTask;
-            }
-            );
+            });
     }
 
     [Fact]
-    public async Task ProcessWebsocketMessage_UnsupportedMessageType_ReturnsDeserializationError()
+    public async Task ProcessWebsocketMessage_UnsupportedMessageType_ReturnsUnsupportedMessageTypeError()
     {
         const string UNSUPPORTED_MESSAGE = """
             {
@@ -267,7 +266,7 @@ public class Test_WebsocketMessageDeserializer
             .MatchAsync(
             e =>
             {
-                Assert.IsType<WebsocketMessageDeserializer.DeserializationError>(e);
+                Assert.IsType<ProcessWebsocketMessageSerializationExtensions.UnsupportedMessageTypeError>(e);
                 return ValueTask.CompletedTask;
             },
             message => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error).")
@@ -275,7 +274,7 @@ public class Test_WebsocketMessageDeserializer
     }
 
     [Fact]
-    public async Task ProcessWebsocketMessage_InvalidWelcomeMessage_ReturnsDeserializationError()
+    public async Task ProcessWebsocketMessage_InvalidWelcomeMessage_ReturnsDeserializationExceptionError()
     {
         const string INVALID_WELCOME_MESSAGE = """
             {
@@ -300,7 +299,7 @@ public class Test_WebsocketMessageDeserializer
             .MatchAsync(
             e =>
             {
-                Assert.IsType<WebsocketMessageDeserializer.DeserializationError>(e);
+                Assert.IsType<ProcessWebsocketMessageSerializationExtensions.DeserializationExceptionError>(e);
                 return ValueTask.CompletedTask;
             },
             message => throw new NotSupportedException("Process returned EventSubWebsocketMessage (expected Error).")

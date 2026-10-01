@@ -45,9 +45,12 @@ public class Test_AspNetWebhookRequestHandler
         public void Dispose() { }
     }
 
-    private record StubWebhookRequestContent : WebhookRequestContent;
+    private record StubWebhookRequestContent : IWebhookRequestContent
+    {
+        public required IEventSubSubscription Subscription { get; init; }
+    }
 
-    private static EventSubSubscription FakeSubscription { get; } = new()
+    private static EventSubSubscription<ImmutableDictionary<string, object>> FakeSubscription { get; } = new()
     {
         Id = new("f1c2a387-161a-49f9-a165-0f21d7a4e1c4"),
         Status = EventSubSubscriptionStatus.Enabled,
@@ -69,7 +72,7 @@ public class Test_AspNetWebhookRequestHandler
 
         HandleAspNetWebhookRequest stubProcess = AspNetWebhookRequestHandler.Create(
             _ => new Validation<EventSubWebhookRequestHeader>(FakeHeader),
-            (_, _) => ValueTask.FromResult<Validation<WebhookRequestContent>>(CreateRequestContent()),
+            (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateRequestContent()),
             loggerFactory
             );
 
@@ -92,7 +95,7 @@ public class Test_AspNetWebhookRequestHandler
             (_, _) =>
             {
                 ranProcess = true;
-                return ValueTask.FromResult<Validation<WebhookRequestContent>>(CreateRequestContent());
+                return ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateRequestContent());
             },
             loggerFactory
             );

@@ -10,7 +10,7 @@ namespace TwitchySharp.EventSub.Webhooks.Tests.Unit.Crypto;
 
 public class Test_WebhookHashVerifier
 {
-    private readonly static EventSubSubscription FAKE_SUBSCRIPTION = new()
+    private readonly static EventSubSubscription<ImmutableDictionary<string, object>> FAKE_SUBSCRIPTION = new()
     {
         Id = new("f1c2a387-161a-49f9-a165-0f21d7a4e1c4"),
         Status = EventSubSubscriptionStatus.Enabled,
@@ -62,11 +62,8 @@ public class Test_WebhookHashVerifier
             TwitchEventsubSubscriptionVersion = new("1")
         };
 
-    private static ResolveWebhookSecret CreateFakeResolver(WebhookSecret secret)
-        => (_, _) => ValueTask.FromResult<WebhookSecret?>(secret);
-
     private static VerifyWebhookHash CreateStubVerifier(WebhookSecret secret)
-        => WebhookHashVerifier.Create(CreateFakeResolver(secret));
+        => VerifyWebhookHash.UsingSecret(secret);
 
     [Fact]
     public async Task VerifyMessage_ValidMessageSignature_ReturnsValid()

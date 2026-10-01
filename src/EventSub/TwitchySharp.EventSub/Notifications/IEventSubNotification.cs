@@ -10,5 +10,9 @@ public interface IEventSubNotification
     /// Preliminary subscription information.
     /// Use this to determine the exact type and version of the notification.
     /// </summary>
-    EventSubSubscription Subscription { get; }
+    IEventSubSubscription Subscription { get; }
+    /// <summary>
+    /// Contains information about the event that triggered the notification.
+    /// </summary>
+    object? Event { get; }
 }

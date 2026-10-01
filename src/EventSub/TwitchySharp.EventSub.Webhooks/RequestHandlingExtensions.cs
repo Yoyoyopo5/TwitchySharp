@@ -14,17 +14,17 @@ public static class RequestHandlingExtensions
     /// <param name="handleRequest">The function to call when an <see cref="EventSubWebhookRequest"/> with content type <typeparamref name="T"/> is recieved.</param>
     /// <returns>A new <see cref="ProcessWebhookRequest"/> with the handler function added.</returns>
     public static ProcessWebhookRequest Map<T>(this ProcessWebhookRequest process, Func<T, CancellationToken, ValueTask> handleRequest)
-        where T : WebhookRequestContent
+        where T : IWebhookRequestContent
         => async (request, ct) =>
         {
-            Validation<WebhookRequestContent> result = await process(request, ct);
-            return await result.Match<ValueTask<Validation<WebhookRequestContent>>>(
-                onError: e => ValueTask.FromResult<Validation<WebhookRequestContent>>(e),
+            Validation<IWebhookRequestContent> result = await process(request, ct);
+            return await result.Match<ValueTask<Validation<IWebhookRequestContent>>>(
+                onError: e => ValueTask.FromResult<Validation<IWebhookRequestContent>>(e),
                 onValid: async content =>
                 {
                     if (content is T typedContent)
                         await handleRequest(typedContent, ct);
-                    return content;
+                    return new Validation<IWebhookRequestContent>(content);
                 });
         };
 
@@ -37,14 +37,14 @@ public static class RequestHandlingExtensions
     public static ProcessWebhookRequest MapError(this ProcessWebhookRequest process, Func<Error, CancellationToken, ValueTask> handleError)
         => async (request, ct) =>
         {
-            Validation<WebhookRequestContent> result = await process(request, ct);
-            return await result.Match<ValueTask<Validation<WebhookRequestContent>>>(
+            Validation<IWebhookRequestContent> result = await process(request, ct);
+            return await result.Match<ValueTask<Validation<IWebhookRequestContent>>>(
                 onError: async e =>
                 {
                     await handleError(e, ct);
                     return e;
                 },
-                onValid: content => ValueTask.FromResult<Validation<WebhookRequestContent>>(content)
+                onValid: content => ValueTask.FromResult(new Validation<IWebhookRequestContent>(content))
                 );
         };
 
@@ -69,7 +69,7 @@ public static class RequestHandlingExtensions
     /// <param name="process"><inheritdoc cref="Map{T}(ProcessWebhookRequest, Func{T, CancellationToken, ValueTask})"/></param>
     /// <param name="handleSubscriptionRevoked">The function to call when a subscription is revoked.</param>
     /// <returns><inheritdoc cref="Map{T}(ProcessWebhookRequest, Func{T, CancellationToken, ValueTask})"/></returns>
-    public static ProcessWebhookRequest MapSubscriptionRevoked(this ProcessWebhookRequest process, Func<EventSubSubscription, CancellationToken, ValueTask> handleSubscriptionRevoked)
+    public static ProcessWebhookRequest MapSubscriptionRevoked(this ProcessWebhookRequest process, Func<IEventSubSubscription, CancellationToken, ValueTask> handleSubscriptionRevoked)
         => process.Map<RevocationRequestContent>((revocationContent, ct) => handleSubscriptionRevoked(revocationContent.Subscription, ct));
 
     /// <summary>
@@ -78,6 +78,6 @@ public static class RequestHandlingExtensions
     /// <param name="process"><inheritdoc cref="Map{T}(ProcessWebhookRequest, Func{T, CancellationToken, ValueTask})"/></param>
     /// <param name="handleCallbackVerification">The function to call when a callback verification request is received.</param>
     /// <returns><inheritdoc cref="Map{T}(ProcessWebhookRequest, Func{T, CancellationToken, ValueTask})"/></returns>
-    public static ProcessWebhookRequest MapCallbackVerification(this ProcessWebhookRequest process, Func<EventSubSubscription, string, CancellationToken, ValueTask> handleCallbackVerification)
+    public static ProcessWebhookRequest MapCallbackVerification(this ProcessWebhookRequest process, Func<IEventSubSubscription, string, CancellationToken, ValueTask> handleCallbackVerification)
         => process.Map<CallbackVerificationRequestContent>((callbackVerificationContent, ct) => handleCallbackVerification(callbackVerificationContent.Subscription, callbackVerificationContent.Challenge, ct));
 }

@@ -1,4 +1,6 @@
-﻿using TwitchySharp.EventSub.Notifications;
+﻿using System.Collections.Frozen;
+using System.Collections.Immutable;
+using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Websocket.Functional;
 
 namespace TwitchySharp.EventSub.Websocket.Tests.Integration;
@@ -155,17 +157,17 @@ public class Test_MessageHandlingExtensions(WebsocketFixture fixture) : IClassFi
             },
             Payload = new()
             {
-                Subscription = new EventSubSubscription<ChannelFollowCondition>()
+                Subscription = new()
                 {
                     Id = new("test-subscription"),
                     Type = new(EventSubSubscriptionType.ChannelFollow.Type),
                     Version = new(EventSubSubscriptionType.ChannelFollow.Version),
                     Status = EventSubSubscriptionStatus.Enabled,
-                    Condition = new()
+                    Condition = new Dictionary<string, string>()
                     {
-                        BroadcasterUserId = new("12345"),
-                        ModeratorUserId = new("12345")
-                    },
+                        { "broadcaster_user_id", "12345" },
+                        { "moderator_user_id", "12345" }
+                    }.ToImmutableDictionary(),
                     Cost = 1,
                     CreatedAt = DateTimeOffset.MinValue,
                     Transport = new()
