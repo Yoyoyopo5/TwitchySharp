@@ -9,7 +9,6 @@ using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Websocket.Clients;
 using TwitchySharp.EventSub.Websocket.Functional;
 using TwitchySharp.EventSub.Websocket.Idempotency;
-using TwitchySharp.EventSub.Websocket.Serialization;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 using Websocket.Client;
@@ -137,7 +136,7 @@ public class WebsocketFixture : IAsyncLifetime
         builder.Services.AddScoped<TestHandler>();
         builder.Services.AddScoped<IdempotencyCache>();
         builder.Services.AddScoped<ProcessWebsocketMessage>(sp
-            => WebsocketMessageDeserializer.Create()
+            => ProcessWebsocketMessage.ByJsonDeserialization()
                 .WithIdempotentMessages((id, ct) => sp.GetRequiredService<IdempotencyCache>().IsRepeated(id, ct))
                 .MapError(async (e, ct) => TestContext.Current.AddAttachment("pipeline-error", $"{e.GetType().FullName}: {e.Message}"))
                 .MapError(sp.GetRequiredService<TestHandler>().OnError)
@@ -164,7 +163,7 @@ public class TestHandler
     public EventSubWebsocketSession? Session { get; private set; }
     public int KeepaliveCounter { get; private set; } = 0;
     public IEventSubNotification? LastNotification { get; private set; }
-    public EventSubSubscription? LastRevokedSubscription { get; private set; }
+    public IEventSubSubscription? LastRevokedSubscription { get; private set; }
     public EventSubReconnectSession? LastReconnect { get; private set; }
     public Error? LastError { get; private set; }
 
@@ -198,7 +197,7 @@ public class TestHandler
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask OnSubscriptionRevoked(EventSubSubscription subscription, CancellationToken ct = default)
+    public ValueTask OnSubscriptionRevoked(IEventSubSubscription subscription, CancellationToken ct = default)
     {
         LastRevokedSubscription = subscription;
         MessageReceived.TrySetResult();

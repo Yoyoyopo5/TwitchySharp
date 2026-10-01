@@ -8,11 +8,11 @@ namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
 public class Test_RequestHandling
 {
     private static ProcessWebhookRequest CreateStubProcess<T>(Func<T> createResponse)
-        where T : WebhookRequestContent
-        => (_, _) => ValueTask.FromResult<Validation<WebhookRequestContent>>(createResponse());
+        where T : IWebhookRequestContent
+        => (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(createResponse());
 
     private static ProcessWebhookRequest CreateStubProcess(Func<Error> createResponse)
-        => (_, _) => ValueTask.FromResult<Validation<WebhookRequestContent>>(createResponse());
+        => (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(createResponse());
 
     [Fact]
     public async Task ProcessWebhookRequest_MapNotification_FunctionCalled()
@@ -21,8 +21,7 @@ public class Test_RequestHandling
 
         ProcessWebhookRequest stubProcess = CreateStubProcess<NotificationRequestContent>(() => new()
         {
-            Notification = new StubEventSubNotification(),
-            Subscription = ProcessStubs.FakeSubscription
+            Notification = new StubEventSubNotification()
         }).MapNotification<StubEventSubNotification>((notification, ct) =>
         {
             receivedNotification = notification;
@@ -37,7 +36,7 @@ public class Test_RequestHandling
     [Fact]
     public async Task ProcessWebhookRequest_MapSubscriptionRevocation_FunctionCalled()
     {
-        EventSubSubscription? receivedRevokedSubscription = null;
+        IEventSubSubscription? receivedRevokedSubscription = null;
 
         ProcessWebhookRequest stubProcess = CreateStubProcess<RevocationRequestContent>(() => new()
         {

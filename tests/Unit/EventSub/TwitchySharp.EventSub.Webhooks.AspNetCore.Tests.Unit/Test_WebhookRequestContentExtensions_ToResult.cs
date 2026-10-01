@@ -4,62 +4,71 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Webhooks.Crypto;
 using TwitchySharp.EventSub.Webhooks.Functional;
-using TwitchySharp.EventSub.Webhooks.Serialization;
 using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore.Tests.Unit;
 
 public class Test_WebhookRequestContentExtensions_ToResult
 {
-    private static EventSubSubscription FakeSubscription { get; } = new()
+    private static EventSubSubscription<ImmutableDictionary<string, string>> FakeSubscription { get; } = new()
     {
         Id = new("f1c2a387-161a-49f9-a165-0f21d7a4e1c4"),
         Status = EventSubSubscriptionStatus.Enabled,
         Type = new("channel.follow"),
         Version = new("1"),
         Cost = 1,
-        Condition = new Dictionary<string, object>() { { "broadcaster_user_id", "12826" } }.ToImmutableDictionary(),
+        Condition = new Dictionary<string, string>() { { "broadcaster_user_id", "12826" } }.ToImmutableDictionary(),
         CreatedAt = DateTimeOffset.Parse("2019-11-16T10:11:12.634234626Z"),
         Transport = new() { Method = EventSubTransportMethod.Webhook, Callback = new("https://example.com/webhooks/callback") }
     };
 
     private record StubEventSubNotification : IEventSubNotification
     {
-        public EventSubSubscription Subscription => FakeSubscription;
+        public IEventSubSubscription Subscription => FakeSubscription;
+        public object Event { get; } = new();
     }
 
-    private record UnsupportedRequestContent : WebhookRequestContent;
+    private record UnsupportedRequestContent : IWebhookRequestContent
+    {
+        public required IEventSubSubscription Subscription { get; init; }
+    }
 
     [Fact]
-    public void ToResult_DeserializationError_ReturnBadRequest()
+    public void ToResult_DeserializationExceptionError_ReturnBadRequest()
     {
-        Validation<WebhookRequestContent> fakeDeserializationError
-            = new WebhookRequestDeserializer.DeserializationError("test error");
+        Validation<IWebhookRequestContent> fakeDeserializationError
+            = new ProcessWebhookRequestSerializationExtensions.DeserializationExceptionError(new Exception());
 
         IResult result = fakeDeserializationError.ToResult();
-
+#if DEBUG
         Assert.IsType<BadRequest>(result);
+#else
+        Assert.IsType<Ok>(result);
+#endif
     }
 
     [Fact]
     public void ToResult_VerificationError_ReturnUnauthorized()
     {
-        Validation<WebhookRequestContent> fakeVerificationError
-            = new WebhookHashVerifier.VerificationError("test error", null!);
+        Validation<IWebhookRequestContent> fakeVerificationError
+            = new VerifyWebhookHashExtensions.VerificationFailedError();
 
         IResult result = fakeVerificationError.ToResult();
 
+#if DEBUG
         Assert.IsType<UnauthorizedHttpResult>(result);
+#else
+        Assert.IsType<Ok>(result);
+#endif
     }
 
     [Fact]
     public void ToResult_NotificationRequestContent_ReturnOk()
     {
-        Validation<WebhookRequestContent> fakeNotificationRequest
+        Validation<IWebhookRequestContent> fakeNotificationRequest
             = new NotificationRequestContent()
             {
-                Notification = new StubEventSubNotification(),
-                Subscription = FakeSubscription
+                Notification = new StubEventSubNotification()
             };
 
         IResult result = fakeNotificationRequest.ToResult();
@@ -72,7 +81,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     {
         const string FAKE_CHALLENGE = "challenge";
 
-        Validation<WebhookRequestContent> fakeCallbackVerificationRequest
+        Validation<IWebhookRequestContent> fakeCallbackVerificationRequest
             = new CallbackVerificationRequestContent()
             {
                 Challenge = FAKE_CHALLENGE,
@@ -89,7 +98,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_RevocationRequestContent_ReturnNoContent()
     {
-        Validation<WebhookRequestContent> fakeRecovationRequest
+        Validation<IWebhookRequestContent> fakeRecovationRequest
             = new RevocationRequestContent()
             {
                 Subscription = FakeSubscription
@@ -103,7 +112,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_UnsupportedRequestContentType_ReturnInternalServerError()
     {
-        Validation<WebhookRequestContent> fakeUnsupportedRequest
+        Validation<IWebhookRequestContent> fakeUnsupportedRequest
             = new UnsupportedRequestContent()
             {
                 Subscription = FakeSubscription

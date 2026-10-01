@@ -14,5 +14,5 @@ public record EventSubWebhookRequest
     /// <summary>
     /// The EventSub webhook request body.
     /// </summary>
-    public required NotificationPayloadStream Content { get; init; }
+    public required WebhookRequestContentStream Content { get; init; }
 }

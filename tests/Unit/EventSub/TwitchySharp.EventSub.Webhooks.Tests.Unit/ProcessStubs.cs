@@ -1,13 +1,15 @@
 ﻿using System.Collections.Immutable;
 using TwitchySharp.EventSub.Notifications;
-using TwitchySharp.EventSub.Serialization;
 using TwitchySharp.EventSub.Webhooks.Functional;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Tests.Unit;
 
 namespace TwitchySharp.EventSub.Webhooks.Tests.Unit;
 
-internal record FakeWebhookRequestContent(string Body) : WebhookRequestContent;
+internal record FakeWebhookRequestContent(string Body) : IWebhookRequestContent
+{
+    public required IEventSubSubscription Subscription { get; init; }
+}
 
 internal class ProcessStubs
 {
@@ -28,17 +30,18 @@ internal class ProcessStubs
             Content = new((requestBody ?? FAKE_REQUEST_BODY).ToMemoryStream())
         };
 
-    private static FakeWebhookRequestContent CreateFakeContent(NotificationPayloadStream bodyStream)
+    private static FakeWebhookRequestContent CreateFakeContent(WebhookRequestContentStream bodyStream)
     {
         using StreamReader sr = new(bodyStream);
         return new FakeWebhookRequestContent(sr.ReadToEnd())
         {
-            Subscription = new EventSubSubscription()
+            Subscription = new EventSubSubscription<object>()
             {
                 Id = new("123"),
                 Status = EventSubSubscriptionStatus.Enabled,
                 CreatedAt = DateTimeOffset.MinValue,
                 Cost = 1,
+                Condition = new(),
                 Transport = new EventSubTransport()
                 {
                     Method = EventSubTransportMethod.Webhook,
@@ -51,16 +54,16 @@ internal class ProcessStubs
     }
 
     public static ProcessWebhookRequest StubProcess { get; }
-        = (request, ct) => ValueTask.FromResult<Validation<WebhookRequestContent>>(CreateFakeContent(request.Content));
+        = (request, ct) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateFakeContent(request.Content));
 
-    public static EventSubSubscription FakeSubscription { get; } = new()
+    public static EventSubSubscription<ImmutableDictionary<string, string>> FakeSubscription { get; } = new()
     {
         Id = new("f1c2a387-161a-49f9-a165-0f21d7a4e1c4"),
         Status = EventSubSubscriptionStatus.Enabled,
         Type = new("channel.follow"),
         Version = new("1"),
         Cost = 1,
-        Condition = new Dictionary<string, object>() { { "broadcaster_user_id", "12826" } }.ToImmutableDictionary(),
+        Condition = new Dictionary<string, string>() { { "broadcaster_user_id", "12826" } }.ToImmutableDictionary(),
         CreatedAt = DateTimeOffset.Parse("2019-11-16T10:11:12.634234626Z"),
         Transport = new() { Method = EventSubTransportMethod.Webhook, Callback = new("https://example.com/webhooks/callback") }
     };
@@ -68,5 +71,6 @@ internal class ProcessStubs
 
 public record StubEventSubNotification : IEventSubNotification
 {
-    public EventSubSubscription Subscription => ProcessStubs.FakeSubscription;
+    public IEventSubSubscription Subscription => ProcessStubs.FakeSubscription;
+    public object Event { get; } = new();
 }

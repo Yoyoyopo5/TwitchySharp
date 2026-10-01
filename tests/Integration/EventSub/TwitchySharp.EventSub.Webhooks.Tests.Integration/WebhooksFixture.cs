@@ -42,7 +42,7 @@ public class WebhooksFixture : IAsyncLifetime
             s.AddRouting();
             s.AddTwitchEventSubWebhooks(sp => pipeline => 
                 pipeline
-                    .WithHashValidation(WebhookHashVerifier.Create((subscription, ct) => ValueTask.FromResult<WebhookSecret?>(WebhooksSecret)))
+                    .WithHashValidation(VerifyWebhookHash.UsingSecret((subscription, ct) => ValueTask.FromResult<WebhookSecret?>(WebhooksSecret)))
                     .WithIdempotentRequests((messageId, ct) =>
                     {
                         if (IdempotencyCache.Contains(messageId))
@@ -86,9 +86,9 @@ public static class WebhooksSecretExtensions
 
 public class TestHandler
 {
-    public EventSubSubscription? LastCallback { get; set; }
+    public IEventSubSubscription? LastCallback { get; set; }
     public string? LastCallbackChallenge { get; set; }
-    public EventSubSubscription? LastRevoked { get; set; }
+    public IEventSubSubscription? LastRevoked { get; set; }
     public IEventSubNotification? LastNotification { get; set; }
     public Error? LastError { get; set; }
 
@@ -98,13 +98,13 @@ public class TestHandler
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask OnSubscriptionRevoked(EventSubSubscription revokedSubscription, CancellationToken ct = default)
+    public ValueTask OnSubscriptionRevoked(IEventSubSubscription revokedSubscription, CancellationToken ct = default)
     {
         LastRevoked = revokedSubscription;
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask OnCallbackVerification(EventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
+    public ValueTask OnCallbackVerification(IEventSubSubscription newSubscription, string challenge, CancellationToken ct = default)
     {
         LastCallback = newSubscription;
         LastCallbackChallenge = challenge;

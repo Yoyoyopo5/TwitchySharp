@@ -1,4 +1,5 @@
-﻿using TwitchySharp.EventSub.Notifications;
+﻿using System.Collections.Immutable;
+using TwitchySharp.EventSub.Notifications;
 
 namespace TwitchySharp.EventSub.Webhooks.Functional;
 
@@ -10,10 +11,12 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// <summary>
 /// The content of an EventSub webhook notification request.
 /// </summary>
-public record NotificationRequestContent : WebhookRequestContent
+public record NotificationRequestContent : IWebhookRequestContent
 {
     /// <summary>
     /// The notification data.
     /// </summary>
     public required IEventSubNotification Notification { get; init; }
+    /// <inheritdoc cref="IWebhookRequestContent.Subscription"/>
+    public IEventSubSubscription Subscription => Notification.Subscription;
 }

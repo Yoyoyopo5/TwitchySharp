@@ -1,4 +1,6 @@
-﻿using TwitchySharp.EventSub.Notifications;
+﻿using System.Collections.Frozen;
+using System.Collections.Immutable;
+using TwitchySharp.EventSub.Notifications;
 using TwitchySharp.EventSub.Websocket.Functional;
 using TwitchySharp.Infrastructure.Functional;
 
@@ -20,11 +22,12 @@ public class Test_MessageHandlingExtensions
 
     private class StubNotification : IEventSubNotification
     {
-        public EventSubSubscription Subscription { get; } = new()
+        public IEventSubSubscription Subscription { get; } = new EventSubSubscription<object>()
         {
             Id = new("12345"),
             Status = EventSubSubscriptionStatus.Enabled,
             Cost = 1,
+            Condition = new(),
             CreatedAt = DateTime.MinValue,
             Transport = new EventSubTransport()
             {
@@ -34,6 +37,7 @@ public class Test_MessageHandlingExtensions
             Type = EventSubSubscriptionType.ChannelBan.Type,
             Version = EventSubSubscriptionType.ChannelBan.Version
         };
+        public object Event { get; } = new();
     }
 
     [Fact]
@@ -96,15 +100,37 @@ public class Test_MessageHandlingExtensions
     [Fact]
     public async Task ProcessWebsocketMessage_Revocation_CallsOnRevoked()
     {
-        EventSubSubscription expectedRevocation = new StubNotification().Subscription;
-        EventSubSubscription? receivedRevocation = null;
+        IEventSubSubscription fakeSubscription = new StubNotification().Subscription;
+        ImmutableDictionary<string, string> stubCondition = ImmutableDictionary.Create<string, string>();
+        EventSubSubscription<ImmutableDictionary<string, string>> expectedRevocation = new()
+        {
+            Id = fakeSubscription.Id,
+            Type = fakeSubscription.Type,
+            Version = fakeSubscription.Version,
+            Status = fakeSubscription.Status,
+            Cost = fakeSubscription.Cost,
+            CreatedAt = fakeSubscription.CreatedAt,
+            Transport = fakeSubscription.Transport,
+            Condition = stubCondition
+        };
+        EventSubSubscription<ImmutableDictionary<string, string>>? receivedRevocation = null;
 
         ProcessWebsocketMessage mockProcess = CreateStubProcess(new EventSubWebsocketMessage<RevocationMessagePayload>()
         {
             Metadata = StubMetadata,
             Payload = new()
             {
-                Subscription = expectedRevocation
+                Subscription = new()
+                {
+                    Id = expectedRevocation.Id,
+                    Type = expectedRevocation.Type,
+                    Version = expectedRevocation.Version,
+                    Status = expectedRevocation.Status,
+                    Cost = expectedRevocation.Cost,
+                    CreatedAt = expectedRevocation.CreatedAt,
+                    Transport = expectedRevocation.Transport,
+                    Condition = ImmutableDictionary.Create<string, string>()
+                }
             }
         }).MapSubscriptionRevoked(async (subscription, ct) => receivedRevocation = subscription);
 

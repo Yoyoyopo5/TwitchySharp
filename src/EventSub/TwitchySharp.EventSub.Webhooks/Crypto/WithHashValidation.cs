@@ -4,7 +4,7 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.Crypto;
 
-public static partial class ProcessWebhookRequestExtensions
+public static partial class ProcessWebhookRequestCryptoExtensions
 {
     private static readonly RecyclableMemoryStreamManager _memoryManager = new();
     public static ProcessWebhookRequest WithHashValidation(this ProcessWebhookRequest process, VerifyWebhookHash verifyHash)
@@ -32,8 +32,8 @@ public static partial class ProcessWebhookRequestExtensions
                     cryptoStream.Position = 0;
                     return verifyHash(result.Subscription, toVerify, ct).MatchAsync(
                     // We have to wrap the unit validation from the verifier back into a WebhookRequestResult validation.
-                    onError: (e, _) => ValueTask.FromResult(new Validation<WebhookRequestContent>(e)),
-                    onValid: _ => ValueTask.FromResult<Validation<WebhookRequestContent>>(result),
+                    onError: (e, _) => ValueTask.FromResult(new Validation<IWebhookRequestContent>(e)),
+                    onValid: _ => ValueTask.FromResult(new Validation<IWebhookRequestContent>(result)),
                     ct);
                 });
         };

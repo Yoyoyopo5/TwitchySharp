@@ -2,13 +2,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using TwitchySharp.Api;
 using TwitchySharp.EventSub.Tests.E2E;
-using TwitchySharp.EventSub.Websocket;
 using TwitchySharp.EventSub.Websocket.Clients;
 using TwitchySharp.EventSub.Websocket.Functional;
-using TwitchySharp.EventSub.Websocket.Serialization;
 using TwitchySharp.Tests.E2E;
 using Websocket.Client;
 
@@ -27,7 +24,7 @@ public sealed class EventSubWebsocketFixture : TwitchTestApplication
             .AddHttpClient<TwitchClient>();
 
         builder.Services
-            .AddTransient<ProcessWebsocketMessage>(sp => WebsocketMessageDeserializer.Create());
+            .AddTransient<ProcessWebsocketMessage>(sp => ProcessWebsocketMessage.ByJsonDeserialization());
 
         builder.Services
             .AddTransient<StartEventSubWebsocketClient>(sp => EventSubWebsocketClient.Create(ctx =>
