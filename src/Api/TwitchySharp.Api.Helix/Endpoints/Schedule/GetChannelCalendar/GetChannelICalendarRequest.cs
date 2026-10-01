@@ -22,10 +22,11 @@ public record GetChannelICalendarRequest
     /// </summary>
     public required UserId BroadcasterId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<GetChannelICalendarResponseContent>>? ConvertResponseContent { get; init; }
-        = async (contentStream, ct) =>
+    public override IResponseContentConverter.ConvertResponse<GetChannelICalendarResponseContent>? ConvertResponse { get; init; }
+        = async (_, response, ct) =>
         {
-            using StreamReader sr = new(contentStream);
+            using HttpResponseMessage r = response;
+            using StreamReader sr = new(await r.Content.ReadAsStreamAsync(ct));
             return new GetChannelICalendarResponseContent(await sr.ReadToEndAsync(ct));
         };
 }

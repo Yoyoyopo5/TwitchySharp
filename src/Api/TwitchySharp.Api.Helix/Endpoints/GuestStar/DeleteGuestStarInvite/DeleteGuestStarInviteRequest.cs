@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
@@ -55,6 +56,10 @@ public record DeleteGuestStarInviteRequest
     /// </summary>
     public required UserId GuestId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteGuestStarInviteResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteGuestStarInviteResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteGuestStarInviteResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteGuestStarInviteResponseContent>>(new DeleteGuestStarInviteResponseContent());
+        };
 }

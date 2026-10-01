@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
@@ -51,6 +52,10 @@ public record UnbanUserRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UnbanUserResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UnbanUserResponseContent());
+    public override IResponseContentConverter.ConvertResponse<UnbanUserResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<UnbanUserResponseContent>>(new UnbanUserResponseContent());
+        };
 }

@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
@@ -60,6 +62,10 @@ public record DeleteChatMessagesRequest
     /// </remarks>
     public MessageId? MessageId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteChatMessagesResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteChatMessagesResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteChatMessagesResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteChatMessagesResponseContent>>(new DeleteChatMessagesResponseContent());
+        };
 }

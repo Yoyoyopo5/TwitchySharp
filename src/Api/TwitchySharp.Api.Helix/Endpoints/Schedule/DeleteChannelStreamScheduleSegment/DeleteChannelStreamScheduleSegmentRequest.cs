@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Schedule;
@@ -45,6 +46,10 @@ public record DeleteChannelStreamScheduleSegmentRequest
     /// </summary>
     public required StreamScheduleSegmentId SegmentId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteChannelStreamScheduleSegmentResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteChannelStreamScheduleSegmentResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteChannelStreamScheduleSegmentResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteChannelStreamScheduleSegmentResponseContent>>(new DeleteChannelStreamScheduleSegmentResponseContent());
+        };
 }

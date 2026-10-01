@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Extensions;
@@ -46,8 +47,12 @@ public record SendExtensionPubSubMessageRequest
     /// </summary>
     public required SendExtensionPubSubMessageRequestData Message { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendExtensionPubSubMessageResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendExtensionPubSubMessageResponseContent());
+    public override IResponseContentConverter.ConvertResponse<SendExtensionPubSubMessageResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<SendExtensionPubSubMessageResponseContent>>(new SendExtensionPubSubMessageResponseContent());
+        };
 }
 
 /// <summary>

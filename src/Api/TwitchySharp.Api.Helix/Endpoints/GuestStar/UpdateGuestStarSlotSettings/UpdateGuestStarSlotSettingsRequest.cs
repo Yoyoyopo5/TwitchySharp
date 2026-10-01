@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
@@ -67,8 +69,12 @@ public record UpdateGuestStarSlotSettingsRequest
     /// </summary>
     public required GuestStarSlotSettings Settings { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UpdateGuestStarSlotSettingsResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UpdateGuestStarSlotSettingsResponseContent());
+    public override IResponseContentConverter.ConvertResponse<UpdateGuestStarSlotSettingsResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<UpdateGuestStarSlotSettingsResponseContent>>(new UpdateGuestStarSlotSettingsResponseContent());
+        };
 }
 
 /// <summary>

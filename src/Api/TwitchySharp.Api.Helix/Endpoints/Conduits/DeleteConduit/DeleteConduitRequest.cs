@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.Conduits;
 /// <summary>
 /// Deletes a specified conduit.
@@ -26,6 +28,10 @@ public record DeleteConduitRequest
     /// </summary>
     public required ConduitId ConduitId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteConduitResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteConduitResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteConduitResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteConduitResponseContent>>(new DeleteConduitResponseContent());
+        };
 }

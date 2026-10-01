@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
 /// Updates a configuration segment.
@@ -44,8 +46,12 @@ public record SetExtensionConfigurationSegmentRequest
     /// </summary>
     public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SetExtensionConfigurationSegmentResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SetExtensionConfigurationSegmentResponseContent());
+    public override IResponseContentConverter.ConvertResponse<SetExtensionConfigurationSegmentResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<SetExtensionConfigurationSegmentResponseContent>>(new SetExtensionConfigurationSegmentResponseContent());
+        };
 }
 
 /// <summary>

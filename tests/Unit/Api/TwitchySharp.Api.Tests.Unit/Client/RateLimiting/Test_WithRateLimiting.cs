@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.Api.Tests.Unit.Client.RateLimiting;
@@ -30,7 +31,11 @@ public class Test_WithRateLimiting
             Identity = new(new("default"))
         };
 
-        public override Func<Stream, CancellationToken, ValueTask<object>>? ConvertResponseContent { get; init; } = (_, _) => ValueTask.FromResult(new object());
+        public override IResponseContentConverter.ConvertResponse<object>? ConvertResponse { get; init; } = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<object>>(new object());
+        };
     }
 
     private static TwitchClient CreateStubClient(TwitchRateLimitDetails? rateLimitDetails = null)

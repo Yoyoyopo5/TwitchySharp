@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
@@ -45,6 +46,10 @@ public record RemoveChannelModeratorRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<RemoveChannelModeratorResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new RemoveChannelModeratorResponseContent());
+    public override IResponseContentConverter.ConvertResponse<RemoveChannelModeratorResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<RemoveChannelModeratorResponseContent>>(new RemoveChannelModeratorResponseContent());
+        };
 }

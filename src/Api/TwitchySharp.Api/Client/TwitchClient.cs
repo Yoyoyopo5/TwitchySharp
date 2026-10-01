@@ -44,16 +44,25 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     {
         public bool CanConvert<TResponseContent>(TwitchRequest<TResponseContent> request)
             => true;
-        public ValueTask<TResponseContent> Convert<TResponseContent>(TwitchRequest<TResponseContent> request, Stream contentStream, CancellationToken ct)
-            => JsonSerializer.DeserializeAsync<TResponseContent>(contentStream, JsonConfig.ApiOptions, ct)!;
+        public async ValueTask<Result<TResponseContent>> Convert<TResponseContent>(TwitchRequest<TResponseContent> request, HttpResponseMessage response, CancellationToken ct)
+        {
+            try
+            {
+                return (await JsonSerializer.DeserializeAsync<TResponseContent>(response.Content.ReadAsStream(ct), JsonConfig.ApiOptions, ct))!;
+            }
+            finally
+            {
+                response.Dispose();
+            }
+        }
     }
 
     private class RequestSpecificContentConverter : IResponseContentConverter
     {
         public bool CanConvert<TResponseContent>(TwitchRequest<TResponseContent> request)
-            => request.ConvertResponseContent is not null;
-        public ValueTask<TResponseContent> Convert<TResponseContent>(TwitchRequest<TResponseContent> request, Stream content, CancellationToken ct)
-            => request.ConvertResponseContent!.Invoke(content, ct);
+            => request.ConvertResponse is not null;
+        public ValueTask<Result<TResponseContent>> Convert<TResponseContent>(TwitchRequest<TResponseContent> request, HttpResponseMessage response, CancellationToken ct)
+            => request.ConvertResponse!.Invoke(request, response, ct);
     }
 
     /// <summary>
@@ -65,8 +74,8 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// with the first converter that returns <see langword="true"/> being used to convert the response content in <see cref="SendAsync{TResponseContent}(TwitchRequest{TResponseContent}, CancellationToken)"/>.
     /// </para>
     /// <para>
-    /// By default, this contains a single converter to use the <see cref="TwitchRequest{T}.ConvertResponseContent"/> on each request.
-    /// In addition, the <see cref="DefaultResponseConverter"/> will be used to convert requests that do not implement <see cref="TwitchRequest{T}.ConvertResponseContent"/>.
+    /// By default, this contains a single converter to use the <see cref="TwitchRequest{T}.ConvertResponse"/> on each request.
+    /// In addition, the <see cref="DefaultResponseConverter"/> will be used to convert requests that do not implement <see cref="TwitchRequest{T}.ConvertResponse"/>.
     /// </para>
     /// </remarks>
     // We use stack here to get delegate decorator like behavior (i.e. newest converter applies first).
@@ -106,13 +115,13 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
         // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
         await using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTypedResponse<TResponseContent>(contentConverter));
         return await requestScope.ResolveOrDefault<TwitchResponse<TResponseContent>>(ct).MatchAsync(
-            e => e switch
-            {
-                ExceptionError exceptionError => throw exceptionError.Exception,
-                Error => throw new InvalidOperationException(e.Message)
-            },
-            valid => valid is not null ? valid : throw new InvalidOperationException("The response resolved to null.")
-            ).AsTask();
+        e => e switch
+        {
+            ExceptionError exceptionError => throw exceptionError.Exception,
+            Error => throw new InvalidOperationException(e.Message)
+        },
+        valid => valid is not null ? valid : throw new InvalidOperationException("The response resolved to null.")
+        ).AsTask();
     }
 }
 
@@ -147,6 +156,12 @@ public static class TwitchClientExtensions
 /// </summary>
 public interface IResponseContentConverter
 {
+    delegate ValueTask<Result<TResponseContent>> ConvertResponse<TResponseContent>(
+        TwitchRequest<TResponseContent> request,
+        HttpResponseMessage response,
+        CancellationToken ct
+        );
+
     // This interface allows us to inject generic behavior (required for binding response content).
 
     /// <summary>
@@ -162,12 +177,12 @@ public interface IResponseContentConverter
     /// </summary>
     /// <typeparam name="TResponseContent">The type to convert to.</typeparam>
     /// <param name="request"><inheritdoc cref="CanConvert{TResponseContent}(TwitchRequest{TResponseContent})"/></param>
-    /// <param name="content">The content <see cref="Stream"/> to convert from.</param>
+    /// <param name="response">The response to convert from.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A <see cref="ValueTask"/> containing the converted <typeparamref name="TResponseContent"/>.</returns>
-    ValueTask<TResponseContent> Convert<TResponseContent>(
+    ValueTask<Result<TResponseContent>> Convert<TResponseContent>(
         TwitchRequest<TResponseContent> request,
-        Stream content,
+        HttpResponseMessage response,
         CancellationToken ct
         );
 }
@@ -228,8 +243,7 @@ internal static class DefaultRequestPipelineExtensions
         => resolvers.SetResolver<HttpResponseMessage>((scope, ct) =>
             scope.ResolveRequired<HttpClient>(ct)
                 .BindAsync(httpClient => scope.ResolveRequired<HttpRequestMessage>(ct)
-                .BindAsync<HttpRequestMessage, HttpResponseMessage>(async httpRequestMessage => await httpClient.SendAsync(httpRequestMessage, ct))))
-            .ConfigureDispose<ITwitchRequestDependencyCollection, HttpResponseMessage>(response => response.Dispose());
+                .BindAsync<HttpRequestMessage, HttpResponseMessage>(async httpRequestMessage => await httpClient.SendAsync(httpRequestMessage, ct))));
 
     public static ITwitchRequestDependencyCollection UseRequestContent(
         this ITwitchRequestDependencyCollection resolvers
@@ -291,23 +305,23 @@ internal static class DefaultRequestPipelineExtensions
             ? request.SetAuthorizationBearer(token.Value)
             : request);
 
-    private static async Task<TwitchResponse<TResponseContent>> CreateResponse<TResponseContent>(
+    private static ValueTask<Result<TwitchResponse<TResponseContent>>> CreateResponse<TResponseContent>(
         this IResponseContentConverter responseContentConverter,
         HttpResponseMessage httpResponse,
         TwitchRequest<TResponseContent> request,
         CancellationToken ct
         )
-        => httpResponse.ToTwitchResponse(request, await responseContentConverter.Convert(request, await httpResponse.Content.ReadAsStreamAsync(ct), ct));
+        => responseContentConverter.Convert(request, httpResponse, ct)
+            .MapAsync(content => httpResponse.ToTwitchResponse(request, content));
 
     public static ITwitchRequestDependencyCollection WithTypedResponse<TResponseContent>(
         this ITwitchRequestDependencyCollection resolvers,
         IResponseContentConverter responseContentConverter
         )
-        => resolvers.TrySetResolver((scope, ct) =>
+        => resolvers.TrySetResolver<ITwitchRequestDependencyCollection, TwitchResponse<TResponseContent>?>((scope, ct) =>
             scope.Request is not TwitchRequest<TResponseContent> typedRequest
                 ? ValueTask.FromResult<Result<TwitchResponse<TResponseContent>?>>(new Error("Incongruent request and response content type."))
-                : scope.ResolveOrDefault<HttpResponseMessage>(ct)
-                    .MapAsync(async response => response is null
-                    ? null
-                    : await responseContentConverter.CreateResponse(response, typedRequest, ct)));
+                : scope.ResolveRequired<HttpResponseMessage>(ct)
+                    .BindAsync(response => responseContentConverter.CreateResponse(response, typedRequest, ct)
+                        .MapAsync<TwitchResponse<TResponseContent>, TwitchResponse<TResponseContent>?>(r => r)));
 }

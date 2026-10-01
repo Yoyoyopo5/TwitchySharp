@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Moderation;
@@ -51,6 +52,10 @@ public record RemoveBlockedTermRequest
     /// </summary>
     public required AutomodBlockedTermId BlockedTermId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<RemoveBlockedTermResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new RemoveBlockedTermResponseContent());
+    public override IResponseContentConverter.ConvertResponse<RemoveBlockedTermResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<RemoveBlockedTermResponseContent>>(new RemoveBlockedTermResponseContent());
+        };
 }

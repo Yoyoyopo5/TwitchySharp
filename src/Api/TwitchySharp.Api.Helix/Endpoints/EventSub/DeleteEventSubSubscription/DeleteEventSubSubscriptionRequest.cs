@@ -83,6 +83,10 @@ public record DeleteEventSubSubscriptionRequest()
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteEventSubSubscriptionResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteEventSubSubscriptionResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteEventSubSubscriptionResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteEventSubSubscriptionResponseContent>>(new DeleteEventSubSubscriptionResponseContent());
+        };
 }

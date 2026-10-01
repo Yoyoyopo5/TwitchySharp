@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -50,6 +51,10 @@ public record RemoveChannelVipRequest
     /// </remarks>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<RemoveChannelVipResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new RemoveChannelVipResponseContent());
+    public override IResponseContentConverter.ConvertResponse<RemoveChannelVipResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<RemoveChannelVipResponseContent>>(new RemoveChannelVipResponseContent());
+        };
 }

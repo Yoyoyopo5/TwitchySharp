@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.Channels;
 /// <summary>
@@ -46,6 +47,10 @@ public record AddChannelVipRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<AddChannelVipResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new AddChannelVipResponseContent());
+    public override IResponseContentConverter.ConvertResponse<AddChannelVipResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<AddChannelVipResponseContent>>(new AddChannelVipResponseContent());
+        };
 }

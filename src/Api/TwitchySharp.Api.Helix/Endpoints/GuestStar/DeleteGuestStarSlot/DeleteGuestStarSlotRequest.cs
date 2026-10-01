@@ -1,3 +1,5 @@
+using TwitchySharp.Infrastructure.Functional;
+
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
@@ -69,6 +71,10 @@ public record DeleteGuestStarSlotRequest
     /// </summary>
     public bool? ShouldReinviteGuest { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteGuestStarSlotResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteGuestStarSlotResponseContent());
+    public override IResponseContentConverter.ConvertResponse<DeleteGuestStarSlotResponseContent>? ConvertResponse { get; init; }
+        = (_, response, _) =>
+        {
+            using HttpResponseMessage r = response;
+            return ValueTask.FromResult<Result<DeleteGuestStarSlotResponseContent>>(new DeleteGuestStarSlotResponseContent());
+        };
 }
