@@ -25,7 +25,7 @@ public sealed record ChannelPointsAutomaticRewardRedemptionAddV2(UserId Broadcas
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<ChannelPointsAutomaticRewardRedemptionAddV2> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelPointsAutomaticRewardRedemptionAddV2> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new ChannelPointsAutomaticRewardRedemptionAddV2(BroadcasterUserId));

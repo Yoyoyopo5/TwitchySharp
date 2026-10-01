@@ -14,7 +14,7 @@ public class Test_ConfigureAsNullCoalesce
             .ConfigureAsNullCoalesce((scope, ct) =>
             {
                 calledConfiguredResolver = true;
-                return ValueTask.FromResult<Validation<object?>>(new object());
+                return ValueTask.FromResult<Result<object?>>(new object());
             });
 
         StubDependencyScope scope = new(dc);
@@ -33,7 +33,7 @@ public class Test_ConfigureAsNullCoalesce
             .ConfigureAsNullCoalesce((scope, ct) =>
             {
                 calledConfiguredResolver = true;
-                return ValueTask.FromResult<Validation<object?>>(new object());
+                return ValueTask.FromResult<Result<object?>>(new object());
             });
 
         StubDependencyScope scope = new(dc);

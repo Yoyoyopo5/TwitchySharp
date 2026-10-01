@@ -8,7 +8,7 @@ namespace TwitchySharp.EventSub.Websocket.Tests.Unit;
 
 public class Test_MessageHandlingExtensions
 {
-    private static ProcessWebsocketMessage CreateStubProcess(Validation<EventSubWebsocketMessage> stubReturn)
+    private static ProcessWebsocketMessage CreateStubProcess(Result<EventSubWebsocketMessage> stubReturn)
         => (_, _) => ValueTask.FromResult(stubReturn);
 
     private readonly static EventSubMessageMetadata StubMetadata = new()

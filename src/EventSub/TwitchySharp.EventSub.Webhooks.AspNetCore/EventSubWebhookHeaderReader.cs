@@ -6,7 +6,7 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
-internal delegate Validation<EventSubWebhookRequestHeader> ReadWebhookHeader(IHeaderDictionary headers);
+internal delegate Result<EventSubWebhookRequestHeader> ReadWebhookHeader(IHeaderDictionary headers);
 
 internal static class EventSubWebhookHeaderReader
 {
@@ -63,7 +63,7 @@ internal static class EventSubWebhookHeaderReader
         public ImmutableDictionary<string, string> Headers { get; init; } = ImmutableDictionary.Create<string, string>();
     }
 
-    public static Validation<EventSubWebhookRequestHeader> Read(IHeaderDictionary headerDictionary)
+    public static Result<EventSubWebhookRequestHeader> Read(IHeaderDictionary headerDictionary)
         => WebhookHeaderKey.All.Aggregate(new HeaderReadContext(headerDictionary), static (context, key) => context.HeaderDictionary.GetFirstValueOrDefault(key) switch
         {
             null when key.IsRequired => context with { MissingHeaders = context.MissingHeaders.Add(key) },

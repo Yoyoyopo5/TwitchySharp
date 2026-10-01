@@ -27,7 +27,7 @@ public sealed record ChannelBan(UserId BroadcasterUserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<ChannelBan> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelBan> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new ChannelBan(BroadcasterUserId));

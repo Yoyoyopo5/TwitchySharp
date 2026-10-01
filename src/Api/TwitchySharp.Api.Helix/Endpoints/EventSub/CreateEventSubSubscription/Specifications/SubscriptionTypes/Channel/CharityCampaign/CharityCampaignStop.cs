@@ -23,7 +23,7 @@ public sealed record CharityCampaignStop(UserId BroadcasterUserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<CharityCampaignStop> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<CharityCampaignStop> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new CharityCampaignStop(BroadcasterUserId));

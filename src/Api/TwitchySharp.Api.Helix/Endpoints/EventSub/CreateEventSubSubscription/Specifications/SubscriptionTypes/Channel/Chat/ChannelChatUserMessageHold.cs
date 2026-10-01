@@ -29,7 +29,7 @@ public sealed record ChannelChatUserMessageHold(UserId BroadcasterUserId, UserId
             .Set(new("broadcaster_user_id"), BroadcasterUserId)
             .Set(new("user_id"), UserId);
 
-    public static Validation<ChannelChatUserMessageHold> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelChatUserMessageHold> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))

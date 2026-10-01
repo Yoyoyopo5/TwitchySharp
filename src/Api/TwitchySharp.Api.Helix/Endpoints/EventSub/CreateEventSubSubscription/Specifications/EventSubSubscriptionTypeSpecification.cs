@@ -17,7 +17,7 @@ public interface IConditionConstructable<T>
     where T : EventSubSubscriptionTypeSpecification
 {
     static abstract EventSubSubscriptionType SubscriptionType { get; }
-    static abstract Validation<T> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition);
+    static abstract Result<T> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition);
 }
 
 /// <summary>

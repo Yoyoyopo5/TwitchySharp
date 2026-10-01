@@ -14,7 +14,7 @@ public class Test_MemoizingRequestDependencyScope
     public void GetResolver_AfterSetResolver_ReturnsSetResolver()
     {
         ResolveRequestDependency<string> expected = (scope, ct)
-            => ValueTask.FromResult<Validation<string>>("hello");
+            => ValueTask.FromResult<Result<string>>("hello");
 
         ImmutableRequestDependencyCollection dc = new();
 

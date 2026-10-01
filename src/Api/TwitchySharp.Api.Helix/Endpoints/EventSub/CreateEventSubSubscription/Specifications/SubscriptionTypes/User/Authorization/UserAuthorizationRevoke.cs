@@ -23,7 +23,7 @@ public sealed record UserAuthorizationRevoke(ClientId ClientId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);
-    public static Validation<UserAuthorizationRevoke> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<UserAuthorizationRevoke> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("client_id"), out ClientId ClientId, value => new(value))
             .Map(_ => new UserAuthorizationRevoke(ClientId));

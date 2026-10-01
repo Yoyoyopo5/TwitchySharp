@@ -26,7 +26,7 @@ public static class ProcessWebsocketMessageExtensions
         )
         => (message, ct) => pipeline(message, ct)
             .BindAsync(async message => await isRepeated(message.Metadata.MessageId, ct)
-                ? new Validation<EventSubWebsocketMessage>(new IdempotencyError(message.Metadata.MessageId))
+                ? new Result<EventSubWebsocketMessage>(new IdempotencyError(message.Metadata.MessageId))
                 : message
             );
 }

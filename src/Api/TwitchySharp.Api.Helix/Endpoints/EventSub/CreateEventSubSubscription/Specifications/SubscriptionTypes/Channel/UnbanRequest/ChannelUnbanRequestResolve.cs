@@ -30,7 +30,7 @@ public sealed record ChannelUnbanRequestResolve(UserId BroadcasterUserId, UserId
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId)
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<ChannelUnbanRequestResolve> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelUnbanRequestResolve> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))

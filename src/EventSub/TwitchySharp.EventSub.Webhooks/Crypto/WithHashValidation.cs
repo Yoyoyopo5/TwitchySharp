@@ -32,8 +32,8 @@ public static partial class ProcessWebhookRequestCryptoExtensions
                     cryptoStream.Position = 0;
                     return verifyHash(result.Subscription, toVerify, ct).MatchAsync(
                     // We have to wrap the unit validation from the verifier back into a WebhookRequestResult validation.
-                    onError: (e, _) => ValueTask.FromResult(new Validation<IWebhookRequestContent>(e)),
-                    onValid: _ => ValueTask.FromResult(new Validation<IWebhookRequestContent>(result)),
+                    onError: (e, _) => ValueTask.FromResult(new Result<IWebhookRequestContent>(e)),
+                    onValid: _ => ValueTask.FromResult(new Result<IWebhookRequestContent>(result)),
                     ct);
                 });
         };

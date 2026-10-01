@@ -36,7 +36,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_DeserializationExceptionError_ReturnBadRequest()
     {
-        Validation<IWebhookRequestContent> fakeDeserializationError
+        Result<IWebhookRequestContent> fakeDeserializationError
             = new ProcessWebhookRequestSerializationExtensions.DeserializationExceptionError(new Exception());
 
         IResult result = fakeDeserializationError.ToResult();
@@ -50,7 +50,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_VerificationError_ReturnUnauthorized()
     {
-        Validation<IWebhookRequestContent> fakeVerificationError
+        Result<IWebhookRequestContent> fakeVerificationError
             = new VerifyWebhookHashExtensions.VerificationFailedError();
 
         IResult result = fakeVerificationError.ToResult();
@@ -65,7 +65,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_NotificationRequestContent_ReturnOk()
     {
-        Validation<IWebhookRequestContent> fakeNotificationRequest
+        Result<IWebhookRequestContent> fakeNotificationRequest
             = new NotificationRequestContent()
             {
                 Notification = new StubEventSubNotification()
@@ -81,7 +81,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     {
         const string FAKE_CHALLENGE = "challenge";
 
-        Validation<IWebhookRequestContent> fakeCallbackVerificationRequest
+        Result<IWebhookRequestContent> fakeCallbackVerificationRequest
             = new CallbackVerificationRequestContent()
             {
                 Challenge = FAKE_CHALLENGE,
@@ -98,7 +98,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_RevocationRequestContent_ReturnNoContent()
     {
-        Validation<IWebhookRequestContent> fakeRecovationRequest
+        Result<IWebhookRequestContent> fakeRecovationRequest
             = new RevocationRequestContent()
             {
                 Subscription = FakeSubscription
@@ -112,7 +112,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
     [Fact]
     public void ToResult_UnsupportedRequestContentType_ReturnInternalServerError()
     {
-        Validation<IWebhookRequestContent> fakeUnsupportedRequest
+        Result<IWebhookRequestContent> fakeUnsupportedRequest
             = new UnsupportedRequestContent()
             {
                 Subscription = FakeSubscription

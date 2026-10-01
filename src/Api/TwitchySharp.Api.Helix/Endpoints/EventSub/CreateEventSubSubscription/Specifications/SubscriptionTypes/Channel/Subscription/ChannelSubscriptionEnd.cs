@@ -28,7 +28,7 @@ public sealed record ChannelSubscriptionEnd(UserId BroadcasterUserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<ChannelSubscriptionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelSubscriptionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new ChannelSubscriptionEnd(BroadcasterUserId));

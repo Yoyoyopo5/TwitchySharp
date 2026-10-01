@@ -71,8 +71,8 @@ public class Test_AspNetWebhookRequestHandler
         StubLoggerFactory loggerFactory = new();
 
         HandleAspNetWebhookRequest stubProcess = AspNetWebhookRequestHandler.Create(
-            _ => new Validation<EventSubWebhookRequestHeader>(FakeHeader),
-            (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateRequestContent()),
+            _ => new Result<EventSubWebhookRequestHeader>(FakeHeader),
+            (_, _) => ValueTask.FromResult<Result<IWebhookRequestContent>>(CreateRequestContent()),
             loggerFactory
             );
 
@@ -91,11 +91,11 @@ public class Test_AspNetWebhookRequestHandler
         bool ranProcess = false;
 
         HandleAspNetWebhookRequest stubProcess = AspNetWebhookRequestHandler.Create(
-            _ => new Validation<EventSubWebhookRequestHeader>(new EventSubWebhookHeaderReader.MissingHeadersError([FAKE_MISSING_HEADER])),
+            _ => new Result<EventSubWebhookRequestHeader>(new EventSubWebhookHeaderReader.MissingHeadersError([FAKE_MISSING_HEADER])),
             (_, _) =>
             {
                 ranProcess = true;
-                return ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateRequestContent());
+                return ValueTask.FromResult<Result<IWebhookRequestContent>>(CreateRequestContent());
             },
             loggerFactory
             );

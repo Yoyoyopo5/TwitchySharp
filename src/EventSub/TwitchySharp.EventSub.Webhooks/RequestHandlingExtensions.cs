@@ -17,14 +17,14 @@ public static class RequestHandlingExtensions
         where T : IWebhookRequestContent
         => async (request, ct) =>
         {
-            Validation<IWebhookRequestContent> result = await process(request, ct);
-            return await result.Match<ValueTask<Validation<IWebhookRequestContent>>>(
-                onError: e => ValueTask.FromResult<Validation<IWebhookRequestContent>>(e),
+            Result<IWebhookRequestContent> result = await process(request, ct);
+            return await result.Match<ValueTask<Result<IWebhookRequestContent>>>(
+                onError: e => ValueTask.FromResult<Result<IWebhookRequestContent>>(e),
                 onValid: async content =>
                 {
                     if (content is T typedContent)
                         await handleRequest(typedContent, ct);
-                    return new Validation<IWebhookRequestContent>(content);
+                    return new Result<IWebhookRequestContent>(content);
                 });
         };
 
@@ -37,14 +37,14 @@ public static class RequestHandlingExtensions
     public static ProcessWebhookRequest MapError(this ProcessWebhookRequest process, Func<Error, CancellationToken, ValueTask> handleError)
         => async (request, ct) =>
         {
-            Validation<IWebhookRequestContent> result = await process(request, ct);
-            return await result.Match<ValueTask<Validation<IWebhookRequestContent>>>(
+            Result<IWebhookRequestContent> result = await process(request, ct);
+            return await result.Match<ValueTask<Result<IWebhookRequestContent>>>(
                 onError: async e =>
                 {
                     await handleError(e, ct);
                     return e;
                 },
-                onValid: content => ValueTask.FromResult(new Validation<IWebhookRequestContent>(content))
+                onValid: content => ValueTask.FromResult(new Result<IWebhookRequestContent>(content))
                 );
         };
 

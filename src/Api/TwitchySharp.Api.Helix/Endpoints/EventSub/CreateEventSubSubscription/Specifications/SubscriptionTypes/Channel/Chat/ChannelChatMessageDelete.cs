@@ -28,7 +28,7 @@ public sealed record ChannelChatMessageDelete(UserId BroadcasterUserId, UserId U
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("user_id"), UserId);
-    public static Validation<ChannelChatMessageDelete> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelChatMessageDelete> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))

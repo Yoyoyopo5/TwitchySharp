@@ -26,7 +26,7 @@ public sealed record ChannelPointsCustomRewardRemove(UserId BroadcasterUserId, R
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("reward_id"), RewardId);
-    public static Validation<ChannelPointsCustomRewardRemove> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelPointsCustomRewardRemove> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("reward_id"), out RewardId RewardId, value => new(value))

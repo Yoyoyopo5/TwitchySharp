@@ -127,7 +127,7 @@ public class KestrelTwitchApiTestServer
             .AddTransient<TwitchClient>(sp => new TwitchClient()
                 .WithHttpClient(sp.GetRequiredService<HttpClient>())
                 .Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
-                    next(scope, ct).MatchAsync<HttpResponseMessage?, Validation<HttpResponseMessage?>>(
+                    next(scope, ct).MatchAsync<HttpResponseMessage?, Result<HttpResponseMessage?>>(
                         e =>
                         {
                             if (e is ExceptionError { Exception: TwitchApiException ex })

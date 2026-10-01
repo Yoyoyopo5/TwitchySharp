@@ -53,18 +53,18 @@ internal static class EventSubSubscriptionConditionExtensions
         return dict;
     }
 
-    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this IReadOnlyDictionary<ConditionKey, string> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    internal static Result<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this IReadOnlyDictionary<ConditionKey, string> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
     {
         if (dict.TryGetValue(key, out string? stringValue))
         {
             value = select(stringValue);
-            return new Validation<IReadOnlyDictionary<ConditionKey, string>>(dict);
+            return new Result<IReadOnlyDictionary<ConditionKey, string>>(dict);
         }
         value = default;
         return new ConditionMissingRequiredKeyError(key);
     }
 
-    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this Validation<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    internal static Result<IReadOnlyDictionary<ConditionKey, string>> GetRequiredValue<TOut>(this Result<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
     {
         value = dict.Match(
             e => default,
@@ -73,12 +73,12 @@ internal static class EventSubSubscriptionConditionExtensions
                     : default
             );
         return dict.Bind(d => d.ContainsKey(key)
-            ? new Validation<IReadOnlyDictionary<ConditionKey, string>>(d)
+            ? new Result<IReadOnlyDictionary<ConditionKey, string>>(d)
             : new ConditionMissingRequiredKeyError(key)
             );
     }
 
-    internal static Validation<IReadOnlyDictionary<ConditionKey, string>> GetValue<TOut>(this Validation<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
+    internal static Result<IReadOnlyDictionary<ConditionKey, string>> GetValue<TOut>(this Result<IReadOnlyDictionary<ConditionKey, string>> dict, ConditionKey key, out TOut? value, Func<string, TOut> select)
     {
         value = dict.Match(
             e => default,

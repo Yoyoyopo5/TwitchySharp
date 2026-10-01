@@ -14,7 +14,7 @@ namespace TwitchySharp.EventSub.Webhooks.Functional;
 /// <param name="request">The webhook request to process.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> containing the request.</returns>
-public delegate ValueTask<Validation<IWebhookRequestContent>> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
+public delegate ValueTask<Result<IWebhookRequestContent>> ProcessWebhookRequest(EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Creation helpers for <see cref="ProcessWebhookRequest"/>.
@@ -66,7 +66,7 @@ public static class ProcessWebhookRequestSerializationExtensions
             )
         {
             RequestDeserializationOptions opts = configure is null ? new() : configure(new());
-            Func<WebhookRequestContentStream, CancellationToken, ValueTask<Validation<NotificationRequestContent>>> deserializeNotification
+            Func<WebhookRequestContentStream, CancellationToken, ValueTask<Result<NotificationRequestContent>>> deserializeNotification
                 = opts.DeserializeNotification.ToWebhookNotificationDeserializer();
 
             return (request, ct) => request.Header.TwitchEventsubMessageType.Value switch
@@ -74,13 +74,13 @@ public static class ProcessWebhookRequestSerializationExtensions
                 EventSubWebhookMessageTypes.WEBHOOK_CALLBACK_VERIFICATION => request.Content.Deserialize<CallbackVerificationRequestContent>(ct),
                 EventSubWebhookMessageTypes.NOTIFICATION => deserializeNotification(request.Content, ct).MapAsync(v => v as IWebhookRequestContent),
                 EventSubWebhookMessageTypes.REVOCATION => request.Content.Deserialize<RevocationRequestContent>(ct),
-                _ => ValueTask.FromResult<Validation<IWebhookRequestContent>>(new UnsupportedMessageTypeError(request.Header.TwitchEventsubMessageType))
+                _ => ValueTask.FromResult<Result<IWebhookRequestContent>>(new UnsupportedMessageTypeError(request.Header.TwitchEventsubMessageType))
             };
         }
 
     }
 
-    private async static ValueTask<Validation<IWebhookRequestContent>> Deserialize<TContent>(
+    private async static ValueTask<Result<IWebhookRequestContent>> Deserialize<TContent>(
         this WebhookRequestContentStream requestContent,
         CancellationToken ct
         )
@@ -98,7 +98,7 @@ public static class ProcessWebhookRequestSerializationExtensions
         }
     }
 
-    private static Func<WebhookRequestContentStream, CancellationToken, ValueTask<Validation<NotificationRequestContent>>> ToWebhookNotificationDeserializer(
+    private static Func<WebhookRequestContentStream, CancellationToken, ValueTask<Result<NotificationRequestContent>>> ToWebhookNotificationDeserializer(
         this DeserializeNotification deserialize)
         => (payload, ct) => deserialize(new(payload), ct).MapAsync(notification => new NotificationRequestContent() { Notification = notification });
 }

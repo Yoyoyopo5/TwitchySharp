@@ -28,7 +28,7 @@ public sealed record ChannelChatMessage(UserId BroadcasterUserId, UserId UserId)
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("user_id"), UserId);
-    public static Validation<ChannelChatMessage> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelChatMessage> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))

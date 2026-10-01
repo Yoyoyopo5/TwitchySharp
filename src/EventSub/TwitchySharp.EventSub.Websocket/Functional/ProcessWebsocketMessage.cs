@@ -13,7 +13,7 @@ namespace TwitchySharp.EventSub.Websocket.Functional;
 /// <param name="message">The incoming message stream.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> of the deserialized <see cref="EventSubWebsocketMessage"/>.</returns>
-public delegate ValueTask<Validation<EventSubWebsocketMessage>> ProcessWebsocketMessage(WebsocketMessageStream message, CancellationToken ct);
+public delegate ValueTask<Result<EventSubWebsocketMessage>> ProcessWebsocketMessage(WebsocketMessageStream message, CancellationToken ct);
 
 /// <summary>
 /// Creation helpers for <see cref="ProcessWebsocketMessage"/>.
@@ -92,7 +92,7 @@ public static class ProcessWebsocketMessageSerializationExtensions
                     return await messageDocument.RootElement
                         .ToMessageElement()
                         .Match(
-                            e => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(e),
+                            e => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(e),
                             messageElement => messageElement.ToWebsocketMessage(opts.DeserializeNotification, ct)
                             );
                 }
@@ -105,18 +105,18 @@ public static class ProcessWebsocketMessageSerializationExtensions
     }
 
     private readonly record struct MessageElement(JsonElement Value);
-    private static Validation<MessageElement> ToMessageElement(this JsonElement element)
+    private static Result<MessageElement> ToMessageElement(this JsonElement element)
         => element.ValueKind == JsonValueKind.Object
             ? new MessageElement(element)
             : new InvalidMessageKindError(element.ValueKind);
-    private static ValueTask<Validation<EventSubWebsocketMessage>> ToWebsocketMessage(
+    private static ValueTask<Result<EventSubWebsocketMessage>> ToWebsocketMessage(
         this MessageElement messageElement,
         DeserializeNotification deserializeNotification,
         CancellationToken ct)
         => messageElement.GetMetadata()
             .Bind(metadata => metadata.Value.DeserializeValidation<EventSubMessageMetadata>(METADATA_PROPERTY_NAME))
-            .Match<ValueTask<Validation<EventSubWebsocketMessage>>>(
-                e => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(e),
+            .Match<ValueTask<Result<EventSubWebsocketMessage>>>(
+                e => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(e),
                 async metadata => metadata.MessageType.Value switch
                 {
                     WebsocketMessageTypes.WELCOME => EventSubWebsocketMessage.Create<WelcomeMessagePayload>(metadata, messageElement.GetPayload()),
@@ -130,14 +130,14 @@ public static class ProcessWebsocketMessageSerializationExtensions
 
     private readonly record struct MetadataElement(JsonElement Value);
     private const string METADATA_PROPERTY_NAME = "metadata";
-    private static Validation<MetadataElement> GetMetadata(this MessageElement messageElement)
+    private static Result<MetadataElement> GetMetadata(this MessageElement messageElement)
         => messageElement.Value.TryGetProperty(METADATA_PROPERTY_NAME, out JsonElement metadataElement) switch
         {
             true when metadataElement.ValueKind == JsonValueKind.Object => new MetadataElement(metadataElement),
             _ => new MissingRequiredObjectPropertyError(METADATA_PROPERTY_NAME)
         };
 
-    private static Validation<T> DeserializeValidation<T>(
+    private static Result<T> DeserializeValidation<T>(
         this JsonElement element,
         string elementName
         )
@@ -155,7 +155,7 @@ public static class ProcessWebsocketMessageSerializationExtensions
     }
 
     private const string PAYLOAD_PROPERTY_NAME = "payload";
-    private static Validation<JsonElement> GetPayload(this MessageElement messageElement)
+    private static Result<JsonElement> GetPayload(this MessageElement messageElement)
         => messageElement.Value.TryGetProperty(PAYLOAD_PROPERTY_NAME, out JsonElement payloadElement) switch
         {
             true when payloadElement.ValueKind == JsonValueKind.Object => payloadElement,
@@ -164,9 +164,9 @@ public static class ProcessWebsocketMessageSerializationExtensions
 
     extension(EventSubWebsocketMessage _)
     {
-        private static Validation<EventSubWebsocketMessage> Create<TPayload>(
+        private static Result<EventSubWebsocketMessage> Create<TPayload>(
             EventSubMessageMetadata metadata,
-            Validation<JsonElement> payloadElement
+            Result<JsonElement> payloadElement
             )
             => payloadElement.Bind(p => p.DeserializeValidation<TPayload>(PAYLOAD_PROPERTY_NAME))
                 .Map<EventSubWebsocketMessage>(payload => new EventSubWebsocketMessage<TPayload>()
@@ -177,12 +177,12 @@ public static class ProcessWebsocketMessageSerializationExtensions
     }
 
     private static readonly RecyclableMemoryStreamManager _memoryManager = new();
-    private static ValueTask<Validation<IEventSubNotification>> ToNotification(
-        this Validation<JsonElement> payloadElement,
+    private static ValueTask<Result<IEventSubNotification>> ToNotification(
+        this Result<JsonElement> payloadElement,
         DeserializeNotification deserialize,
         CancellationToken ct)
-        => payloadElement.Match<ValueTask<Validation<IEventSubNotification>>>(
-                e => ValueTask.FromResult<Validation<IEventSubNotification>>(e),
+        => payloadElement.Match<ValueTask<Result<IEventSubNotification>>>(
+                e => ValueTask.FromResult<Result<IEventSubNotification>>(e),
                 async p =>
                 {
                     using Stream stream = _memoryManager.GetStream();

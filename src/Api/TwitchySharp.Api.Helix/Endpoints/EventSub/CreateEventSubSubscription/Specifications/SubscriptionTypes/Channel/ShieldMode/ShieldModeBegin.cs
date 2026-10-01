@@ -30,7 +30,7 @@ public sealed record ShieldModeBegin(UserId BroadcasterUserId, UserId ModeratorU
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
-    public static Validation<ShieldModeBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ShieldModeBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

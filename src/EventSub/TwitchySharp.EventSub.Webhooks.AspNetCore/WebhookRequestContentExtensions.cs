@@ -8,7 +8,7 @@ namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
 internal static class WebhookRequestContentExtensions
 {
-    public static IResult ToResult(this Validation<IWebhookRequestContent> result)
+    public static IResult ToResult(this Result<IWebhookRequestContent> result)
         => result.Match(
             onError: error => error switch
             {

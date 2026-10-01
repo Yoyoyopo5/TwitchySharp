@@ -11,7 +11,7 @@ public class Test_Map
         bool mapCalled = false;
 
         ResolveRequestDependency<string?> rootResolver = (scope, ct)
-            => ValueTask.FromResult<Validation<string?>>(EXPECTED);
+            => ValueTask.FromResult<Result<string?>>(EXPECTED);
 
         ResolveRequestDependency<string?> mapped = rootResolver.Map<string?, string?>(s =>
         {
@@ -31,7 +31,7 @@ public class Test_Map
         bool mapCalled = false;
 
         ResolveRequestDependency<string?> rootResolver = (scope, ct)
-            => ValueTask.FromResult<Validation<string?>>(EXPECTED);
+            => ValueTask.FromResult<Result<string?>>(EXPECTED);
 
         ResolveRequestDependency<string?> mapped = rootResolver.Map<string?, string?>(s =>
         {

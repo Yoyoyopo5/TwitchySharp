@@ -11,7 +11,7 @@ public class Test_TrySetResolver
 
         ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
             .SetResolver(expected)
-            .TrySetResolver((scope, ct) => ValueTask.FromResult<Validation<int>>(1));
+            .TrySetResolver((scope, ct) => ValueTask.FromResult<Result<int>>(1));
 
         Assert.Equal(expected, dc.GetResolver<int>());
     }

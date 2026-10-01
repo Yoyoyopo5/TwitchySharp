@@ -11,10 +11,10 @@ public record StubDependencyScope(ITwitchRequestDependencyCollection Resolvers)
     public StubDependencyScope SetResolver<T>(ResolveRequestDependency<T> resolve)
         => this with { Resolvers = Resolvers.SetResolver(resolve) };
 
-    public ValueTask<Validation<T?>> ResolveOrDefault<T>(CancellationToken ct)
+    public ValueTask<Result<T?>> ResolveOrDefault<T>(CancellationToken ct)
         => GetResolver<T>() is ResolveRequestDependency<T> resolver
             ? resolver(this, ct).MapAsync(result => (T?)result)
-            : ValueTask.FromResult<Validation<T?>>((T?)default);
+            : ValueTask.FromResult<Result<T?>>((T?)default);
     ITwitchRequestDependencyScope ITwitchRequestDependencyCollection<ITwitchRequestDependencyScope>.SetResolver<T>(ResolveRequestDependency<T> resolve)
         => SetResolver(resolve);
     ITwitchRequestDependencyCollection ITwitchRequestDependencyCollection<ITwitchRequestDependencyCollection>.SetResolver<T>(ResolveRequestDependency<T> resolve)

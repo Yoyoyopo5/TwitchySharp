@@ -47,7 +47,7 @@ public sealed record ChannelRaid(UserId? ToBroadcasterUserId, UserId? FromBroadc
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("from_broadcaster_user_id"), FromBroadcasterUserId)
             .Set(new ConditionKey("to_broadcaster_user_id"), ToBroadcasterUserId);
-    public static Validation<ChannelRaid> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelRaid> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
     {
         condition
             .GetValue(new("from_broadcaster_user_id"), out UserId FromBroadcasterUserId, value => new(value))

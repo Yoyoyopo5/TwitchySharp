@@ -31,7 +31,7 @@ public sealed record ShoutoutReceived(UserId BroadcasterUserId, UserId Moderator
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
-    public static Validation<ShoutoutReceived> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ShoutoutReceived> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

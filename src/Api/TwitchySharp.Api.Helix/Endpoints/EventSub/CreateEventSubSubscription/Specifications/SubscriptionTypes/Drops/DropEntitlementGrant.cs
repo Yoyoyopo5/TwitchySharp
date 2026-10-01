@@ -23,7 +23,7 @@ public sealed record DropEntitlementGrant(OrganizationId OrganizationId, GameId?
             .Set(new("category_id"), CategoryId)
             .Set(new("campaign_id"), CampaignId);
 
-    public static Validation<DropEntitlementGrant> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<DropEntitlementGrant> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("organization_id"), out OrganizationId organizationId, value => new(value))
             .GetValue(new("category_id"), out GameId? categoryId, value => new(value))

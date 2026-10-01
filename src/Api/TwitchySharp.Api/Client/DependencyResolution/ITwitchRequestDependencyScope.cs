@@ -18,7 +18,7 @@ public interface ITwitchRequestDependencyScope
     /// <typeparam name="T">The type of dependency to resolve.</typeparam>
     /// <param name="ct">Cancellation token</param>
     /// <returns>A <see cref="ValueTask"/> containing the resolver result.</returns>
-    ValueTask<Validation<T?>> ResolveOrDefault<T>(CancellationToken ct);
+    ValueTask<Result<T?>> ResolveOrDefault<T>(CancellationToken ct);
 }
 
 /// <summary>
@@ -57,7 +57,7 @@ public static class IRequestDependencyScopeExtensions
     /// <param name="scope">The scope to resolve the dependency from.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns><inheritdoc cref="ITwitchRequestDependencyScope.ResolveOrDefault{T}(CancellationToken)"/></returns>
-    public static ValueTask<Validation<T>> ResolveRequired<T>(
+    public static ValueTask<Result<T>> ResolveRequired<T>(
         this ITwitchRequestDependencyScope scope,
         CancellationToken ct)
         => scope.ResolveOrDefault<T>(ct).BindAsync<T?, T>(value => value is not null

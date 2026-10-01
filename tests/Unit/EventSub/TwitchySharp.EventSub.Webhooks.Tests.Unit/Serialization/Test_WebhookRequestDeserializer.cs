@@ -79,7 +79,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Result<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content => Assert.IsType<RevocationRequestContent>(content)
@@ -108,7 +108,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Result<IWebhookRequestContent> result = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content =>
@@ -140,7 +140,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest stubProcess = CreateStubProcess();
 
-        Validation<IWebhookRequestContent> actualResponse = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
+        Result<IWebhookRequestContent> actualResponse = await stubProcess(fakeRequest, TestContext.Current.CancellationToken);
         actualResponse.Match(
             onError: e => throw new Exception(e.Message),
             onValid: content =>
@@ -166,7 +166,7 @@ public class Test_WebhookRequestDeserializer
 
         ProcessWebhookRequest process = CreateStubProcess();
 
-        Validation<IWebhookRequestContent> result = await process(fakeRequest, TestContext.Current.CancellationToken);
+        Result<IWebhookRequestContent> result = await process(fakeRequest, TestContext.Current.CancellationToken);
         result.Match(
             onError: e => e,
             onValid: _ => throw new Exception("The process result was valid (expected error).")

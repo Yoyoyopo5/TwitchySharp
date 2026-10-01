@@ -14,7 +14,7 @@ namespace TwitchySharp.EventSub.Serialization;
 /// <param name="payload">The notification payload, as a <see cref="Stream"/>.</param>
 /// <param name="ct">Cancellation token.</param>
 /// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> of the deserialized notification.</returns>
-public delegate ValueTask<Validation<IEventSubNotification>> DeserializeNotification(NotificationPayloadStream payload, CancellationToken ct);
+public delegate ValueTask<Result<IEventSubNotification>> DeserializeNotification(NotificationPayloadStream payload, CancellationToken ct);
 
 /// <summary>
 /// Creation helpers for <see cref="DeserializeNotification"/>.
@@ -58,12 +58,12 @@ public static class DeserializeNotificationExtensions
         /// <returns>A <see cref="DeserializeNotification"/> function using polymorphic JSON deserialization.</returns>
         public static DeserializeNotification ByPolymorphicJsonDeserialization(
             Func<
-                Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?>,
-                Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?>
+                Func<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>?>,
+                Func<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>?>
                 >? configureDeserializers = null
             )
         {
-            Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?> getDeserializer
+            Func<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>?> getDeserializer
                 = configureDeserializers is null
                     ? CreateDefaultMap()
                     : configureDeserializers(CreateDefaultMap());
@@ -87,7 +87,7 @@ public static class DeserializeNotificationExtensions
         }
     }
 
-    private static Validation<EventSubSubscriptionType> GetSubscriptionType(
+    private static Result<EventSubSubscriptionType> GetSubscriptionType(
         this JsonElement notification
         )
     {
@@ -112,8 +112,8 @@ public static class DeserializeNotificationExtensions
 
     // We could add a static abstract interface to point notification types to subscription types,
     // but we will still need to register each type, so I'm just leaving the mapping here for now.
-    private readonly static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> _defaultMap
-        = new Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>>()
+    private readonly static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>> _defaultMap
+        = new Dictionary<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>>()
             .Register<AutomodMessageHoldNotification>(EventSubSubscriptionType.AutomodMessageHold)
             .Register<AutomodMessageHoldV2Notification>(EventSubSubscriptionType.AutomodMessageHoldV2)
             .Register<AutomodMessageUpdateNotification>(EventSubSubscriptionType.AutomodMessageUpdate)
@@ -197,8 +197,8 @@ public static class DeserializeNotificationExtensions
             .Register<UserUpdateNotification>(EventSubSubscriptionType.UserUpdate)
             .Register<WhisperReceivedNotification>(EventSubSubscriptionType.WhisperReceived);
 
-    private static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> Register<T>(
-        this Dictionary<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>> map,
+    private static Dictionary<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>> Register<T>(
+        this Dictionary<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>> map,
         EventSubSubscriptionType subscriptionType
         )
         where T : IEventSubNotification
@@ -226,6 +226,6 @@ public static class DeserializeNotificationExtensions
     /// You may need to use the output of this method if you want to extend the default subscription type list (e.g. if a specific subscription type is not yet implemented by default). 
     /// </remarks>
     /// <returns>A function mapping <see cref="EventSubSubscriptionType"/> to a specific deserialization function returning <see cref="IEventSubNotification"/> for that subscription type.</returns>
-    private static Func<EventSubSubscriptionType, Func<JsonDocument, Validation<IEventSubNotification>>?> CreateDefaultMap()
+    private static Func<EventSubSubscriptionType, Func<JsonDocument, Result<IEventSubNotification>>?> CreateDefaultMap()
         => subscriptionType => _defaultMap.GetValueOrDefault(subscriptionType);
 }

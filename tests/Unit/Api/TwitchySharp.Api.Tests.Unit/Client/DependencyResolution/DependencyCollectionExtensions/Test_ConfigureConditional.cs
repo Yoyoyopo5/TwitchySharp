@@ -15,9 +15,9 @@ public class Test_ConfigureConditional
                 (value, scope, ct) =>
                 {
                     Assert.Equal(EXPECTED, value);
-                    return ValueTask.FromResult<Validation<bool>>(true);
+                    return ValueTask.FromResult<Result<bool>>(true);
                 },
-                (value, scope, ct) => ValueTask.FromResult<Validation<string?>>(value)
+                (value, scope, ct) => ValueTask.FromResult<Result<string?>>(value)
             );
 
         StubDependencyScope scope = new(dc);
@@ -33,7 +33,7 @@ public class Test_ConfigureConditional
         ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
             .SetFixed(EXPECTED)
             .ConfigureConditional<ImmutableRequestDependencyCollection, string?>(
-                (value, scope, ct) => ValueTask.FromResult<Validation<bool>>(false),
+                (value, scope, ct) => ValueTask.FromResult<Result<bool>>(false),
                 (value, scope, ct) => throw new InvalidOperationException("Conditional resolver should not be called.")
             );
 
@@ -56,11 +56,11 @@ public class Test_ConfigureConditional
         ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
             .SetFixed("def")
             .ConfigureConditional<ImmutableRequestDependencyCollection, string?>(
-                (value, scope, ct) => ValueTask.FromResult<Validation<bool>>(true),
+                (value, scope, ct) => ValueTask.FromResult<Result<bool>>(true),
                 (value, scope, ct) =>
                 {
                     Assert.Equal("def", value);
-                    return ValueTask.FromResult<Validation<string?>>(EXPECTED);
+                    return ValueTask.FromResult<Result<string?>>(EXPECTED);
                 }
             );
 

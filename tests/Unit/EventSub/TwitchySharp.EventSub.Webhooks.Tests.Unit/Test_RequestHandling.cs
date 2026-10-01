@@ -9,10 +9,10 @@ public class Test_RequestHandling
 {
     private static ProcessWebhookRequest CreateStubProcess<T>(Func<T> createResponse)
         where T : IWebhookRequestContent
-        => (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(createResponse());
+        => (_, _) => ValueTask.FromResult<Result<IWebhookRequestContent>>(createResponse());
 
     private static ProcessWebhookRequest CreateStubProcess(Func<Error> createResponse)
-        => (_, _) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(createResponse());
+        => (_, _) => ValueTask.FromResult<Result<IWebhookRequestContent>>(createResponse());
 
     [Fact]
     public async Task ProcessWebhookRequest_MapNotification_FunctionCalled()

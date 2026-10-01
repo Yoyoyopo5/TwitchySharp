@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Authentication;
 /// </summary>
 public static class AppAccessTokenResolution
 {
-    private static async ValueTask<Validation<AccessTokenDetails.App>> GetNewAppAccessToken(
+    private static async ValueTask<Result<AccessTokenDetails.App>> GetNewAppAccessToken(
         this ITwitchClient twitchClient,
         ClientId clientId,
         ClientSecret clientSecret,
@@ -151,7 +151,7 @@ public static class AppAccessTokenResolution
         ClientSecret clientSecret
         )
         => client
-            .ConfigureAsNullCoalesce((_, _) => ValueTask.FromResult<Validation<ClientId?>>(clientId))
+            .ConfigureAsNullCoalesce((_, _) => ValueTask.FromResult<Result<ClientId?>>(clientId))
             .When((scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(id => id == clientId))
             .SetFixed((ClientSecret?)clientSecret)
             .EndWhen();

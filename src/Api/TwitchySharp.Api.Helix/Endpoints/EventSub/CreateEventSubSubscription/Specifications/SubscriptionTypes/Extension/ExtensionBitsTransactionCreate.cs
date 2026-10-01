@@ -19,7 +19,7 @@ public sealed record ExtensionBitsTransactionCreate(ExtensionId ExtensionClientI
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("extension_client_id"), ExtensionClientId);
-    public static Validation<ExtensionBitsTransactionCreate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ExtensionBitsTransactionCreate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("extension_client_id"), out ExtensionId ExtensionClientId, value => new(value))
             .Map(_ => new ExtensionBitsTransactionCreate(ExtensionClientId));

@@ -21,7 +21,7 @@ public sealed record ChannelSharedChatSessionBegin(UserId BroadcasterUserId)
     public override EventSubSubscriptionAuthenticationContext.None AuthenticationContext
         => EventSubSubscriptionAuthenticationContext.None.Instance;
 
-    public static Validation<ChannelSharedChatSessionBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelSharedChatSessionBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new ChannelSharedChatSessionBegin(BroadcasterUserId));

@@ -54,7 +54,7 @@ internal class ProcessStubs
     }
 
     public static ProcessWebhookRequest StubProcess { get; }
-        = (request, ct) => ValueTask.FromResult<Validation<IWebhookRequestContent>>(CreateFakeContent(request.Content));
+        = (request, ct) => ValueTask.FromResult<Result<IWebhookRequestContent>>(CreateFakeContent(request.Content));
 
     public static EventSubSubscription<ImmutableDictionary<string, string>> FakeSubscription { get; } = new()
     {

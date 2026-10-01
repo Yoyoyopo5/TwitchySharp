@@ -27,7 +27,7 @@ public sealed record GoalBegin(UserId BroadcasterUserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<GoalBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<GoalBegin> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new GoalBegin(BroadcasterUserId));

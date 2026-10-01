@@ -27,7 +27,7 @@ public sealed record ChannelGuestStarSessionEnd(UserId BroadcasterUserId, UserId
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId)
             .Set(new("moderator_user_id"), ModeratorUserId);
-    public static Validation<ChannelGuestStarSessionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelGuestStarSessionEnd> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

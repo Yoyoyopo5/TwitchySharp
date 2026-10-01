@@ -22,7 +22,7 @@ public sealed record UserAuthorizationGrant(ClientId ClientId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("client_id"), ClientId);
-    public static Validation<UserAuthorizationGrant> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<UserAuthorizationGrant> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("client_id"), out ClientId ClientId, value => new(value))
             .Map(_ => new UserAuthorizationGrant(ClientId));

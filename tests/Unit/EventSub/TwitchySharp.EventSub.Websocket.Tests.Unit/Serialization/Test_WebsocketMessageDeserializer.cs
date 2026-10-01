@@ -32,7 +32,7 @@ public class Test_WebsocketMessageDeserializer
     }
 
     private readonly static ProcessWebsocketMessage MockProcess = ProcessWebsocketMessage.ByJsonDeserialization(
-        options => options with { DeserializeNotification = (stream, ct) => ValueTask.FromResult<Validation<IEventSubNotification>>(new StubNotification()) }
+        options => options with { DeserializeNotification = (stream, ct) => ValueTask.FromResult<Result<IEventSubNotification>>(new StubNotification()) }
         );
 
     private readonly static JsonSerializerOptions SerializerOptions = JsonConfig.ApiOptions;

@@ -17,7 +17,7 @@ public sealed record StreamOffline(UserId BroadcasterUserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId);
-    public static Validation<StreamOffline> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<StreamOffline> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new StreamOffline(BroadcasterUserId));

@@ -8,7 +8,7 @@ namespace TwitchySharp.Api;
 /// <param name="scope">The dependency scope for the request.</param>
 /// <param name="ct">Cancellation token</param>
 /// <returns>A <see cref="ValueTask"/> containing the resolved dependency result.</returns>
-public delegate ValueTask<Validation<T>> ResolveRequestDependency<T>(
+public delegate ValueTask<Result<T>> ResolveRequestDependency<T>(
     ITwitchRequestDependencyScope scope,
     CancellationToken ct);
 

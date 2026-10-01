@@ -8,7 +8,7 @@ public class Test_Configure
     public void GetResolver_ReturnsNotNull()
     {
         ImmutableRequestDependencyCollection dc = new ImmutableRequestDependencyCollection()
-            .Configure<ImmutableRequestDependencyCollection, int>(next => (scope, ct) => ValueTask.FromResult<Validation<int>>(1));
+            .Configure<ImmutableRequestDependencyCollection, int>(next => (scope, ct) => ValueTask.FromResult<Result<int>>(1));
 
         Assert.NotNull(dc.GetResolver<int>());
     }

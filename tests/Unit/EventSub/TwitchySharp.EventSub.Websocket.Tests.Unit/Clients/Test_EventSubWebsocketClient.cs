@@ -7,7 +7,7 @@ namespace TwitchySharp.EventSub.Websocket.Tests.Unit.Clients;
 public class Test_EventSubWebsocketClient
 {
     private readonly ProcessWebsocketMessage _stubProcess = (_, _)
-        => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(
+        => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(
             new EventSubWebsocketMessage()
             {
                 Metadata = new()

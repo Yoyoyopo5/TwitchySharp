@@ -26,7 +26,7 @@ public sealed record AutomodMessageHold(UserId BroadcasterUserId, UserId Moderat
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId)
             .Set(new("moderator_user_id"), ModeratorUserId);
-    public static Validation<AutomodMessageHold> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<AutomodMessageHold> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId broadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId moderatorUserId, value => new(value))

@@ -190,7 +190,7 @@ internal static class DefaultRequestPipelineExtensions
             .From<ITwitchRequestDependencyCollection, ExtensionId?, TwitchIdentity.Extension>(identity => identity?.ExtensionId)
             .MapNullableStruct<ITwitchRequestDependencyCollection, ExtensionId>()
             .ConfigureConditional<ITwitchRequestDependencyCollection, TwitchIdentity>(
-                (identity, scope, ct) => ValueTask.FromResult<Validation<bool>>(identity is { ClientId: null }),
+                (identity, scope, ct) => ValueTask.FromResult<Result<bool>>(identity is { ClientId: null }),
                 (identity, scope, ct) => scope.ResolveOrDefault<ClientId?>(ct).MapAsync(clientId => identity! with { ClientId = clientId })
                 );
 
@@ -236,7 +236,7 @@ internal static class DefaultRequestPipelineExtensions
         )
         => resolvers.Configure<ITwitchRequestDependencyCollection, HttpContent?>(next => (scope, ct) =>
             scope.Request.Content is not null
-                ? ValueTask.FromResult<Validation<HttpContent?>>(scope.Request.Content)
+                ? ValueTask.FromResult<Result<HttpContent?>>(scope.Request.Content)
                 : next(scope, ct));
 
     public static ITwitchRequestDependencyCollection WithSystemTextJsonRequestContentObjectConverter(
@@ -246,7 +246,7 @@ internal static class DefaultRequestPipelineExtensions
         => resolvers.Configure<ITwitchRequestDependencyCollection, HttpContent?>(next => (scope, ct) =>
             scope.Request.ContentObject is null
             ? next(scope, ct)
-            : ValueTask.FromResult<Validation<HttpContent?>>(JsonContent.Create(scope.Request.ContentObject, options: options)));
+            : ValueTask.FromResult<Result<HttpContent?>>(JsonContent.Create(scope.Request.ContentObject, options: options)));
 
     public static ITwitchRequestDependencyCollection WithTwitchApiExceptions(
         this ITwitchRequestDependencyCollection resolvers
@@ -267,7 +267,7 @@ internal static class DefaultRequestPipelineExtensions
         Func<HttpRequestMessage, T, HttpRequestMessage> configure
         )
         => (scope, ct) => resolveRequestMessage(scope, ct).BindAsync(request => request is null
-            ? ValueTask.FromResult<Validation<HttpRequestMessage?>>(request)
+            ? ValueTask.FromResult<Result<HttpRequestMessage?>>(request)
             : scope.ResolveOrDefault<T>(ct).MapAsync<T?, HttpRequestMessage?>(t => t is null
             ? request
             : configure(request, t)));
@@ -305,7 +305,7 @@ internal static class DefaultRequestPipelineExtensions
         )
         => resolvers.TrySetResolver((scope, ct) =>
             scope.Request is not TwitchRequest<TResponseContent> typedRequest
-                ? ValueTask.FromResult<Validation<TwitchResponse<TResponseContent>?>>(new Error("Incongruent request and response content type."))
+                ? ValueTask.FromResult<Result<TwitchResponse<TResponseContent>?>>(new Error("Incongruent request and response content type."))
                 : scope.ResolveOrDefault<HttpResponseMessage>(ct)
                     .MapAsync(async response => response is null
                     ? null

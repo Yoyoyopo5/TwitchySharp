@@ -27,7 +27,7 @@ public sealed record ConduitShardDisabled(ClientId ClientId, ConduitId? ConduitI
             .Set(new("client_id"), ClientId)
             .Set(new("conduit_id"), ConduitId);
 
-    public static Validation<ConduitShardDisabled> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ConduitShardDisabled> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("client_id"), out ClientId clientId, value => new(value))
             .GetValue(new("conduit_id"), out ConduitId conduitId, value => new(value))

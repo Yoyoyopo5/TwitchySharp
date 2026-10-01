@@ -44,7 +44,7 @@ public sealed record ChannelModerateV2(UserId BroadcasterUserId, UserId Moderato
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
-    public static Validation<ChannelModerateV2> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelModerateV2> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

@@ -60,7 +60,7 @@ public record DeleteEventSubSubscriptionRequest()
         }
     }
 
-    private readonly IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> _specificationRegistry = EventSubSubscriptionExtensions.DefaultSubscriptionTypeSpecificationRegistry;
+    private readonly IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>> _specificationRegistry = EventSubSubscriptionExtensions.DefaultSubscriptionTypeSpecificationRegistry;
 
     /// <summary>
     /// Automatically sets the required <see cref="SubscriptionId"/>.
@@ -73,7 +73,7 @@ public record DeleteEventSubSubscriptionRequest()
     [SetsRequiredMembers]
     public DeleteEventSubSubscriptionRequest(
         EventSubSubscription subscription,
-        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? specificationRegistry = null
+        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>>? specificationRegistry = null
         )
         : this()
         => (Subscription, SubscriptionId, _specificationRegistry) = (subscription, subscription.Id, specificationRegistry ?? EventSubSubscriptionExtensions.DefaultSubscriptionTypeSpecificationRegistry);

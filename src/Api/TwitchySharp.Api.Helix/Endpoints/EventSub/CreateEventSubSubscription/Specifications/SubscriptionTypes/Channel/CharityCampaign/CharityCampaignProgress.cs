@@ -27,7 +27,7 @@ public sealed record CharityCampaignProgress(UserId BroadcasterUserId)
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId);
 
-    public static Validation<CharityCampaignProgress> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<CharityCampaignProgress> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .Map(_ => new CharityCampaignProgress(BroadcasterUserId));

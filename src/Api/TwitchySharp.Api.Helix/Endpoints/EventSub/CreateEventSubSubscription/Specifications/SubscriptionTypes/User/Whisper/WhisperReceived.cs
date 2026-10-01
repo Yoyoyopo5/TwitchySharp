@@ -24,7 +24,7 @@ public sealed record WhisperReceived(UserId UserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("user_id"), UserId);
-    public static Validation<WhisperReceived> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<WhisperReceived> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
             .Map(_ => new WhisperReceived(UserId));

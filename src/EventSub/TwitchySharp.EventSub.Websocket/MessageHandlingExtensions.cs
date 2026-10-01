@@ -18,9 +18,9 @@ public static class MessageHandlingExtensions
     public static ProcessWebsocketMessage Map<T>(this ProcessWebsocketMessage process, Func<EventSubWebsocketMessage<T>, CancellationToken, ValueTask> handleMessage)
         => async (message, ct) =>
         {
-            Validation<EventSubWebsocketMessage> result = await process(message, ct);
-            return await result.Match<ValueTask<Validation<EventSubWebsocketMessage>>>(
-                onError: e => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(e),
+            Result<EventSubWebsocketMessage> result = await process(message, ct);
+            return await result.Match<ValueTask<Result<EventSubWebsocketMessage>>>(
+                onError: e => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(e),
                 onValid: async content =>
                 {
                     if (content is EventSubWebsocketMessage<T> typedContent)
@@ -38,14 +38,14 @@ public static class MessageHandlingExtensions
     public static ProcessWebsocketMessage MapError(this ProcessWebsocketMessage process, Func<Error, CancellationToken, ValueTask> handleError)
         => async (message, ct) =>
         {
-            Validation<EventSubWebsocketMessage> result = await process(message, ct);
-            return await result.Match<ValueTask<Validation<EventSubWebsocketMessage>>>(
+            Result<EventSubWebsocketMessage> result = await process(message, ct);
+            return await result.Match<ValueTask<Result<EventSubWebsocketMessage>>>(
                 onError: async e =>
                 {
                     await handleError(e, ct);
                     return e;
                 },
-                onValid: content => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(content)
+                onValid: content => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(content)
                 );
         };
 

@@ -74,8 +74,8 @@ public static class EventSubSubscriptionExtensions
     /// <summary>
     /// The default set of <see cref="EventSubSubscriptionType"/> mapped to a function creating the respective <see cref="IEventSubSubscriptionTypeSpecification"/> from an <see cref="EventSubSubscription.Condition"/>.
     /// </summary>
-    public static ImmutableDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> DefaultSubscriptionTypeSpecificationRegistry { get; }
-        = new Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>()
+    public static ImmutableDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>> DefaultSubscriptionTypeSpecificationRegistry { get; }
+        = new Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>>()
         .Register<AutomodMessageHold>()
         .Register<AutomodMessageHoldV2>()
         .Register<AutomodMessageUpdate>()
@@ -160,8 +160,8 @@ public static class EventSubSubscriptionExtensions
         .Register<WhisperReceived>()
         .ToImmutableDictionary();
 
-    private static Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> Register<T>(
-        this Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>> subscriptionTypes
+    private static Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>> Register<T>(
+        this Dictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>> subscriptionTypes
         )
         where T : EventSubSubscriptionTypeSpecification, IConditionConstructable<T>
     {
@@ -180,12 +180,12 @@ public static class EventSubSubscriptionExtensions
     /// You may extend the default with your own types that implement <see cref="IConditionConstructable{T}"/>.
     /// </param>
     /// <returns></returns>
-    public static Validation<EventSubSubscriptionTypeSpecification> ToSubscriptionTypeSpecification(
+    public static Result<EventSubSubscriptionTypeSpecification> ToSubscriptionTypeSpecification(
         this EventSubSubscription subscription,
-        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>>? registry = null)
+        IReadOnlyDictionary<EventSubSubscriptionType, Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>>? registry = null)
     {
         EventSubSubscriptionType subscriptionType = subscription.GetSubscriptionType();
-        return (registry ?? DefaultSubscriptionTypeSpecificationRegistry).TryGetValue(subscriptionType, out Func<IReadOnlyDictionary<ConditionKey, string>, Validation<EventSubSubscriptionTypeSpecification>>? fromCondition)
+        return (registry ?? DefaultSubscriptionTypeSpecificationRegistry).TryGetValue(subscriptionType, out Func<IReadOnlyDictionary<ConditionKey, string>, Result<EventSubSubscriptionTypeSpecification>>? fromCondition)
             ? fromCondition(subscription.Condition)
             : new MissingEventSubSubscriptionTypeError(subscriptionType);
     }

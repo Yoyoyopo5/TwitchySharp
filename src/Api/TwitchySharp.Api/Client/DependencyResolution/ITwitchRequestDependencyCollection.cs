@@ -50,19 +50,19 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// <inheritdoc cref="ITwitchRequestDependencyCollection{T}.SetResolver{T}(ResolveRequestDependency{T})" />
     public static TCollection SetResolver<TCollection, T>(
         this TCollection dc,
-        Func<ITwitchRequestDependencyScope, Validation<T>> resolve)
+        Func<ITwitchRequestDependencyScope, Result<T>> resolve)
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult(resolve(scope)));
 
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection SetResolver<TCollection, T>(
         this TCollection dc,
         Func<ITwitchRequestDependencyScope, T> resolve
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult<Validation<T>>(resolve(scope)));
+        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult<Result<T>>(resolve(scope)));
 
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection SetResolver<TCollection, T>(
         this TCollection dc,
         Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<T>> resolve
@@ -76,7 +76,7 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// </summary>
     /// <typeparam name="TFrom">The type of dependency to derive <typeparamref name="T"/> from.</typeparam>
     /// <param name="select">The selector function to use.</param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection From<TCollection, T, TFrom>(
         this TCollection dc,
         Func<TFrom?, T> select
@@ -102,19 +102,19 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// using the provided <paramref name="select"/> function.
     /// </summary>
     /// <param name="select">The selector function to use.</param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection FromRequest<TCollection, T>(
         this TCollection dc,
         Func<TwitchRequest, T> select
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult<Validation<T>>(select(scope.Request)));
+        => dc.SetResolver<T>((scope, ct) => ValueTask.FromResult<Result<T>>(select(scope.Request)));
 
     /// <summary>
     /// Set a resolver for <typeparamref name="T"/> that resolves its value by casting the resolved <typeparamref name="TBase"/> to <typeparamref name="T"/> using <see langword="as"/>.
     /// </summary>
     /// <typeparam name="TBase">The type of dependency to cast from.</typeparam>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection As<TCollection, T, TBase>(
         this TCollection dc
         )
@@ -131,25 +131,25 @@ public static class ITwitchRequestDependencyCollectionExtensions
         )
         where T : class
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver<T?>((scope, ct) => ValueTask.FromResult<Validation<T?>>(scope.Request as T));
+        => dc.SetResolver<T?>((scope, ct) => ValueTask.FromResult<Result<T?>>(scope.Request as T));
 
     /// <summary>
     /// Set a resolver for <typeparamref name="T"/> that always resolves to <paramref name="fixedValue"/>.
     /// </summary>
     /// <param name="fixedValue">The value to resolve for <typeparamref name="T"/>.</param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection SetFixed<TCollection, T>(
         this TCollection dc,
         T fixedValue
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.SetResolver<T>((scope, _) => ValueTask.FromResult<Validation<T>>(fixedValue));
+        => dc.SetResolver<T>((scope, _) => ValueTask.FromResult<Result<T>>(fixedValue));
 
     /// <summary>
     /// Set the resolver for <typeparamref name="T"/> if a resolver for <typeparamref name="T"/> is not
     /// already present in the collection.
     /// </summary>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection TrySetResolver<TCollection, T>(
         this TCollection dc,
         ResolveRequestDependency<T> resolve
@@ -160,7 +160,7 @@ public static class ITwitchRequestDependencyCollectionExtensions
             : dc.SetResolver(resolve);
 
     private static ResolveRequestDependency<T?> MakeDefaultResolver<T>()
-        => (scope, _) => ValueTask.FromResult<Validation<T?>>((T?)default);
+        => (scope, _) => ValueTask.FromResult<Result<T?>>((T?)default);
 
     /// <summary>
     /// Set the resolver for <typeparamref name="T"/> to the output of <paramref name="configure"/>.
@@ -169,7 +169,7 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// A function that receives the previously configured resolver for <typeparamref name="T"/> (or a default, <see langword="null"/> returning resolver if one is not present)
     /// and returns a new resolver for <typeparamref name="T"/> that will replace the existing resolver, if it exists.
     /// </param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection Configure<TCollection, T>(
         this TCollection dc,
         Func<ResolveRequestDependency<T?>, ResolveRequestDependency<T>> configure
@@ -192,7 +192,7 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// are used.
     /// </param>
     /// <returns>A new dependency collection whose resolvers will only be used if <paramref name="predicate"/> returns <see langword="true"/> during resolution.</returns>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static RequestDependencyConditionalConfiguration<TCollection> When<TCollection>(
         this TCollection dc,
         ResolveRequestDependency<bool> predicate
@@ -206,13 +206,13 @@ public static class ITwitchRequestDependencyCollectionExtensions
         Func<ITwitchRequestDependencyScope, bool> predicate
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => new(dc, (scope, ct) => ValueTask.FromResult<Validation<bool>>(predicate(scope)));
+        => new(dc, (scope, ct) => ValueTask.FromResult<Result<bool>>(predicate(scope)));
 
     /// <summary>
     /// Applies a resolver for <typeparamref name="T"/> after the previously configured resolver,
     /// so that <paramref name="resolve"/> is only evaluated if the previous resolver returns a <see langword="null"/> <typeparamref name="T"/>.
     /// </summary>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection ConfigureAsNullCoalesce<TCollection, T>(
         this TCollection dc,
         ResolveRequestDependency<T> resolve
@@ -222,7 +222,7 @@ public static class ITwitchRequestDependencyCollectionExtensions
         {
             ResolveRequestDependency<T?> configured = resolve as ResolveRequestDependency<T?>;
             return (scope, ct) => next(scope, ct).BindAsync(value => value is not null
-                ? ValueTask.FromResult<Validation<T?>>(value)
+                ? ValueTask.FromResult<Result<T?>>(value)
                 : configured(scope, ct));
         });
 
@@ -231,13 +231,13 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// Set a default value for <typeparamref name="T"/> that is returned if all previous resolvers for <typeparamref name="T"/> return <see langword="null"/>.
     /// </summary>
     /// <param name="defaultValue">The default value.</param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection ConfigureDefault<TCollection, T>(
         this TCollection dc,
         T defaultValue
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
-        => dc.ConfigureAsNullCoalesce((scope, _) => ValueTask.FromResult<Validation<T?>>(defaultValue));
+        => dc.ConfigureAsNullCoalesce((scope, _) => ValueTask.FromResult<Result<T?>>(defaultValue));
 
     /// <summary>
     /// Apply a resolver for <typeparamref name="T"/> conditionally.
@@ -255,11 +255,11 @@ public static class ITwitchRequestDependencyCollectionExtensions
     /// If returning <see langword="false"/>, the previously resolved <typeparamref name="T"/> is used.
     /// </param>
     /// <param name="conditionalResolve">The resolver that should be conditionally evaluated.</param>
-    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Validation{T}})"/>
+    /// <inheritdoc cref="SetResolver{TCollection, T}(TCollection, Func{ITwitchRequestDependencyScope, Result{T}})"/>
     public static TCollection ConfigureConditional<TCollection, T>(
         this TCollection dc,
-        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Validation<bool>>> predicate,
-        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Validation<T>>> conditionalResolve
+        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<bool>>> predicate,
+        Func<T?, ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<T>>> conditionalResolve
         )
         where TCollection : ITwitchRequestDependencyCollection<TCollection>
         => dc.Configure<TCollection, T?>(next => (scope, ct) =>

@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Authentication;
 /// </summary>
 public static class UserAccessTokenResolution
 {
-    private static async ValueTask<Validation<AccessTokenDetails.User>> RefreshToken(
+    private static async ValueTask<Result<AccessTokenDetails.User>> RefreshToken(
         this ITwitchClient twitchClient,
         ClientId clientId,
         ClientSecret clientSecret,
@@ -38,16 +38,16 @@ public static class UserAccessTokenResolution
         }
     }
 
-    private static async ValueTask<Validation<AccessTokenDetails.User>> RefreshToken(
+    private static async ValueTask<Result<AccessTokenDetails.User>> RefreshToken(
         this ITwitchClient client,
         AccessTokenDetails.User expiredDetails,
         ClientSecret clientSecret,
         CancellationToken ct
         )
         => expiredDetails.Identity.ClientId is not ClientId clientId
-            ? (Validation<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(ClientId)} when attempting refresh.")
+            ? (Result<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(ClientId)} when attempting refresh.")
             : expiredDetails.RefreshToken is not RefreshToken refreshToken
-            ? (Validation<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.")
+            ? (Result<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.")
             : await client.RefreshToken(clientId, clientSecret, expiredDetails.Identity.UserId, refreshToken, ct);
 
     private static ResolveRequestDependency<AccessTokenDetails.User?> GetFromCache(
@@ -63,7 +63,7 @@ public static class UserAccessTokenResolution
         Func<DateTimeOffset> getNow
         )
         => (scope, ct) => next(scope, ct).BindAsync(details => (details is null || details.ExpiresAt > getNow())
-                ? ValueTask.FromResult<Validation<AccessTokenDetails.User?>>(details)
+                ? ValueTask.FromResult<Result<AccessTokenDetails.User?>>(details)
                 : scope.ResolveRequired<ITwitchClient>(ct)
                     .BindAsync(twitchClient => scope.ResolveRequired<ClientSecret?>(ct)
                     .BindAsync(clientSecret => twitchClient.RefreshToken(details, clientSecret!.Value, ct).MapAsync<AccessTokenDetails.User, AccessTokenDetails.User?>(details => details))));

@@ -27,7 +27,7 @@ public sealed record ChannelFollow(UserId BroadcasterUserId, UserId ModeratorUse
         = new EventSubSubscriptionCondition()
             .Set(new("broadcaster_user_id"), BroadcasterUserId)
             .Set(new("moderator_user_id"), ModeratorUserId);
-    public static Validation<ChannelFollow> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<ChannelFollow> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

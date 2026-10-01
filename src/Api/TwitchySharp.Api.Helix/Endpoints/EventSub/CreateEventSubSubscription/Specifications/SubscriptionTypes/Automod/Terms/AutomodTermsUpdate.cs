@@ -26,7 +26,7 @@ public sealed record AutomodTermsUpdate(UserId BroadcasterUserId, UserId Moderat
         = new EventSubSubscriptionCondition()
             .Set(new ConditionKey("broadcaster_user_id"), BroadcasterUserId)
             .Set(new ConditionKey("moderator_user_id"), ModeratorUserId);
-    public static Validation<AutomodTermsUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<AutomodTermsUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("broadcaster_user_id"), out UserId BroadcasterUserId, value => new(value))
             .GetRequiredValue(new("moderator_user_id"), out UserId ModeratorUserId, value => new(value))

@@ -18,7 +18,7 @@ public sealed record UserUpdate(UserId UserId)
     public override IReadOnlyDictionary<ConditionKey, object> Condition { get; }
         = new EventSubSubscriptionCondition()
             .Set(new("user_id"), UserId);
-    public static Validation<UserUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
+    public static Result<UserUpdate> FromCondition(IReadOnlyDictionary<ConditionKey, string> condition)
         => condition
             .GetRequiredValue(new("user_id"), out UserId UserId, value => new(value))
             .Map(_ => new UserUpdate(UserId));

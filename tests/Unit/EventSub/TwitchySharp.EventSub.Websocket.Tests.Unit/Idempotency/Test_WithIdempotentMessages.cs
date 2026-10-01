@@ -6,7 +6,7 @@ namespace TwitchySharp.EventSub.Websocket.Tests.Unit.Idempotency;
 
 public class Test_WithIdempotentMessages
 {
-    private readonly static ProcessWebsocketMessage MockProcess = (message, ct) => ValueTask.FromResult<Validation<EventSubWebsocketMessage>>(new EventSubWebsocketMessage()
+    private readonly static ProcessWebsocketMessage MockProcess = (message, ct) => ValueTask.FromResult<Result<EventSubWebsocketMessage>>(new EventSubWebsocketMessage()
     {
         Metadata = new()
         {

@@ -48,8 +48,8 @@ internal class MemoizingRequestDependencyScope(
     : ITwitchRequestDependencyScope, IAsyncDisposable
 {
     public TwitchRequest Request { get; } = request;
-    private readonly Dictionary<Type, Validation<object?>> _memos = [];
-    public IReadOnlyDictionary<Type, Validation<object?>> Memos => _memos;
+    private readonly Dictionary<Type, Result<object?>> _memos = [];
+    public IReadOnlyDictionary<Type, Result<object?>> Memos => _memos;
 
     /// <summary>
     /// The underlying <see cref="ITwitchRequestDependencyCollection"/> to resolve dependency values from.
@@ -76,7 +76,7 @@ internal class MemoizingRequestDependencyScope(
 
     private void InvalidateMemo<T>()
     {
-        if (_memos.Remove(typeof(T), out Validation<object?> memo))
+        if (_memos.Remove(typeof(T), out Result<object?> memo))
             memo.Map(memo =>
             {
                 if (memo is IDisposable d)
@@ -85,11 +85,11 @@ internal class MemoizingRequestDependencyScope(
             });
     }
 
-    public ValueTask<Validation<T?>> ResolveOrDefault<T>(CancellationToken ct)
-        => _memos.TryGetValue(typeof(T), out Validation<object?> memo)
+    public ValueTask<Result<T?>> ResolveOrDefault<T>(CancellationToken ct)
+        => _memos.TryGetValue(typeof(T), out Result<object?> memo)
             ? ValueTask.FromResult(memo.Map(obj => (T?)obj))
             : DependencyCollection.GetResolver<T>() is not ResolveRequestDependency<T> resolver
-            ? ValueTask.FromResult<Validation<T?>>((T?)default)
+            ? ValueTask.FromResult<Result<T?>>((T?)default)
             : resolver(this, ct).MapAsync(
             value =>
             {
@@ -105,7 +105,7 @@ internal class MemoizingRequestDependencyScope(
                 if (d is null)
                     return d;
 
-                foreach ((Type t, Validation<object?> v) in _memos)
+                foreach ((Type t, Result<object?> v) in _memos)
                     if (d.GetOrDefault(t) is Action<object> dispose)
                         v.Map(memo =>
                         {
