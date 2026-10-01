@@ -13,7 +13,7 @@ namespace TwitchySharp.EventSub.Serialization;
 /// </remarks>
 /// <param name="payload">The notification payload, as a <see cref="Stream"/>.</param>
 /// <param name="ct">Cancellation token.</param>
-/// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> of the deserialized notification.</returns>
+/// <returns>A <see cref="ValueTask"/> containing a <see cref="Result"/> of the deserialized notification.</returns>
 public delegate ValueTask<Result<IEventSubNotification>> DeserializeNotification(NotificationPayloadStream payload, CancellationToken ct);
 
 /// <summary>

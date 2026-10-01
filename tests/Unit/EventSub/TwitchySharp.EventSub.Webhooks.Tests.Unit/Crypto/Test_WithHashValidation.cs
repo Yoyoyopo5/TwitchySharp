@@ -15,7 +15,7 @@ public class Test_WithHashValidation
         {
             using StreamReader sr = new(request.Content);
             verifyInputBody = sr.ReadToEnd();
-            return ValueTask.FromResult(new Validation());
+            return ValueTask.FromResult(new Result());
         });
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
@@ -32,7 +32,7 @@ public class Test_WithHashValidation
     [Fact]
     public async Task ProcessWebhookRequest_WithHashValidationError_ReturnsError()
     {
-        ProcessWebhookRequest process = ProcessStubs.StubProcess.WithHashValidation((_, request, ct) => ValueTask.FromResult<Validation>(new Error()));
+        ProcessWebhookRequest process = ProcessStubs.StubProcess.WithHashValidation((_, request, ct) => ValueTask.FromResult<Result>(new Error()));
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(
@@ -44,7 +44,7 @@ public class Test_WithHashValidation
     [Fact]
     public async Task ProcessWebhookRequest_WithHashValidationSuccess_ReturnsNext()
     {
-        ProcessWebhookRequest process = ProcessStubs.StubProcess.WithHashValidation((_, request, ct) => ValueTask.FromResult(new Validation()));
+        ProcessWebhookRequest process = ProcessStubs.StubProcess.WithHashValidation((_, request, ct) => ValueTask.FromResult(new Result()));
 
         await process(ProcessStubs.CreateFakeRequest(), TestContext.Current.CancellationToken)
             .MatchAsync(

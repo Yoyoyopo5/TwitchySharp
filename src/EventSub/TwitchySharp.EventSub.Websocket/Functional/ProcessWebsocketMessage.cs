@@ -12,7 +12,7 @@ namespace TwitchySharp.EventSub.Websocket.Functional;
 /// </summary>
 /// <param name="message">The incoming message stream.</param>
 /// <param name="ct">Cancellation token.</param>
-/// <returns>A <see cref="ValueTask"/> containing a <see cref="Validation"/> of the deserialized <see cref="EventSubWebsocketMessage"/>.</returns>
+/// <returns>A <see cref="ValueTask"/> containing a <see cref="Result"/> of the deserialized <see cref="EventSubWebsocketMessage"/>.</returns>
 public delegate ValueTask<Result<EventSubWebsocketMessage>> ProcessWebsocketMessage(WebsocketMessageStream message, CancellationToken ct);
 
 /// <summary>

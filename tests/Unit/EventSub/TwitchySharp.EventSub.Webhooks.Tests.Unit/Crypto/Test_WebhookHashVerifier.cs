@@ -81,7 +81,7 @@ public class Test_WebhookHashVerifier
         };
 
         VerifyWebhookHash stubVerifier = CreateStubVerifier(secret);
-        Validation result = await stubVerifier(FAKE_SUBSCRIPTION, fakeRequest, TestContext.Current.CancellationToken);
+        Result result = await stubVerifier(FAKE_SUBSCRIPTION, fakeRequest, TestContext.Current.CancellationToken);
 
         result.Match(
             onError: e => throw new Exception($"Verifier returned an error: {e.Message}."),
@@ -107,7 +107,7 @@ public class Test_WebhookHashVerifier
         };
 
         VerifyWebhookHash stubVerifier = CreateStubVerifier(clientSecret);
-        Validation result = await stubVerifier(FAKE_SUBSCRIPTION, fakeRequest, TestContext.Current.CancellationToken);
+        Result result = await stubVerifier(FAKE_SUBSCRIPTION, fakeRequest, TestContext.Current.CancellationToken);
 
         result.Match(
             onError: e => true,

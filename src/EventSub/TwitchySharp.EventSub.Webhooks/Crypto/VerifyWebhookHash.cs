@@ -11,8 +11,8 @@ namespace TwitchySharp.EventSub.Webhooks.Crypto;
 /// <param name="subscription">The subscription that the request is for.</param>
 /// <param name="request">The webhook request to verify.</param>
 /// <param name="ct">Cancellation token.</param>
-/// <returns>A <see cref="Validation"/> which, if not in the errored state, indicates a valid request hash.</returns>
-public delegate ValueTask<Validation> VerifyWebhookHash(IEventSubSubscription subscription, EventSubWebhookRequest request, CancellationToken ct);
+/// <returns>A <see cref="Result"/> which, if not in the errored state, indicates a valid request hash.</returns>
+public delegate ValueTask<Result> VerifyWebhookHash(IEventSubSubscription subscription, EventSubWebhookRequest request, CancellationToken ct);
 
 /// <summary>
 /// Creation helpers for <see cref="VerifyWebhookHash"/>.
@@ -43,7 +43,7 @@ public static class VerifyWebhookHashExtensions
             => async (subscription, request, ct) => await resolveSecret(subscription, ct) is not WebhookSecret secret
             ? new MissingSecretError(subscription)
             : await VerifySignature(secret, request, ct)
-            ? new Validation()
+            ? new Result()
             : new VerificationFailedError();
 
         /// <summary>

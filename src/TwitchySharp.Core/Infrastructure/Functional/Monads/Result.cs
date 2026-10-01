@@ -13,15 +13,15 @@ public record Error()
 
 public record ExceptionError(Exception Exception) : Error;
 
-public readonly record struct Validation
+public readonly record struct Result
 {
     private readonly Error? _error;
-    public Validation(Error error) => _error = error;
-    public Validation() => _error = null;
-    public static implicit operator Validation(Error error) => new(error);
+    public Result(Error error) => _error = error;
+    public Result() => _error = null;
+    public static implicit operator Result(Error error) => new(error);
     public Result<TNextR> Bind<TNextR>(Func<Result<TNextR>> func)
         => _error is not null ? _error : func();
-    public Validation Bind(Func<Validation> func)
+    public Result Bind(Func<Result> func)
         => _error is not null ? _error : func();
     public Result<TNextR> Map<TNextR>(Func<TNextR> func)
         => _error is not null ? _error : func();
@@ -39,7 +39,7 @@ public readonly record struct Result<T>
     public static implicit operator Result<T>(T right) => new(right);
     public Result<TNextR> Bind<TNextR>(Func<T, Result<TNextR>> func)
         => _error is not null ? _error : func(_valid!);
-    public Validation Bind(Func<T, Validation> func)
+    public Result Bind(Func<T, Result> func)
         => _error is not null ? _error : func(_valid!);
     public Result<TNextR> Map<TNextR>(Func<T, TNextR> func)
         => _error is not null ? _error : func(_valid!);
@@ -64,21 +64,21 @@ public static class AsyncValidationExtensions
             onValid: valid => func(valid, ct)
             );
 
-    public static async ValueTask<Validation> BindAsync(this ValueTask<Validation> val, Func<CancellationToken, ValueTask<Validation>> func, CancellationToken ct)
+    public static async ValueTask<Result> BindAsync(this ValueTask<Result> val, Func<CancellationToken, ValueTask<Result>> func, CancellationToken ct)
         => await (await val).Match(
-            onError: e => ValueTask.FromResult<Validation>(e),
+            onError: e => ValueTask.FromResult<Result>(e),
             onValid: () => func(ct)
             );
 
-    public static async ValueTask<Result<TNext>> BindAsync<TNext>(this ValueTask<Validation> val, Func<CancellationToken, ValueTask<Result<TNext>>> func, CancellationToken ct)
+    public static async ValueTask<Result<TNext>> BindAsync<TNext>(this ValueTask<Result> val, Func<CancellationToken, ValueTask<Result<TNext>>> func, CancellationToken ct)
         => await (await val).Match(
             onError: e => ValueTask.FromResult<Result<TNext>>(e),
             onValid: () => func(ct)
             );
 
-    public static async Task<Validation> BindAsync(this Task<Validation> val, Func<CancellationToken, Task<Validation>> func, CancellationToken ct)
+    public static async Task<Result> BindAsync(this Task<Result> val, Func<CancellationToken, Task<Result>> func, CancellationToken ct)
         => await (await val).Match(
-            onError: e => Task.FromResult<Validation>(e),
+            onError: e => Task.FromResult<Result>(e),
             onValid: () => func(ct)
             );
 
@@ -88,13 +88,13 @@ public static class AsyncValidationExtensions
             onValid: valid => func(valid)
             );
 
-    public static async ValueTask<Validation> MapAsync<T>(this ValueTask<Result<T>> val, Action<T> action)
+    public static async ValueTask<Result> MapAsync<T>(this ValueTask<Result<T>> val, Action<T> action)
         => (await val).Match(
             e => e,
             value =>
             {
                 action(value);
-                return new Validation();
+                return new Result();
             }
             );
 
@@ -110,7 +110,7 @@ public static class AsyncValidationExtensions
             onValid: valid => func(valid)
             );
 
-    public static async Task<Result<TNext>> MapAsync<TNext>(this Task<Validation> val, Func<TNext> func)
+    public static async Task<Result<TNext>> MapAsync<TNext>(this Task<Result> val, Func<TNext> func)
         => (await val).Match<Result<TNext>>(
             onError: e => e,
             onValid: () => func()
@@ -143,25 +143,25 @@ public static class AsyncValidationExtensions
             onValid: valid => onValid(valid, ct)
             );
 
-    public static async ValueTask MatchAsync(this ValueTask<Validation> val, Func<Error, CancellationToken, Task> onError, Func<CancellationToken, Task> onValid, CancellationToken ct)
+    public static async ValueTask MatchAsync(this ValueTask<Result> val, Func<Error, CancellationToken, Task> onError, Func<CancellationToken, Task> onValid, CancellationToken ct)
         => await (await val).Match(
             onError: e => onError(e, ct),
             onValid: () => onValid(ct)
             );
 
-    public static async ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Validation> val, Func<Error, CancellationToken, ValueTask<TOut>> onError, Func<CancellationToken, ValueTask<TOut>> onValid, CancellationToken ct)
+    public static async ValueTask<TOut> MatchAsync<TOut>(this ValueTask<Result> val, Func<Error, CancellationToken, ValueTask<TOut>> onError, Func<CancellationToken, ValueTask<TOut>> onValid, CancellationToken ct)
         => await (await val).Match(
             onError: e => onError(e, ct),
             onValid: () => onValid(ct)
             );
 
-    public static async Task MatchAsync(this Task<Validation> val, Func<Error, CancellationToken, Task> onError, Func<CancellationToken, Task> onValid, CancellationToken ct)
+    public static async Task MatchAsync(this Task<Result> val, Func<Error, CancellationToken, Task> onError, Func<CancellationToken, Task> onValid, CancellationToken ct)
         => await (await val).Match(
             onError: e => onError(e, ct),
             onValid: () => onValid(ct)
             );
 
-    public static async Task<T> MatchAsync<T>(this Task<Validation> val, Func<Error, CancellationToken, Task<T>> onError, Func<CancellationToken, Task<T>> onValid, CancellationToken ct)
+    public static async Task<T> MatchAsync<T>(this Task<Result> val, Func<Error, CancellationToken, Task<T>> onError, Func<CancellationToken, Task<T>> onValid, CancellationToken ct)
         => await (await val).Match(
             onError: e => onError(e, ct),
             onValid: () => onValid(ct)
