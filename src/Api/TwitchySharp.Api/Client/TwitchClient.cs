@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
+using static TwitchySharp.Api.TwitchIdentity;
 
 namespace TwitchySharp.Api;
 
@@ -98,26 +99,26 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     public IResponseContentConverter DefaultResponseConverter { get; init; }
         = new SystemTextJsonContentConverter();
 
-    public ImmutableList<DelegatingTwitchHandler> Handlers { get; init; } = [];
+    /// <summary>
+    /// Configured send middleware.
+    /// </summary>
+    public ImmutableList<Middleware> ConfiguredMiddleware { get; init; } = [];
 
-    private record RootClient(TwitchClient Client) : ITwitchClient
+    /// <summary>
+    /// Represents generic behavior around the <see cref="TwitchClient"/> send function.
+    /// </summary>
+    /// <remarks>
+    /// Allows for configuration against the entire send pipeline via <see cref="ConfiguredMiddleware"/> while maintaining the generic context.
+    /// </remarks>
+    public abstract class Middleware
     {
-        public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
-        {
-            // We have to get the typed content converter per request.
-            IResponseContentConverter contentConverter = Client.ResponseConverters.FirstOrDefault(rc => rc.CanConvert(request)) ?? Client.DefaultResponseConverter;
+        public Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<TwitchResponse<TResponseContent>>>> ConfigureSend<TResponseContent>(
+            Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<TwitchResponse<TResponseContent>>>> send
+            )
+            => (scope, ct) => SendAsync(send, scope, ct);
 
-            // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
-            await using MemoizingRequestDependencyScope requestScope = new(request, Client.Resolvers.WithTwitchClient(this).WithTypedResponse<TResponseContent>(contentConverter));
-            return await requestScope.ResolveOrDefault<TwitchResponse<TResponseContent>>(ct).MatchAsync(
-            e => e switch
-            {
-                ExceptionError exceptionError => throw exceptionError.Exception,
-                Error => throw new InvalidOperationException(e.Message)
-            },
-            valid => valid is not null ? valid : throw new InvalidOperationException("The response resolved to null.")
-            ).AsTask();
-        }
+        /// <param name="send">The inner send function. Use this to send the request.</param>
+        protected abstract ValueTask<Result<TwitchResponse<TResponseContent>>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<TwitchResponse<TResponseContent>>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct);
     }
 
     /// <summary>
@@ -127,8 +128,25 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// <exception cref="TwitchApiException">When the HTTP response is a non-success status code.</exception>
     /// <exception cref="InvalidOperationException">When another error occurred.</exception>
     /// <inheritdoc/>
-    public Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
-        => Handlers.Aggregate(new RootClient(this) as ITwitchClient, (client, next) => next.ToClient(client)).SendAsync(request, ct);
+    public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
+    {
+        // We have to get the typed content converter per request.
+        IResponseContentConverter contentConverter = ResponseConverters.FirstOrDefault(rc => rc.CanConvert(request)) ?? DefaultResponseConverter;
+
+        // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
+        await using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTwitchClient(this).WithTypedResponse<TResponseContent>(contentConverter));
+
+        return await ConfiguredMiddleware.Aggregate((ITwitchRequestDependencyScope scope, CancellationToken ct)
+            => scope.ResolveRequired<TwitchResponse<TResponseContent>>(ct), (send, next)
+            => next.ConfigureSend(send))(requestScope, ct).MatchAsync(
+            e => e switch
+            {
+                ExceptionError exceptionError => throw exceptionError.Exception,
+                Error => throw new InvalidOperationException(e.Message)
+            },
+            valid => valid
+            ).AsTask();
+    }
 }
 
 public static class TwitchClientExtensions
