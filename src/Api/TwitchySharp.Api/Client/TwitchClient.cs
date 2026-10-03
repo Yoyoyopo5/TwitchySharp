@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
-using static TwitchySharp.Api.TwitchIdentity;
 
 namespace TwitchySharp.Api;
 
@@ -79,8 +78,7 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// In addition, the <see cref="DefaultResponseConverter"/> will be used to convert requests that do not implement <see cref="TwitchRequest{T}.ConvertResponse"/>.
     /// </para>
     /// </remarks>
-    // We use stack here to get delegate decorator like behavior (i.e. newest converter applies first).
-    public ImmutableStack<IResponseContentConverter> ResponseConverters { get; init; }
+    public ImmutableList<IResponseContentConverter> ResponseConverters { get; init; }
         = [new RequestSpecificContentConverter()];
 
     /// <summary>
@@ -131,7 +129,8 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
     {
         // We have to get the typed content converter per request.
-        IResponseContentConverter contentConverter = ResponseConverters.FirstOrDefault(rc => rc.CanConvert(request)) ?? DefaultResponseConverter;
+        // Reverse to eval from newest converter first.
+        IResponseContentConverter contentConverter = ResponseConverters.Reverse().FirstOrDefault(rc => rc.CanConvert(request)) ?? DefaultResponseConverter;
 
         // This method MUST remain async otherwise the scope will be disposed before the response is resolved!
         await using MemoizingRequestDependencyScope requestScope = new(request, Resolvers.WithTwitchClient(this).WithTypedResponse<TResponseContent>(contentConverter));
@@ -166,7 +165,7 @@ public static class TwitchClientExtensions
         this TwitchClient client,
         IResponseContentConverter converter
         )
-        => client with { ResponseConverters = client.ResponseConverters.Push(converter) };
+        => client with { ResponseConverters = client.ResponseConverters.Add(converter) };
 
     public static TwitchClient WithHttpClient(
         this TwitchClient client,
@@ -197,7 +196,7 @@ public interface IResponseContentConverter
     bool CanConvert<TResponseContent>(TwitchRequest<TResponseContent> request);
 
     /// <summary>
-    /// Convert a <see cref="Stream"/> of response content into a <typeparamref name="TResponseContent"/>.
+    /// Convert a <see cref="HttpResponseMessage"/> into a <typeparamref name="TResponseContent"/>.
     /// </summary>
     /// <typeparam name="TResponseContent">The type to convert to.</typeparam>
     /// <param name="request"><inheritdoc cref="CanConvert{TResponseContent}(TwitchRequest{TResponseContent})"/></param>
