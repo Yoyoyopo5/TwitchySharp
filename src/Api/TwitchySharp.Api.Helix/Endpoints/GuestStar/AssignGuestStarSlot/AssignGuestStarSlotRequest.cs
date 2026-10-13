@@ -1,5 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
-
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
@@ -70,10 +68,6 @@ public record AssignGuestStarSlotRequest
     /// </remarks>
     public required GuestStarSlotId SlotId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<AssignGuestStarSlotResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<AssignGuestStarSlotResponseContent>>(new AssignGuestStarSlotResponseContent());
-        };
+    public override ValueTask<TwitchResponse<AssignGuestStarSlotResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<AssignGuestStarSlotResponseContent>(response, ct);
 }

@@ -51,10 +51,6 @@ public record RemoveChannelVipRequest
     /// </remarks>
     public required UserId UserId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<RemoveChannelVipResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<RemoveChannelVipResponseContent>>(new RemoveChannelVipResponseContent());
-        };
+    public override ValueTask<TwitchResponse<RemoveChannelVipResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<RemoveChannelVipResponseContent>(response, ct);
 }

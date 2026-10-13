@@ -7,6 +7,12 @@ namespace TwitchySharp.Api.Authentication;
 /// </summary>
 public static class UserAccessTokenResolution
 {
+    public record MissingClientIdError()
+        : Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(ClientId)} when attempting refresh.");
+
+    public record MissingRefreshTokenError()
+        : Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.");
+
     private static async ValueTask<Result<AccessTokenDetails.User>> RefreshToken(
         this ITwitchClient twitchClient,
         ClientId clientId,
@@ -45,9 +51,9 @@ public static class UserAccessTokenResolution
         CancellationToken ct
         )
         => expiredDetails.Identity.ClientId is not ClientId clientId
-            ? (Result<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(ClientId)} when attempting refresh.")
+            ? (Result<AccessTokenDetails.User>)new MissingClientIdError()
             : expiredDetails.RefreshToken is not RefreshToken refreshToken
-            ? (Result<AccessTokenDetails.User>)new Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.")
+            ? (Result<AccessTokenDetails.User>)new MissingRefreshTokenError()
             : await client.RefreshToken(clientId, clientSecret, expiredDetails.Identity.UserId, refreshToken, ct);
 
     private static ResolveRequestDependency<AccessTokenDetails.User?> GetFromCache(

@@ -46,12 +46,8 @@ public record ModifyChannelInformationRequest
     /// </summary>
     public required ModifyChannelInformationRequestData ChannelInformation { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<ModifyChannelInformationResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<ModifyChannelInformationResponseContent>>(new ModifyChannelInformationResponseContent());
-        };
+    public override ValueTask<TwitchResponse<ModifyChannelInformationResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<ModifyChannelInformationResponseContent>(response, ct);
 }
 
 /// <summary>

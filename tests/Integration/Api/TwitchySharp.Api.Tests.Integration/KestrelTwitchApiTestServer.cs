@@ -126,20 +126,7 @@ public class KestrelTwitchApiTestServer
             })))
             .AddTransient<TwitchClient>(sp => new TwitchClient()
                 .WithHttpClient(sp.GetRequiredService<HttpClient>())
-                .Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
-                    next(scope, ct).MatchAsync<HttpResponseMessage?, Result<HttpResponseMessage?>>(
-                        e =>
-                        {
-                            if (e is ExceptionError { Exception: TwitchApiException ex })
-                            {
-                                string id = Guid.CreateVersion7().ToString();
-                                TestContext.Current.AddAttachment($"ApiExceptionStatusCode-{id}", ex.StatusCode.ToString());
-                                TestContext.Current.AddAttachment($"ApiExceptionContent-{id}", ex.Content);
-                            }
-                            return e;
-                        },
-                        v => v
-                        ))
+                .UseMiddleware(new ErrorLoggingMiddleware())
             );
 
         WebApplication app = builder.Build();
@@ -188,4 +175,25 @@ public sealed class TwitchApiIntegrationTestFixture : IAsyncLifetime
     public KestrelTwitchApiTestServer TestServer { get; } = new();
     public async ValueTask DisposeAsync() => await TestServer.StopAsync(default);
     public async ValueTask InitializeAsync() => await TestServer.StartAsync(default);
+}
+
+public class ErrorLoggingMiddleware : TwitchClient.Middleware
+{
+    protected override async ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(
+        Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send,
+        ITwitchRequestDependencyScope scope,
+        CancellationToken ct)
+    {
+        TwitchResponse<TResponseContent> response = await send(scope, ct);
+        if (response.Error is not null)
+        {
+            string id = Guid.CreateVersion7().ToString();
+            TestContext.Current.AddAttachment($"TwitchClientError-{id}",
+                $"""
+                Type: {response.Error.GetType()}
+                Message: {response.Error.Message}
+                """);
+        }
+        return response;
+    }
 }

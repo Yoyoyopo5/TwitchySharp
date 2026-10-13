@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Whispers;
@@ -60,12 +59,8 @@ public record SendWhisperRequest
     /// </summary>
     public required SendWhisperRequestData Whisper { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SendWhisperResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SendWhisperResponseContent>>(new SendWhisperResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SendWhisperResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendWhisperResponseContent>(response, ct);
 }
 
 /// <summary>

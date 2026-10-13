@@ -1,5 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
-
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
 /// Sends a message to the specified broadcaster's chat room.
@@ -47,12 +45,8 @@ public record SendExtensionChatMessageRequest
     /// </summary>
     public required SendExtensionChatMessageRequestData Message { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SendExtensionChatMessageResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SendExtensionChatMessageResponseContent>>(new SendExtensionChatMessageResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SendExtensionChatMessageResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendExtensionChatMessageResponseContent>(response, ct);
 }
 
 /// <summary>

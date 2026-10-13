@@ -23,13 +23,6 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
             UserId = userConfig.UserId,
         };
 
-        try
-        {
-            await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
-        }
-        catch (TwitchApiException ex)
-        {
-            Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
-        }
+        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
     }
 }

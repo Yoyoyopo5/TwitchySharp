@@ -1,5 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
-
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.GuestStar;
@@ -57,10 +55,6 @@ public record SendGuestStarInviteRequest
     /// </summary>
     public required UserId GuestId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SendGuestStarInviteResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SendGuestStarInviteResponseContent>>(new SendGuestStarInviteResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SendGuestStarInviteResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendGuestStarInviteResponseContent>(response, ct);
 }

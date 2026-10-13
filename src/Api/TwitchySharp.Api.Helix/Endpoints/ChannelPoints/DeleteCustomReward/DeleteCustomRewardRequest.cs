@@ -49,10 +49,6 @@ public record DeleteCustomRewardRequest
     /// </summary>
     public required RewardId RewardId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<DeleteCustomRewardResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<DeleteCustomRewardResponseContent>>(new DeleteCustomRewardResponseContent());
-        };
+    public override ValueTask<TwitchResponse<DeleteCustomRewardResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteCustomRewardResponseContent>(response, ct);
 }

@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Users;
@@ -45,10 +44,6 @@ public record UnblockUserRequest
     /// </remarks>
     public required UserId TargetUserId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<UnblockUserResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<UnblockUserResponseContent>>(new UnblockUserResponseContent());
-        };
+    public override ValueTask<TwitchResponse<UnblockUserResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UnblockUserResponseContent>(response, ct);
 }

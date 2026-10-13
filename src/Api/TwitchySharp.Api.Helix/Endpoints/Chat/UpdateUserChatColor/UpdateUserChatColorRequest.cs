@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Chat;
@@ -46,10 +45,6 @@ public record UpdateUserChatColorRequest
     /// </summary>
     public required ChatColor Color { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<UpdateUserChatColorResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<UpdateUserChatColorResponseContent>>(new UpdateUserChatColorResponseContent());
-        };
+    public override ValueTask<TwitchResponse<UpdateUserChatColorResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UpdateUserChatColorResponseContent>(response, ct);
 }

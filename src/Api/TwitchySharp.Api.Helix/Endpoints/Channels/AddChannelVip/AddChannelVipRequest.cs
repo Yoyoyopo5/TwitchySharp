@@ -47,10 +47,6 @@ public record AddChannelVipRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<AddChannelVipResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<AddChannelVipResponseContent>>(new AddChannelVipResponseContent());
-        };
+    public override ValueTask<TwitchResponse<AddChannelVipResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<AddChannelVipResponseContent>(response, ct);
 }

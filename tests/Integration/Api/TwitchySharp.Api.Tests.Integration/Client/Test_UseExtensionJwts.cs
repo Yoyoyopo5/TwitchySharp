@@ -167,7 +167,7 @@ public class Test_UseExtensionJwts(TwitchApiIntegrationTestFixture fixture) : IA
     }
 
     [Fact]
-    public async Task SendAsync_NoCachedTokenAndNoExtensionSecret_ThrowInvalidOperationException()
+    public async Task SendAsync_NoCachedTokenAndNoExtensionSecret_ReturnsMissingRequiredDependencyError()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
 
@@ -182,11 +182,15 @@ public class Test_UseExtensionJwts(TwitchApiIntegrationTestFixture fixture) : IA
                 JwtCache = cache
             });
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => client.SendAsync(new StubExtensionAuthenticatedRequest() { ExtensionId = _fakeExtensionId }, ct));
+        TwitchResponse<BearerToken> response = await client.SendAsync(new StubExtensionAuthenticatedRequest() { ExtensionId = _fakeExtensionId }, ct);
+
+        Assert.NotNull(response.Error);
+        MissingRequiredDependencyError e = Assert.IsType<MissingRequiredDependencyError>(response.Error);
+        Assert.Equal(typeof(ExtensionSecret?), e.DependencyType);
     }
 
     [Fact]
-    public async Task SendAsync_NoCachedTokenAndNoExtensionOwnerId_ThrowInvalidOperationException()
+    public async Task SendAsync_NoCachedTokenAndNoExtensionOwnerId_ReturnsMissingRequiredDependencyError()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
 
@@ -201,6 +205,10 @@ public class Test_UseExtensionJwts(TwitchApiIntegrationTestFixture fixture) : IA
                 JwtCache = cache
             });
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => client.SendAsync(new StubExtensionAuthenticatedRequest() { ExtensionId = _fakeExtensionId }, ct));
+        TwitchResponse<BearerToken> response = await client.SendAsync(new StubExtensionAuthenticatedRequest() { ExtensionId = _fakeExtensionId }, ct);
+
+        Assert.NotNull(response.Error);
+        MissingRequiredDependencyError e = Assert.IsType<MissingRequiredDependencyError>(response.Error);
+        Assert.Equal(typeof(ExtensionOwnerId?), e.DependencyType);
     }
 }

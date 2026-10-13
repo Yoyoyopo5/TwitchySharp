@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using TwitchySharp.Serialization;
@@ -42,12 +41,8 @@ public record UpdateChannelStreamScheduleRequest
     /// </summary>
     public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<UpdateChannelStreamScheduleResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<UpdateChannelStreamScheduleResponseContent>>(new UpdateChannelStreamScheduleResponseContent());
-        };
+    public override ValueTask<TwitchResponse<UpdateChannelStreamScheduleResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UpdateChannelStreamScheduleResponseContent>(response, ct);
 }
 
 /// <summary>

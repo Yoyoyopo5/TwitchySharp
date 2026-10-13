@@ -28,10 +28,9 @@ public record RevokeAccessTokenRequest
     /// </summary>
     public required IAccessToken AccessToken { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<RevokeAccessTokenResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<RevokeAccessTokenResponseContent>>(new RevokeAccessTokenResponseContent());
-        };
+    public override ValueTask<TwitchResponse<RevokeAccessTokenResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+    {
+        using HttpResponseMessage r = response;
+        return ValueTask.FromResult(new TwitchResponse<RevokeAccessTokenResponseContent>(new RevokeAccessTokenResponseContent()));
+    }
 }

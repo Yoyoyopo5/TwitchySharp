@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using TwitchySharp.Api;
 using TwitchySharp.Api.Authentication;
+using TwitchySharp.Infrastructure.Functional;
 using Xunit;
 
 namespace TwitchySharp.Tests.E2E;
@@ -49,7 +50,8 @@ public class TwitchTestApplication
                     .AddExtensionConfiguration(sp)
                     .UseAppAccessTokens(options => options with { TokenCache = sp.GetRequiredService<TokenStore>() })
                     .UseUserAccessTokens(sp.GetRequiredService<TokenStore>())
-                    .UseExtensionJwts(options => options with { JwtCache = sp.GetRequiredService<TokenStore>() }))
+                    .UseExtensionJwts(options => options with { JwtCache = sp.GetRequiredService<TokenStore>() })
+                    .UseMiddleware(new ErrorLoggingMiddleware()))
             .AddTransient<TestingTwitchClient>(sp => new(sp.GetRequiredService<TwitchClient>()))
             .AddTransient<ITwitchClient>(sp => sp.GetRequiredService<TwitchClient>());
 
@@ -60,26 +62,40 @@ public class TwitchTestApplication
         => builder;
 }
 
-public record TestingTwitchClient(TwitchClient Client)
+public class ErrorLoggingMiddleware : TwitchClient.Middleware
 {
-    public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, TestName testName, CancellationToken ct)
+    protected override async ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(
+        Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send,
+        ITwitchRequestDependencyScope scope,
+        CancellationToken ct)
     {
         try
         {
-
-            return await Client.SetFixed(testName).SendAsync(request, ct);
-        }
-        catch (TwitchApiException ex)
-        {
-            TestContext.Current.AddAttachment(nameof(TwitchApiException), ex.ToReportString());
-            throw;
+            TwitchResponse<TResponseContent> response = await send(scope, ct);
+            if (response.Error is Error e)
+            {
+                string id = Guid.CreateVersion7().ToString();
+                TestContext.Current.AddAttachment($"TwitchClientError-{id}",
+                    $"""
+                    Type: {e.GetType()}
+                    Message: {e.Message}
+                    """);
+            }
+            return response;
         }
         catch (Exception ex)
         {
-            TestContext.Current.AddAttachment(ex.GetType().Name, ex.Message);
-            throw;
+            string id = Guid.CreateVersion7().ToString();
+            TestContext.Current.AddAttachment(ex.GetType().Name + '-' + id, ex.Message);
+            return new TwitchResponse<TResponseContent>(new ExceptionError(ex));
         }
     }
+}
+
+public record TestingTwitchClient(TwitchClient Client)
+{
+    public Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, TestName testName, CancellationToken ct)
+        => Client.SetFixed(testName).SendAsync(request, ct);
 }
 
 public static class TwitchTestApplicationExtensions

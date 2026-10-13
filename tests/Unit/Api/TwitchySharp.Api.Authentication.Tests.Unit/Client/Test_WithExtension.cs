@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Infrastructure.Functional;
+﻿using TwitchySharp.Api.Tests.Unit.Client.DependencyResolution;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Authentication.Tests.Unit.Client;
 
@@ -17,94 +18,100 @@ public class Test_WithExtension
     }
 
     [Fact]
-    public async Task SendAsync_ResolveExtensionSecret_WithSameExtensionId_ReturnsSecret()
+    public async Task ResolveExtensionSecret_WithSameExtensionId_ReturnsSecret()
     {
         ExtensionId fakeId = new("mclovin");
         ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ExtensionSecret?>>((scope, ct) =>
-                scope.ResolveOrDefault<ExtensionSecret?>(ct).MapAsync(secret => new TwitchResponse<ExtensionSecret?>()
-                {
-                    Content = secret,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithExtension(fakeId, fakeOwnerId, fakeSecret)
             .SetFixed<TwitchClient, ExtensionId?>(fakeId);
 
-        ExtensionSecret? result = (await stubClient.SendAsync(new ExtensionSecretRequest(), TestContext.Current.CancellationToken)).Content;
+        ResolveRequestDependency<ExtensionSecret?>? resolve = stubClient.GetResolver<ExtensionSecret?>();
+        Assert.NotNull(resolve);
+
+        StubDependencyScope scope = new(stubClient.Resolvers);
+        Result<ExtensionSecret?> result = await resolve(scope, TestContext.Current.CancellationToken);
 
         Assert.Equal(fakeSecret, result);
     }
 
     [Fact]
-    public async Task SendAsync_ResolveExtensionOwnerId_WithSameExtensionId_ReturnsOwnerId()
+    public async Task ResolveExtensionOwnerId_WithSameExtensionId_ReturnsOwnerId()
     {
         ExtensionId fakeId = new("mclovin");
         ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ExtensionOwnerId?>>((scope, ct) =>
-                scope.ResolveOrDefault<ExtensionOwnerId?>(ct).MapAsync(ownerId => new TwitchResponse<ExtensionOwnerId?>()
-                {
-                    Content = ownerId,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithExtension(fakeId, fakeOwnerId, fakeSecret)
             .SetFixed<TwitchClient, ExtensionId?>(fakeId);
 
-        ExtensionOwnerId? result = (await stubClient.SendAsync(new ExtensionOwnerIdRequest(), TestContext.Current.CancellationToken)).Content;
+        ResolveRequestDependency<ExtensionOwnerId?>? resolve = stubClient.GetResolver<ExtensionOwnerId?>();
+        Assert.NotNull(resolve);
 
-        Assert.Equal(fakeOwnerId, result);
+        StubDependencyScope scope = new(stubClient.Resolvers);
+        Result<ExtensionOwnerId?> result = await resolve(scope, TestContext.Current.CancellationToken);
+
+        result.Match(
+            e => throw new Exception(e.Message),
+            id =>
+            {
+                Assert.Equal(id, result);
+                return id;
+            });
     }
 
     [Fact]
-    public async Task SendAsync_ResolveExtensionSecret_WithDifferentExtensionId_ReturnsNull()
+    public async Task ResolveExtensionSecret_WithDifferentExtensionId_ReturnsNull()
     {
         ExtensionId fakeId = new("mclovin");
         ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ExtensionSecret?>>((scope, ct) =>
-                scope.ResolveOrDefault<ExtensionSecret?>(ct).MapAsync(secret => new TwitchResponse<ExtensionSecret?>()
-                {
-                    Content = secret,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithExtension(fakeId, fakeOwnerId, fakeSecret)
             .SetFixed<TwitchClient, ExtensionId?>(new("other-id"));
 
-        ExtensionSecret? result = (await stubClient.SendAsync(new ExtensionSecretRequest(), TestContext.Current.CancellationToken)).Content;
+        ResolveRequestDependency<ExtensionSecret?>? resolve = stubClient.GetResolver<ExtensionSecret?>();
+        Assert.NotNull(resolve);
 
-        Assert.Null(result);
+        StubDependencyScope scope = new(stubClient.Resolvers);
+        Result<ExtensionSecret?> result = await resolve(scope, TestContext.Current.CancellationToken);
+
+        result.Match(
+            e => throw new Exception(e.Message),
+            secret =>
+            {
+                Assert.Null(secret);
+                return secret;
+            });
     }
 
     [Fact]
-    public async Task SendAsync_ResolveExtensionOwnerId_WithDifferentExtensionId_ReturnsNull()
+    public async Task ResolveExtensionOwnerId_WithDifferentExtensionId_ReturnsNull()
     {
         ExtensionId fakeId = new("mclovin");
         ExtensionSecret fakeSecret = new("c3VwZXJfc2VjdXJlX3NlY3JldF9rZXk=");
         ExtensionOwnerId fakeOwnerId = new(new("fogle"));
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ExtensionOwnerId?>>((scope, ct) =>
-                scope.ResolveOrDefault<ExtensionOwnerId?>(ct).MapAsync(ownerId => new TwitchResponse<ExtensionOwnerId?>()
-                {
-                    Content = ownerId,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithExtension(fakeId, fakeOwnerId, fakeSecret)
             .SetFixed<TwitchClient, ExtensionId?>(new("other-id"));
 
-        ExtensionOwnerId? result = (await stubClient.SendAsync(new ExtensionOwnerIdRequest(), TestContext.Current.CancellationToken)).Content;
+        ResolveRequestDependency<ExtensionOwnerId?>? resolve = stubClient.GetResolver<ExtensionOwnerId?>();
+        Assert.NotNull(resolve);
 
-        Assert.Null(result);
+        StubDependencyScope scope = new(stubClient.Resolvers);
+        Result<ExtensionOwnerId?> result = await resolve(scope, TestContext.Current.CancellationToken);
+
+        result.Match(
+            e => throw new Exception(e.Message),
+            id =>
+            {
+                Assert.Null(id);
+                return id;
+            });
     }
 }

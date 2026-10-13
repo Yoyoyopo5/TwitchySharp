@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api;
@@ -49,8 +48,9 @@ public abstract record TwitchRequest<TResponseContent> : TwitchRequest
     /// Defines how the HTTP response content stream is converted into <typeparamref name="TResponseContent"/>.
     /// </summary>
     /// <remarks>
-    /// The default <see cref="TwitchClient"/> uses JSON deserialization using <see cref="JsonSerializer"/> and <see cref="JsonConfig.ApiOptions"/> if this is <see langword="null"/>.
-    /// This property can be used to define a custom response content converter.
+    /// By default, this uses JSON deserialization using <see cref="JsonSerializer"/> and <see cref="JsonConfig.ApiOptions"/>.
+    /// Override to define a custom response content converter for a request.
     /// </remarks>
-    public virtual IResponseContentConverter.ConvertResponse<TResponseContent>? ConvertResponse { get; init; }
+    public virtual ValueTask<TwitchResponse<TResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => JsonResponse.Create<TResponseContent>(response, ct);
 }

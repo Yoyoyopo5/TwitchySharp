@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Tests.Unit.Client.DependencyResolution;
 public record StubDependencyScope(ITwitchRequestDependencyCollection Resolvers)
         : ITwitchRequestDependencyScope
 {
-    public TwitchRequest Request { get; } = new StubTwitchRequest();
+    public TwitchRequest Request { get; init; } = new StubTwitchRequest();
 
     public ResolveRequestDependency<T>? GetResolver<T>() => Resolvers.GetResolver<T>();
     public StubDependencyScope SetResolver<T>(ResolveRequestDependency<T> resolve)

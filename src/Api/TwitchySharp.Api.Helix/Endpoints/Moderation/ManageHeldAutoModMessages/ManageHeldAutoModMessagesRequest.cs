@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
@@ -37,12 +36,8 @@ public record ManageHeldAutoModMessagesRequest
     /// </summary>
     public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<ManageHeldAutoModMessagesResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<ManageHeldAutoModMessagesResponseContent>>(new ManageHeldAutoModMessagesResponseContent());
-        };
+    public override ValueTask<TwitchResponse<ManageHeldAutoModMessagesResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<ManageHeldAutoModMessagesResponseContent>(response, ct);
 }
 
 /// <summary>

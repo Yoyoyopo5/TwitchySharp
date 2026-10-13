@@ -54,12 +54,8 @@ public record SendChatAnnouncementRequest
     /// </summary>
     public required SendChatAnnouncementRequestData Announcement { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SendChatAnnouncementResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SendChatAnnouncementResponseContent>>(new SendChatAnnouncementResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SendChatAnnouncementResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendChatAnnouncementResponseContent>(response, ct);
 }
 
 /// <summary>

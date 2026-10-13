@@ -31,11 +31,11 @@ public class Test_WithRateLimiting
             Identity = new(new("default"))
         };
 
-        public override IResponseContentConverter.ConvertResponse<object>? ConvertResponse { get; init; } = (_, response, _) =>
+        public override ValueTask<TwitchResponse<object>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
         {
             using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<object>>(new object());
-        };
+            return ValueTask.FromResult(new TwitchResponse<object>(new object()));
+        }
     }
 
     private static TwitchClient CreateStubClient(TwitchRateLimitDetails? rateLimitDetails = null)

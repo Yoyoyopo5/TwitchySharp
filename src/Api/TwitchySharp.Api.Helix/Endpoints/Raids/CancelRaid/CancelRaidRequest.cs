@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Raids;
@@ -39,10 +38,6 @@ public record CancelRaidRequest
     /// </summary>
     public required UserId BroadcasterId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<CancelRaidResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<CancelRaidResponseContent>>(new CancelRaidResponseContent());
-        };
+    public override ValueTask<TwitchResponse<CancelRaidResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<CancelRaidResponseContent>(response, ct);
 }

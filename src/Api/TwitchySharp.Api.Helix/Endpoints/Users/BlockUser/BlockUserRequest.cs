@@ -1,4 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Users;
@@ -55,10 +54,6 @@ public record BlockUserRequest
     /// </summary>
     public BlockUserReason? Reason { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<BlockUserResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<BlockUserResponseContent>>(new BlockUserResponseContent());
-        };
+    public override ValueTask<TwitchResponse<BlockUserResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<BlockUserResponseContent>(response, ct);
 }

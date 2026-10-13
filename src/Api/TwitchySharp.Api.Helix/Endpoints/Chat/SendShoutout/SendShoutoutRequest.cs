@@ -55,10 +55,6 @@ public record SendShoutoutRequest
     /// </remarks>
     public required UserId ModeratorId { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SendShoutoutResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SendShoutoutResponseContent>>(new SendShoutoutResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SendShoutoutResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendShoutoutResponseContent>(response, ct);
 }

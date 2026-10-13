@@ -1,5 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
-
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
 /// Updates the extension's required_configuration string.
@@ -48,12 +46,8 @@ public record SetExtensionRequiredConfigurationRequest
     /// </summary>
     public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
 
-    public override IResponseContentConverter.ConvertResponse<SetExtensionRequiredConfigurationResponseContent>? ConvertResponse { get; init; }
-        = (_, response, _) =>
-        {
-            using HttpResponseMessage r = response;
-            return ValueTask.FromResult<Result<SetExtensionRequiredConfigurationResponseContent>>(new SetExtensionRequiredConfigurationResponseContent());
-        };
+    public override ValueTask<TwitchResponse<SetExtensionRequiredConfigurationResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SetExtensionRequiredConfigurationResponseContent>(response, ct);
 }
 
 /// <summary>

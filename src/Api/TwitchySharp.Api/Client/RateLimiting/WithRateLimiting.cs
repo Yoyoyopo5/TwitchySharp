@@ -26,7 +26,7 @@ internal class RequestSerializingMiddleware<TKey>(
 
     public readonly record struct SerializationKey(TKey Value, bool Serialize = true);
 
-    protected override async ValueTask<Result<TwitchResponse<TResponseContent>>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<TwitchResponse<TResponseContent>>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct)
+    protected override async ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct)
     {
         SerializationKey key = await resolveKey(scope, ct);
 
@@ -43,13 +43,13 @@ public static class TwitchRateLimiting
 {
     private class RateLimitingMiddleware(TwitchRateLimitQueueOptions options) : TwitchClient.Middleware
     {
-        protected override ValueTask<Result<TwitchResponse<TResponseContent>>> SendAsync<TResponseContent>(
-            Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<Result<TwitchResponse<TResponseContent>>>> send,
+        protected override ValueTask<TwitchResponse<T>> SendAsync<T>(
+            Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<T>>> send,
             ITwitchRequestDependencyScope scope,
             CancellationToken ct
             )
             => scope.ResolveOrDefault<ClientId?>(ct)
-                .BindAsync(async clientId =>
+                .MapAsync(async clientId =>
                 {
                     if (!clientId.HasValue)
                         return await send(scope, ct);
@@ -57,15 +57,24 @@ public static class TwitchRateLimiting
                     if (await options.Cache.GetOrDefault(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
                         await cachedDetails.WaitFor(options.GetNow(), ct);
 
-                    return await send(scope, ct).MapAsync(async response =>
-                    {
-                        await options.Cache.Set(
-                            clientId.Value,
-                            response.RateLimitDetails,
-                            ct);
-                        return response;
-                    });
-                });
+                    TwitchResponse<T> response = await send(scope, ct);
+
+                    await scope.ResolveOrDefault<HttpResponseMessage>(ct).MapAsync(
+                        async responseMessage =>
+                        {
+                            if (responseMessage is not null)
+                                await options.Cache.Set(
+                                    clientId.Value,
+                                    responseMessage.Headers.ToTwitchRateLimitDetails(),
+                                    ct);
+                            return responseMessage;
+                        });
+
+                    return response;
+                }).MatchAsync(
+                    e => new TwitchResponse<T>(e),
+                    r => r
+                );
     }
 
     /// <summary>
