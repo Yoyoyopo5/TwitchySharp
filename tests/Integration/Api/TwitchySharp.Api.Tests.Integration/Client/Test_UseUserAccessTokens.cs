@@ -155,6 +155,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
+        Assert.Null(response.Error);
         Assert.Equal(expectedAccessToken, response.Content);
     }
 
@@ -190,6 +191,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
+        Assert.Null(response.Error);
         Assert.NotEqual(expiredAccessToken, response.Content);
 
         AccessTokenDetails.User? cached = await cache.GetOrDefault(userIdentity, ct);
