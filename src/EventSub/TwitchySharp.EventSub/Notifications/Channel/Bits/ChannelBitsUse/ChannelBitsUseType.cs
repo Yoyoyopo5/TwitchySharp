@@ -11,4 +11,5 @@ public readonly partial record struct ChannelBitsUseType(string Value)
 {
     public static ChannelBitsUseType Cheer { get; } = new("cheer");
     public static ChannelBitsUseType PowerUp { get; } = new("power_up");
+    public static ChannelBitsUseType CustomPowerUp { get; } = new("custom_power_up");
 }
