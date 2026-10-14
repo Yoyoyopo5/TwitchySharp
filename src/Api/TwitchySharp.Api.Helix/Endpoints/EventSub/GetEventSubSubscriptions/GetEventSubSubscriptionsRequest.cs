@@ -80,6 +80,10 @@ public record GetEventSubSubscriptionsRequest
     /// If a matching subscription does not exist, an empty array is returned.
     /// </remarks>
     public EventSubSubscriptionId? SubscriptionId { get; init; }
+    /// <summary>
+    /// Specify this parameter to filter the returned list by a specific <see href="https://dev.twitch.tv/docs/eventsub/handling-conduit-events">Conduit</see>.
+    /// </summary>
+    public ConduitId? ConduitId { get; init; }
 
     /// <summary>
     /// Unused for this request type.
