@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Net;
 
 namespace TwitchySharp.Api.Helix.Subscriptions;
 /// <summary>
@@ -46,4 +47,12 @@ public record CheckUserSubscriptionRequest
     /// This must be the same user that created the access token.
     /// </remarks>
     public required UserId UserId { get; init; }
+
+    public override async ValueTask<TwitchResponse<CheckUserSubscriptionResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+    {
+        using HttpResponseMessage r = response;
+        return r.StatusCode == HttpStatusCode.NotFound
+            ? new(new CheckUserSubscriptionResponseContent() { Data = [] })
+            : await base.CreateResponse(response, ct);
+    }
 }

@@ -15,11 +15,68 @@ internal static class IAsyncDisposableExtensions
     }
 }
 
+internal class RequestSerializingMiddleware<TKey>(
+    Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<RequestSerializingMiddleware<TKey>.SerializationKey>> resolveKey,
+    Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
+    : TwitchClient.Middleware
+    where TKey : notnull
+{
+    private readonly Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> _lockFactory
+        = lockFactory ?? ThreadSafety.CreateInMemoryLockProvider<TKey>();
+
+    public readonly record struct SerializationKey(TKey Value, bool Serialize = true);
+
+    protected override async ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct)
+    {
+        SerializationKey key = await resolveKey(scope, ct);
+
+        return !key.Serialize
+            ? await send(scope, ct)
+            : await _lockFactory(key.Value, ct).AwaitUsing(() => send(scope, ct));
+    }
+}
+
 /// <summary>
 /// Contains <see cref="TwitchClient"/> extensions for rate limiting.
 /// </summary>
 public static class TwitchRateLimiting
 {
+    private class RateLimitingMiddleware(TwitchRateLimitQueueOptions options) : TwitchClient.Middleware
+    {
+        protected override ValueTask<TwitchResponse<T>> SendAsync<T>(
+            Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<T>>> send,
+            ITwitchRequestDependencyScope scope,
+            CancellationToken ct
+            )
+            => scope.ResolveOrDefault<ClientId?>(ct)
+                .MapAsync(async clientId =>
+                {
+                    if (!clientId.HasValue)
+                        return await send(scope, ct);
+
+                    if (await options.Cache.GetOrDefault(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
+                        await cachedDetails.WaitFor(options.GetNow(), ct);
+
+                    TwitchResponse<T> response = await send(scope, ct);
+
+                    await scope.ResolveOrDefault<HttpResponseMessage>(ct).MapAsync(
+                        async responseMessage =>
+                        {
+                            if (responseMessage is not null)
+                                await options.Cache.Set(
+                                    clientId.Value,
+                                    responseMessage.Headers.ToTwitchRateLimitDetails(),
+                                    ct);
+                            return responseMessage;
+                        });
+
+                    return response;
+                }).MatchAsync(
+                    e => new TwitchResponse<T>(e),
+                    r => r
+                );
+    }
+
     /// <summary>
     /// Send each <see cref="TwitchRequest"/> in series.
     /// </summary>
@@ -41,15 +98,17 @@ public static class TwitchRateLimiting
     /// disposing it once the response is resolved.
     /// If <see langword="null"/>, uses a default in-memory lock provider scoped to the client.
     /// </param>
-    /// <param name="defaultClientId">
-    /// The fallback <see cref="ClientId"/> to use if the request does not resolve a <see cref="ClientId"/>.
-    /// If <see langword="null"/>, does not serialize requests that do not resolve a <see cref="ClientId"/>.
-    /// </param>
     /// <returns>A new <see cref="TwitchClient"/> configured to serialize requests by their resolved <see cref="ClientId"/>.</returns>
     public static TwitchClient SerializeRequestsByClientId(
         this TwitchClient client,
         Func<ClientId, CancellationToken, ValueTask<IAsyncDisposable>>? lockFactory = null)
-        => client.Configure<TwitchClient, HttpResponseMessage?>(next => next.SerializeByValue(lockFactory));
+        => client with { ConfiguredMiddleware = client.ConfiguredMiddleware.Add(new RequestSerializingMiddleware<ClientId>((scope, ct)
+                => scope.ResolveOrDefault<ClientId?>(ct).MatchAsync(
+                    e => new RequestSerializingMiddleware<ClientId>.SerializationKey(default, false),
+                    v => v.HasValue
+                        ? new RequestSerializingMiddleware<ClientId>.SerializationKey(v.Value)
+                        : new RequestSerializingMiddleware<ClientId>.SerializationKey(default, false)
+                    ), lockFactory)) };
 
     private static ValueTask WaitFor(
         this TwitchRateLimitDetails rateLimitDetails,
@@ -68,7 +127,7 @@ public static class TwitchRateLimiting
     /// <remarks>
     /// <para>
     /// Rate Limiting is not thread-safe by default and does not guarantee an HTTP 429 Too Many Requests error will never be returned.
-    /// Call <see cref="SerializeRequestsByClientId(TwitchClient, Func{ClientId, CancellationToken, ValueTask{IAsyncDisposable}}?, ClientId?)"/> after this to serialize requests based on <see cref="ClientId"/>, if necessary.
+    /// Call <see cref="SerializeRequestsByClientId"/> after this to serialize requests based on <see cref="ClientId"/>, if necessary.
     /// </para>
     /// <para>
     /// You may define your own rate limit cache via the <paramref name="configure"/>.
@@ -83,26 +142,7 @@ public static class TwitchRateLimiting
         Func<TwitchRateLimitQueueOptions, TwitchRateLimitQueueOptions>? configure = null
         )
     {
-            TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
-            return client.Configure<TwitchClient, HttpResponseMessage?>(next => (scope, ct) =>
-                scope.ResolveOrDefault<ClientId?>(ct)
-                    .BindAsync(async clientId =>
-                    {
-                        if (!clientId.HasValue)
-                            return await next(scope, ct);
-
-                        if (await options.Cache.GetOrDefault(clientId.Value, ct) is TwitchRateLimitDetails cachedDetails)
-                            await cachedDetails.WaitFor(options.GetNow(), ct);
-
-                        return await next(scope, ct).MapAsync(async response =>
-                        {
-                            if (response is not null)
-                                await options.Cache.Set(
-                                    clientId.Value,
-                                    response.Headers.ToTwitchRateLimitDetails(),
-                                    ct);
-                            return response;
-                        });
-                    }));
-        }
+        TwitchRateLimitQueueOptions options = configure is null ? new() : configure(new());
+        return client with { ConfiguredMiddleware = client.ConfiguredMiddleware.Add(new RateLimitingMiddleware(options)) };
+    }
 }

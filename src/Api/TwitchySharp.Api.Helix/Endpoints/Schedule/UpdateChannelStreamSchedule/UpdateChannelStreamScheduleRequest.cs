@@ -41,8 +41,8 @@ public record UpdateChannelStreamScheduleRequest
     /// </summary>
     public required UpdateChannelStreamScheduleRequestParameters Settings { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UpdateChannelStreamScheduleResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UpdateChannelStreamScheduleResponseContent());
+    public override ValueTask<TwitchResponse<UpdateChannelStreamScheduleResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UpdateChannelStreamScheduleResponseContent>(response, ct);
 }
 
 /// <summary>

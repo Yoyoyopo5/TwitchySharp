@@ -48,10 +48,9 @@ public abstract record TwitchRequest<TResponseContent> : TwitchRequest
     /// Defines how the HTTP response content stream is converted into <typeparamref name="TResponseContent"/>.
     /// </summary>
     /// <remarks>
-    /// The default virtual implementation is JSON deserialization using <see cref="JsonSerializer"/> and <see cref="JsonConfig.ApiOptions"/>.
-    /// Override this method to define a custom response content converter.
+    /// By default, this uses JSON deserialization using <see cref="JsonSerializer"/> and <see cref="JsonConfig.ApiOptions"/>.
+    /// Override to define a custom response content converter for a request.
     /// </remarks>
-    /// <param name="contentStream">The HTTP content stream.</param>
-    /// <returns>The converted <typeparamref name="TResponseContent"/>.</returns>
-    public virtual Func<Stream, CancellationToken, ValueTask<TResponseContent>>? ConvertResponseContent { get; init; }
+    public virtual ValueTask<TwitchResponse<TResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => JsonResponse.Create<TResponseContent>(response, ct);
 }

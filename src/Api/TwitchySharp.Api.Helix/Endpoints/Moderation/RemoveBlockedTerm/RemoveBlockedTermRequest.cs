@@ -51,6 +51,6 @@ public record RemoveBlockedTermRequest
     /// </summary>
     public required AutomodBlockedTermId BlockedTermId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<RemoveBlockedTermResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new RemoveBlockedTermResponseContent());
+    public override ValueTask<TwitchResponse<RemoveBlockedTermResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<RemoveBlockedTermResponseContent>(response, ct);
 }

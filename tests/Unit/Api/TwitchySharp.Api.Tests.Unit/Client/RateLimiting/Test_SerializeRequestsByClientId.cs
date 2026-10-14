@@ -1,7 +1,4 @@
-﻿using System.Collections.Concurrent;
-using TwitchySharp.Infrastructure.Functional;
-using TwitchySharp.Tests.Unit.Toolkit;
-using static TwitchySharp.Tests.Unit.Toolkit.Concurrency;
+﻿using TwitchySharp.Tests.Unit.Toolkit;
 
 namespace TwitchySharp.Api.Tests.Unit.Client.RateLimiting;
 
@@ -18,12 +15,7 @@ public class Test_SerializeRequestsByClientId
             .SetResolver<TwitchClient, TwitchResponse<object>>(async (scope, ct) =>
             {
                 await scope.ResolveOrDefault<HttpResponseMessage>(ct); // Invokes serializer
-                return new TwitchResponse<object>()
-                {
-                    Content = new(),
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = null!
-                };
+                return new TwitchResponse<object>(new object());
             });
 
     private record ConcurrentRequest(Func<Task> Effect) : StubTwitchRequest;

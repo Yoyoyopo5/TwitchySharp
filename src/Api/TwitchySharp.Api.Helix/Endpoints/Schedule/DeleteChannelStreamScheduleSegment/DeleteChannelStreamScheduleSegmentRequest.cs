@@ -45,6 +45,6 @@ public record DeleteChannelStreamScheduleSegmentRequest
     /// </summary>
     public required StreamScheduleSegmentId SegmentId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteChannelStreamScheduleSegmentResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteChannelStreamScheduleSegmentResponseContent());
+    public override ValueTask<TwitchResponse<DeleteChannelStreamScheduleSegmentResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteChannelStreamScheduleSegmentResponseContent>(response, ct);
 }

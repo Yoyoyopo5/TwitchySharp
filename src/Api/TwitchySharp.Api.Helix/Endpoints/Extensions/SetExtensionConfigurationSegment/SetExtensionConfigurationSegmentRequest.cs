@@ -44,8 +44,8 @@ public record SetExtensionConfigurationSegmentRequest
     /// </summary>
     public required SetExtensionConfigurationSegmentRequestData Configuration { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SetExtensionConfigurationSegmentResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SetExtensionConfigurationSegmentResponseContent());
+    public override ValueTask<TwitchResponse<SetExtensionConfigurationSegmentResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SetExtensionConfigurationSegmentResponseContent>(response, ct);
 }
 
 /// <summary>

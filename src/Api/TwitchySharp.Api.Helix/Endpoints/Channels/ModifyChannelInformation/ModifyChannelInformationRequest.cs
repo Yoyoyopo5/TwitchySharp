@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using TwitchySharp.Infrastructure.Functional;
 using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api.Helix.Channels;
@@ -45,8 +46,8 @@ public record ModifyChannelInformationRequest
     /// </summary>
     public required ModifyChannelInformationRequestData ChannelInformation { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<ModifyChannelInformationResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new ModifyChannelInformationResponseContent());
+    public override ValueTask<TwitchResponse<ModifyChannelInformationResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<ModifyChannelInformationResponseContent>(response, ct);
 }
 
 /// <summary>

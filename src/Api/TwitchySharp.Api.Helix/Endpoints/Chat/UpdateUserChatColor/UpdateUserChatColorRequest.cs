@@ -45,6 +45,6 @@ public record UpdateUserChatColorRequest
     /// </summary>
     public required ChatColor Color { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UpdateUserChatColorResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UpdateUserChatColorResponseContent());
+    public override ValueTask<TwitchResponse<UpdateUserChatColorResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UpdateUserChatColorResponseContent>(response, ct);
 }

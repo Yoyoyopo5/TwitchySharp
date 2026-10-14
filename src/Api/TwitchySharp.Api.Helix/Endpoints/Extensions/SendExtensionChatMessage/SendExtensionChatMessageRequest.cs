@@ -45,8 +45,8 @@ public record SendExtensionChatMessageRequest
     /// </summary>
     public required SendExtensionChatMessageRequestData Message { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendExtensionChatMessageResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendExtensionChatMessageResponseContent());
+    public override ValueTask<TwitchResponse<SendExtensionChatMessageResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendExtensionChatMessageResponseContent>(response, ct);
 }
 
 /// <summary>

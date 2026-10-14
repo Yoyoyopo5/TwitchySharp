@@ -1,56 +1,68 @@
-﻿using TwitchySharp.Infrastructure.Functional;
+﻿using TwitchySharp.Api.Tests.Unit.Client.DependencyResolution;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Tests.Unit.Client.Authentication;
 
 public class Test_AlwaysUsePriorAuthorization
 {
-    private class TokenTypeCapturingTwitchClient
+    private class TokenTypeCapturingMiddleware(Action<BearerTokenType?> tokenTypeUsed) : TwitchClient.Middleware
     {
-        private BearerTokenType? _typeUsed;
-        private readonly TwitchClient _client;
-        public TokenTypeCapturingTwitchClient(ITwitchRequestAuthenticationContext<TwitchIdentity> authenticationContext)
+        protected override async ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct)
         {
-            _client = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetFixed(authenticationContext)
-            .AlwaysUsePriorAuthorization()
-            .Configure<TwitchClient, BearerTokenType?>(next => (scope, ct) =>
-                next(scope, ct).MapAsync(tokenType =>
-                {
-                    _typeUsed = tokenType;
-                    return tokenType;
-                }
-            ))
-            .UseStubResponse<BearerTokenType?>();
-        }
+            await scope.ResolveOrDefault<BearerTokenType?>(ct).MapAsync(t =>
+            {
+                tokenTypeUsed(t);
+                return t;
+            });
 
-        public async Task<BearerTokenType?> SendStub()
-        {
-            await _client.SendAsync(new StubTwitchRequest(), TestContext.Current.CancellationToken);
-            return _typeUsed;
+            return await send(scope, ct);
         }
     }
 
+    private record StubAuthenticatedRequest(ITwitchRequestAuthenticationContext<TwitchIdentity> context) : TwitchRequest<object>,
+        IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
+    {
+        public override HttpMethod Method => HttpMethod.Get;
+        public override Uri RequestUri => new("http://localhost/");
+
+        public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext { get; } = context;
+
+        public override ValueTask<TwitchResponse<object>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+            => ValueTask.FromResult(new TwitchResponse<object>(new object()));
+    }
+
     [Fact]
-    public async Task SendAsync_RequestSupportingPriorAuthorization_UsesAppAccessToken()
+    public async Task ResolveTokenType_RequestSupportingPriorAuthorization_ReturnsAppAccessToken()
     {
         UserSupportingPriorAuthorizationAuthenticationContext context = new()
         {
             Identity = new(new("12345"))
         };
-        TokenTypeCapturingTwitchClient stubClient = new(context);
 
-        Assert.Equal(BearerTokenType.AppAccessToken, await stubClient.SendStub());
+        TwitchClient stubClient = new TwitchClient()
+            .AlwaysUsePriorAuthorization();
+
+        StubDependencyScope scope = new(stubClient.Resolvers) { Request = new StubAuthenticatedRequest(context) };
+
+        Result<BearerTokenType?> result = await scope.ResolveOrDefault<BearerTokenType?>(TestContext.Current.CancellationToken);
+
+        Assert.Equal(BearerTokenType.AppAccessToken, result);
     }
 
     [Fact]
-    public async Task SendAsync_RequestNotSupportingPriorAuthorization_DoesNotUseAppAccessToken()
+    public async Task ResolveTokenType_RequestNotSupportingPriorAuthorization_DoesNotReturnAppAccessToken()
     {
         UserWithScopesAuthenticationContext context = new()
         {
             Identity = new(new("12345"))
         };
-        TokenTypeCapturingTwitchClient stubClient = new(context);
+        TwitchClient stubClient = new TwitchClient()
+            .AlwaysUsePriorAuthorization();
 
-        Assert.NotEqual(BearerTokenType.AppAccessToken, await stubClient.SendStub());
+        StubDependencyScope scope = new(stubClient.Resolvers) { Request = new StubAuthenticatedRequest(context) };
+
+        Result<BearerTokenType?> result = await scope.ResolveOrDefault<BearerTokenType?>(TestContext.Current.CancellationToken);
+
+        Assert.NotEqual(BearerTokenType.AppAccessToken, result);
     }
 }

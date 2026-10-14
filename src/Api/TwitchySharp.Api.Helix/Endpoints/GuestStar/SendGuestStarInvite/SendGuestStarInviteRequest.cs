@@ -55,6 +55,6 @@ public record SendGuestStarInviteRequest
     /// </summary>
     public required UserId GuestId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendGuestStarInviteResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendGuestStarInviteResponseContent());
+    public override ValueTask<TwitchResponse<SendGuestStarInviteResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendGuestStarInviteResponseContent>(response, ct);
 }

@@ -59,8 +59,8 @@ public record SendWhisperRequest
     /// </summary>
     public required SendWhisperRequestData Whisper { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendWhisperResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendWhisperResponseContent());
+    public override ValueTask<TwitchResponse<SendWhisperResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendWhisperResponseContent>(response, ct);
 }
 
 /// <summary>

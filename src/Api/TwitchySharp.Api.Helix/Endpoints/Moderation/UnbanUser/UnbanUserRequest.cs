@@ -51,6 +51,6 @@ public record UnbanUserRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UnbanUserResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UnbanUserResponseContent());
+    public override ValueTask<TwitchResponse<UnbanUserResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UnbanUserResponseContent>(response, ct);
 }

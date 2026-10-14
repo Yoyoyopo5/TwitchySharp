@@ -54,6 +54,6 @@ public record BlockUserRequest
     /// </summary>
     public BlockUserReason? Reason { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<BlockUserResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new BlockUserResponseContent());
+    public override ValueTask<TwitchResponse<BlockUserResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<BlockUserResponseContent>(response, ct);
 }

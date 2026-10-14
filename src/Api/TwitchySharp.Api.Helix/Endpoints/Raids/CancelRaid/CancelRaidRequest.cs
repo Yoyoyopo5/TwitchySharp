@@ -38,6 +38,6 @@ public record CancelRaidRequest
     /// </summary>
     public required UserId BroadcasterId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<CancelRaidResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new CancelRaidResponseContent());
+    public override ValueTask<TwitchResponse<CancelRaidResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<CancelRaidResponseContent>(response, ct);
 }

@@ -67,8 +67,8 @@ public record UpdateGuestStarSlotSettingsRequest
     /// </summary>
     public required GuestStarSlotSettings Settings { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UpdateGuestStarSlotSettingsResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UpdateGuestStarSlotSettingsResponseContent());
+    public override ValueTask<TwitchResponse<UpdateGuestStarSlotSettingsResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UpdateGuestStarSlotSettingsResponseContent>(response, ct);
 }
 
 /// <summary>

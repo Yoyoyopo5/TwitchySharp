@@ -68,6 +68,6 @@ public record AssignGuestStarSlotRequest
     /// </remarks>
     public required GuestStarSlotId SlotId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<AssignGuestStarSlotResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new AssignGuestStarSlotResponseContent());
+    public override ValueTask<TwitchResponse<AssignGuestStarSlotResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<AssignGuestStarSlotResponseContent>(response, ct);
 }

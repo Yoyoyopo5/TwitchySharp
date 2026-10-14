@@ -36,8 +36,8 @@ public record ManageHeldAutoModMessagesRequest
     /// </summary>
     public required ManageHeldAutoModMessagesRequestData MessageAction { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<ManageHeldAutoModMessagesResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new ManageHeldAutoModMessagesResponseContent());
+    public override ValueTask<TwitchResponse<ManageHeldAutoModMessagesResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<ManageHeldAutoModMessagesResponseContent>(response, ct);
 }
 
 /// <summary>

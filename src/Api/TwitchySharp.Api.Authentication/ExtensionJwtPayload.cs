@@ -8,9 +8,6 @@ namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Used to create a signed JWT for various Extensions API endpoints.
 /// </summary>
-/// <param name="UserId">
-/// The user id of the owner of the extension.
-/// </param>
 public record ExtensionJwtPayload
 {
     /// <summary>

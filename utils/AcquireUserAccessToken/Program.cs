@@ -24,7 +24,7 @@ JsonSerializerOptions serializerOptions = new()
     WriteIndented = true,
 };
 
-TwitchClient client = new TwitchClient();
+TwitchClient client = new();
 
 string state = Guid.NewGuid().ToString();
 string nonce = Guid.NewGuid().ToString();
@@ -86,21 +86,24 @@ async ValueTask<AccessTokenDetails.User> acquireToken(string code, CancellationT
         ClientSecret = clientSecret,
         Code = code,
         RedirectUri = redirectUri
-    }, ct)).Content switch
-    {
-        { } response => new AccessTokenDetails.User()
+    }, ct)).Match(
+        content => new AccessTokenDetails.User()
         {
-            AccessToken = response.AccessToken,
-            Scopes = response.Scope?.ToHashSet() ?? [],
-            ExpiresAt = DateTimeOffset.UtcNow + response.ExpiresIn,
+            AccessToken = content.AccessToken,
+            Scopes = content.Scope?.ToHashSet() ?? [],
+            ExpiresAt = DateTimeOffset.UtcNow + content.ExpiresIn,
             Identity = new TwitchIdentity.User(
-                new(response.GetOidc()?.Sub
+                new(content.GetOidc()?.Sub
                     ?? throw new Exception("OIDC claims were not present, and the authorizing user could not be identified.")),
                 clientId
                 ),
-            RefreshToken = response.RefreshToken
-        }
-    };
+            RefreshToken = content.RefreshToken
+        },
+        error =>
+        {
+            Console.WriteLine($"Error when sending the token request: {error.Message}");
+            throw new Exception(error.Message);
+        });
 
 string clipboard(string text)
 {
@@ -137,7 +140,6 @@ try
     Console.WriteLine("Access token details were copied to the clipboard.");
 }
 catch (OperationCanceledException cancelEx) { Console.WriteLine(cancelEx.Message); }
-catch (TwitchApiException apiEx) { Console.WriteLine($"An error occurred when requesting the token: {apiEx.StatusCode} {apiEx.Message} {apiEx.Content} {((FormUrlEncodedContent)apiEx.Request.Content!).ReadAsStringAsync().Result}"); }
 catch (Exception ex) { Console.WriteLine($"An error occurred when waiting for the code: {ex.Message}"); }
 
 Console.WriteLine();

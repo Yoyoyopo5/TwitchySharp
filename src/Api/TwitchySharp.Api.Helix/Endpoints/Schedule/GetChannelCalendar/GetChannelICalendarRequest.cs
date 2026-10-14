@@ -1,4 +1,6 @@
-﻿namespace TwitchySharp.Api.Helix.Schedule;
+﻿using TwitchySharp.Infrastructure.Functional;
+
+namespace TwitchySharp.Api.Helix.Schedule;
 /// <summary>
 /// Gets the broadcaster's streaming schedule as an <see href="https://datatracker.ietf.org/doc/html/rfc5545">iCalendar</see>.
 /// </summary>
@@ -22,10 +24,17 @@ public record GetChannelICalendarRequest
     /// </summary>
     public required UserId BroadcasterId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<GetChannelICalendarResponseContent>>? ConvertResponseContent { get; init; }
-        = async (contentStream, ct) =>
+    public override async ValueTask<TwitchResponse<GetChannelICalendarResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+    {
+        using HttpResponseMessage r = response;
+        try
         {
-            using StreamReader sr = new(contentStream);
-            return new GetChannelICalendarResponseContent(await sr.ReadToEndAsync(ct));
-        };
+            using StreamReader sr = new(await r.Content.ReadAsStreamAsync(ct));
+            return new(new GetChannelICalendarResponseContent(await sr.ReadToEndAsync(ct)));
+        }
+        catch (Exception ex)
+        {
+            return new(new ExceptionError(ex));
+        }
+    }
 }

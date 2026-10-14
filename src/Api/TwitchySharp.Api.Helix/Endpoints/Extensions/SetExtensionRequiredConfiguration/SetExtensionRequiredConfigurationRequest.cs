@@ -46,8 +46,8 @@ public record SetExtensionRequiredConfigurationRequest
     /// </summary>
     public required SetExtensionRequiredConfigurationRequestData Configuration { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SetExtensionRequiredConfigurationResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SetExtensionRequiredConfigurationResponseContent());
+    public override ValueTask<TwitchResponse<SetExtensionRequiredConfigurationResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SetExtensionRequiredConfigurationResponseContent>(response, ct);
 }
 
 /// <summary>

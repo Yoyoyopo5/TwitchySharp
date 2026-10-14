@@ -45,6 +45,6 @@ public record AddChannelModeratorRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<AddChannelModeratorResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new AddChannelModeratorResponseContent());
+    public override ValueTask<TwitchResponse<AddChannelModeratorResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<AddChannelModeratorResponseContent>(response, ct);
 }

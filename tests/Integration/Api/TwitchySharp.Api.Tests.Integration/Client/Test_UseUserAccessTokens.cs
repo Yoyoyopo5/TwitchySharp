@@ -113,7 +113,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
         => RequestDependencyCache.Create(tokens.Select(token => KeyValuePair.Create(token.Identity, token)));
 
     [Fact]
-    public async Task SendAsync_WithNoCachedToken_ReturnsBadRequest()
+    public async Task SendAsync_WithNoCachedToken_ReturnsUnexpectedHttpStatusCodeErrorWithBadRequest()
     {
         IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User> cache = await CreateCache();
 
@@ -123,8 +123,10 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         StubUserAuthenticatedRequest request = new() { UserId = new("12345") };
 
-        TwitchApiException exception = await Assert.ThrowsAsync<TwitchApiException>(async () => await client.SendAsync(request, TestContext.Current.CancellationToken));
-        Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+        TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        Assert.NotNull(response.Error);
+        UnexpectedHttpStatusCodeError error = Assert.IsType<UnexpectedHttpStatusCodeError>(response.Error);
+        Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
     }
 
     [Fact]
@@ -153,6 +155,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
+        Assert.Null(response.Error);
         Assert.Equal(expectedAccessToken, response.Content);
     }
 
@@ -188,6 +191,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
+        Assert.Null(response.Error);
         Assert.NotEqual(expiredAccessToken, response.Content);
 
         AccessTokenDetails.User? cached = await cache.GetOrDefault(userIdentity, ct);
@@ -237,7 +241,7 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
     }
 
     [Fact]
-    public async Task SendAsync_WithInvalidCachedTokenWithNoRefreshToken_ThrowsInvalidOperationException()
+    public async Task SendAsync_WithInvalidCachedTokenWithNoRefreshToken_ReturnsMissingRefreshTokenError()
     {
         UserId fakeUserId = new("1249017848");
         UserAccessToken expiredAccessToken = new("489128149");
@@ -264,7 +268,10 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         StubUserAuthenticatedRequest request = new() { UserId = fakeUserId };
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => client.SendAsync(request, TestContext.Current.CancellationToken));
+        TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.NotNull(response.Error);
+        Assert.IsType<UserAccessTokenResolution.MissingRefreshTokenError>(response.Error);
     }
 
     [Fact]
@@ -291,7 +298,9 @@ public class Test_UseUserAccessTokens(TwitchApiIntegrationTestFixture fixture)
 
         StubUserAuthenticatedRequest request = new() { UserId = requestUserIdentity.UserId };
 
-        TwitchApiException ex = await Assert.ThrowsAsync<TwitchApiException>(() => client.SendAsync(request, TestContext.Current.CancellationToken));
-        Assert.Equal(HttpStatusCode.BadRequest, ex.StatusCode);
+        TwitchResponse<BearerToken> response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        Assert.NotNull(response.Error);
+        UnexpectedHttpStatusCodeError error = Assert.IsType<UnexpectedHttpStatusCodeError>(response.Error);
+        Assert.Equal(HttpStatusCode.BadRequest, error.StatusCode);
     }
 }

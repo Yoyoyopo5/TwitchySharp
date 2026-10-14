@@ -45,6 +45,6 @@ public record RemoveChannelModeratorRequest
     /// </summary>
     public required UserId UserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<RemoveChannelModeratorResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new RemoveChannelModeratorResponseContent());
+    public override ValueTask<TwitchResponse<RemoveChannelModeratorResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<RemoveChannelModeratorResponseContent>(response, ct);
 }

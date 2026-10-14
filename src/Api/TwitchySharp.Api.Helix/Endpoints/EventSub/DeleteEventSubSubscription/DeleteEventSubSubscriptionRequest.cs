@@ -83,6 +83,6 @@ public record DeleteEventSubSubscriptionRequest()
     /// </summary>
     public required EventSubSubscriptionId SubscriptionId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteEventSubSubscriptionResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteEventSubSubscriptionResponseContent());
+    public override ValueTask<TwitchResponse<DeleteEventSubSubscriptionResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteEventSubSubscriptionResponseContent>(response, ct);
 }

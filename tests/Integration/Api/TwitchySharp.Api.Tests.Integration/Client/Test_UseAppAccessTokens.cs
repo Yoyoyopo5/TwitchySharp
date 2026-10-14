@@ -183,7 +183,7 @@ public class Test_UseAppAccessTokens(TwitchApiIntegrationTestFixture fixture) : 
 
         TwitchResponse<object> response = await client.SendAsync(new StubTwitchRequest(FAKE_UNAUTHENTICATED_ENDPOINT_PATH), ct);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(response.Error);
     }
 
     [Fact]

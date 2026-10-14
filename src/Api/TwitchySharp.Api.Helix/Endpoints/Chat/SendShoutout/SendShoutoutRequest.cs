@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Chat;
@@ -54,6 +55,6 @@ public record SendShoutoutRequest
     /// </remarks>
     public required UserId ModeratorId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendShoutoutResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendShoutoutResponseContent());
+    public override ValueTask<TwitchResponse<SendShoutoutResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendShoutoutResponseContent>(response, ct);
 }

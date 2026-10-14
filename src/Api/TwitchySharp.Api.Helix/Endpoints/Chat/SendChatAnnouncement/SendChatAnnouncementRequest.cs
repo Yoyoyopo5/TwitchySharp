@@ -1,3 +1,4 @@
+using TwitchySharp.Infrastructure.Functional;
 using System.Collections.Immutable;
 
 namespace TwitchySharp.Api.Helix.Chat;
@@ -53,8 +54,8 @@ public record SendChatAnnouncementRequest
     /// </summary>
     public required SendChatAnnouncementRequestData Announcement { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendChatAnnouncementResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendChatAnnouncementResponseContent());
+    public override ValueTask<TwitchResponse<SendChatAnnouncementResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendChatAnnouncementResponseContent>(response, ct);
 }
 
 /// <summary>

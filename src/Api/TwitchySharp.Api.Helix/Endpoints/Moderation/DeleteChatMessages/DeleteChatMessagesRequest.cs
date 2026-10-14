@@ -60,6 +60,6 @@ public record DeleteChatMessagesRequest
     /// </remarks>
     public MessageId? MessageId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteChatMessagesResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteChatMessagesResponseContent());
+    public override ValueTask<TwitchResponse<DeleteChatMessagesResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteChatMessagesResponseContent>(response, ct);
 }

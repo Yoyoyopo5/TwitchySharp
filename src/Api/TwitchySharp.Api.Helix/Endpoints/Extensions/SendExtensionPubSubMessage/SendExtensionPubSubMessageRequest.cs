@@ -46,8 +46,8 @@ public record SendExtensionPubSubMessageRequest
     /// </summary>
     public required SendExtensionPubSubMessageRequestData Message { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<SendExtensionPubSubMessageResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new SendExtensionPubSubMessageResponseContent());
+    public override ValueTask<TwitchResponse<SendExtensionPubSubMessageResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<SendExtensionPubSubMessageResponseContent>(response, ct);
 }
 
 /// <summary>

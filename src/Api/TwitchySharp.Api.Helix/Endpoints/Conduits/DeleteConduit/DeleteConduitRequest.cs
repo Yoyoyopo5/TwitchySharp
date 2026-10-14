@@ -26,6 +26,6 @@ public record DeleteConduitRequest
     /// </summary>
     public required ConduitId ConduitId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteConduitResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new DeleteConduitResponseContent());
+    public override ValueTask<TwitchResponse<DeleteConduitResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteConduitResponseContent>(response, ct);
 }

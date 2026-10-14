@@ -1,4 +1,5 @@
-﻿using TwitchySharp.Infrastructure.Functional;
+﻿using TwitchySharp.Api.Tests.Unit.Client.DependencyResolution;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Authentication.Tests.Unit.Client;
 
@@ -11,28 +12,26 @@ public class Test_WithClient
     }
 
     [Fact]
-    public async Task SendAsync_ResolveClientSecret_WithSameClientId_ReturnsClientSecret()
+    public async Task ResolveClientSecret_WithSameClientId_ReturnsClientSecret()
     {
         ClientId fakeId = new("mclovin");
         ClientSecret fakeSecret = new("26");
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ClientSecret?>>((scope, ct) =>
-                scope.ResolveOrDefault<ClientSecret?>(ct).MapAsync(secret => new TwitchResponse<ClientSecret?>()
-                {
-                    Content = secret,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithClient(fakeId, fakeSecret);
 
-        ClientSecret? result = (await stubClient.SendAsync(new ClientSecretRequest(), TestContext.Current.CancellationToken)).Content;
+        StubDependencyScope scope = new(stubClient.Resolvers);
+
+        ResolveRequestDependency<ClientSecret?>? resolver = stubClient.Resolvers.GetResolver<ClientSecret?>();
+        Assert.NotNull(resolver);
+
+        Result<ClientSecret?> result = await resolver(scope, TestContext.Current.CancellationToken);
 
         Assert.Equal(fakeSecret, result);
     }
 
     [Fact]
-    public async Task SendAsync_ResolveClientSecret_WithDifferentClientId_ReturnsNull()
+    public async Task ResolveClientSecret_WithDifferentClientId_ReturnsNull()
     {
         ClientId fakeId = new("mclovin");
         ClientSecret fakeSecret = new("26");
@@ -40,18 +39,22 @@ public class Test_WithClient
         ClientId otherFakeId = new("fogle");
 
         TwitchClient stubClient = new TwitchClient() { Resolvers = new ImmutableRequestDependencyCollection() }
-            .SetResolver<TwitchResponse<ClientSecret?>>((scope, ct) =>
-                scope.ResolveOrDefault<ClientSecret?>(ct).MapAsync(secret => new TwitchResponse<ClientSecret?>()
-                {
-                    Content = secret,
-                    StatusCode = System.Net.HttpStatusCode.OK,
-                    Request = scope.Request
-                }))
             .WithClient(fakeId, fakeSecret)
             .SetFixed<TwitchClient, ClientId?>(otherFakeId);
 
-        ClientSecret? result = (await stubClient.SendAsync(new ClientSecretRequest(), TestContext.Current.CancellationToken)).Content;
+        StubDependencyScope scope = new(stubClient.Resolvers);
 
-        Assert.Null(result);
+        ResolveRequestDependency<ClientSecret?>? resolver = stubClient.Resolvers.GetResolver<ClientSecret?>();
+        Assert.NotNull(resolver);
+
+        Result<ClientSecret?> result = await resolver(scope, TestContext.Current.CancellationToken);
+
+        result.Match(
+            e => throw new Exception(e.Message),
+            secret =>
+            {
+                Assert.Null(secret);
+                return secret;
+            });
     }
 }

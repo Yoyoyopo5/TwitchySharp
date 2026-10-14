@@ -44,6 +44,6 @@ public record UnblockUserRequest
     /// </remarks>
     public required UserId TargetUserId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<UnblockUserResponseContent>>? ConvertResponseContent { get; init; }
-        = (_, _) => ValueTask.FromResult(new UnblockUserResponseContent());
+    public override ValueTask<TwitchResponse<UnblockUserResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<UnblockUserResponseContent>(response, ct);
 }

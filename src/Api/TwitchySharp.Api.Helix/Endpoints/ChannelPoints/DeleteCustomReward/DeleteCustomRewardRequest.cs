@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <summary>
@@ -48,6 +49,6 @@ public record DeleteCustomRewardRequest
     /// </summary>
     public required RewardId RewardId { get; init; }
 
-    public override Func<Stream, CancellationToken, ValueTask<DeleteCustomRewardResponseContent>>? ConvertResponseContent { get; init; } =
-        (_, _) => ValueTask.FromResult(new DeleteCustomRewardResponseContent());
+    public override ValueTask<TwitchResponse<DeleteCustomRewardResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => EmptyResponse.Create<DeleteCustomRewardResponseContent>(response, ct);
 }

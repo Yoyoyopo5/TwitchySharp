@@ -11,14 +11,10 @@ public class Test_GetPages
             CancellationToken ct = default
             )
             => request is StubPageableTwitchRequest pageableRequest
-            ? Task.FromResult(new TwitchResponse<TResponseContent>()
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Request = request,
-                Content = new StubPageableResponseContent() { Pagination = new() { Cursor = _pages == 0 ? null : new(_pages--.ToString()) } } is TResponseContent content
-                    ? content
-                    : throw new NotImplementedException()
-            })
+            ? Task.FromResult(
+                new StubPageableResponseContent() { Pagination = new() { Cursor = _pages == 0 ? null : new(_pages--.ToString()) } } is TResponseContent content
+                    ? new TwitchResponse<TResponseContent>(content)
+                    : throw new NotImplementedException())
             : throw new NotImplementedException();
     }
 
