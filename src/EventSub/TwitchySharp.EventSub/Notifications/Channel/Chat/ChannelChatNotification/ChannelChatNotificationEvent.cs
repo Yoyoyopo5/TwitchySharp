@@ -119,6 +119,11 @@ public record ChannelChatNotificationEvent
     /// </summary>
     public ChannelChatMessageNotificationCharityDonation? CharityDonation { get; init; }
     /// <summary>
+    /// Information about the Watch Streak event,
+    /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.WatchStreak"/>.
+    /// </summary>
+    public ChannelChatMessageNotificationWatchStreak? WatchStreak { get; init; }
+    /// <summary>
     /// The user id of the broadcaster (channel) the message that triggered the notification was sent from.
     /// This is <see langword="null"/> when a shared chat session is not active, or the message is sent in the same channel as the <see cref="BroadcasterUserId"/>.
     /// </summary>

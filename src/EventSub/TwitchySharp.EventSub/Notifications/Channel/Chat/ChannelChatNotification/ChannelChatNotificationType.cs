@@ -64,6 +64,10 @@ public readonly partial record struct ChannelChatNotificationType(string Value)
     /// </summary>
     public static ChannelChatNotificationType CharityDonation { get; } = new("charity_donation");
     /// <summary>
+    /// A user has a watch streak.
+    /// </summary>
+    public static ChannelChatNotificationType WatchStreak { get; } = new("watch_streak");
+    /// <summary>
     /// A user subscribed to a channel in a shared chat.
     /// </summary>
     public static ChannelChatNotificationType SharedChatSubscription { get; } = new("shared_chat_sub");
