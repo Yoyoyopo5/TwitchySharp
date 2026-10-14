@@ -8,6 +8,36 @@ namespace TwitchySharp.Api.Tests.Integration.Helix;
 public class Test_CreateEventSubSubscription(TwitchApiIntegrationTestFixture fixture)
 {
     [Fact]
+    public async Task SendAsync_CreateEventSubSubscriptionRequest_Conflict_ReturnsExpectedErrorWithSubscriptionId()
+    {
+        EventSubSubscriptionId expectedId = new("c3e419d8-4f1d-403c-80f5-1639a672a81d");
+
+        using IDisposable endpoint = fixture.TestServer.Map(HttpMethod.Post, "/helix/eventsub/subscriptions",
+            (CreateEventSubSubscriptionRequestData data) => Results.Conflict(new
+                {
+                    error = "Conflict",
+                    status = 409,
+                    message = $"subscription already exists; id={expectedId.Value}"
+                }));
+
+        CreateEventSubSubscriptionRequest request = new()
+        {
+            Subscription = new()
+            {
+                Transport = new WebhookSubscriptionTransport(new("https://fake-callback.com"), new("super_secure_secret")),
+                Type = new ChannelBan(new("12374"))
+            }
+        };
+
+        TwitchResponse<CreateEventSubSubscriptionResponseContent> response = await fixture.TestServer.GetDefaultTwitchClient().SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.NotNull(response.Error);
+        CreateEventSubSubscriptionRequest.SubscriptionAlreadyExistsError error
+            = Assert.IsType<CreateEventSubSubscriptionRequest.SubscriptionAlreadyExistsError>(response.Error);
+        Assert.Equal(expectedId, error.Id);
+    }
+
+    [Fact]
     public async Task SendAsync_CreateEventSubSubscriptionRequest_ResponseContainsExpectedData()
     {
         EventSubSubscription expectedSubscription = new()

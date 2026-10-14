@@ -81,4 +81,8 @@ public readonly partial record struct EventSubSubscriptionStatus(string Value)
     /// The client failed to reconnect to the Twitch WebSocket server within the required time after a Reconnect Message.
     /// </summary>
     public static EventSubSubscriptionStatus WebsocketFailedToReconnect { get; } = new("websocket_failed_to_reconnect");
+    /// <summary>
+    /// The conduit associated with the subscription was deleted.
+    /// </summary>
+    public static EventSubSubscriptionStatus ConduitDeleted { get; } = new("conduit_deleted ");
 }
