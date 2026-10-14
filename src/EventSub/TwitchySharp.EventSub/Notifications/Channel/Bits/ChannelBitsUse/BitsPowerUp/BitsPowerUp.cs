@@ -2,7 +2,6 @@
 
 /// <summary>
 /// A Bits power-up.
-/// See <see href="https://help.twitch.tv/s/article/power-ups">Power-ups</see> for more information.
 /// </summary>
 public record BitsPowerUp
 {
