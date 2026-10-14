@@ -85,4 +85,11 @@ public record ChannelChatMessageEvent
     /// Is <see langword="null"/> if the message did not come from another broadcaster during a shared chat session.
     /// </summary>
     public ChannelChatMessageBadge[]? SourceBadges { get; init; }
+    /// <summary>
+    /// Determines if a message delivered during a shared chat session is only sent to the source channel.
+    /// </summary>
+    /// <remarks>
+    /// Has no effect if the message is not sent during a shared chat session.
+    /// </remarks>
+    public bool? IsSourceOnly { get; init; } 
 }
