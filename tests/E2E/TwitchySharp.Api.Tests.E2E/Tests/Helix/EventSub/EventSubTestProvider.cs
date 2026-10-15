@@ -56,6 +56,7 @@ public static class EventSubTestRegistry
         .Register<ChannelPointsCustomRewardRemove, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRemove(userConfig.UserId))
         .Register<ChannelPointsCustomRewardRedemptionAdd, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRedemptionAdd(userConfig.UserId))
         .Register<ChannelPointsCustomRewardRedemptionUpdate, UserConfiguration>(userConfig => new ChannelPointsCustomRewardRedemptionUpdate(userConfig.UserId))
+        .Register<ChannelCustomPowerUpRedemptionAdd, UserConfiguration>(userConfig => new ChannelCustomPowerUpRedemptionAdd(userConfig.UserId))
         .Register<ChannelPollBegin, UserConfiguration>(userConfig => new ChannelPollBegin(userConfig.UserId))
         .Register<ChannelPollProgress, UserConfiguration>(userConfig => new ChannelPollProgress(userConfig.UserId))
         .Register<ChannelPollEnd, UserConfiguration>(userConfig => new ChannelPollEnd(userConfig.UserId))
@@ -301,6 +302,10 @@ public class EventSubTestProvider : IEnumerable<TheoryDataRow<EventSubTestRow>>
         new TheoryDataRow<EventSubTestRow>(new()
         {
             SubscriptionType = ChannelPointsCustomRewardRedemptionUpdate.SubscriptionType
+        }),
+        new TheoryDataRow<EventSubTestRow>(new()
+        {
+            SubscriptionType = ChannelCustomPowerUpRedemptionAdd.SubscriptionType
         }),
         new TheoryDataRow<EventSubTestRow>(new()
         {
