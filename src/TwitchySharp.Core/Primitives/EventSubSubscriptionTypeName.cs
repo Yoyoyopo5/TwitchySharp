@@ -93,6 +93,8 @@ public readonly partial record struct EventSubSubscriptionTypeName(string Value)
     public static EventSubSubscriptionTypeName ChannelPointsCustomRewardRedemptionAdd { get; } = new("channel.channel_points_custom_reward_redemption.add");
     /// <inheritdoc cref="EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate"/>
     public static EventSubSubscriptionTypeName ChannelPointsCustomRewardRedemptionUpdate { get; } = new("channel.channel_points_custom_reward_redemption.update");
+    /// <inheritdoc cref="EventSubSubscriptionType.ChannelCustomPowerUpRedemptionAdd"/>
+    public static EventSubSubscriptionTypeName ChannelCustomPowerUpRedemptionAdd { get; } = new("channel.custom_power_up_redemption.add");
     /// <inheritdoc cref="EventSubSubscriptionType.ChannelPollBegin"/>
     public static EventSubSubscriptionTypeName ChannelPollBegin { get; } = new("channel.poll.begin");
     /// <inheritdoc cref="EventSubSubscriptionType.ChannelPollProgress"/>

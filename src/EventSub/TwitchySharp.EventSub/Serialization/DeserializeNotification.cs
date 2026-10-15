@@ -138,6 +138,7 @@ public static class DeserializeNotificationExtensions
             .Register<ChannelPointsCustomRewardRemoveNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRemove)
             .Register<ChannelPointsCustomRewardRedemptionAddNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionAdd)
             .Register<ChannelPointsCustomRewardRedemptionUpdateNotification>(EventSubSubscriptionType.ChannelPointsCustomRewardRedemptionUpdate)
+            .Register<ChannelCustomPowerUpRedemptionAddNotification>(EventSubSubscriptionType.ChannelCustomPowerUpRedemptionAdd)
             .Register<CharityDonationNotification>(EventSubSubscriptionType.CharityDonation)
             .Register<CharityCampaignStartNotification>(EventSubSubscriptionType.CharityCampaignStart)
             .Register<CharityCampaignProgressNotification>(EventSubSubscriptionType.CharityCampaignProgress)

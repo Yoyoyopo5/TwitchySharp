@@ -122,6 +122,7 @@ public static class EventSubSubscriptionExtensions
         .Register<ChannelPointsCustomRewardRemove>()
         .Register<ChannelPointsCustomRewardRedemptionAdd>()
         .Register<ChannelPointsCustomRewardRedemptionUpdate>()
+        .Register<ChannelCustomPowerUpRedemptionAdd>()
         .Register<ChannelPollBegin>()
         .Register<ChannelPollProgress>()
         .Register<ChannelPollEnd>()

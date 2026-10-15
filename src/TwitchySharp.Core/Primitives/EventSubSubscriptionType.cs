@@ -259,6 +259,14 @@ public record EventSubSubscriptionType(
     public static EventSubSubscriptionType ChannelPointsCustomRewardRedemptionUpdate { get; } = new(EventSubSubscriptionTypeName.ChannelPointsCustomRewardRedemptionUpdate, EventSubSubscriptionTypeVersion.Version1);
 
     /// <summary>
+    /// A viewer has redeemed a custom Power-up on the specified channel.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/#channelcustom_power_up_redemptionadd">channel.custom_power_up_redemption.add</see> for more information.
+    /// </remarks>
+    public static EventSubSubscriptionType ChannelCustomPowerUpRedemptionAdd { get; } = new(EventSubSubscriptionTypeName.ChannelCustomPowerUpRedemptionAdd, EventSubSubscriptionTypeVersion.Version1);
+
+    /// <summary>
     /// A poll started on a specified channel.
     /// </summary>
     public static EventSubSubscriptionType ChannelPollBegin { get; } = new(EventSubSubscriptionTypeName.ChannelPollBegin, EventSubSubscriptionTypeVersion.Version1);

@@ -45,7 +45,7 @@ public class TwitchTestApplication
 
         builder.Services
             .AddTransient(sp => new TwitchClient()
-                    .WithHttpClient(sp.GetRequiredService<HttpClient>())
+                    .WithHttpClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(TwitchClient)))
                     .AddClientConfiguration(sp)
                     .AddExtensionConfiguration(sp)
                     .UseAppAccessTokens(options => options with { TokenCache = sp.GetRequiredService<TokenStore>() })
