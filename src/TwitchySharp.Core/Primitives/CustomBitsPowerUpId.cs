@@ -1,6 +1,6 @@
 ﻿using Yoyoyopo5.ValueWrapper;
 
-namespace TwitchySharp.EventSub.Notifications;
+namespace TwitchySharp;
 
 /// <summary>
 /// An id of a custom bits power up reward.
