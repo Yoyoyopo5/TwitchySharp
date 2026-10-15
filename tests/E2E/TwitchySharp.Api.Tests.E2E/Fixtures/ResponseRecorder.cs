@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace TwitchySharp.Api.Tests.E2E;
 
@@ -18,11 +19,15 @@ internal class ResponseRecorder : DelegatingHandler
         string? responseContent = null;
         if (response.Content is not null)
         {
-            await response.Content.LoadIntoBufferAsync(ct);
-            Stream responseContentStream = await response.Content.ReadAsStreamAsync(ct);
-            using StreamReader sr = new(responseContentStream, leaveOpen: true);
-            responseContent = await sr.ReadToEndAsync(ct);
-            responseContentStream.Seek(0, SeekOrigin.Begin);
+            byte[] content = await response.Content.ReadAsByteArrayAsync(ct);
+            ByteArrayContent replace = new(content);
+            foreach ((string key, IEnumerable<string> value) in response.Content.Headers)
+            {
+                replace.Headers.TryAddWithoutValidation(
+                    key, value);
+            }
+            response.Content = replace;
+            responseContent = Encoding.UTF8.GetString(content);
         }
 
         TestContext.Current.AddAttachment($"http-{request.Method}-{request.RequestUri?.AbsolutePath.Replace('/', '_')}-{Guid.CreateVersion7()}", $$"""
