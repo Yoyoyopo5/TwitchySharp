@@ -78,4 +78,19 @@ public record SendChatMessageRequestData
     /// The default value is <see langword="true"/>.
     /// </remarks>
     public bool? ForSourceOnly { get; init; }
+
+    /// <summary>
+    /// Determines if the message should be pinned.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If <see langword="true"/>, the message will be immediately pinned for 20 minutes.
+    /// Cannot be combined with <see cref="ForSourceOnly"/> or <see cref="ReplyParentMessageId"/>.
+    /// </para>
+    /// <para>
+    /// Requires <see cref="Scope.ModeratorManageChatMessages"/>, and the <see cref="SenderId"/> must
+    /// be either the <see cref="BroadcasterId"/> or one of the broadcaster's moderators.
+    /// </para>
+    /// </remarks>
+    public bool? Pin { get; init; }
 }
