@@ -124,6 +124,11 @@ public record ChannelChatNotificationEvent
     /// </summary>
     public ChannelChatMessageNotificationWatchStreak? WatchStreak { get; init; }
     /// <summary>
+    /// Information about the Modiversary event,
+    /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.Modiversary"/>.
+    /// </summary>
+    public ChannelChatNotificationModiversary? Modiversary { get; init; }
+    /// <summary>
     /// The user id of the broadcaster (channel) the message that triggered the notification was sent from.
     /// This is <see langword="null"/> when a shared chat session is not active, or the message is sent in the same channel as the <see cref="BroadcasterUserId"/>.
     /// </summary>
@@ -202,4 +207,10 @@ public record ChannelChatNotificationEvent
     /// and the announcement event occurred in a shared chat session to a broadcaster other than <see cref="BroadcasterUserId"/>.
     /// </summary>
     public ChannelChatNotificationAnnouncement? SharedChatAnnouncement { get; init; }
+    /// <summary>
+    /// Information about the modiversary event in a shared chat,
+    /// if the <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.SharedChatModiversary"/>
+    /// and the event occurred in a shared chat session to a broadcaster other than <see cref="BroadcasterUserId"/>.
+    /// </summary>
+    public ChannelChatNotificationModiversary? SharedChatModiversary { get; init; }
 }
