@@ -103,4 +103,8 @@ public readonly partial record struct ChannelChatNotificationType(string Value)
     /// A chat announcement was made in a shared chat.
     /// </summary>
     public static ChannelChatNotificationType SharedChatAnnouncement { get; } = new("shared_chat_announcement");
+    /// <summary>
+    /// An unknown notification type.
+    /// </summary>
+    public static ChannelChatNotificationType Unknown { get; } = new("unknown");
 }
