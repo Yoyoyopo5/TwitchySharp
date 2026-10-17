@@ -12,11 +12,17 @@ public record TwitchTeam
     /// <summary>
     /// A URL to the team’s background image.
     /// </summary>
-    public required Uri BackgroundImageUrl { get; init; }
+    /// <remarks>
+    /// This is <see langword="null"/> if the team does not have a background image set.
+    /// </remarks>
+    public Uri? BackgroundImageUrl { get; init; }
     /// <summary>
     /// A URL to the team’s banner.
     /// </summary>
-    public required Uri Banner { get; init; }
+    /// <remarks>
+    /// This is <see langword="null"/> if the team does not have a banner set.
+    /// </remarks>
+    public Uri? Banner { get; init; }
     /// <summary>
     /// The date and time when the team was created.
     /// </summary>

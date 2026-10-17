@@ -18,9 +18,9 @@ public record BroadcasterTeam
     /// </summary>
     public required UserName BroadcasterName { get; init; }
     /// <inheritdoc cref="TwitchTeam.BackgroundImageUrl"/>
-    public required Uri BackgroundImageUrl { get; init; }
+    public Uri? BackgroundImageUrl { get; init; }
     /// <inheritdoc cref="TwitchTeam.Banner"/>
-    public required Uri Banner { get; init; }
+    public Uri? Banner { get; init; }
     /// <inheritdoc cref="TwitchTeam.CreatedAt"/>
     public required DateTimeOffset CreatedAt { get; init; }
     /// <inheritdoc cref="TwitchTeam.UpdatedAt"/>
