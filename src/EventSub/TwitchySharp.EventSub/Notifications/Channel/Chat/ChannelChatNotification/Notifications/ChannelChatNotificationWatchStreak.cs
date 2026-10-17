@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains information about a watch streak notification that appeared in a chat notification.
 /// </summary>
-public record ChannelChatMessageNotificationWatchStreak
+public record ChannelChatNotificationWatchStreak
 {
     /// <summary>
     /// The number of consecutive broadcasts for which the user has been watching.

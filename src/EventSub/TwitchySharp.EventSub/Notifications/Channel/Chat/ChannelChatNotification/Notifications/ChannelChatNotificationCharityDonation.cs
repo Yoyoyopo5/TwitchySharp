@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains information about a charity donation notification.
 /// </summary>
-public record ChannelChatMessageNotificationCharityDonation
+public record ChannelChatNotificationCharityDonation
 {
     /// <summary>
     /// The name of the charity that was donated to.

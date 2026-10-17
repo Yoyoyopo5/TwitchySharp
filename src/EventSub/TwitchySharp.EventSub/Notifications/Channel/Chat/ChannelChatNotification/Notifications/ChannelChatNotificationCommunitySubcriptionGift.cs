@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains information about a specific community subscription gift that appeared in a chat notification.
 /// </summary>
-public record ChannelChatMessageNotificationCommunitySubcriptionGift
+public record ChannelChatNotificationCommunitySubcriptionGift
 {
     /// <summary>
     /// The id of the community gift event.

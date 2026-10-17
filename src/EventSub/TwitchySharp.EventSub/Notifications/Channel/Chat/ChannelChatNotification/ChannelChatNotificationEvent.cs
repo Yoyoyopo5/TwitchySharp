@@ -77,7 +77,7 @@ public record ChannelChatNotificationEvent
     /// Information about the community subscription gift event,
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.CommunityGiftedSubscription"/>.
     /// </summary>
-    public ChannelChatMessageNotificationCommunitySubcriptionGift? CommunitySubGift { get; init; }
+    public ChannelChatNotificationCommunitySubcriptionGift? CommunitySubGift { get; init; }
     /// <summary>
     /// Information about the gifted subscription paid upgrade event,
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.GiftedSubscriptionPaidUpgrade"/>.
@@ -117,12 +117,12 @@ public record ChannelChatNotificationEvent
     /// Information about the charity donation event,
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.CharityDonation"/>.
     /// </summary>
-    public ChannelChatMessageNotificationCharityDonation? CharityDonation { get; init; }
+    public ChannelChatNotificationCharityDonation? CharityDonation { get; init; }
     /// <summary>
     /// Information about the Watch Streak event,
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.WatchStreak"/>.
     /// </summary>
-    public ChannelChatMessageNotificationWatchStreak? WatchStreak { get; init; }
+    public ChannelChatNotificationWatchStreak? WatchStreak { get; init; }
     /// <summary>
     /// Information about the Modiversary event,
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.Modiversary"/>.
@@ -176,7 +176,7 @@ public record ChannelChatNotificationEvent
     /// if the <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.SharedChatCommunityGiftedSubscription"/>
     /// and the community gifted subscription occurred in a shared chat session to a broadcaster other than <see cref="BroadcasterUserId"/>.
     /// </summary>
-    public ChannelChatMessageNotificationCommunitySubcriptionGift? SharedChatCommunitySubGift { get; init; }
+    public ChannelChatNotificationCommunitySubcriptionGift? SharedChatCommunitySubGift { get; init; }
     /// <summary>
     /// Information about the gifted subscription paid upgrade event in a shared chat,
     /// if the <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.SharedChatGiftedSubscriptionPaidUpgrade"/>
