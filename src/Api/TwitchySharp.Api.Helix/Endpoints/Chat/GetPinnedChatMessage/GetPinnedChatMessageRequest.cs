@@ -24,7 +24,7 @@ public record GetPinnedChatMessageRequest : TwitchHelixRequest<GetPinnedChatMess
     protected override string Path { get; } = "/chat/pins";
     public UserSupportingPriorAuthorizationAuthenticationContext AuthenticationContext
     {
-        get => field ??= new()
+        get => field ?? new()
         {
             Identity = new TwitchIdentity.User(ModeratorId),
             ValidScopes = ImmutableHashSet.Create(Scope.ModeratorReadChatMessages, Scope.ModeratorManageChatMessages)
