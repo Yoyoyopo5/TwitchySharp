@@ -17,4 +17,11 @@ public readonly partial record struct AutomodHoldReason(string Value)
     /// The Automod held the message due to a manually blocked term appearing in it.
     /// </summary>
     public static AutomodHoldReason BlockedTerm { get; } = new("blocked_term");
+    /// <summary>
+    /// The Automod held the message due to it containing a link.
+    /// </summary>
+    /// <remarks>
+    /// This hold reason can occur when the "Hold Hyperlinks for Review" Automod setting is enabled.
+    /// </remarks>
+    public static AutomodHoldReason BlockedLink { get; } = new("blocked_link");
 }
