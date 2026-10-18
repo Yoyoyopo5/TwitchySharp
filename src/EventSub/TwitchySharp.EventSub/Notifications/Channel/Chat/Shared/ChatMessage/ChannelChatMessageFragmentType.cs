@@ -25,4 +25,8 @@ public readonly partial record struct ChannelChatMessageFragmentType(string Valu
     /// A mention.
     /// </summary>
     public static ChannelChatMessageFragmentType Mention { get; } = new("mention");
+    /// <summary>
+    /// A gif.
+    /// </summary>
+    public static ChannelChatMessageFragmentType Gif { get; } = new("gif");
 }
