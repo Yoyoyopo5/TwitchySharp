@@ -14,23 +14,39 @@ public readonly partial record struct CreatorGoalType(string Value)
     public static CreatorGoalType Follower { get; } = new("follower");
     /// <summary>
     /// The goal is to increase subscription points.
-    /// Higher tier subscriptions contribute more to this type of goal.
     /// </summary>
+    /// <remarks>
+    /// Higher tier subscriptions contribute more to this type of goal.
+    /// </remarks>
     public static CreatorGoalType Subscription { get; } = new("subscription");
     /// <summary>
     /// The goal is to increase subscriptions.
-    /// This type shows the net increase or decrease in the number of subscriptions.
     /// </summary>
+    /// <remarks>
+    /// This type shows the net increase or decrease in the number of subscriptions.
+    /// </remarks>
     public static CreatorGoalType SubscriptionCount { get; } = new("subscription_count");
     /// <summary>
     /// The goal is to increase subscriptions.
+    /// </summary>
+    /// <remarks>
     /// This type shows only the net increase in tier points associated with new subscriptions (from users that have not subscribed before).
     /// Higher tier subscriptions contribute more to this type of goal.
-    /// </summary>
+    /// </remarks>
     public static CreatorGoalType NewSubscription { get; } = new("new_subscription");
     /// <summary>
     /// The goal is to increase subscriptions.
-    /// This type shows only the net increase in subscription count associated with new subscriptions (from users that have not subscribed before).
     /// </summary>
+    /// <remarks>
+    /// This type shows only the net increase in subscription count associated with new subscriptions (from users that have not subscribed before).
+    /// </remarks>
     public static CreatorGoalType NewSubscriptionCount { get; } = new("new_subscription_count");
+    /// <summary>
+    /// The goal is to increase the amount of Bits used on the channel.
+    /// </summary>
+    public static CreatorGoalType NewBit { get; } = new("new_bit");
+    /// <summary>
+    /// The goal is to increase the amount of unique Cheerers on to Cheer on the channel.
+    /// </summary>
+    public static CreatorGoalType NewCheerer { get; } = new("new_cheerer");
 }
