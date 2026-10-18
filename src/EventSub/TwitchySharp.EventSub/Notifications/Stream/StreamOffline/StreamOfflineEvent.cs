@@ -5,6 +5,10 @@
 public record StreamOfflineEvent
 {
     /// <summary>
+    /// The id of the stream that went offline.
+    /// </summary>
+    public required StreamId Id { get; init; }
+    /// <summary>
     /// The user id of the broadcaster (channel) whose stream went offline.
     /// </summary>
     public required UserId BroadcasterUserId { get; init; }
