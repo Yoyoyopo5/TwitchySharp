@@ -72,6 +72,10 @@ public readonly partial record struct ChannelChatNotificationType(string Value)
     /// </summary>
     public static ChannelChatNotificationType Modiversary { get; } = new("modiversary");
     /// <summary>
+    /// A gifted drops event is summarized.
+    /// </summary>
+    public static ChannelChatNotificationType GiftedDropsSummary { get; } = new("gifted_drops_summary");
+    /// <summary>
     /// A user subscribed to a channel in a shared chat.
     /// </summary>
     public static ChannelChatNotificationType SharedChatSubscription { get; } = new("shared_chat_sub");
@@ -111,6 +115,10 @@ public readonly partial record struct ChannelChatNotificationType(string Value)
     /// A moderator has their monthly modiversary in a shared chat.
     /// </summary>
     public static ChannelChatNotificationType SharedChatModiversary { get; } = new("shared_chat_modiversary");
+    /// <summary>
+    /// A gifted drops event is summarized in a shared chat.
+    /// </summary>
+    public static ChannelChatNotificationType SharedChatGiftedDropsSummary { get; } = new("shared_chat_gifted_drops_summary");
     /// <summary>
     /// An unknown notification type.
     /// </summary>

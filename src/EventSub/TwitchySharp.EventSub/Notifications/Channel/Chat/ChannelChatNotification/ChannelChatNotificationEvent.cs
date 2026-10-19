@@ -57,7 +57,14 @@ public record ChannelChatNotificationEvent
     /// The type of notification. This determines which of the other properties are populated.
     /// </summary>
     public required ChannelChatNotificationType NoticeType { get; init; }
-    // So this is kind of fucked, but it's how Twitch decided to design it.
+
+    // We could look into introducing polymorphic deserialization here based on the NoticeType discriminator,
+    // but for now it's not really on my agenda, since the amount of pattern matching required would be just
+    // as difficult as checking NoticeType or the notification property the consumer is actually interested in.
+    // Since the object is immutable and wire-format, we aren't really worried about a consumer introducing an
+    // invalid state here (e.g. two notifications set, all of them null, etc.) so the benefit of introducing a
+    // bunch of subtypes is minimal.
+
     /// <summary>
     /// Information about the subscription event, 
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.Subscription"/>.
@@ -128,6 +135,11 @@ public record ChannelChatNotificationEvent
     /// if <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.Modiversary"/>.
     /// </summary>
     public ChannelChatNotificationModiversary? Modiversary { get; init; }
+    /// <summary>
+    /// Information about the gifted Drops summary event,
+    /// if the <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.GiftedDropsSummary"/>.
+    /// </summary>
+    public ChannelChatNotificationGiftedDropsSummary? GiftedDropsSummary { get; init; }
     /// <summary>
     /// The user id of the broadcaster (channel) the message that triggered the notification was sent from.
     /// This is <see langword="null"/> when a shared chat session is not active, or the message is sent in the same channel as the <see cref="BroadcasterUserId"/>.
@@ -213,4 +225,10 @@ public record ChannelChatNotificationEvent
     /// and the event occurred in a shared chat session to a broadcaster other than <see cref="BroadcasterUserId"/>.
     /// </summary>
     public ChannelChatNotificationModiversary? SharedChatModiversary { get; init; }
+    /// <summary>
+    /// Information about the gifted Drops summary event in a shared chat,
+    /// if the <see cref="NoticeType"/> is <see cref="ChannelChatNotificationType.SharedChatGiftedDropsSummary"/>
+    /// and the event occurred in a shared chat session to a broadcaster other than the <see cref="BroadcasterUserId"/>.
+    /// </summary>
+    public ChannelChatNotificationGiftedDropsSummary? SharedChatGiftedDropsSummary { get; init; }
 }
