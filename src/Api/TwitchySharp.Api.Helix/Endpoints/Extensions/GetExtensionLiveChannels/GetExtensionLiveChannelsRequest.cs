@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace TwitchySharp.Api.Helix.Extensions;
 /// <summary>
 /// Gets a list of broadcasters that are streaming live and have installed or activated the extension.
@@ -42,4 +44,18 @@ public record GetExtensionLiveChannelsRequest
 
     /// <inheritdoc/>
     public PaginationCursor? After { get; init; }
+
+    public override ValueTask<TwitchResponse<GetExtensionLiveChannelsResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
+        => response.StatusCode switch
+        {
+            // As per docs:
+            // The extension specified in the extension_id query parameter was not found or it's not being used in a live stream.
+            // Let's return an empty list here instead of the 404. We could return a special error as well.
+            HttpStatusCode.NotFound => ValueTask.FromResult(new TwitchResponse<GetExtensionLiveChannelsResponseContent>(new GetExtensionLiveChannelsResponseContent()
+            {
+                Data = [],
+                Pagination = new()
+            })),
+            _ => base.CreateResponse(response, ct)
+        };
 }
