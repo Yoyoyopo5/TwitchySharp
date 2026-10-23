@@ -24,6 +24,8 @@ public class Test_GetStreams(TwitchClientFixture fixture)
             Type = StreamType.All
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetStreamsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

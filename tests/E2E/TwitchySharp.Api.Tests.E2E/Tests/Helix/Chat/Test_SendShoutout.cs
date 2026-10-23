@@ -29,6 +29,8 @@ public class Test_SendShoutout(TwitchClientFixture fixture)
             ModeratorId = userConfig.UserId
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<SendShoutoutResponseContent> response = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

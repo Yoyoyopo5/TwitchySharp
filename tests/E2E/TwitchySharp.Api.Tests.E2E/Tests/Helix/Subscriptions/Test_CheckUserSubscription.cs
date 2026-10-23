@@ -1,5 +1,4 @@
-﻿using System.Net;
-using TwitchySharp.Api.Helix.Subscriptions;
+﻿using TwitchySharp.Api.Helix.Subscriptions;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Subscriptions;
@@ -23,6 +22,8 @@ public class Test_CheckUserSubscription(TwitchClientFixture fixture)
             UserId = userConfig.UserId,
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<CheckUserSubscriptionResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+
+        Assert.Null(response.Error);
     }
 }

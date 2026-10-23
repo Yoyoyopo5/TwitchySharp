@@ -20,9 +20,12 @@ public class Test_BlockUnblockUser(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await BlockUser(client, userId, userToBlock, ct);
+        TwitchResponse<BlockUserResponseContent> blockResponse = await BlockUser(client, userId, userToBlock, ct);
+        Assert.Null(blockResponse.Error);
         await Task.Delay(250, ct);
-        await UnblockUser(client, userId, userToBlock, ct);
+
+        TwitchResponse<UnblockUserResponseContent> unblockResponse = await UnblockUser(client, userId, userToBlock, ct);
+        Assert.Null(unblockResponse.Error);
     }
 
     private static Task<TwitchResponse<BlockUserResponseContent>> BlockUser(TestingTwitchClient client, UserId userId, UserId blockUserId, CancellationToken ct)

@@ -24,7 +24,9 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SendChatMessageResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 
     [Fact]
@@ -43,10 +45,12 @@ public class Test_SendChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request with { AuthenticationContext = request.AuthenticationContext with
+        TwitchResponse<SendChatMessageResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request with { AuthenticationContext = request.AuthenticationContext with
         {
             UsePriorAuthorization = true,
             Identity = request.AuthenticationContext.Identity with { ClientId = userConfig.Token.ClientId }
         }}, TestName, TestContext.Current.CancellationToken);
+
+        Assert.Null(response.Error);
     }
 }

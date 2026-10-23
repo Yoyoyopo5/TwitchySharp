@@ -20,6 +20,8 @@ public class Test_GetChannelEditors(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetChannelEditorsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

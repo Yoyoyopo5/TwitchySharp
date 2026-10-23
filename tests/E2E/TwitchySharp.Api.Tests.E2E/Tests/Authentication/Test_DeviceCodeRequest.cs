@@ -24,6 +24,8 @@ public class Test_DeviceCodeRequest(TwitchClientFixture fixture)
 
         TwitchResponse<DeviceCodeResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
+
         Assert.False(string.IsNullOrEmpty(response.Content.DeviceCode.Value));
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);
         Assert.True(response.Content.Interval > TimeSpan.Zero);

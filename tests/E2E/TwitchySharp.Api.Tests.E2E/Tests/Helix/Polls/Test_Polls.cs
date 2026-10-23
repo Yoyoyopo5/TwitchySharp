@@ -19,11 +19,15 @@ public class Test_Polls(TwitchClientFixture fixture)
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         TwitchResponse<CreatePollResponseContent> createResponse = await CreatePoll(client, broadcasterId, ct);
+        Assert.NotNull(createResponse.Content);
         ChatPoll poll = createResponse.Content.Data.Single();
         await Task.Delay(250, ct);
 
-        await GetPolls(client, broadcasterId, ct);
-        await EndPoll(client, broadcasterId, poll.Id, ct);
+        TwitchResponse<GetPollsResponseContent> getResponse = await GetPolls(client, broadcasterId, ct);
+        Assert.Null(getResponse.Error);
+
+        TwitchResponse<EndPollResponseContent> endResponse = await EndPoll(client, broadcasterId, poll.Id, ct);
+        Assert.Null(endResponse.Error);
     }
 
     private static Task<TwitchResponse<CreatePollResponseContent>> CreatePoll(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)

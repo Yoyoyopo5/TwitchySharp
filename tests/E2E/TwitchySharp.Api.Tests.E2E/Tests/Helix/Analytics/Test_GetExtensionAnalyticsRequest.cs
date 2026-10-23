@@ -20,6 +20,9 @@ public class Test_GetExtensionAnalyticsRequest(TwitchClientFixture fixture)
             UserId = userConfig.UserId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetExtensionAnalyticsResponseContent> response
+            = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+
+        Assert.Null(response.Error);
     }
 }

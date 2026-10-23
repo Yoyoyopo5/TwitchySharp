@@ -25,6 +25,8 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
         };
         TwitchResponse<GetVipsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
 
+        Assert.NotNull(getResponse.Content);
+
         Assert.SkipWhen(
             getResponse.Content.Data.Any(vip => vip.UserId == testUser),
             $"Test user id {testUser} is already a VIP on the broadcaster's channel."
@@ -35,7 +37,8 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId,
             UserId = testUser
         };
-        await client.SendAsync(addRequest, TestName, ct);
+        TwitchResponse<AddChannelVipResponseContent> addResponse = await client.SendAsync(addRequest, TestName, ct);
+        Assert.Null(addResponse.Error);
         await Task.Delay(250, ct);
 
         RemoveChannelVipRequest removeRequest = new()
@@ -43,6 +46,8 @@ public class Test_AddRemoveChannelVip(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId,
             UserId = testUser
         };
-        await client.SendAsync(removeRequest, TestName, ct);
+        TwitchResponse<RemoveChannelVipResponseContent> removeResponse = await client.SendAsync(removeRequest, TestName, ct);
+
+        Assert.Null(removeResponse.Error);
     }
 }

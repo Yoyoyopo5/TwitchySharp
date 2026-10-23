@@ -24,6 +24,7 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetExtensionBitsProductsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
         ExtensionBitsProduct product = getResponse.Content.Data.Single(d => d.Sku == extensionConfig.BitsProduct.Sku);
 
         UpdateExtensionBitsProductRequest updateRequest = new()
@@ -40,7 +41,8 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, TestName, ct);
+        TwitchResponse<UpdateExtensionBitsProductResponseContent> updateResponse = await client.SendAsync(updateRequest, TestName, ct);
+        Assert.Null(updateResponse.Error);
         await Task.Delay(250, ct);
 
         UpdateExtensionBitsProductRequest restoreRequest = new()
@@ -57,6 +59,9 @@ public class Test_UpdateExtensionBitsProduct(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(restoreRequest, TestName, ct);
+        TwitchResponse<UpdateExtensionBitsProductResponseContent> restoreResponse
+            = await client.SendAsync(restoreRequest, TestName, ct);
+
+        Assert.Null(restoreResponse.Error);
     }
 }

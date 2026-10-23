@@ -20,6 +20,8 @@ public class Test_GetCheermotesRequest(TwitchClientFixture fixture)
             BroadcasterId = broadcasterId,
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetCheermotesResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

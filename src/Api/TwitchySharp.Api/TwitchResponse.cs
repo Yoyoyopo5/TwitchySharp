@@ -118,10 +118,10 @@ public record TwitchResponse<TResponseContent>
     /// (the value will be <see langword="default"/>).
     /// Use <see cref="Match"/> or null-check <see cref="Error"/> for safe access.
     /// </remarks>
-    public TResponseContent Content { get; } = default!;
+    public TResponseContent? Content { get; }
 
     public T Match<T>(Func<TResponseContent, T> content, Func<Error, T> error)
         => Error is not null
             ? error(Error)
-            : content(Content);
+            : content(Content!);
 }

@@ -1,5 +1,4 @@
 ﻿using TwitchySharp.Api.Helix.Ads;
-using TwitchySharp.Api.Helix.Streams;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels.Ads;
@@ -26,6 +25,7 @@ public class Test_StartCommercial(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetAdScheduleResponseContent> getAdScheduleResponse = await client.SendAsync(getAdScheduleRequest, TestName, ct);
+        Assert.NotNull(getAdScheduleResponse.Content);
         AdSchedule? schedule = getAdScheduleResponse.Content.Data.SingleOrDefault();
 
         // This may not be required to test StartCommercial
@@ -49,6 +49,8 @@ public class Test_StartCommercial(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<StartCommercialResponseContent> response = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

@@ -20,6 +20,8 @@ public class Test_GetExtensionBitsProducts(TwitchClientFixture fixture)
             ShouldIncludeAll = true
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetExtensionBitsProductsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

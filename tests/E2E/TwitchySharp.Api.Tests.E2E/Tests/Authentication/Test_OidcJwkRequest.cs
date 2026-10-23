@@ -14,6 +14,7 @@ public class Test_OidcJwkRequest(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         TwitchResponse<OidcJwkResponseContent> response = await client.SendAsync(request, new(), TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
         Assert.NotEmpty(response.Content.Keys);
     }
 }

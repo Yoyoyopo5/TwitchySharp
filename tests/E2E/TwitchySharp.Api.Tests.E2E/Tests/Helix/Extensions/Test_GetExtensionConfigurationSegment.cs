@@ -25,6 +25,8 @@ public class Test_GetExtensionConfigurationSegment(TwitchClientFixture fixture)
             .WithDeveloper(userConfig.UserId)
             .WithBroadcaster(userConfig.UserId);
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetExtensionConfigurationSegmentResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

@@ -22,10 +22,14 @@ public class Test_ChannelStreamScheduleSegments(TwitchClientFixture fixture)
 
         TwitchResponse<CreateChannelStreamScheduleSegmentResponseContent> createResponse
             = await CreateSegment(client, broadcasterId, TEST_SEGMENT_TITLE, ct);
+        Assert.NotNull(createResponse.Content);
         ChannelStreamScheduleSegment segment = createResponse.Content.Data.Segments.Where(s => s.Title == TEST_SEGMENT_TITLE).First();
 
-        await UpdateSegment(client, broadcasterId, segment.Id, ct);
-        await DeleteSegment(client, broadcasterId, segment.Id, ct);
+        TwitchResponse<UpdateChannelStreamScheduleSegmentResponseContent> updateResponse = await UpdateSegment(client, broadcasterId, segment.Id, ct);
+        Assert.Null(updateResponse.Error);
+
+        TwitchResponse<DeleteChannelStreamScheduleSegmentResponseContent> deleteResponse = await DeleteSegment(client, broadcasterId, segment.Id, ct);
+        Assert.Null(deleteResponse.Error);
     }
 
     private static Task<TwitchResponse<CreateChannelStreamScheduleSegmentResponseContent>> CreateSegment(TestingTwitchClient client, UserId broadcasterId, string title, CancellationToken ct)

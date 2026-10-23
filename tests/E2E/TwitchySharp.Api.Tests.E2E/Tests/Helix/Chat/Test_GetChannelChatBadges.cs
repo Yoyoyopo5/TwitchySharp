@@ -20,6 +20,8 @@ public class Test_GetChannelChatBadges(TwitchClientFixture fixture)
             BroadcasterId = broadcasterId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetChannelChatBadgesResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

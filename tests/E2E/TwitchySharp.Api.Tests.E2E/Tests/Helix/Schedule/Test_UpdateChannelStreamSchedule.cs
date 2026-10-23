@@ -33,8 +33,10 @@ public class Test_UpdateChannelStreamSchedule(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<UpdateChannelStreamScheduleResponseContent> response = await client.SendAsync(request, TestName, ct);
+        Assert.Null(response.Error);
         await Task.Delay(250, ct);
-        await client.SendAsync(restoreRequest, TestName, ct);
+        TwitchResponse<UpdateChannelStreamScheduleResponseContent> restoreResponse = await client.SendAsync(restoreRequest, TestName, ct);
+        Assert.Null(restoreResponse.Error);
     }
 }

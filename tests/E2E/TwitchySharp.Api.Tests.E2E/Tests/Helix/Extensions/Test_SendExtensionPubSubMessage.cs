@@ -25,7 +25,8 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(globalRequest, TestName, ct);
+        TwitchResponse<SendExtensionPubSubMessageResponseContent> response = await client.SendAsync(globalRequest, TestName, ct);
+        Assert.Null(response.Error);
     }
 
     [Fact]
@@ -48,7 +49,9 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(broadcastRequest, TestName, ct);
+        TwitchResponse<SendExtensionPubSubMessageResponseContent> response = await client.SendAsync(broadcastRequest, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 
     [Fact]
@@ -70,6 +73,8 @@ public class Test_SendExtensionPubSubMessage(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await client.SendAsync(whisperRequest, TestName, ct);
+        TwitchResponse<SendExtensionPubSubMessageResponseContent> response = await client.SendAsync(whisperRequest, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

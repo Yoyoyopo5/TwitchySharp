@@ -22,6 +22,8 @@ public class Test_GetExtensions(TwitchClientFixture fixture)
             ExtensionVersion = testExtensionVersion // must specify because its unreleased
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetExtensionsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

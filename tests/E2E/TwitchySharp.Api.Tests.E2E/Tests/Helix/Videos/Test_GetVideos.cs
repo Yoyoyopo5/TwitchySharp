@@ -31,6 +31,7 @@ public class Test_GetVideos(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetVideosResponseContent> byGameResponse = await client.SendAsync(byGame, TestName, ct);
+        Assert.NotNull(byGameResponse.Content);
         if (byGameResponse.Content.Data.FirstOrDefault() is not TwitchVideo video)
             return;
 
@@ -42,7 +43,8 @@ public class Test_GetVideos(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(byUser, TestName, ct);
+        TwitchResponse<GetVideosResponseContent> byUserResponse = await client.SendAsync(byUser, TestName, ct);
+        Assert.Null(byUserResponse.Error);
 
         GetVideosRequest byId = new()
         {
@@ -52,6 +54,7 @@ public class Test_GetVideos(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(byId, TestName, ct);
+        TwitchResponse<GetVideosResponseContent> byIdResponse = await client.SendAsync(byId, TestName, ct);
+        Assert.Null(byIdResponse.Error);
     }
 }

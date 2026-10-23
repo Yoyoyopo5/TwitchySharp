@@ -24,6 +24,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetChannelGuestStarSettingsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
         ChannelGuestStarSettings cachedSettings = getResponse.Content.Data.Single();
 
         UpdateChannelGuestStarSettingsRequest updateRequest = new()
@@ -39,7 +40,8 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, TestName, ct);
+        TwitchResponse<UpdateChannelGuestStarSettingsResponseContent> updateResponse = await client.SendAsync(updateRequest, TestName, ct);
+        Assert.Null(updateResponse.Error);
         await Task.Delay(100, ct);
 
         UpdateChannelGuestStarSettingsRequest restoreRequest = new()
@@ -54,6 +56,7 @@ public class Test_UpdateChannelGuestStarSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(restoreRequest, TestName, ct);
+        TwitchResponse<UpdateChannelGuestStarSettingsResponseContent> restoreResponse = await client.SendAsync(restoreRequest, TestName, ct);
+        Assert.Null(restoreResponse.Error);
     }
 }

@@ -21,6 +21,8 @@ public class Test_UpdateUserChatColor(TwitchClientFixture fixture)
             Color = ChatColor.Red
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<UpdateUserChatColorResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

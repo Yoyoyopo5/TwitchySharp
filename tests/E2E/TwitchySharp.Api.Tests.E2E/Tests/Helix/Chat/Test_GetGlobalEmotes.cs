@@ -15,6 +15,8 @@ public class Test_GetGlobalEmotes(TwitchClientFixture fixture)
 
         GetGlobalEmotesRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetGlobalEmotesResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

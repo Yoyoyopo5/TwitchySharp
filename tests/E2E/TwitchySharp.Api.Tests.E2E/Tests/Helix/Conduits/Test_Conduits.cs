@@ -16,21 +16,29 @@ public class Test_Conduits(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        ConduitId conduitId = (await CreateConduit(client, ct)).Content.Data.First().Id;
+        TwitchResponse<CreateConduitsResponseContent> createResponse = await CreateConduit(client, ct);
+        Assert.NotNull(createResponse.Content);
+        ConduitId conduitId = createResponse.Content.Data.First().Id;
         try
         {
             await Task.Delay(250, ct);
 
-            await UpdateConduitShards(client, conduitId, new("0"), ct);
+            TwitchResponse<UpdateConduitShardsResponseContent> updateShardsResponse = await UpdateConduitShards(client, conduitId, new("0"), ct);
+            Assert.Null(updateShardsResponse.Error);
 
-            await GetConduits(client, ct);
-            await GetConduitShards(client, conduitId, ct);
-            
-            await UpdateConduit(client, conduitId, ct);
+            TwitchResponse<GetConduitsResponseContent> getConduitsResponse = await GetConduits(client, ct);
+            Assert.Null(getConduitsResponse.Error);
+
+            TwitchResponse<GetConduitShardsResponseContent> getShardsResponse = await GetConduitShards(client, conduitId, ct);
+            Assert.Null(getShardsResponse.Error);
+
+            TwitchResponse<UpdateConduitResponseContent> updateConduitResponse = await UpdateConduit(client, conduitId, ct);
+            Assert.Null(updateConduitResponse.Error);
         }
         finally
         {
-            await DeleteConduit(client, conduitId, ct);
+            TwitchResponse<DeleteConduitResponseContent> deleteResponse = await DeleteConduit(client, conduitId, ct);
+            Assert.Null(deleteResponse.Error);
         }
     }
 

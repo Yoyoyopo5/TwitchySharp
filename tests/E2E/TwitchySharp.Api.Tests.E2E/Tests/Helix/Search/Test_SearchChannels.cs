@@ -18,6 +18,8 @@ public class Test_SearchChannels(TwitchClientFixture fixture)
             Query = "yoyoyopo5"
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SearchChannelsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

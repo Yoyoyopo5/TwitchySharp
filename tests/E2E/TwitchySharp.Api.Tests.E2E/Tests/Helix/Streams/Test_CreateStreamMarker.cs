@@ -29,6 +29,8 @@ public class Test_CreateStreamMarker(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<CreateStreamMarkerResponseContent> response = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

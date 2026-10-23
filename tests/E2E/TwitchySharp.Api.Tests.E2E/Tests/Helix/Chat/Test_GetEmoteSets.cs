@@ -24,6 +24,8 @@ public class Test_GetEmoteSets(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetChannelEmotesResponseContent> getEmotesResponse = await client.SendAsync(getEmotesRequest, TestName, ct);
+        Assert.NotNull(getEmotesResponse.Content);
+
         if (getEmotesResponse.Content.Data.FirstOrDefault()?.EmoteSetId is not EmoteSetId id)
             return;
 
@@ -32,6 +34,8 @@ public class Test_GetEmoteSets(TwitchClientFixture fixture)
             EmoteSetIds = [id]
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<GetEmoteSetsResponseContent> getEmoteSetsResponse = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(getEmoteSetsResponse.Error);
     }
 }

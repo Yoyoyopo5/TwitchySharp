@@ -37,12 +37,17 @@ public static class EventSubFixtureExtensions
         }
     }
 
-    private static Task<TwitchResponse<DeleteEventSubSubscriptionResponseContent>> DeleteSubscription(
+    private static async Task DeleteSubscription(
         this TestingTwitchClient client,
         EventSubSubscription subscription,
         CancellationToken ct
         )
-        => client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), subscription.GetSubscriptionType().ToTestName(), ct);
+    {
+        TwitchResponse<DeleteEventSubSubscriptionResponseContent> response
+            = await client.SendAsync(new DeleteEventSubSubscriptionRequest(subscription), subscription.GetSubscriptionType().ToTestName(), ct);
+
+        Assert.Null(response.Error);
+    }
 
     private async static Task<EventSubSubscription> GetSubscription(
         this TestingTwitchClient client,
@@ -51,8 +56,7 @@ public static class EventSubFixtureExtensions
         )
     {
         GetEventSubSubscriptionsRequest requestForSubscription = new() { SubscriptionId = subscription.Id };
-
-        return (await client.SendAsync(
+        TwitchResponse<GetEventSubSubscriptionsResponseContent> response = await client.SendAsync(
             requestForSubscription with
             {
                 AuthenticationContext = subscription.ToSubscriptionTypeSpecification().Match(
@@ -61,8 +65,11 @@ public static class EventSubFixtureExtensions
                     )
             },
             subscription.GetSubscriptionType().ToTestName(),
-            ct
-            )).Content.Data.Single();
+            ct);
+
+        Assert.Null(response.Error);
+        Assert.NotNull(response.Content);
+        return Assert.Single(response.Content.Data);
     }
 
     private async static Task<EventSubSubscription> CreateSubscription(
@@ -70,10 +77,16 @@ public static class EventSubFixtureExtensions
         EventSubSubscriptionSpecification specification,
         CancellationToken ct
         )
-        => (await client.SendAsync(new CreateEventSubSubscriptionRequest()
+    {
+        TwitchResponse<CreateEventSubSubscriptionResponseContent> response = await client.SendAsync(new CreateEventSubSubscriptionRequest()
         {
             Subscription = specification
-        }, specification.Type.Type.ToTestName(), ct)).Content.Data.Single();
+        }, specification.Type.Type.ToTestName(), ct);
+
+        Assert.Null(response.Error);
+        Assert.NotNull(response.Content);
+        return Assert.Single(response.Content.Data);
+    }
 
     private static void AssertEqual(
         EventSubSubscriptionSpecification specification,

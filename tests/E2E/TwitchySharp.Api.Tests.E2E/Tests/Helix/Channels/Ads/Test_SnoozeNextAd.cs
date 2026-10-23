@@ -23,6 +23,7 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetAdScheduleResponseContent> adScheduleResponse = await client.SendAsync(adScheduleRequest, TestName, ct);
+        Assert.NotNull(adScheduleResponse.Content);
         AdSchedule? schedule = adScheduleResponse.Content.Data.SingleOrDefault();
 
         Assert.SkipWhen(
@@ -45,6 +46,8 @@ public class Test_SnoozeNextAd(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<SnoozeNextAdResponseContent> response = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

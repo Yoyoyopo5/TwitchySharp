@@ -28,6 +28,8 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetVideosResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
+
         if (getResponse.Content.Data.FirstOrDefault() is not TwitchVideo video)
             return;
 
@@ -37,6 +39,8 @@ public class Test_DeleteVideos(TwitchClientFixture fixture)
             Ids = [video.Id]
         };
 
-        await client.SendAsync(deleteRequest, TestName, ct);
+        TwitchResponse<DeleteVideosResponseContent> deleteResponse = await client.SendAsync(deleteRequest, TestName, ct);
+
+        Assert.Null(deleteResponse.Error);
     }
 }

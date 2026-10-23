@@ -21,6 +21,8 @@ public class Test_GetStreamMarkers(TwitchClientFixture fixture)
         GetVideosRequest getVideosRequest = new() { Query = new VideoUserQuery() { UserId = userConfig.UserId } };
         TwitchResponse<GetVideosResponseContent> getVideosResponse = await client.SendAsync(getVideosRequest, TestName, ct);
 
+        Assert.NotNull(getVideosResponse.Content);
+
         Assert.SkipWhen(
             getVideosResponse.Content.Data.Length == 0,
             "Broadcaster has no videos :("
@@ -35,6 +37,8 @@ public class Test_GetStreamMarkers(TwitchClientFixture fixture)
             UserId = userConfig.UserId,
         };
 
-        await client.SendAsync(request, TestName, ct);
+        TwitchResponse<GetStreamMarkersResponseContent> response = await client.SendAsync(request, TestName, ct);
+
+        Assert.Null(response.Error);
     }
 }

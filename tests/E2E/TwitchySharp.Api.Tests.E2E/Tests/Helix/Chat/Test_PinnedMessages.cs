@@ -33,6 +33,7 @@ public class Test_PinnedMessages(TwitchClientFixture fixture)
                 ct);
 
         Assert.Null(sendChatMessageResponse.Error);
+        Assert.NotNull(sendChatMessageResponse.Content);
 
         MessageId messageId = sendChatMessageResponse.Content.Data.First().MessageId;
 
@@ -111,6 +112,7 @@ public class Test_PinnedMessages(TwitchClientFixture fixture)
                 ct);
 
         Assert.Null(sendChatMessageResponse.Error);
+        Assert.NotNull(sendChatMessageResponse.Content);
 
         UnpinChatMessageRequest unpinRequest = new()
         {

@@ -20,6 +20,8 @@ public class Test_GetChannelEmotes(TwitchClientFixture fixture)
             BroadcasterId = broadcasterId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetChannelEmotesResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }
