@@ -19,6 +19,8 @@ public class Test_GetChannelStreamSchedule(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetChannelStreamScheduleResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

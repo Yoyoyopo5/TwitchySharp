@@ -20,9 +20,9 @@ public class Test_AddRemoveModerator(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await AddChannelModerator(client, userConfig.UserId, moderatorId, ct);
+        Assert.Null((await AddChannelModerator(client, userConfig.UserId, moderatorId, ct)).Error);
         await Task.Delay(250, ct);
-        await RemoveChannelModerator(client, userConfig.UserId, moderatorId, ct);
+        Assert.Null((await RemoveChannelModerator(client, userConfig.UserId, moderatorId, ct)).Error);
     }
 
     private static Task<TwitchResponse<AddChannelModeratorResponseContent>> AddChannelModerator(TestingTwitchClient client, UserId broadcasterId, UserId moderatorId, CancellationToken ct)

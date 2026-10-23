@@ -21,6 +21,7 @@ public class Test_GetSharedChatSession(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetSharedChatSessionResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        Assert.NotNull(response.Content);
 
         if (response.Content.Data.Length == 0)
             TestContext.Current.AddWarning("The broadcaster is not in a shared chat session.");

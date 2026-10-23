@@ -26,6 +26,7 @@ public class Test_ResolveUnbanRequests(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetUnbanRequestsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
         if (getResponse.Content.Data.FirstOrDefault() is not UnbanRequest unbanRequest)
             return; // Can only test this if we have pending request.
 
@@ -38,6 +39,6 @@ public class Test_ResolveUnbanRequests(TwitchClientFixture fixture)
             ResolutionText = "test resolution"
         };
 
-        await client.SendAsync(resolveRequest, TestName, ct);
+        Assert.NotNull((await client.SendAsync(resolveRequest, TestName, ct)).Error);
     }
 };

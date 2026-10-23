@@ -31,8 +31,11 @@ public class Test_Raid(TwitchClientFixture fixture)
             BroadcasterId = fromBroadcasterId,
         };
 
-        await client.SendAsync(startRaidRequest, TestName, ct);
+        TwitchResponse<StartRaidResponseContent> startResponse = await client.SendAsync(startRaidRequest, TestName, ct);
+        Assert.Null(startResponse.Error);
+
         await Task.Delay(250, ct);
-        await client.SendAsync(cancelRaidRequest, TestName, ct);
+        TwitchResponse<CancelRaidResponseContent> cancelResponse = await client.SendAsync(cancelRaidRequest, TestName, ct);
+        Assert.Null(cancelResponse.Error);
     }
 }

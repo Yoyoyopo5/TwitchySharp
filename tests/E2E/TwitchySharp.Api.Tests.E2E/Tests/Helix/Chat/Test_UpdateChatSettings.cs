@@ -24,6 +24,7 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetChatSettingsResponseContent> getSettingsResponse = await client.SendAsync(getSettingsRequest, TestName, ct);
+        Assert.NotNull(getSettingsResponse.Content);
         ChatSettings? settings = getSettingsResponse.Content.Data.FirstOrDefault();
 
         UpdateChatSettingsRequest updateSettingsRequest = new()
@@ -44,11 +45,13 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateSettingsRequest, TestName, ct);
+        TwitchResponse<UpdateChatSettingsResponseContent> updateResponse = await client.SendAsync(updateSettingsRequest, TestName, ct);
+        Assert.Null(updateResponse.Error);
         await Task.Delay(100, ct);
 
-        if (settings is not null) // restore
-            await client.SendAsync(updateSettingsRequest with
+        if (settings is not null)
+        {
+            updateResponse = await client.SendAsync(updateSettingsRequest with
             {
                 NewSettings = new()
                 {
@@ -63,5 +66,7 @@ public class Test_UpdateChatSettings(TwitchClientFixture fixture)
                     UniqueChatMode = settings.UniqueChatMode
                 }
             }, TestName, ct);
+            Assert.Null(updateResponse.Error);
+        } // restore
     }
 }

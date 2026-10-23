@@ -17,22 +17,28 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
         UserConfiguration userConfig
             = _fixture.GetAuthorizingConfigForTestOrSkip<UserConfiguration>(TestName);
 
-        CustomChannelPointsReward createdReward = await CreateReward(client, userConfig.UserId, ct);
+        TwitchResponse<CreateCustomRewardsResponseContent> createResponse = await CreateReward(client, userConfig.UserId, ct);
+        Assert.NotNull(createResponse.Content);
+        CustomChannelPointsReward reward = Assert.Single(createResponse.Content.Data);
+
         try
         {
             await Task.Delay(250, TestContext.Current.CancellationToken);
 
-            await UpdateReward(client, userConfig.UserId, createdReward, ct);
+            TwitchResponse<UpdateCustomRewardResponseContent> updateResponse = await UpdateReward(client, userConfig.UserId, reward, ct);
+            Assert.Null(updateResponse.Error);
+
             await Task.Delay(250, TestContext.Current.CancellationToken);
         }
         finally
         {
-            await DeleteReward(client, userConfig.UserId, createdReward, ct);
+            TwitchResponse<DeleteCustomRewardResponseContent> deleteResponse = await DeleteReward(client, userConfig.UserId, reward, ct);
+            Assert.Null(deleteResponse.Error);
         }
     }
 
-    private static async Task<CustomChannelPointsReward> CreateReward(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
-        => (await client.SendAsync(new CreateCustomRewardsRequest
+    private static Task<TwitchResponse<CreateCustomRewardsResponseContent>> CreateReward(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)
+        => client.SendAsync(new CreateCustomRewardsRequest
         {
             BroadcasterId = broadcasterId,
             Reward = new()
@@ -51,7 +57,7 @@ public class Test_CustomRewardRequests(TwitchClientFixture fixture)
                 IsUserInputRequired = true,
                 Prompt = "Share your thoughts."
             }
-        }, TestName, ct)).Content.Data.First();
+        }, TestName, ct);
 
     private static Task<TwitchResponse<UpdateCustomRewardResponseContent>> UpdateReward(
         TestingTwitchClient client,

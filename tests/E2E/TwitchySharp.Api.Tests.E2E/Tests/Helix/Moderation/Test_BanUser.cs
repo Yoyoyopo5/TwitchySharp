@@ -20,9 +20,9 @@ public class Test_BanUser(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        await BanUser(client, broadcasterId, bannedUserId, ct);
+        Assert.Null((await BanUser(client, broadcasterId, bannedUserId, ct)).Error);
         await Task.Delay(250, ct);
-        await UnbanUser(client, broadcasterId, bannedUserId, ct);
+        Assert.Null((await UnbanUser(client, broadcasterId, bannedUserId, ct)).Error);
     }
 
     private static Task<TwitchResponse<BanUserResponseContent>> BanUser(TestingTwitchClient client, UserId broadcasterId, UserId userId, CancellationToken ct)

@@ -21,10 +21,11 @@ public class Test_BlockedTerms(TwitchClientFixture fixture)
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         TwitchResponse<AddBlockedTermResponseContent> addResponse = await AddBlockedTerm(client, broadcasterId, TEST_BLOCKED_TERM, ct);
+        Assert.NotNull(addResponse.Content);
         BlockedTerm blockedTerm = addResponse.Content.Data.Single();
         await Task.Delay(100, ct);
-        await GetBlockedTerms(client, broadcasterId, ct);
-        await RemoveBlockedTerm(client, broadcasterId, blockedTerm.Id, ct);
+        Assert.Null((await GetBlockedTerms(client, broadcasterId, ct)).Error);
+        Assert.Null((await RemoveBlockedTerm(client, broadcasterId, blockedTerm.Id, ct)).Error);
     }
 
     private static Task<TwitchResponse<AddBlockedTermResponseContent>> AddBlockedTerm(TestingTwitchClient client, UserId broadcasterId, string term, CancellationToken ct)

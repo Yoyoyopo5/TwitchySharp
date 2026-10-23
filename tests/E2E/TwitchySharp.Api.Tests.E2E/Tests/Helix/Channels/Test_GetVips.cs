@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TwitchySharp.Api.Helix.Channels;
+﻿using TwitchySharp.Api.Helix.Channels;
 using TwitchySharp.Tests.E2E;
 
 namespace TwitchySharp.Api.Tests.E2E.Tests.Helix.Channels;
@@ -22,6 +19,8 @@ public class Test_GetVips(TwitchClientFixture fixture)
             BroadcasterId = userConfig.UserId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetVipsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+
+        Assert.Null(response.Error);
     }
 }

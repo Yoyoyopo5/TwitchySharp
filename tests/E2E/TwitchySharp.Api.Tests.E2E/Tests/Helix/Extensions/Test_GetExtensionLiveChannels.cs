@@ -20,6 +20,8 @@ public class Test_GetExtensionLiveChannels(TwitchClientFixture fixture)
             ExtensionId = extensionConfig.ExtensionId
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetExtensionLiveChannelsResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

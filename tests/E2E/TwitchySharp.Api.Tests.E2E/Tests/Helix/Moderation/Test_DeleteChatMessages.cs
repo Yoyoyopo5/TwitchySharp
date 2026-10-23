@@ -21,9 +21,10 @@ public class Test_DeleteChatMessages(TwitchClientFixture fixture)
         UserId broadcasterId = userConfig.UserId;
 
         TwitchResponse<SendChatMessageResponseContent> sendResponse = await SendChatMessage(client, broadcasterId, TEST_MESSAGE, ct);
+        Assert.NotNull(sendResponse.Content);
         MessageId messageId = sendResponse.Content.Data.Single().MessageId;
         await Task.Delay(250, ct);
-        await DeleteChatMessage(client, broadcasterId, messageId, ct); // Technically can't delete broadcaster's message but this call still succeeds.
+        Assert.Null((await DeleteChatMessage(client, broadcasterId, messageId, ct)).Error); // Technically can't delete broadcaster's message but this call still succeeds.
     }
 
     private static Task<TwitchResponse<SendChatMessageResponseContent>> SendChatMessage(TestingTwitchClient client, UserId broadcasterId, string message, CancellationToken ct)

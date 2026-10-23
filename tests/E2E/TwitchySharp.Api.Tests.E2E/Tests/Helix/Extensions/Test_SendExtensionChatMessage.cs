@@ -28,6 +28,8 @@ public class Test_SendExtensionChatMessage(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SendExtensionChatMessageResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

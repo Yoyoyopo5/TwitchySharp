@@ -35,6 +35,8 @@ public class Test_AccessTokenRefreshRequest(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         TwitchResponse<AccessTokenRefreshResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
+        
         AccessTokenDetails.User refreshedTokenDetails = userTokenDetails with
         {
             AccessToken = response.Content.AccessToken,

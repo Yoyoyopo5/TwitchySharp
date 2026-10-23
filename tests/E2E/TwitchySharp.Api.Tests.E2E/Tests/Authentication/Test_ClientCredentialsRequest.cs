@@ -22,6 +22,8 @@ public class Test_ClientCredentialsRequest(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         TwitchResponse<ClientCredentialsResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
+
         Assert.False(string.IsNullOrEmpty(response.Content.AccessToken.Value));
         Assert.Equal("bearer", response.Content.TokenType);
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);

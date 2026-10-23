@@ -19,13 +19,16 @@ public class Test_Predictions(TwitchClientFixture fixture)
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         TwitchResponse<CreatePredictionResponseContent> createRespone = await CreatePrediction(client, broadcasterId, ct);
+        Assert.NotNull(createRespone.Content);
         ChatPrediction prediction = createRespone.Content.Data.Single();
         await Task.Delay(250, ct);
 
         TwitchResponse<GetPredictionsResponseContent> getResponse = await GetPredictions(client, broadcasterId, prediction.Id, ct);
+        Assert.NotNull(getResponse.Content);
         ChatPredictionOutcome outcome = getResponse.Content.Data.Single().Outcomes.First();
 
-        await EndPrediction(client, broadcasterId, prediction.Id, outcome.Id, ct);
+        TwitchResponse<EndPredictionResponseContent> endResponse = await EndPrediction(client, broadcasterId, prediction.Id, outcome.Id, ct);
+        Assert.Null(endResponse.Error);
     }
 
     private static Task<TwitchResponse<CreatePredictionResponseContent>> CreatePrediction(TestingTwitchClient client, UserId broadcasterId, CancellationToken ct)

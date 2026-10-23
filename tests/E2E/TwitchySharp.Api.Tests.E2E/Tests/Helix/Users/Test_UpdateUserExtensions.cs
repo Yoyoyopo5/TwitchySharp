@@ -24,6 +24,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
         };
 
         TwitchResponse<GetUserExtensionsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
         if (getResponse.Content.Data.FirstOrDefault(ext => ext.Type.Contains(UserExtensionType.Panel)) is not InstalledExtension extension)
             return;
 
@@ -36,7 +37,8 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(enableRequest, TestName, ct);
+        TwitchResponse<UpdateUserExtensionsResponseContent> enableResponse = await client.SendAsync(enableRequest, TestName, ct);
+        Assert.Null(enableResponse.Error);
         await Task.Delay(100, ct);
 
         UpdateUserExtensionsRequest disableRequest = enableRequest with
@@ -47,6 +49,7 @@ public class Test_UpdateUserExtensions(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(disableRequest, TestName, ct);
+        TwitchResponse<UpdateUserExtensionsResponseContent> disableResponse = await client.SendAsync(disableRequest, TestName, ct);
+        Assert.Null(disableResponse.Error);
     }
 }

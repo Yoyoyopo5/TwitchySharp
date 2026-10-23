@@ -23,6 +23,8 @@ public class Test_UserInfoRequest(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         TwitchResponse<TwitchOidc> response = await client.SendAsync(stubRequest, TestName, TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
+
         Assert.False(string.IsNullOrEmpty(response.Content.Sub));
         Assert.False(string.IsNullOrEmpty(response.Content.Iss));
         Assert.False(string.IsNullOrEmpty(response.Content.Aud));

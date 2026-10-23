@@ -23,7 +23,10 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
         };
 
         // cache original
-        ChannelInformation channelInfo = (await client.SendAsync(getInfoRequest, TestName, ct)).Content.Data.First();
+        TwitchResponse<GetChannelInformationResponseContent> getResponse = await client.SendAsync(getInfoRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
+        Assert.NotEmpty(getResponse.Content.Data);
+        ChannelInformation channelInfo = getResponse.Content.Data.First();
 
         ModifyChannelInformationRequest modifyRequest = new()
         {
@@ -38,11 +41,12 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(modifyRequest, TestName, ct);
+        TwitchResponse<ModifyChannelInformationResponseContent> modifyResponse = await client.SendAsync(modifyRequest, TestName, ct);
+        Assert.Null(modifyResponse.Error);
         await Task.Delay(250, ct);
 
         // restore original
-        await client.SendAsync(modifyRequest with
+        modifyResponse = await client.SendAsync(modifyRequest with
         {
             ChannelInformation = modifyRequest.ChannelInformation with
             {
@@ -53,5 +57,7 @@ public class Test_ModifyChannelInformation(TwitchClientFixture fixture)
                 Title = channelInfo.Title
             }
         }, TestName, ct);
+
+        Assert.Null(modifyResponse.Error);
     }
 }

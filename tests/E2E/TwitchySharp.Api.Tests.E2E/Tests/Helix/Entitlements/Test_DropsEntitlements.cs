@@ -17,8 +17,10 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         GetDropsEntitlementsRequest getRequest = new();
+        TwitchResponse<GetDropsEntitlementsResponseContent> getResponse = await client.SendAsync(getRequest, TestName, ct);
+        Assert.NotNull(getResponse.Content);
 
-        if ((await client.SendAsync(getRequest, TestName, ct)).Content.Data.FirstOrDefault()?.Id is not DropsEntitlementId id)
+        if (getResponse.Content.Data.FirstOrDefault()?.Id is not DropsEntitlementId id)
         {
             Assert.Skip("There are no drops entitlements associated with the client.");
             return;
@@ -33,6 +35,8 @@ public class Test_DropsEntitlements(TwitchClientFixture fixture)
             }
         };
 
-        await client.SendAsync(updateRequest, TestName, ct);
+        TwitchResponse<UpdateDropsEntitlementsResponseContent> updateResponse = await client.SendAsync(updateRequest, TestName, ct);
+
+        Assert.Null(updateResponse.Error);
     }
 }

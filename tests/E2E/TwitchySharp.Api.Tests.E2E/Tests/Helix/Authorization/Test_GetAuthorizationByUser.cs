@@ -21,6 +21,8 @@ public class Test_GetAuthorizationByUser(TwitchClientFixture fixture)
             UserIds = [userId]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetAuthorizationByUserResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

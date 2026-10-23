@@ -25,7 +25,10 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SetExtensionConfigurationSegmentResponseContent> response
+            = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 
     [Fact]
@@ -49,7 +52,10 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SetExtensionConfigurationSegmentResponseContent> response
+            = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 
     [Fact]
@@ -73,6 +79,9 @@ public class Test_SetExtensionConfigurationSegment(TwitchClientFixture fixture)
             }
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<SetExtensionConfigurationSegmentResponseContent> response
+            = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

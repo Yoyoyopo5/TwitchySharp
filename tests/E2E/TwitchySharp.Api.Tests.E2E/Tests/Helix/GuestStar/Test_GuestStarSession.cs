@@ -24,50 +24,52 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
 
         TwitchResponse<CreateGuestStarSessionResponseContent> createResponse
             = await CreateGuestStarSession(client, userConfig.UserId, ct);
+        Assert.NotNull(createResponse.Content);
         GuestStarSessionId sessionId = createResponse.Content.Data.Single().Id;
 
         try
         {
             await Task.Delay(100, ct);
 
-            await SendGuestStarInvite(
+            Assert.Null((await SendGuestStarInvite(
                 client,
                 userConfig.UserId,
                 sessionId,
                 guestUserId,
                 ct
-                );
+                )).Error);
 
             await Task.Delay(100, ct);
 
-            await GetGuestStarInvites(
+            Assert.Null((await GetGuestStarInvites(
                 client,
                 userConfig.UserId,
                 sessionId,
                 ct
-                );
+                )).Error);
 
-            await DeleteGuestStarInvite(
+            Assert.Null((await DeleteGuestStarInvite(
                 client,
                 userConfig.UserId,
                 sessionId,
                 guestUserId,
                 ct
-                );
+                )).Error);
 
-            await SendGuestStarInvite(
+            Assert.Null((await SendGuestStarInvite(
                 client,
                 userConfig.UserId,
                 sessionId,
                 guestUserId,
                 ct
-                );
+                )).Error);
 
             await Task.Delay(TimeSpan.FromSeconds(5), ct); // Wait for join.
 
-            GuestStarSessionGuest? guest = (await GetGuestStarSession(client, userConfig.UserId, ct))
-                .Content
-                .Data
+            TwitchResponse<GetGuestStarSessionResponseContent> getSessionResponse = await GetGuestStarSession(client, userConfig.UserId, ct);
+            Assert.NotNull(getSessionResponse.Content);
+
+            GuestStarSessionGuest? guest = getSessionResponse.Content.Data
                 .FirstOrDefault()?
                 .Guests
                 .ElementAtOrDefault(1);
@@ -80,44 +82,44 @@ public class Test_GuestStarSession(TwitchClientFixture fixture)
             GuestStarSlotId slot1 = new("1");
             GuestStarSlotId slot2 = new("2");
 
-            await AssignGuestStarSlot(client,
+            Assert.Null((await AssignGuestStarSlot(client,
                 userConfig.UserId,
                 sessionId,
                 guest.UserId,
                 slot1,
                 ct
-                ); // Cannot get this to work, not sure when it is acceptable to call.
+                )).Error); // Cannot get this to work, not sure when it is acceptable to call.
 
-            await UpdateGuestStarSlotSettings(
+            Assert.Null((await UpdateGuestStarSlotSettings(
                 client,
                 userConfig.UserId,
                 sessionId,
                 slot1,
                 ct
-                );
+                )).Error);
 
-            await UpdateGuestStarSlot(
+            Assert.Null((await UpdateGuestStarSlot(
                 client,
                 userConfig.UserId,
                 sessionId,
                 slot1,
                 slot2,
                 ct
-                );
+                )).Error);
 
             await Task.Delay(100, ct);
-            await DeleteGuestStarSlot(
+            Assert.Null((await DeleteGuestStarSlot(
                 client,
                 userConfig.UserId,
                 sessionId,
                 guest.UserId,
                 slot2,
                 ct
-                );
+                )).Error);
         }
         finally
         {
-            await EndGuestStarSession(client, userConfig.UserId, sessionId, ct);
+            Assert.Null((await EndGuestStarSession(client, userConfig.UserId, sessionId, ct)).Error);
         }
     }
 

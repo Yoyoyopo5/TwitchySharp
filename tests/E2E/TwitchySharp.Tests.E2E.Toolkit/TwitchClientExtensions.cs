@@ -13,8 +13,12 @@ public static class TwitchClientExtensions
         UserId broadcasterId,
         CancellationToken ct
         )
-        => (await client.SendAsync(new GetStreamsRequest() { UserIds = [broadcasterId] }, new TestName("get-streams"), ct))
-            .Content.Data.SingleOrDefault();
+    {
+        TwitchResponse<GetStreamsResponseContent> response = await client.SendAsync(new GetStreamsRequest() { UserIds = [broadcasterId] }, new TestName("get-streams"), ct);
+        Assert.Null(response.Error);
+        Assert.NotNull(response.Content);
+        return response.Content.Data.SingleOrDefault();
+    }
 
     public static async Task SkipIfBroadcasterIsNotStreaming(
         this TestingTwitchClient client,

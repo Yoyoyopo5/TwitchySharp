@@ -23,6 +23,8 @@ public class Test_ValidateAccessTokenRequest(TwitchClientFixture fixture)
         TestingTwitchClient client = _fixture.GetTwitchApiClient();
         TwitchResponse<ValidateAccessTokenResponseContent> response = await client.SendAsync(request, TestName, TestContext.Current.CancellationToken);
 
+        Assert.NotNull(response.Content);
+
         Assert.True(response.Content.ExpiresIn > TimeSpan.Zero);
         Assert.False(string.IsNullOrEmpty(response.Content.Login));
         Assert.False(string.IsNullOrEmpty(response.Content.UserId.Value));

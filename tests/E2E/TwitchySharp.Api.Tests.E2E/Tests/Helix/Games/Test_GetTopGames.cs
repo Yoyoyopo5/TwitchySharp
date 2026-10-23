@@ -15,6 +15,9 @@ public class Test_GetTopGames(TwitchClientFixture fixture)
 
         GetTopGamesRequest request = new();
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetTopGamesResponseContent> response
+            = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }

@@ -20,6 +20,8 @@ public class Test_GetChannelInformation(TwitchClientFixture fixture)
             BroadcasterIds = [testBroadcasterId]
         };
 
-        await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        TwitchResponse<GetChannelInformationResponseContent> response = await _fixture.GetTwitchApiClient().SendAsync(request, TestName, TestContext.Current.CancellationToken);
+        
+        Assert.Null(response.Error);
     }
 }
