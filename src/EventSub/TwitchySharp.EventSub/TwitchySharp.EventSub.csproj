@@ -1,22 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-    <ItemGroup>
-        <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
-    </ItemGroup>
+  <PropertyGroup>
+    <PackageId>TwitchySharp.EventSub</PackageId>
+    <Authors>Yoyoyopo5</Authors>
+    <Description>Provides core types and functions for receiving Twitch EventSub notifications.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Yoyoyopo5.ValueWrapper" />
-    </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Unit" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../TwitchySharp.Core/TwitchySharp.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
