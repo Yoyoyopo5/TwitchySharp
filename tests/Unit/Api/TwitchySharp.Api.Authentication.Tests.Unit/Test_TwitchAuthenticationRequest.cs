@@ -3,7 +3,7 @@ using TwitchySharp.Infrastructure.Http;
 
 namespace TwitchySharp.Api.Tests.Unit.Authorization;
 
-public class Test_TwitchAuthorizationRequest
+public class Test_TwitchAuthenticationRequest
 {
     [Fact]
     public void RequestUri_WithDefaultHostAndBasePath_BuildsCorrectUri()
@@ -96,7 +96,7 @@ public class Test_TwitchAuthorizationRequest
         Assert.Contains("scope=openid", uri.Query);
     }
 
-    private record StubAuthorizationRequest : TwitchAuthorizationRequest<object>
+    private record StubAuthorizationRequest : TwitchAuthenticationRequest<object>
     {
         public string StubPath { get; init; } = "/stub";
         public HttpQueryParameters? StubQueryParameters { get; init; }

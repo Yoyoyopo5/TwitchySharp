@@ -3,7 +3,7 @@
 /// Base class for requests using the <see href="https://dev.twitch.tv/docs/authentication/">Twitch Authentication API</see>.
 /// </summary>
 /// <typeparam name="TResponseContent"><inheritdoc/></typeparam>
-public abstract record TwitchAuthorizationRequest<TResponseContent>
+public abstract record TwitchAuthenticationRequest<TResponseContent>
     : TwitchRequest<TResponseContent>
 {
     /// <summary>
