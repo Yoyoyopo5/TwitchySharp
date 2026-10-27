@@ -1,3 +1,3 @@
 # TwitchySharp.Api.Helix
 
-This is a **beta** release of the TwitchySharp.Api.Helix package.
+This package contains the [Twitch Helix API](https://dev.twitch.tv/docs/api/) request types. Types are divided by namespaces that roughly follow the official Twitch developer documentation.

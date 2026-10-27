@@ -1,3 +1,3 @@
 # TwitchySharp.EventSub.Webhooks.AspNetCore
 
-This is a **beta** release of the TwitchySharp.EventSub.Webhooks.AspNetCore package.
+The TwitchySharp.EventSub.Webhooks.AspNetCore package integrates the TwitchySharp.EventSub.Webhooks package with ASP.NET Core.
