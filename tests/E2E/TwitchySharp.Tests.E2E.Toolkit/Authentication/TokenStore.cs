@@ -53,25 +53,25 @@ public sealed class TokenStore(IEnumerable<IAccessTokenDetails<TwitchIdentity>>?
 
     public ValueTask<AccessTokenDetails.App?> GetOrDefault(ClientId key, CancellationToken ct)
         => ValueTask.FromResult(GetOrDefault<AccessTokenDetails.App>(new TwitchIdentity.Client(key)));
-    public ValueTask<IRequestDependencyCache<ClientId, AccessTokenDetails.App>> Set(ClientId key, AccessTokenDetails.App value, CancellationToken ct)
+    public ValueTask Set(ClientId key, AccessTokenDetails.App value, CancellationToken ct)
     {
         AddOrUpdate(value);
-        return ValueTask.FromResult<IRequestDependencyCache<ClientId, AccessTokenDetails.App>>(this);
+        return ValueTask.CompletedTask;
     }
 
     public ValueTask<AccessTokenDetails.User?> GetOrDefault(TwitchIdentity.User key, CancellationToken ct)
         => ValueTask.FromResult(GetOrDefault<AccessTokenDetails.User>(key));
-    public ValueTask<IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User>> Set(TwitchIdentity.User key, AccessTokenDetails.User value, CancellationToken ct)
+    public ValueTask Set(TwitchIdentity.User key, AccessTokenDetails.User value, CancellationToken ct)
     {
         AddOrUpdate(value);
-        return ValueTask.FromResult<IRequestDependencyCache<TwitchIdentity.User, AccessTokenDetails.User>>(this);
+        return ValueTask.CompletedTask;
     }
 
     public ValueTask<AccessTokenDetails.ExtensionJwt?> GetOrDefault(TwitchIdentity.Extension key, CancellationToken ct)
         => ValueTask.FromResult(GetOrDefault<AccessTokenDetails.ExtensionJwt>(key));
-    public ValueTask<IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>> Set(TwitchIdentity.Extension key, AccessTokenDetails.ExtensionJwt value, CancellationToken ct)
+    public ValueTask Set(TwitchIdentity.Extension key, AccessTokenDetails.ExtensionJwt value, CancellationToken ct)
     {
         AddOrUpdate(value);
-        return ValueTask.FromResult<IRequestDependencyCache<TwitchIdentity.Extension, AccessTokenDetails.ExtensionJwt>>(this);
+        return ValueTask.CompletedTask;
     }
 }
