@@ -297,8 +297,10 @@ public record RequestDependencyConditionalConfiguration<TCollection>(
     public TCollection EndWhen()
         => ConfigurationApplicators.Values.Aggregate(Collection, (configured, nextApplicator) => nextApplicator(configured));
 
+    /// <inheritdoc/>
     public ResolveRequestDependency<T>? GetResolver<T>()
         => ConditionalResolvers.GetValueOrDefault(typeof(T)) as ResolveRequestDependency<T> ?? Collection.GetResolver<T>();
+    /// <inheritdoc/>
     public RequestDependencyConditionalConfiguration<TCollection> SetResolver<T>(ResolveRequestDependency<T> resolve)
         => this with
         {

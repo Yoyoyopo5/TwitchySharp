@@ -9,6 +9,9 @@ namespace TwitchySharp.Api;
 [Wrapper<string>]
 public readonly partial record struct Scope(string Value);
 
+/// <summary>
+/// General purpose extension methods for <see cref="Scope"/>.
+/// </summary>
 public static class ScopeExtensions
 {
     internal static string FormatScopes(this IEnumerable<Scope> scopes)

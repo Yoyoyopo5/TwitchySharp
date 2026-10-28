@@ -27,7 +27,7 @@ public interface IRequestDependencyCache<TKey, TValue>
     /// <param name="value">The value to set.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A <see cref="ValueTask"/> containing the modified cache.</returns>
-    ValueTask<IRequestDependencyCache<TKey, TValue>> Set(TKey key, TValue value, CancellationToken ct);
+    ValueTask Set(TKey key, TValue value, CancellationToken ct);
 }
 
 /// <summary>
@@ -73,9 +73,9 @@ internal class InMemoryConcurrentCache<TKey, TValue>(ConcurrentDictionary<TKey, 
 
     public ValueTask<TValue?> GetOrDefault(TKey key, CancellationToken ct)
         => ValueTask.FromResult(_cache.GetValueOrDefault(key));
-    public ValueTask<IRequestDependencyCache<TKey, TValue>> Set(TKey key, TValue value, CancellationToken ct)
+    public ValueTask Set(TKey key, TValue value, CancellationToken ct)
     {
         _cache.AddOrUpdate(key, value, (_, _) => value);
-        return ValueTask.FromResult<IRequestDependencyCache<TKey, TValue>>(this);
+        return ValueTask.CompletedTask;
     }
 }

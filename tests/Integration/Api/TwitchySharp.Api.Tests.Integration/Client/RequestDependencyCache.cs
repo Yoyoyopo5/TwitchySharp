@@ -15,9 +15,13 @@ public static class RequestDependencyCache
                 ? ValueTask.FromResult<IRequestDependencyCache<TKey, TValue>>(new InMemoryConcurrentCache<TKey, TValue>())
                 : tokens.Aggregate(
                 ValueTask.FromResult<IRequestDependencyCache<TKey, TValue>>(new InMemoryConcurrentCache<TKey, TValue>()),
-                async (current, next) => await (await current).Set(
+                async (current, next) =>
+                {
+                    await (await current).Set(
                     next.Key,
                     next.Value,
                     TestContext.Current.CancellationToken
-                    ));
+                    );
+                    return await current;
+                });
 }

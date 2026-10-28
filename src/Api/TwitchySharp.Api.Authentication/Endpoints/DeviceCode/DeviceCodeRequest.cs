@@ -6,7 +6,7 @@ namespace TwitchySharp.Api.Authentication;
 /// Uses the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.
 /// </remarks>
 public record DeviceCodeRequest
-    : TwitchAuthorizationRequest<DeviceCodeResponseContent>
+    : TwitchAuthenticationRequest<DeviceCodeResponseContent>
 {
     protected override string Path => "/device";
     public override HttpMethod Method => HttpMethod.Post;

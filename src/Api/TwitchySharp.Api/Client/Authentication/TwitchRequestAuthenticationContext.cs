@@ -51,6 +51,7 @@ public record TwitchRequestAuthenticationContext<TIdentity>
     /// for an individual request.
     /// </remarks>
     public BearerToken? BearerToken { get; init; }
+    /// <inheritdoc/>
     public virtual BearerTokenType TokenType { get; }
         = typeof(TIdentity) switch
         {
@@ -75,7 +76,9 @@ public record TwitchRequestAuthenticationContext<TIdentity>
 public sealed record UserWithScopesAuthenticationContext
     : TwitchRequestAuthenticationContext<TwitchIdentity.User>, IHaveScopes
 {
+    /// <inheritdoc/>
     public override BearerTokenType TokenType => BearerTokenType.UserAccessToken;
+    /// <inheritdoc/>
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
 }
 
@@ -89,8 +92,11 @@ public sealed record UserWithScopesAuthenticationContext
 public sealed record UserSupportingPriorAuthorizationAuthenticationContext
     : TwitchRequestAuthenticationContext<TwitchIdentity.User>, IHaveScopes, ISupportPriorAuthorization
 {
+    /// <inheritdoc/>
     public IReadOnlySet<Scope> ValidScopes { get; init; } = ImmutableHashSet<Scope>.Empty;
+    /// <inheritdoc/>
     public bool UsePriorAuthorization { get; init; } = false;
+    /// <inheritdoc/>
     public override BearerTokenType TokenType => UsePriorAuthorization
         ? BearerTokenType.AppAccessToken
         : BearerTokenType.UserAccessToken;

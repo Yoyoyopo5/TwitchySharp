@@ -10,14 +10,30 @@ namespace TwitchySharp.Api;
 /// A Twitch API client.
 /// </summary>
 /// <remarks>
-/// Provides a default implementation for sending typed <see cref="TwitchRequest"/> commands using an <see cref="System.Net.Http.HttpClient"/>.
+/// Provides a default implementation for sending typed <see cref="TwitchRequest"/> commands using an <see cref="HttpClient"/>.
 /// Can be further configured using
-/// <see cref="Set{T}(ResolveRequestDependency{T})"/>
-/// and <see cref="Configure{T}(Func{ResolveRequestDependency{T}, ResolveRequestDependency{T}})"/> methods,
+/// <see cref="ITwitchRequestDependencyCollection{TSelf}.SetResolver"/>
+/// and <see cref="ITwitchRequestDependencyCollectionExtensions.Configure"/> methods,
 /// as well as various built-in extension methods.
 /// </remarks>
 public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<TwitchClient>
 {
+    /// <summary>
+    /// The client's request dependency resolvers.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// By default, this includes:
+    /// <list type="number">
+    /// <item>Serializer for <see cref="TwitchRequest.ContentObject"/></item>
+    /// <item>Conversion to <see cref="HttpRequestMessage"/> from <see cref="TwitchRequest{T}"/></item>
+    /// <item>Various id types extracted from <see cref="ITwitchRequestAuthenticationContext{TIdentity}"/></item>
+    /// <item>Authentication headers added from <see  cref="ITwitchRequestAuthenticationContext{TIdentity}"/></item>
+    /// <item><see cref="HttpClient"/> to send requests (can be configured with <see cref="TwitchClientExtensions.WithHttpClient"/>).</item>
+    /// </list>
+    /// </para>
+    /// This can be set to a new collection to clear all default resolvers.
+    /// </remarks>
     public ITwitchRequestDependencyCollection Resolvers { get; init; }
             = new ImmutableRequestDependencyCollection() // Default Pipeline
                 .UseRequestContent()
@@ -30,9 +46,11 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
                 .WithHttpClient(new())
                 .UseHttpClientToSendRequests();
 
+    /// <inheritdoc/>
     public TwitchClient SetResolver<T>(ResolveRequestDependency<T> resolver)
         => this with { Resolvers = Resolvers.SetResolver(resolver) };
 
+    /// <inheritdoc/>
     public ResolveRequestDependency<T>? GetResolver<T>()
         => Resolvers.GetResolver<T>();
 
@@ -49,12 +67,25 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// </remarks>
     public abstract class Middleware
     {
+        /// <summary>
+        /// Pass a typed send function that will be wrapped by the middleware and returned as a composed send function.
+        /// </summary>
+        /// <typeparam name="TResponseContent">The response type.</typeparam>
+        /// <param name="send">The send function to wrap.</param>
+        /// <returns>A new send function composed from <paramref name="send"/> and the middleware <see cref="SendAsync"/>.</returns>
         public Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> ConfigureSend<TResponseContent>(
             Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send
             )
             => (scope, ct) => SendAsync(send, scope, ct);
 
+        /// <summary>
+        /// Send the request with added configuration.
+        /// </summary>
+        /// <typeparam name="TResponseContent">The response type.</typeparam>
         /// <param name="send">The inner send function. Use this to send the request.</param>
+        /// <param name="scope">The request's dependency scope. Use this to extract dependencies and pass to <paramref name="send"/>.</param>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>A <see cref="ValueTask"/> of <see cref="TwitchResponse{TResponseContent}"/>.</returns>
         protected abstract ValueTask<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(Func<ITwitchRequestDependencyScope, CancellationToken, ValueTask<TwitchResponse<TResponseContent>>> send, ITwitchRequestDependencyScope scope, CancellationToken ct);
     }
 
@@ -62,8 +93,6 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     /// Send a <see cref="TwitchRequest"/> using the configured client.
     /// </summary>
     /// <typeparam name="TResponseContent">The response content type.</typeparam>
-    /// <exception cref="TwitchApiException">When the HTTP response is a non-success status code.</exception>
-    /// <exception cref="InvalidOperationException">When another error occurred.</exception>
     /// <inheritdoc/>
     public async Task<TwitchResponse<TResponseContent>> SendAsync<TResponseContent>(TwitchRequest<TResponseContent> request, CancellationToken ct = default)
     {
@@ -76,14 +105,29 @@ public record TwitchClient : ITwitchClient, ITwitchRequestDependencyCollection<T
     }
 }
 
+/// <summary>
+/// Basic functionality extensions for <see cref="TwitchClient"/>.
+/// </summary>
 public static class TwitchClientExtensions
 {
+    /// <summary>
+    /// Use a specific <see cref="HttpClient"/> to send requests.
+    /// </summary>
+    /// <param name="client">The <see cref="TwitchClient"/> to configure.</param>
+    /// <param name="httpClient">The <see cref="HttpClient"/> to use.</param>
+    /// <returns>A new <see cref="TwitchClient"/> configured to use <paramref name="httpClient"/>.</returns>
     public static TwitchClient WithHttpClient(
         this TwitchClient client,
         HttpClient httpClient
         )
         => client.SetFixed(httpClient);
 
+    /// <summary>
+    /// Configure the send operation of the <see cref="TwitchClient"/>.
+    /// </summary>
+    /// <param name="client">The <see cref="TwitchClient"/> to configure.</param>
+    /// <param name="middleware">The middleware instance containing the configured send method.</param>
+    /// <returns>A new <see cref="TwitchClient"/> with the middleware added.</returns>
     public static TwitchClient UseMiddleware(
         this TwitchClient client,
         TwitchClient.Middleware middleware
