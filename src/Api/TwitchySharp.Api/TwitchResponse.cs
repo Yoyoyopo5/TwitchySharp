@@ -5,6 +5,11 @@ using TwitchySharp.Serialization;
 
 namespace TwitchySharp.Api;
 
+/// <summary>
+/// The response had an unexpected HTTP status code.
+/// </summary>
+/// <param name="StatusCode">The unexpected status code.</param>
+/// <param name="Content">The body of the response as a <see langword="string"/>.</param>
 public record UnexpectedHttpStatusCodeError(
     HttpStatusCode StatusCode,
     string Content) : Error($"Twitch API returned unexpected status code {StatusCode}.");
@@ -100,6 +105,12 @@ public record TwitchResponse<TResponseContent>
     /// <param name="content">The response content.</param>
     public TwitchResponse(TResponseContent content) => Content = content;
 
+    /// <summary>
+    /// Convert a <see cref="Result{T}"/> to a <see cref="TwitchResponse{TResponseContent}"/>,
+    /// carrying over its error and content.
+    /// </summary>
+    /// <param name="result">The result to convert from.</param>
+    /// <returns>A <see cref="TwitchResponse{TResponseContent}"/> with the same error and content as the <paramref name="result"/>.</returns>
     public static TwitchResponse<TResponseContent> FromResult(Result<TResponseContent> result)
         => result.Match(
             e => new TwitchResponse<TResponseContent>(e),
@@ -120,6 +131,14 @@ public record TwitchResponse<TResponseContent>
     /// </remarks>
     public TResponseContent? Content { get; }
 
+    /// <summary>
+    /// Eliminate a response into <typeparamref name="T"/>,
+    /// providing a function mapping both a successful response and an error.
+    /// </summary>
+    /// <typeparam name="T">The type to return.</typeparam>
+    /// <param name="content">The function that will be evaluated if the response contains <typeparamref name="TResponseContent"/>.</param>
+    /// <param name="error">The function that will be evaluated if the response is an error.</param>
+    /// <returns>The return value of one of the passed functions.</returns>
     public T Match<T>(Func<TResponseContent, T> content, Func<Error, T> error)
         => Error is not null
             ? error(Error)

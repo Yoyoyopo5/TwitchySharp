@@ -23,6 +23,18 @@ internal record DependencyDisposalDictionary
 /// </summary>
 public static class ITwitchRequestDependencyCollectionDisposeExtensions
 {
+    /// <summary>
+    /// Add a dispose function associated with <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// This can be used to dispose a memoized <typeparamref name="T"/>,
+    /// if the implementation of <see cref="ITwitchRequestDependencyScope"/> supports it.
+    /// </remarks>
+    /// <typeparam name="TCollection">The dependency collection type.</typeparam>
+    /// <typeparam name="T">The dependency type.</typeparam>
+    /// <param name="dc">The dependency collection.</param>
+    /// <param name="dispose">The dispose function.</param>
+    /// <returns>The configured collection.</returns>
     public static TCollection ConfigureDispose<TCollection, T>(
         this TCollection dc,
         Action<T> dispose

@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Api;
 
+/// <summary>
+/// <see cref="TwitchClient"/> extensions relating to authentication.
+/// </summary>
 public static class TwitchClientAuthenticationExtensions
 {
     /// <summary>

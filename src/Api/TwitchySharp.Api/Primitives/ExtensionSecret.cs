@@ -15,5 +15,8 @@ namespace TwitchySharp.Api;
 [Wrapper<string>]
 public readonly partial record struct ExtensionSecret(string Value)
 {
+    /// <summary>
+    /// The bytes of the base64 encoded secret.
+    /// </summary>
     public byte[] Bytes { get; } = Convert.FromBase64String(Value);
 }

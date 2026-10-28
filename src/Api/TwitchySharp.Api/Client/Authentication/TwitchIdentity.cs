@@ -8,8 +8,15 @@
 /// </remarks>
 public abstract record TwitchIdentity
 {
+    /// <summary>
+    /// Set the <see cref="ClientId"/> for the identity.
+    /// </summary>
+    /// <param name="clientId">The client id.</param>
     protected TwitchIdentity(ClientId? clientId)
         => ClientId = clientId;
+    /// <summary>
+    /// <inheritdoc cref="Client(ClientId?)" path="/param[@name='ClientId']"/>
+    /// </summary>
     public ClientId? ClientId { get; init; }
     /// <summary>
     /// An explicit no identity.
@@ -17,6 +24,9 @@ public abstract record TwitchIdentity
     public sealed record None : TwitchIdentity
     {
         private None() : base((ClientId?)null) { }
+        /// <summary>
+        /// A static <see cref="None"/> instance that can be reused.
+        /// </summary>
         public static None Instance { get; } = new();
     }
     /// <summary>
@@ -36,7 +46,7 @@ public abstract record TwitchIdentity
     /// <summary>
     /// A user to make requests on behalf of.
     /// </summary>
-    /// <param name="ClientId"><inheritdoc cref="Client(ClientId)" path="/param[@name='ClientId']"/></param>
+    /// <param name="ClientId"><inheritdoc cref="Client(ClientId?)" path="/param[@name='ClientId']"/></param>
     /// <param name="UserId">The id of the user to make requests on behalf of.</param>
     public sealed record User(UserId UserId, ClientId? ClientId = null) : TwitchIdentity(ClientId);
     /// <summary>
@@ -52,6 +62,9 @@ public abstract record TwitchIdentity
     /// <param name="ExtensionId">The client id of the extension. Used as the <c>Client-Id</c> header of Helix API requests.</param>
     public sealed record Extension(ExtensionId? ExtensionId, UserId? BroadcasterId = null) : TwitchIdentity(ExtensionId)
     {
+        /// <summary>
+        /// <inheritdoc cref="Extension" path="/param[@name='ExtensionId']"/>
+        /// </summary>
         public ExtensionId? ExtensionId
         { 
             get => ClientId.HasValue ? new ExtensionId(ClientId.Value) : default;
