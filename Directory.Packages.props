@@ -1,15 +1,5 @@
 <Project>
   <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Yoyoyopo5/TwitchySharp</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Yoyoyopo5/TwitchySharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>twitch;api;eventsub</PackageTags>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>2.0.0-beta.1</Version>
-  </PropertyGroup>
-  <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
