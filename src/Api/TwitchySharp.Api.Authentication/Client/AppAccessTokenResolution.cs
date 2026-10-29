@@ -15,20 +15,17 @@ public static class AppAccessTokenResolution
         CancellationToken ct
         )
     {
-        try
-        {
-            TwitchResponse<ClientCredentialsResponseContent> credentialsResponse =
-                await twitchClient.SendAsync(new ClientCredentialsRequest()
-                {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret
-                }, ct);
-            return credentialsResponse.Content.ToAccessTokenDetails(clientId, now);
-        }
-        catch (Exception ex)
-        {
-            return new ExceptionError(ex);
-        }
+        TwitchResponse<ClientCredentialsResponseContent> credentialsResponse =
+            await twitchClient.SendAsync(new ClientCredentialsRequest()
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            }, ct);
+
+        return credentialsResponse.Match(
+            content => content.ToAccessTokenDetails(clientId, now),
+            error => new Result<AccessTokenDetails.App>(error)
+            );
     }
 
     private static ResolveRequestDependency<AccessTokenDetails.App> GetTokenFromTwitch(
