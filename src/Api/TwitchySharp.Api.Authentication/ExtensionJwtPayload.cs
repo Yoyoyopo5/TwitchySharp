@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TwitchySharp.Serialization;
+using Yoyoyopo5.ValueWrapper;
 
 namespace TwitchySharp.Api.Authentication;
 /// <summary>
@@ -25,20 +26,34 @@ public record ExtensionJwtPayload
     /// The JWT role. This should always be set to <c>"external"</c> for EBS generated tokens.
     /// </summary>
     public string Role { get; } = "external";
+    /// <summary>
+    /// The user id of the broadcaster (channel) that the JWT is issued for.
+    /// </summary>
+    /// <remarks>
+    /// If <see langword="null"/>, represents a <c>global</c> JWT.
+    /// Typically, if the requested operation is targeting a specific channel,
+    /// it should set this to that channel's broadcaster user id.
+    /// </remarks>
     public UserId? ChannelId { get; init; }
+    /// <summary>
+    /// The set of PubSub permissions associated with the JWT.
+    /// </summary>
+    /// <remarks>
+    /// Set to <c>Send = *</c> by default.
+    /// </remarks>
     [JsonPropertyName("pubsub_perms")]
-    public ExtensionPubSubPermissions PubSubPermissions { get; } = new()
+    public ExtensionPubSubPermissions PubSubPermissions { get; init; } = new()
     {
-        Send = ["*"]
+        Send = [ExtensionPubSubPermission.All]
     };
 
     /// <summary>
     /// Creates an encoded JWT used to make various Extensions API calls.
     /// </summary>
     /// <param name="extensionSecret">An extension secret.</param>
-    /// <param name="serializerOptions">
-    /// Custom serializer options to use. 
-    /// Leave <see langword="null"/> to use the default <see cref="JsonConfig.ApiOptions"/>.
+    /// <param name="serialize">
+    /// Serialize function to use.
+    /// Leave <see langword="null"/> to use the default <see cref="JsonSerializer"/>.
     /// </param>
     /// <returns>A signed JWT.</returns>
     public ExtensionJsonWebToken Sign(ExtensionSecret extensionSecret, Func<ExtensionJwtPayload, string>? serialize = null)
@@ -49,8 +64,30 @@ public record ExtensionJwtPayload
             );
 }
 
+/// <summary>
+/// Group of permissions that determine how the token holder can listen and send messages.
+/// </summary>
 public readonly record struct ExtensionPubSubPermissions
 {
-    public string[]? Listen { get; init; }
-    public string[]? Send { get; init; }
+    /// <summary>
+    /// The topics the token holder is allowed to listen to.
+    /// </summary>
+    public ExtensionPubSubPermission[]? Listen { get; init; }
+    /// <summary>
+    /// The topics the token holder is allowed to send to.
+    /// </summary>
+    public ExtensionPubSubPermission[]? Send { get; init; }
+}
+
+/// <summary>
+/// An individual extension PubSub permission.
+/// </summary>
+/// <param name="Value">The string value of the permission</param>
+[Wrapper<string>]
+public readonly partial record struct ExtensionPubSubPermission(string Value)
+{
+    /// <summary>
+    /// The wildcard permission <c>*</c> includes all permissions.
+    /// </summary>
+    public static ExtensionPubSubPermission All { get; } = new("*");
 }
