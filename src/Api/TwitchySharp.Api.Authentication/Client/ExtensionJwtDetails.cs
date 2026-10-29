@@ -9,7 +9,9 @@ public static partial class AccessTokenDetails
     /// <param name="JsonWebToken">The extension JWT signed by an EBS.</param>
     public sealed record ExtensionJwt(TwitchIdentity.Extension Identity, ExtensionJsonWebToken JsonWebToken) : IAccessTokenDetails<TwitchIdentity.Extension>
     {
+        /// <inheritdoc/>
         public BearerToken BearerToken => JsonWebToken;
+        /// <inheritdoc/>
         public DateTimeOffset ExpiresAt { get; init; } = JsonWebToken.ToJsonWebToken().ValidTo;
     }
 }

@@ -34,6 +34,8 @@ public abstract record TwitchAuthenticationRequest<TResponseContent>
     /// The request query parameters, if any.
     /// </summary>
     protected virtual HttpQueryParameters? QueryParameters { get; }
+
+    /// <inheritdoc/>
     public override Uri RequestUri => new UriBuilder()
     {
         Scheme = "https",

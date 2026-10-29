@@ -13,7 +13,9 @@ public record ValidateAccessTokenRequest
     : TwitchAuthenticationRequest<ValidateAccessTokenResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Get;
+    /// <inheritdoc/>
     protected override string Path => "/validate";
 
     /// <summary>
@@ -33,6 +35,7 @@ public record ValidateAccessTokenRequest
     /// </remarks>
     public UserAccessToken? AccessToken { get; init; }
 
+    /// <inheritdoc/>
     public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext =>
         UserId.HasValue
         ? new UserWithScopesAuthenticationContext()

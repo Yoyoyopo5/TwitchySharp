@@ -11,5 +11,8 @@ namespace TwitchySharp.Api.Authentication;
 public record AuthorizationCodeGrantUrl
     : AuthorizationUrl
 {
+    /// <summary>
+    /// Sets the response type to <see cref="TwitchAuthorizationResponseType.Code"/>.
+    /// </summary>
     protected override ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; } = [TwitchAuthorizationResponseType.Code];
 }

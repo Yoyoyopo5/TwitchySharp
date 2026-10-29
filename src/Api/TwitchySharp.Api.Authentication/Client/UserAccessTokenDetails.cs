@@ -18,6 +18,7 @@ public static partial class AccessTokenDetails
         /// The access token.
         /// </summary>
         public required UserAccessToken AccessToken { get; init; }
+        /// <inheritdoc/>
         public BearerToken BearerToken => AccessToken;
         /// <summary>
         /// The refresh token that can be used to obtain a new access token when this one expires, if any.
@@ -27,9 +28,18 @@ public static partial class AccessTokenDetails
         /// The scopes present on this access token.
         /// </summary>
         public IReadOnlySet<Scope> Scopes { get; init; } = ImmutableHashSet<Scope>.Empty;
+        /// <inheritdoc/>
         public required DateTimeOffset ExpiresAt { get; init; }
     }
 
+    /// <summary>
+    /// Obtain user access token details from an <see cref="AccessTokenRefreshResponseContent"/>.
+    /// </summary>
+    /// <param name="refreshResponse">The refresh response to get token details from.</param>
+    /// <param name="clientId">The client id used to refresh the token.</param>
+    /// <param name="userId">The id of the user the token belongs to.</param>
+    /// <param name="now">The current time. Used for determining token expiry.</param>
+    /// <returns>User access token details for the refreshed token.</returns>
     public static AccessTokenDetails.User ToAccessTokenDetails(
         this AccessTokenRefreshResponseContent refreshResponse,
         ClientId clientId,
@@ -45,6 +55,14 @@ public static partial class AccessTokenDetails
             ExpiresAt = now + refreshResponse.ExpiresIn
         };
 
+    /// <summary>
+    /// Obtain user access token details from an <see cref="AuthorizationCodeResponseContent"/>.
+    /// </summary>
+    /// <param name="authorizationCodeResponse">The response to get details from.</param>
+    /// <param name="clientId">The client id used to make the <see cref="AuthorizationCodeRequest"/>.</param>
+    /// <param name="userId"><inheritdoc cref="ToAccessTokenDetails(AccessTokenRefreshResponseContent, ClientId, UserId, DateTimeOffset)" path="/param[@name = 'userId']"/></param>
+    /// <param name="now"><inheritdoc cref="ToAccessTokenDetails(AccessTokenRefreshResponseContent, ClientId, UserId, DateTimeOffset)" path="/param[@name = 'now']"/></param>
+    /// <returns>User access token details for the new token.</returns>
     public static AccessTokenDetails.User ToAccessTokenDetails(
         this AuthorizationCodeResponseContent authorizationCodeResponse,
         ClientId clientId,
@@ -60,6 +78,14 @@ public static partial class AccessTokenDetails
             ExpiresAt = now + authorizationCodeResponse.ExpiresIn
         };
 
+    /// <summary>
+    /// Obtain user access token details from a <see cref="DeviceCodeTokenResponseContent"/>.
+    /// </summary>
+    /// <param name="deviceCodeTokenResponse">The device code response to get token details from.</param>
+    /// <param name="clientId">The client id used to make the <see cref="DeviceCodeTokenRequest"/>.</param>
+    /// <param name="userId"><inheritdoc cref="ToAccessTokenDetails(AccessTokenRefreshResponseContent, ClientId, UserId, DateTimeOffset)" path="/param[@name = 'userId']"/></param>
+    /// <param name="now"><inheritdoc cref="ToAccessTokenDetails(AccessTokenRefreshResponseContent, ClientId, UserId, DateTimeOffset)" path="/param[@name = 'now']"/></param>
+    /// <returns>User access token details for the new token.</returns>
     public static AccessTokenDetails.User ToAccessTokenDetails(
         this DeviceCodeTokenResponseContent deviceCodeTokenResponse,
         ClientId clientId,

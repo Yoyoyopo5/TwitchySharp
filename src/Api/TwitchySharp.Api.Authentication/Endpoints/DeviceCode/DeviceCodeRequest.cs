@@ -8,8 +8,11 @@ namespace TwitchySharp.Api.Authentication;
 public record DeviceCodeRequest
     : TwitchAuthenticationRequest<DeviceCodeResponseContent>
 {
+    /// <inheritdoc/>
     protected override string Path => "/device";
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Post;
+    /// <inheritdoc/>
     public override HttpContent? Content
         => new FormUrlEncodedContent(new Dictionary<string, string>
         {

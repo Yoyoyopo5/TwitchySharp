@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using TwitchySharp.Api;
 
 namespace TwitchySharp.Api.Authentication;
 /// <summary>
@@ -55,6 +54,9 @@ public abstract record AuthorizationUrl
     /// This must be a redirect URI registered for your application (the <see cref="ClientId"/>) in the <see href="https://dev.twitch.tv/console">Twitch Developer Console</see>.
     /// </remarks>
     public required RedirectUri RedirectUri { get; init; }
+    /// <summary>
+    /// The type of response to obtain from Twitch.
+    /// </summary>
     protected abstract ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; }
     /// <summary>
     /// The user access token <see href="https://dev.twitch.tv/docs/authentication/scopes/">Scopes</see> to get authorization for.

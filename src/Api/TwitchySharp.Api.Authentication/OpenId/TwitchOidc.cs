@@ -33,6 +33,10 @@ public record TwitchOidc
             UpdatedAt = jwt.TryGetValue("updated_at", out int seconds) ? DateTimeOffset.FromUnixTimeSeconds(seconds) : null
         };
 
+    /// <summary>
+    /// Convert a <see cref="JsonWebToken"/> to <see cref="TwitchOidc"/>.
+    /// </summary>
+    /// <param name="jwt">The JWT to convert.</param>
     public static explicit operator TwitchOidc(JsonWebToken jwt)
         => FromJsonWebToken(jwt);
 

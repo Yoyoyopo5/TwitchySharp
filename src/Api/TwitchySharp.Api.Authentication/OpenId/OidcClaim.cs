@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Authentication;
 public readonly partial record struct OidcClaim(string Value)
 {
     /// <summary>
-    /// The email address of the user that authorized the app. Requires <see cref="Scope.ReadUserEmail"/>.
+    /// The email address of the user that authorized the app. Requires <see cref="Scope.UserReadEmail"/>.
     /// </summary>
     public static OidcClaim Email { get; } = new("email");
     /// <summary>

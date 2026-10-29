@@ -1,5 +1,3 @@
-using TwitchySharp.Infrastructure.Functional;
-
 namespace TwitchySharp.Api.Authentication;
 /// <summary>
 /// Revokes a valid app or user access token so that it is no longer valid.
@@ -10,8 +8,11 @@ namespace TwitchySharp.Api.Authentication;
 public record RevokeAccessTokenRequest
     : TwitchAuthenticationRequest<RevokeAccessTokenResponseContent>
 {
+    /// <inheritdoc/>
     protected override string Path => "/revoke";
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Post;
+    /// <inheritdoc/>
     public override HttpContent? Content
         => new FormUrlEncodedContent(new Dictionary<string, string>()
         {
@@ -28,6 +29,7 @@ public record RevokeAccessTokenRequest
     /// </summary>
     public required IAccessToken AccessToken { get; init; }
 
+    /// <inheritdoc/>
     public override ValueTask<TwitchResponse<RevokeAccessTokenResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
     {
         using HttpResponseMessage r = response;
