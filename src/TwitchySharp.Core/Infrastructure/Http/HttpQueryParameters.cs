@@ -8,16 +8,34 @@ namespace TwitchySharp.Infrastructure.Http;
 /// Helper class for creating HTTP query strings.
 /// Allows for multiple parameters with the same name.
 /// </summary>
+/// <remarks>
+/// Note that this class is <i>mutable</i>.
+/// </remarks>
 public class HttpQueryParameters
 {
     private readonly List<KeyValuePair<string, string?>> _parameters = [];
 
+    /// <summary>
+    /// Add a key and value to the query.
+    /// </summary>
+    /// <remarks>
+    /// Does not overwrite previously added values with the same key.
+    /// </remarks>
+    /// <param name="key">The query parameter key.</param>
+    /// <param name="value">The query parameter value for the <paramref name="key"/>.</param>
+    /// <returns>This instance.</returns>
     public HttpQueryParameters Add(string key, string? value)
     {
         _parameters.Add(new KeyValuePair<string, string?>(key, value));
         return this;
     }
 
+    /// <summary>
+    /// Add multiple values for a key to the query.
+    /// </summary>
+    /// <param name="key">The query key to add values to.</param>
+    /// <param name="values">The value to add for the <paramref name="key"/>.</param>
+    /// <returns>This instance.</returns>
     public HttpQueryParameters Add(string key, IEnumerable<string?>? values)
     {
         if (values is null)
@@ -29,6 +47,10 @@ public class HttpQueryParameters
         return this;
     }
 
+    /// <summary>
+    /// Get the query string.
+    /// </summary>
+    /// <returns>The query string.</returns>
     public override string ToString()
         => ToStringEfficient();
 
