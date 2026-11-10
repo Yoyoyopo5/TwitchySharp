@@ -9,5 +9,8 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct GameId(string Value)
 {
+    /// <summary>
+    /// An explicit no category, represented as <see cref="string.Empty"/>.
+    /// </summary>
     public static GameId None { get; } = new(string.Empty);
 }

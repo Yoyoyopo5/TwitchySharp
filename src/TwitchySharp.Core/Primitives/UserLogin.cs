@@ -17,5 +17,8 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct UserLogin(string Value)
 {
+    /// <summary>
+    /// The lowercase login as a string.
+    /// </summary>
     public string Value { get; } = Value.ToLower();
 }
