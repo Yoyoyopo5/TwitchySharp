@@ -9,6 +9,7 @@ namespace TwitchySharp.Serialization;
 /// </summary>
 public class IanaTimeZoneJsonConverter : JsonConverter<TimeZoneInfo>
 {
+    /// <inheritdoc/>
     public override TimeZoneInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => reader.TokenType switch
         {
@@ -16,6 +17,7 @@ public class IanaTimeZoneJsonConverter : JsonConverter<TimeZoneInfo>
             _ => throw new JsonException($"Unexpected {reader.TokenType} when deserializing Timezone.")
         };
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, TimeZoneInfo value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.ToIanaId());
 }

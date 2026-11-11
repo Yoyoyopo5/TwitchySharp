@@ -7,9 +7,15 @@ namespace TwitchySharp.Api.Authentication;
 /// </summary>
 public static class UserAccessTokenResolution
 {
+    /// <summary>
+    /// A resolver for <see cref="ClientId"/> was not configured on the <see cref="TwitchClient"/>.
+    /// </summary>
     public record MissingClientIdError()
         : Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(ClientId)} when attempting refresh.");
 
+    /// <summary>
+    /// The <see cref="AccessTokenDetails.User.RefreshToken"/> was <see langword="null"/> and the access token was expired.
+    /// </summary>
     public record MissingRefreshTokenError()
         : Error($"{nameof(AccessTokenDetails.User)} missing required {nameof(Authentication.RefreshToken)} when attempting refresh.");
 

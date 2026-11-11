@@ -113,9 +113,9 @@ public readonly partial record struct EventSubSubscriptionTypeName(string Value)
     public static EventSubSubscriptionTypeName ChannelSuspiciousUserMessage { get; } = new("channel.suspicious_user.message");
     /// <inheritdoc cref="EventSubSubscriptionType.ChannelSuspiciousUserUpdate"/>
     public static EventSubSubscriptionTypeName ChannelSuspiciousUserUpdate { get; } = new("channel.suspicious_user.update");
-    /// <inheritdoc cref="EventSubSubscriptionType.ChannelVipAdd"/>
+    /// <inheritdoc cref="EventSubSubscriptionType.ChannelVIPAdd"/>
     public static EventSubSubscriptionTypeName ChannelVipAdd { get; } = new("channel.vip.add");
-    /// <inheritdoc cref="EventSubSubscriptionType.ChannelVipRemove"/>
+    /// <inheritdoc cref="EventSubSubscriptionType.ChannelVIPRemove"/>
     public static EventSubSubscriptionTypeName ChannelVipRemove { get; } = new("channel.vip.remove");
     /// <inheritdoc cref="EventSubSubscriptionType.ChannelWarningAcknowledgement"/>
     public static EventSubSubscriptionTypeName ChannelWarningAcknowledgement { get; } = new("channel.warning.acknowledge");

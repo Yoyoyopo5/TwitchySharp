@@ -22,5 +22,8 @@ public record ImplicitGrantUrl : AuthorizationUrl
     /// See <see cref="TwitchAuthorizationResponseType.Token"/> and <see cref="TwitchAuthorizationResponseType.IdToken"/>.
     /// </remarks>
     public required ImmutableHashSet<TwitchAuthorizationResponseType> IncludeResponseTypes { get => ResponseTypes; init => ResponseTypes = value; }
+    /// <summary>
+    /// Response types set by <see cref="IncludeResponseTypes"/>.
+    /// </summary>
     protected override ImmutableHashSet<TwitchAuthorizationResponseType> ResponseTypes { get; init; } = [];
 }

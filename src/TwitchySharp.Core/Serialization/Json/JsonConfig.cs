@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Serialization;
 
+/// <summary>
+/// Static container for default <see cref="JsonSerializerOptions"/>.
+/// </summary>
 public static class JsonConfig
 {
     /// <summary>

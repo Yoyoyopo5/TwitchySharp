@@ -8,6 +8,8 @@ namespace TwitchySharp.Api.Authentication;
 public record OidcJwkRequest
     : TwitchAuthenticationRequest<OidcJwkResponseContent>
 {
+    /// <inheritdoc/>
     protected override string Path => "/keys";
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Get;
 }

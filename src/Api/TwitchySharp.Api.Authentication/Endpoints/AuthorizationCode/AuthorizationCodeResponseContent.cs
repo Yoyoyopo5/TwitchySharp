@@ -44,16 +44,19 @@ public record AuthorizationCodeResponseContent
     public string? IdToken { get; init; }
 }
 
+/// <summary>
+/// Extensions for <see cref="AuthorizationCodeResponseContent"/>.
+/// </summary>
 public static class AuthorizationCodeResponseExtensions
 {
     /// <summary>
-    /// Converts the <see cref="IdToken"/> property into a <see cref="JsonWebToken"/> if it exists.
+    /// Converts the <see cref="AuthorizationCodeResponseContent.IdToken"/> property into a <see cref="JsonWebToken"/> if it exists.
     /// </summary>
     public static JsonWebToken? GetJwt(this AuthorizationCodeResponseContent authResponse)
         => authResponse.IdToken is null ? null : new(authResponse.IdToken);
 
     /// <summary>
-    /// Converts the <see cref="IdToken"/> property into a <see cref="TwitchOidc"/> if it exists.
+    /// Converts the <see cref="AuthorizationCodeResponseContent.IdToken"/> property into a <see cref="TwitchOidc"/> if it exists.
     /// </summary>
     public static TwitchOidc? GetOidc(this AuthorizationCodeResponseContent authResponse)
         => authResponse.IdToken is null ? null : TwitchOidc.FromJsonWebToken(authResponse.GetJwt()!); // Can safely ignore null here because it will only be null if the IdToken is null.

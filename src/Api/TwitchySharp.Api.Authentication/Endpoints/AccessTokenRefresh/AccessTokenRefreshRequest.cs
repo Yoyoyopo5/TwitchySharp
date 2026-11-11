@@ -10,8 +10,14 @@
 public record AccessTokenRefreshRequest
     : TwitchAuthenticationRequest<AccessTokenRefreshResponseContent>
 {
+    /// <inheritdoc/>
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Post;
+    /// <inheritdoc/>
+    /// <inheritdoc/>
     protected override string Path => "/token";
+    /// <inheritdoc/>
+    /// <inheritdoc/>
     public override HttpContent? Content
         => new FormUrlEncodedContent(
             new Dictionary<string, string>()

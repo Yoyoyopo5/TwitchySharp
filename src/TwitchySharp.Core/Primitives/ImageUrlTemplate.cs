@@ -10,7 +10,13 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public partial record ImageUrlTemplate(string Value)
 {
+    /// <summary>
+    /// The url substring that should be replaced with the request image width in pixels.
+    /// </summary>
     protected string WidthTemplate { get; init; } = "{width}";
+    /// <summary>
+    /// The url substring that should be replaced with the request image height in pixels.
+    /// </summary>
     protected string HeightTemplate { get; init; } = "{height}";
 
     /// <summary>

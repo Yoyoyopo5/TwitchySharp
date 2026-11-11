@@ -12,6 +12,10 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct ExtensionId(string Value)
 {
+    /// <summary>
+    /// Use <see cref="ExtensionId"/> as <see cref="ClientId"/>.
+    /// </summary>
+    /// <param name="id">The <see cref="ExtensionId"/> to use.</param>
     public static implicit operator ClientId(ExtensionId id)
         => new(id.Value);
 }

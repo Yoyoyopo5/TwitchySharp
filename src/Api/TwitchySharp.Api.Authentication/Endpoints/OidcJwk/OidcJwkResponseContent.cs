@@ -2,6 +2,9 @@
 
 namespace TwitchySharp.Api.Authentication;
 
+/// <summary>
+/// Response containing the OIDC JWKs.
+/// </summary>
 public record OidcJwkResponseContent
 {
     /// <summary>

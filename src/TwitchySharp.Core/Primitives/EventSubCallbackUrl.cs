@@ -10,5 +10,10 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct EventSubCallbackUrl(string Value)
 {
+    /// <summary>
+    /// Create a <see cref="Uri"/> from the <see cref="Value"/>.
+    /// </summary>
+    /// <returns>A <see cref="Uri"/> representing the url <see cref="Value"/>.</returns>
+    /// <exception cref="UriFormatException"/>
     public Uri ToUri() => new(Value);
 }

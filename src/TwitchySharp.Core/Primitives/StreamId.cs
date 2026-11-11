@@ -9,6 +9,10 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct StreamId(string Value)
 {
+    /// <summary>
+    /// Use the <see cref="StreamId"/> as a <see cref="VideoId"/>.
+    /// </summary>
+    /// <param name="id">The <see cref="StreamId"/> to use.</param>
     public static implicit operator VideoId(StreamId id)
         => new(id);
 }

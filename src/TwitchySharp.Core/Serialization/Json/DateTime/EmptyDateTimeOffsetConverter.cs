@@ -10,6 +10,7 @@ namespace TwitchySharp.Serialization;
 /// </summary>
 public class EmptyDateTimeOffsetConverter : JsonConverter<DateTimeOffset?>
 {
+    /// <inheritdoc/>
     public override DateTimeOffset? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         Debug.Assert(typeToConvert == typeof(DateTimeOffset?));
@@ -18,6 +19,7 @@ public class EmptyDateTimeOffsetConverter : JsonConverter<DateTimeOffset?>
             : null;
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, DateTimeOffset? value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value.HasValue switch

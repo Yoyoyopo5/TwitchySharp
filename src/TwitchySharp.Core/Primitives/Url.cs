@@ -10,5 +10,10 @@ namespace TwitchySharp;
 [Wrapper<string>]
 public readonly partial record struct Url(string Value)
 {
+    /// <summary>
+    /// Create a <see cref="Uri"/> from the <see cref="Url.Value"/>.
+    /// </summary>
+    /// <returns>A new <see cref="Uri"/> of the <see cref="Url.Value"/>.</returns>
+    /// <exception cref="UriFormatException"/>
     public Uri ToUri() => new(Value);
 }

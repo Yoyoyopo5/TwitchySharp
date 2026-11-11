@@ -14,10 +14,25 @@ namespace TwitchySharp;
 [JsonConverter(typeof(HexColorJsonConverter))]
 public readonly record struct RgbColor
 {
+    /// <summary>
+    /// The red value.
+    /// </summary>
     public byte R { get; }
+    /// <summary>
+    /// The green value.
+    /// </summary>
     public byte G { get; }
+    /// <summary>
+    /// The blue value.
+    /// </summary>
     public byte B { get; }
 
+    /// <summary>
+    /// Create RGB color from specific red, green, and blue <see langword="byte"/> values.
+    /// </summary>
+    /// <param name="r">The red value.</param>
+    /// <param name="g">The green value.</param>
+    /// <param name="b">The blue value.</param>
     public RgbColor(byte r, byte g, byte b)
     {
         R = r;

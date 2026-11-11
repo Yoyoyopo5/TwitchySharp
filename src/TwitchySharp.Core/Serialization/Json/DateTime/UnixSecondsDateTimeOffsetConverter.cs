@@ -4,8 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace TwitchySharp.Serialization;
 
+/// <summary>
+/// Converts <see cref="DateTimeOffset"/> to UNIX timestamp in seconds.
+/// </summary>
 public class UnixSecondsDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
 {
+    /// <inheritdoc/>
     public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => DateTimeOffset.FromUnixTimeSeconds(reader.TokenType switch
         {
@@ -14,6 +18,7 @@ public class UnixSecondsDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
             _ => throw new NotSupportedException("Cannot parse input as a DateTimeOffset.")
         });
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
         => writer.WriteNumberValue(value.ToUnixTimeSeconds());
 }

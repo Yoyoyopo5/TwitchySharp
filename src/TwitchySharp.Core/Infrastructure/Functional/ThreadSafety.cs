@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace TwitchySharp.Infrastructure.Functional;
 
+/// <summary>
+/// Various static methods relating to concurrency and thread safety.
+/// </summary>
 public static class ThreadSafety
 {
+    /// <summary>
+    /// Create a lock provider function that uses a thread-safe in-memory lock cache per key.
+    /// </summary>
+    /// <typeparam name="TKey">They key type to create locks against.</typeparam>
+    /// <returns>A lock provider function.</returns>
     public static Func<TKey, CancellationToken, ValueTask<IAsyncDisposable>> CreateInMemoryLockProvider<TKey>()
         where TKey : notnull
         => new InMemoryLockProvider<TKey>().AcquireAsync;

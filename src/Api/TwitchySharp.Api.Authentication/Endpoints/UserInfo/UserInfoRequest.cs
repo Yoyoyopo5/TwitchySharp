@@ -13,7 +13,9 @@ public record UserInfoRequest
     : TwitchAuthenticationRequest<TwitchOidc>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {
+    /// <inheritdoc/>
     protected override string Path => "/userinfo";
+    /// <inheritdoc/>
     public override HttpMethod Method => HttpMethod.Get;
 
     /// <summary>
@@ -33,6 +35,7 @@ public record UserInfoRequest
     /// </remarks>
     public UserAccessToken? AccessToken { get; init; }
 
+    /// <inheritdoc/>
     public ITwitchRequestAuthenticationContext<TwitchIdentity> AuthenticationContext =>
         UserId.HasValue
         ? new UserWithScopesAuthenticationContext()
