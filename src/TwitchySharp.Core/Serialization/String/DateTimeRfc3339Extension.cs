@@ -2,6 +2,9 @@ using System;
 
 namespace TwitchySharp.Serialization;
 
+/// <summary>
+/// Contains an extension method for converting <see cref="DateTime"/> to an RFC3339 string.
+/// </summary>
 public static class DateTimeRfc3339Extension
 {
     /// <summary>
