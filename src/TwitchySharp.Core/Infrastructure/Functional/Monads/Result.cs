@@ -406,9 +406,8 @@ public static class AsyncResultExtensions
             );
 
     /// <summary>
-    /// Perform a side-effect <see cref="Result{T}.Match"/> operation within a <see cref="Task"/> context.
+    /// Perform a side-effect <see cref="Result.Match"/> operation within a <see cref="Task"/> context.
     /// </summary>
-    /// <typeparam name="T"><inheritdoc cref="BindAsync{T, TNext}(Task{Result{T}}, Func{T, Task{Result{TNext}}})" path="/typeparam[@name = 'T']"/></typeparam>
     /// <param name="val"><inheritdoc cref="MatchAsync{T, TNext}(Task{Result{T}}, Func{Error, Task{TNext}}, Func{T, Task{TNext}})" path="/param[@name = 'val']"/></param>
     /// <param name="onError"><inheritdoc cref="MatchAsync{T, TNext}(Task{Result{T}}, Func{Error, Task{TNext}}, Func{T, Task{TNext}})" path="/param[@name = 'onError']"/></param>
     /// <param name="onValid"><inheritdoc cref="MatchAsync{T, TNext}(Task{Result{T}}, Func{Error, Task{TNext}}, Func{T, Task{TNext}})" path="/param[@name = 'onValid']"/></param>
