@@ -12,7 +12,7 @@ public static class TimeZoneInfoToIanaIdExtension
             false => tzi.HasIanaId switch
             {
                 true => tzi.Id,
-                false => throw new JsonException($"Cannot convert timezone id '{tzi.Id}' to IANA id format.")
+                false => throw new NotSupportedException($"Cannot convert timezone id '{tzi.Id}' to IANA id format.")
             }
         };
 }
