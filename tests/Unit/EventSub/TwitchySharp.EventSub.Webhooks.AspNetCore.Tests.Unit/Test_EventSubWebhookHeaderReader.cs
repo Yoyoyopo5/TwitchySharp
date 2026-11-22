@@ -32,7 +32,7 @@ public class Test_EventSubWebhookHeaderReader
         };
         IHeaderDictionary fakeHeaderDictionary = new HeaderDictionary(fakeHeaders);
 
-        EventSubWebhookRequestHeader header = EventSubWebhookHeaderReader.Read(fakeHeaderDictionary)
+        EventSubWebhookRequestHeader header = EventSubWebhookHeaderReader.ReadTwitchEventSubHeaders(fakeHeaderDictionary)
             .Match(
             onError: _ => throw new NotSupportedException("Read returned Error (expected Validation)."),
             onValid: header => header
@@ -56,7 +56,7 @@ public class Test_EventSubWebhookHeaderReader
         };
         IHeaderDictionary fakeHeaderDictionary = new HeaderDictionary(fakeHeaders);
 
-        EventSubWebhookHeaderReader.MissingHeadersError e = EventSubWebhookHeaderReader.Read(fakeHeaderDictionary)
+        EventSubWebhookHeaderReader.MissingHeadersError e = EventSubWebhookHeaderReader.ReadTwitchEventSubHeaders(fakeHeaderDictionary)
             .Match(
             onError: e => Assert.IsType<EventSubWebhookHeaderReader.MissingHeadersError>(e),
             onValid: _ => throw new NotSupportedException("Read returned Validation (expected Error).")
@@ -82,7 +82,7 @@ public class Test_EventSubWebhookHeaderReader
         };
         IHeaderDictionary fakeHeaderDictionary = new HeaderDictionary(fakeHeaders);
 
-        EventSubWebhookHeaderReader.MissingHeadersError e = EventSubWebhookHeaderReader.Read(fakeHeaderDictionary)
+        EventSubWebhookHeaderReader.MissingHeadersError e = EventSubWebhookHeaderReader.ReadTwitchEventSubHeaders(fakeHeaderDictionary)
             .Match(
             onError: e => Assert.IsType<EventSubWebhookHeaderReader.MissingHeadersError>(e),
             onValid: _ => throw new NotSupportedException("Read returned Validation (expected Error).")

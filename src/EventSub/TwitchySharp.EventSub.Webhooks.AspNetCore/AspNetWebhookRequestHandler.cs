@@ -27,6 +27,6 @@ internal static class AspNetWebhookRequestHandler
                 {
                     Header = header,
                     Content = new(context.Request.Body)
-                }, ct)).ToResult()
+                }, ct)).ToHttpResult()
                 );
 }

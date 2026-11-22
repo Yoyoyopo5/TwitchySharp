@@ -6,9 +6,22 @@ using TwitchySharp.Infrastructure.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
-internal static class WebhookRequestContentExtensions
+/// <summary>
+/// Extensions mapping <see cref="IWebhookRequestContent"/>.
+/// </summary>
+public static class WebhookRequestContentExtensions
 {
-    public static IResult ToResult(this Result<IWebhookRequestContent> result)
+    /// <summary>
+    /// Convert a <see cref="Result{T}"/> of <see cref="IWebhookRequestContent"/>
+    /// into its corresponding <see cref="IResult"/>.
+    /// </summary>
+    /// <remarks>
+    /// In <c>DEBUG</c>, this can create error results (e.g. <c>BadRequest</c>).
+    /// In <c>RELEASE</c>, a success result is always returned until the <see cref="IWebhookRequestContent"/> is an unmatched type (returns <c>InternalServerError</c>).
+    /// </remarks>
+    /// <param name="result">The webhook content as a <see cref="Result{T}"/> to match.</param>
+    /// <returns>The HTTP response as an <see cref="IResult"/>.</returns>
+    public static IResult ToHttpResult(this Result<IWebhookRequestContent> result)
         => result.Match(
             onError: error => error switch
             {

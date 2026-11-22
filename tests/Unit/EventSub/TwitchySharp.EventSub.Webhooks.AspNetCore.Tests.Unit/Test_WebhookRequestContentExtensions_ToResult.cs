@@ -39,7 +39,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
         Result<IWebhookRequestContent> fakeDeserializationError
             = new ProcessWebhookRequestSerializationExtensions.DeserializationExceptionError(new Exception());
 
-        IResult result = fakeDeserializationError.ToResult();
+        IResult result = fakeDeserializationError.ToHttpResult();
 #if DEBUG
         Assert.IsType<BadRequest>(result);
 #else
@@ -53,7 +53,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
         Result<IWebhookRequestContent> fakeVerificationError
             = new VerifyWebhookHashExtensions.VerificationFailedError();
 
-        IResult result = fakeVerificationError.ToResult();
+        IResult result = fakeVerificationError.ToHttpResult();
 
 #if DEBUG
         Assert.IsType<UnauthorizedHttpResult>(result);
@@ -71,7 +71,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
                 Notification = new StubEventSubNotification()
             };
 
-        IResult result = fakeNotificationRequest.ToResult();
+        IResult result = fakeNotificationRequest.ToHttpResult();
 
         Assert.IsType<Ok>(result);
     }
@@ -88,7 +88,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
                 Subscription = FakeSubscription
             };
 
-        IResult result = fakeCallbackVerificationRequest.ToResult();
+        IResult result = fakeCallbackVerificationRequest.ToHttpResult();
 
         ContentHttpResult ok = Assert.IsType<ContentHttpResult>(result);
         Assert.Equal(FAKE_CHALLENGE, ok.ResponseContent);
@@ -104,7 +104,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
                 Subscription = FakeSubscription
             };
 
-        IResult result = fakeRecovationRequest.ToResult();
+        IResult result = fakeRecovationRequest.ToHttpResult();
 
         Assert.IsType<NoContent>(result);
     }
@@ -118,7 +118,7 @@ public class Test_WebhookRequestContentExtensions_ToResult
                 Subscription = FakeSubscription
             };
 
-        IResult result = fakeUnsupportedRequest.ToResult();
+        IResult result = fakeUnsupportedRequest.ToHttpResult();
 
         StatusCodeHttpResult error = Assert.IsType<StatusCodeHttpResult>(result);
         Assert.Equal(500, error.StatusCode);

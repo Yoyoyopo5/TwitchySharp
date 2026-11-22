@@ -5,6 +5,9 @@ using TwitchySharp.EventSub.Webhooks.Functional;
 
 namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
+/// <summary>
+/// <see cref="IServiceCollection"/> extensions for Twitch EventSub webhooks.
+/// </summary>
 public static class TwitchEventSubWebhooksServiceExtensions
 {
     /// <summary>
@@ -19,7 +22,7 @@ public static class TwitchEventSubWebhooksServiceExtensions
         )
     {
         services.TryAddScoped(sp => AspNetWebhookRequestHandler.Create(
-            EventSubWebhookHeaderReader.Read,
+            EventSubWebhookHeaderReader.ReadTwitchEventSubHeaders,
             configurePipeline(sp)(ProcessWebhookRequest.ByJsonDeserialization()),
             sp.GetService<ILoggerFactory>()
             ));

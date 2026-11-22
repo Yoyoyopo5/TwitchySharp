@@ -8,8 +8,15 @@ namespace TwitchySharp.EventSub.Webhooks.AspNetCore;
 
 internal delegate Result<EventSubWebhookRequestHeader> ReadWebhookHeader(IHeaderDictionary headers);
 
-internal static class EventSubWebhookHeaderReader
+/// <summary>
+/// Contains static functionality for reading <see cref="EventSubWebhookRequestHeader"/> from <see cref="IHeaderDictionary"/>.
+/// </summary>
+public static class EventSubWebhookHeaderReader
 {
+    /// <summary>
+    /// The <see cref="IHeaderDictionary"/> was missing one or more required EventSub headers.
+    /// </summary>
+    /// <param name="Headers">The missing header keys.</param>
     public record MissingHeadersError(IReadOnlyCollection<string> Headers) : Error($"Missing required header: {string.Join(", ", Headers)}");
 
     private static class WebhookHeaderKeys
@@ -63,7 +70,15 @@ internal static class EventSubWebhookHeaderReader
         public ImmutableDictionary<string, string> Headers { get; init; } = ImmutableDictionary.Create<string, string>();
     }
 
-    public static Result<EventSubWebhookRequestHeader> Read(IHeaderDictionary headerDictionary)
+    /// <summary>
+    /// Bind an <see cref="IHeaderDictionary"/> to <see cref="EventSubWebhookRequestHeader"/>.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Result"/> can be <see cref="MissingHeadersError"/>.
+    /// </remarks>
+    /// <param name="headerDictionary">The header dictionary to read as EventSub request headers.</param>
+    /// <returns>A <see cref="Result"/> containing the bound headers.</returns>
+    public static Result<EventSubWebhookRequestHeader> ReadTwitchEventSubHeaders(this IHeaderDictionary headerDictionary)
         => WebhookHeaderKey.All.Aggregate(new HeaderReadContext(headerDictionary), static (context, key) => context.HeaderDictionary.GetFirstValueOrDefault(key) switch
         {
             null when key.IsRequired => context with { MissingHeaders = context.MissingHeaders.Add(key) },
