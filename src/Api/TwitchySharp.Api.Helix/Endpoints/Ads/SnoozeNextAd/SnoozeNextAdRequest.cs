@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#snooze-next-ad">Snooze Next Ad</see> for more information.
 /// </remarks>
-public record SnoozeNextAdRequest
+public sealed record SnoozeNextAdRequest
     : TwitchHelixRequest<SnoozeNextAdResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

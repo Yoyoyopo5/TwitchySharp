@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-cheermotes">Get Cheermotes</see> for more information.
 /// </remarks>
-public record GetCheermotesRequest
+public sealed record GetCheermotesRequest
     : TwitchHelixRequest<GetCheermotesResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

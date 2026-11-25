@@ -14,7 +14,7 @@
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-categories">Search Categories</see> for more information.
 /// </remarks>
-public record SearchCategoriesRequest
+public sealed record SearchCategoriesRequest
     : TwitchHelixRequest<SearchCategoriesResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

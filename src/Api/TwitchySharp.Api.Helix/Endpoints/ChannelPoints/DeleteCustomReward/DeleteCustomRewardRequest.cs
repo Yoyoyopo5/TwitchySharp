@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-custom-reward">Delete Custom Reward</see> for more information.
 /// </remarks>
-public record DeleteCustomRewardRequest
+public sealed record DeleteCustomRewardRequest
     : TwitchHelixRequest<DeleteCustomRewardResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

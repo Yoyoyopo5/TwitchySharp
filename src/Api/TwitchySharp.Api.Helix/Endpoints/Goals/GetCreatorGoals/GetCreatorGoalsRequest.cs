@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Goals;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-creator-goals">Get Creator Goals</see> for more information.
 /// </remarks>
-public record GetCreatorGoalsRequest
+public sealed record GetCreatorGoalsRequest
     : TwitchHelixRequest<GetCreatorGoalsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

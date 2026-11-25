@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference#create-clip-from-vod">Create Clip From VOD</see> for more information.
 /// </remarks>
-public record CreateClipFromVodRequest
+public sealed record CreateClipFromVodRequest
     : TwitchHelixRequest<CreateClipFromVodResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

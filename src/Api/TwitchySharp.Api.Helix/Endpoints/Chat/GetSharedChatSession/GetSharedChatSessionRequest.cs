@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-shared-chat-session">Get Shared Chat Session</see> for more information.
 /// </remarks>
-public record GetSharedChatSessionRequest
+public sealed record GetSharedChatSessionRequest
     : TwitchHelixRequest<GetSharedChatSessionResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-blocked-terms">Get Blocked Terms</see> for more information.
 /// </remarks>
-public record GetBlockedTermsRequest
+public sealed record GetBlockedTermsRequest
     : TwitchHelixRequest<GetBlockedTermsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-channel-stream-schedule-segment">Delete Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
-public record DeleteChannelStreamScheduleSegmentRequest
+public sealed record DeleteChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<DeleteChannelStreamScheduleSegmentResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

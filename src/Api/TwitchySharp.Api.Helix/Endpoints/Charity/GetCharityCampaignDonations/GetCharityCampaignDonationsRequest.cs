@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Charity;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations">Get Charity Campaign Donations</see> for more information.
 /// </remarks>
-public record GetCharityCampaignDonationsRequest
+public sealed record GetCharityCampaignDonationsRequest
     : TwitchHelixRequest<GetCharityCampaignDonationsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

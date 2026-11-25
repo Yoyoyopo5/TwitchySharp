@@ -27,7 +27,7 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-clip">Create Clip</see> for more information.
 /// </remarks>
-public record CreateClipRequest
+public sealed record CreateClipRequest
     : TwitchHelixRequest<CreateClipResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

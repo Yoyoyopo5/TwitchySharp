@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-extension-chat-message">Send Extension Chat Message</see> for more information.
 /// </remarks>
-public record SendExtensionChatMessageRequest
+public sealed record SendExtensionChatMessageRequest
     : TwitchHelixRequest<SendExtensionChatMessageResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {

@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Games;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-top-games">Get Top Games</see> for more information.
 /// </remarks>
-public record GetTopGamesRequest
+public sealed record GetTopGamesRequest
     : TwitchHelixRequest<GetTopGamesResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

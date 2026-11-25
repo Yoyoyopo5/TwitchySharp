@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-blocked-term">Add Blocked Term</see> for more information.
 /// </remarks>
-public record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponseContent>,
+public sealed record AddBlockedTermRequest : TwitchHelixRequest<AddBlockedTermResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     protected override string Path => "/moderation/blocked_terms";

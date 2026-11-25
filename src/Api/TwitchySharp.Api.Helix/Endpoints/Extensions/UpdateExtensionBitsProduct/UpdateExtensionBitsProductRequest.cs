@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-extension-bits-product">Update Extension Bits Product</see> for more information.
 /// </remarks>
-public record UpdateExtensionBitsProductRequest
+public sealed record UpdateExtensionBitsProductRequest
     : TwitchHelixRequest<UpdateExtensionBitsProductResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

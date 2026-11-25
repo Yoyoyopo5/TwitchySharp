@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-guest-star-session">Create Guest Star Session</see> for more information.
 /// </remarks>
-public record CreateGuestStarSessionRequest
+public sealed record CreateGuestStarSessionRequest
     : TwitchHelixRequest<CreateGuestStarSessionResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment">Create Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
-public record CreateChannelStreamScheduleSegmentRequest
+public sealed record CreateChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<CreateChannelStreamScheduleSegmentResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

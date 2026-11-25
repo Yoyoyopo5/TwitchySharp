@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Teams;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-teams">Get Teams</see> for more information.
 /// </remarks>
-public record GetTeamsRequest
+public sealed record GetTeamsRequest
     : TwitchHelixRequest<GetTeamsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

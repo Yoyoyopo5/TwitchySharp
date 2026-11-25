@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-automod-settings">Update AutoMod Settings</see> for more information.
 /// </remarks>
-public record UpdateAutoModSettingsRequest
+public sealed record UpdateAutoModSettingsRequest
     : TwitchHelixRequest<UpdateAutoModSettingsResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

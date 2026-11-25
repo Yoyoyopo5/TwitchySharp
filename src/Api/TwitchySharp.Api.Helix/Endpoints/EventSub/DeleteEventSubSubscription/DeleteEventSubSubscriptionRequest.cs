@@ -18,7 +18,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription">Delete EventSub Subscription</see> for more information.
 /// </remarks>
-public record DeleteEventSubSubscriptionRequest()
+public sealed record DeleteEventSubSubscriptionRequest()
     : TwitchHelixRequest<DeleteEventSubSubscriptionResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

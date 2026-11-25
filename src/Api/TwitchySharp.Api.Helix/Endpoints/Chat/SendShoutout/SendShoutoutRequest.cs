@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-a-shoutout">Send a Shoutout</see> for more information.
 /// </remarks>
-public record SendShoutoutRequest
+public sealed record SendShoutoutRequest
     : TwitchHelixRequest<SendShoutoutResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-prediction">Create Prediction</see> for more information.
 /// </remarks>
-public record CreatePredictionRequest
+public sealed record CreatePredictionRequest
     : TwitchHelixRequest<CreatePredictionResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

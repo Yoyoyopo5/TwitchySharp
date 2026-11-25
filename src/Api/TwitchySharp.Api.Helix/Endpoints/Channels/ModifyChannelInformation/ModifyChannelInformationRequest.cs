@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#modify-channel-information">Modify Channel Information</see> for more information.
 /// </remarks>
-public record ModifyChannelInformationRequest
+public sealed record ModifyChannelInformationRequest
     : TwitchHelixRequest<ModifyChannelInformationResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

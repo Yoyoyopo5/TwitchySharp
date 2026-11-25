@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#set-extension-required-configuration">Set Extension Required Configuration</see> for more information.
 /// </remarks>
-public record SetExtensionRequiredConfigurationRequest
+public sealed record SetExtensionRequiredConfigurationRequest
     : TwitchHelixRequest<SetExtensionRequiredConfigurationResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {

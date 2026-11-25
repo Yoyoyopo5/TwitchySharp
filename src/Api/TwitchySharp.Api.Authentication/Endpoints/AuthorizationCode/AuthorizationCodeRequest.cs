@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#authorization-code-grant-flow">Authorization Code Grant Flow</see> for more information.
 /// </remarks>
-public record AuthorizationCodeRequest
+public sealed record AuthorizationCodeRequest
     : TwitchAuthenticationRequest<AuthorizationCodeResponseContent>
 {
     /// <inheritdoc/>

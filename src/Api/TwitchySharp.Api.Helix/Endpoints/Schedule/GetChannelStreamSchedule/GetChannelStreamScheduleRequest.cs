@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule">Get Channel Stream Schedule</see> for more information.
 /// </remarks>
-public record GetChannelStreamScheduleRequest
+public sealed record GetChannelStreamScheduleRequest
     : TwitchHelixRequest<GetChannelStreamScheduleResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

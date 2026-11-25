@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-emotes">Get Channel Emotes</see> for more information.
 /// </remarks>
-public record GetChannelEmotesRequest
+public sealed record GetChannelEmotesRequest
     : TwitchHelixRequest<GetChannelEmotesResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

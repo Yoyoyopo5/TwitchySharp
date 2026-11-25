@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.HypeTrain;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-hype-train-status">Get Hype Train Status</see> for more information.
 /// </remarks>
-public record GetHypeTrainStatusRequest
+public sealed record GetHypeTrainStatusRequest
     : TwitchHelixRequest<GetHypeTrainStatusResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

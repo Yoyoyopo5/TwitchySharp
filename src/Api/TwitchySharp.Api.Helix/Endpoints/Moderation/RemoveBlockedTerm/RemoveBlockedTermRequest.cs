@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-blocked-term">Remove Blocked Term</see> for more information.
 /// </remarks>
-public record RemoveBlockedTermRequest
+public sealed record RemoveBlockedTermRequest
     : TwitchHelixRequest<RemoveBlockedTermResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

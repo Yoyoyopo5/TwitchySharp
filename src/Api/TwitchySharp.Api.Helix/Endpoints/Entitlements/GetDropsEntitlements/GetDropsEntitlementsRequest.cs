@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements">Get Drops Entitlements</see> for more information.
 /// </remarks>
-public record GetDropsEntitlementsRequest
+public sealed record GetDropsEntitlementsRequest
     : TwitchHelixRequest<GetDropsEntitlementsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

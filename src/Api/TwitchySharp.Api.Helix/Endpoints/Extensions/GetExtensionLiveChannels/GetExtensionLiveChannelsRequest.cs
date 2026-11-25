@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-live-channels">Get Extension Live Channels</see> for more information.
 /// </remarks>
-public record GetExtensionLiveChannelsRequest
+public sealed record GetExtensionLiveChannelsRequest
     : TwitchHelixRequest<GetExtensionLiveChannelsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

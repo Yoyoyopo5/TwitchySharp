@@ -21,7 +21,7 @@ namespace TwitchySharp.Api.Helix.Whispers;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-whisper">Send Whisper</see> for more information.
 /// </remarks>
-public record SendWhisperRequest
+public sealed record SendWhisperRequest
     : TwitchHelixRequest<SendWhisperResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

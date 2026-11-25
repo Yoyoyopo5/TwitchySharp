@@ -8,7 +8,7 @@
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#search-channels">Search Channels</see> for more information.
 /// </remarks>
-public record SearchChannelsRequest
+public sealed record SearchChannelsRequest
     : TwitchHelixRequest<SearchChannelsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

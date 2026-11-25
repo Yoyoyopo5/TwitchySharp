@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-game-analytics">Get Game Analytics</see> for more information.
 /// </remarks>
-public record GetGameAnalyticsRequest
+public sealed record GetGameAnalyticsRequest
     : TwitchHelixRequest<GetGameAnalyticsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>,
     IForwardPageableRequest

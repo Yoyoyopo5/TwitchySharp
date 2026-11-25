@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-clips">Get Clips</see> for more information.
 /// </remarks>
-public record GetClipsRequest
+public sealed record GetClipsRequest
     : TwitchHelixRequest<GetClipsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

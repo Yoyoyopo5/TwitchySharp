@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderators">Get Moderators</see> for more information.
 /// </remarks>
-public record GetModeratorsRequest
+public sealed record GetModeratorsRequest
     : TwitchHelixRequest<GetModeratorsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-custom-power-up">Get Custom Power-Up</see> for more information.
 /// </para>
 /// </remarks>
-public record GetCustomPowerUpsRequest
+public sealed record GetCustomPowerUpsRequest
     : TwitchHelixRequest<GetCustomPowerUpsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

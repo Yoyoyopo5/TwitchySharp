@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#unpin-chat-message">Unpin Chat Message</see> for more information.
 /// </para>
 /// </remarks>
-public record UnpinChatMessageRequest : TwitchHelixRequest<UnpinChatMessageResponseContent>,
+public sealed record UnpinChatMessageRequest : TwitchHelixRequest<UnpinChatMessageResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     public override HttpMethod Method { get; } = HttpMethod.Delete;

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot">Delete Guest Star Slot</see> for more information.
 /// </remarks>
-public record DeleteGuestStarSlotRequest
+public sealed record DeleteGuestStarSlotRequest
     : TwitchHelixRequest<DeleteGuestStarSlotResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

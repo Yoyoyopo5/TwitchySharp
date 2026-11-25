@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-information">Get Channel Information</see> for more information.
 /// </remarks>
-public record GetChannelInformationRequest
+public sealed record GetChannelInformationRequest
     : TwitchHelixRequest<GetChannelInformationResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

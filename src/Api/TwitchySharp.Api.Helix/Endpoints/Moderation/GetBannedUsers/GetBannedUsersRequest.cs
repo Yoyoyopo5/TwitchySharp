@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-banned-users">Get Banned Users</see> for more information.
 /// </remarks>
-public record GetBannedUsersRequest
+public sealed record GetBannedUsersRequest
     : TwitchHelixRequest<GetBannedUsersResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

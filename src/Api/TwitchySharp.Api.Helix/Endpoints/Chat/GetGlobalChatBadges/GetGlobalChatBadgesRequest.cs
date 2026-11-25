@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges">Get Global Chat Badges</see> for more information.
 /// </remarks>
-public record GetGlobalChatBadgesRequest
+public sealed record GetGlobalChatBadgesRequest
     : TwitchHelixRequest<GetGlobalChatBadgesResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

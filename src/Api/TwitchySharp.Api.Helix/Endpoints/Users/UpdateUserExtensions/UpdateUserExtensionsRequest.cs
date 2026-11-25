@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-user-extensions">Update User Extensions</see> for more information.
 /// </remarks>
-public record UpdateUserExtensionsRequest
+public sealed record UpdateUserExtensionsRequest
     : TwitchHelixRequest<UpdateUserExtensionsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

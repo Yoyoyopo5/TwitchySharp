@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Videos;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-videos">Get Videos</see> for more information.
 /// </remarks>
-public record GetVideosRequest
+public sealed record GetVideosRequest
     : TwitchHelixRequest<GetVideosResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

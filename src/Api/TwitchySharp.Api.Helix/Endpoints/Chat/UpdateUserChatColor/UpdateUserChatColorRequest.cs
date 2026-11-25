@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-user-chat-color">Update User Chat Color</see> for more information.
 /// </remarks>
-public record UpdateUserChatColorRequest
+public sealed record UpdateUserChatColorRequest
     : TwitchHelixRequest<UpdateUserChatColorResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

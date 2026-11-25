@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-transactions">Get Extension Transactions</see> for more information.
 /// </remarks>
-public record GetExtensionTransactionsRequest
+public sealed record GetExtensionTransactionsRequest
     : TwitchHelixRequest<GetExtensionTransactionsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

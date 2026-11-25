@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-chat-announcement">Send Chat Announcement</see> for more information.
 /// </remarks>
-public record SendChatAnnouncementRequest
+public sealed record SendChatAnnouncementRequest
     : TwitchHelixRequest<SendChatAnnouncementResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

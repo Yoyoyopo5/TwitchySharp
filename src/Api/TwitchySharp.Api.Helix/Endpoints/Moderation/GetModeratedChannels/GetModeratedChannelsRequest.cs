@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-moderated-channels">Get Moderated Channels</see> for more information.
 /// </remarks>
-public record GetModeratedChannelsRequest
+public sealed record GetModeratedChannelsRequest
     : TwitchHelixRequest<GetModeratedChannelsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

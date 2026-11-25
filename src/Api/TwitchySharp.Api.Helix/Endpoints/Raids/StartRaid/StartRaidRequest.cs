@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Raids;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#start-a-raid">Start A Raid</see> for more information.
 /// </remarks>
-public record StartRaidRequest
+public sealed record StartRaidRequest
     : TwitchHelixRequest<StartRaidResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

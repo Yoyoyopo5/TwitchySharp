@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-conduits">Create Conduits</see> for more information.
 /// </remarks>
-public record CreateConduitRequest
+public sealed record CreateConduitRequest
     : TwitchHelixRequest<CreateConduitsResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

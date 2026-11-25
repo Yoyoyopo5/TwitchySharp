@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-ad-schedule">Get Ad Schedule</see> for more information.
 /// </remarks>
-public record GetAdScheduleRequest
+public sealed record GetAdScheduleRequest
     : TwitchHelixRequest<GetAdScheduleResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

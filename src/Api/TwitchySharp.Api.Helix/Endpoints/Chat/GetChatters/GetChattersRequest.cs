@@ -20,7 +20,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-chatters">Get Chatters</see> for more information.
 /// </remarks>
-public record GetChattersRequest
+public sealed record GetChattersRequest
     : TwitchHelixRequest<GetChattersResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

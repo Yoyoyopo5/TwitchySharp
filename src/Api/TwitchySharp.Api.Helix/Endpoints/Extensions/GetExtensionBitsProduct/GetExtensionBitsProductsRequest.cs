@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-bits-products">Get Extension Bits Products</see> for more information.
 /// </remarks>
-public record GetExtensionBitsProductsRequest
+public sealed record GetExtensionBitsProductsRequest
     : TwitchHelixRequest<GetExtensionBitsProductsResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

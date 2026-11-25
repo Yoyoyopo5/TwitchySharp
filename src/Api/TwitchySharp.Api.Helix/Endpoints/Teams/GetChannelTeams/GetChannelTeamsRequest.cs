@@ -7,7 +7,7 @@
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-teams">Get Channel Teams</see> for more information.
 /// </remarks>
-public record GetChannelTeamsRequest
+public sealed record GetChannelTeamsRequest
     : TwitchHelixRequest<GetChannelTeamsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

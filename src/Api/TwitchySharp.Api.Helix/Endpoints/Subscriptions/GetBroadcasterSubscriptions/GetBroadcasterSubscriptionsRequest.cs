@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions">Get Broadcaster Subscriptions</see> for more information.
 /// </remarks>
-public record GetBroadcasterSubscriptionsRequest
+public sealed record GetBroadcasterSubscriptionsRequest
     : TwitchHelixRequest<GetBroadcasterSubscriptionsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

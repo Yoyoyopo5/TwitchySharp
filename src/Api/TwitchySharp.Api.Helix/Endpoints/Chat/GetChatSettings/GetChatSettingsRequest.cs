@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-chat-settings">Get Chat Settings</see> for more information.
 /// </remarks>
-public record GetChatSettingsRequest
+public sealed record GetChatSettingsRequest
     : TwitchHelixRequest<GetChatSettingsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite">Delete Guest Star Invite</see> for more information.
 /// </remarks>
-public record DeleteGuestStarInviteRequest
+public sealed record DeleteGuestStarInviteRequest
     : TwitchHelixRequest<DeleteGuestStarInviteResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

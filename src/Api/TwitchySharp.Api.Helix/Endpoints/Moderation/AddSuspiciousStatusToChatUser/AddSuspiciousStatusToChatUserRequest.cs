@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-suspicious-status-to-chat-user">Add Suspicious Status to Chat User</see> for more information.
 /// </remarks>
-public record AddSuspiciousStatusToChatUserRequest
+public sealed record AddSuspiciousStatusToChatUserRequest
     : TwitchHelixRequest<AddSuspiciousStatusToChatUserResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

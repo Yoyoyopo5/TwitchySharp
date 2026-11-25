@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#set-extension-configuration-segment">Set Extension Configuration Segment</see> for more information.
 /// </remarks>
-public record SetExtensionConfigurationSegmentRequest
+public sealed record SetExtensionConfigurationSegmentRequest
     : TwitchHelixRequest<SetExtensionConfigurationSegmentResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#end-guest-star-session">End Guest Star Session</see> for more information.
 /// </remarks>
-public record EndGuestStarSessionRequest
+public sealed record EndGuestStarSessionRequest
     : TwitchHelixRequest<EndGuestStarSessionResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {
