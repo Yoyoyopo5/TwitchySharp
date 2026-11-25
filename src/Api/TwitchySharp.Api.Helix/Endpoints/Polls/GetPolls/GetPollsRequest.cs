@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-polls">Get Polls</see> for more information.
 /// </remarks>
-public record GetPollsRequest
+public sealed record GetPollsRequest
     : TwitchHelixRequest<GetPollsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

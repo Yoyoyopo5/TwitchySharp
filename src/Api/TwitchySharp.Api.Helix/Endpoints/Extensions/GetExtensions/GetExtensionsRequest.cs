@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extensions">Get Extensions</see> for more information.
 /// </remarks>
-public record GetExtensionsRequest
+public sealed record GetExtensionsRequest
     : TwitchHelixRequest<GetExtensionsResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {

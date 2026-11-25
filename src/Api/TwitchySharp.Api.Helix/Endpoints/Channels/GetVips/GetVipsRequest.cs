@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-vips">Get VIPs</see> for more information.
 /// </remarks>
-public record GetVipsRequest
+public sealed record GetVipsRequest
     : TwitchHelixRequest<GetVipsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

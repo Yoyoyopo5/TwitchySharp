@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Raids;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#cancel-a-raid">Cancel A Raid</see> for more information.
 /// </remarks>
-public record CancelRaidRequest
+public sealed record CancelRaidRequest
     : TwitchHelixRequest<CancelRaidResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

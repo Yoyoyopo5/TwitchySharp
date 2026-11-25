@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions">Get EventSub Subscriptions</see> for more information.
 /// </remarks>
-public record GetEventSubSubscriptionsRequest
+public sealed record GetEventSubSubscriptionsRequest
     : TwitchHelixRequest<GetEventSubSubscriptionsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

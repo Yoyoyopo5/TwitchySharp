@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.CCLs;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels">Get Content Classification Labels</see> for more information.
 /// </remarks>
-public record GetContentClassificationLabelsRequest
+public sealed record GetContentClassificationLabelsRequest
     : TwitchHelixRequest<GetContentClassificationLabelsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

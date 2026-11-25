@@ -14,7 +14,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-extension-secret">Create Extension Secret</see> for more information.
 /// </remarks>
-public record CreateExtensionSecretRequest
+public sealed record CreateExtensionSecretRequest
     : TwitchHelixRequest<CreateExtensionSecretResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {

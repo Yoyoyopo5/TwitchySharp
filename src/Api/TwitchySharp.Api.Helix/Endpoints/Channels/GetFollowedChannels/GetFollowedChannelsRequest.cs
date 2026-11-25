@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-channels">Get Followed Channels</see> for more information.
 /// </remarks>
-public record GetFollowedChannelsRequest
+public sealed record GetFollowedChannelsRequest
     : TwitchHelixRequest<GetFollowedChannelsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

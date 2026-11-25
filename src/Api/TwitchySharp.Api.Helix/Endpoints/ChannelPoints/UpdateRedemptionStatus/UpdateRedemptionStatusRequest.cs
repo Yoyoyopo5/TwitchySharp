@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-redemption-status">update redemption status</see> for more information.
 /// </remarks>
-public record UpdateRedemptionStatusRequest
+public sealed record UpdateRedemptionStatusRequest
     : TwitchHelixRequest<UpdateRedemptionStatusResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

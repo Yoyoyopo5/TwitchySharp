@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Charity;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-charity-campaign">get charity campaign</see> for more information.
 /// </remarks>
-public record GetCharityCampaignRequest
+public sealed record GetCharityCampaignRequest
     : TwitchHelixRequest<GetCharityCampaignResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-emote-sets">Get Emote Sets</see> for more information.
 /// </remarks>
-public record GetEmoteSetsRequest
+public sealed record GetEmoteSetsRequest
     : TwitchHelixRequest<GetEmoteSetsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

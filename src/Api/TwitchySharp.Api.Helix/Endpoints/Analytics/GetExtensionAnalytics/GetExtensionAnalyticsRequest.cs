@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Analytics;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-extension-analytics">Get Extension Analytics</see> for more information.
 /// </remarks>
-public record GetExtensionAnalyticsRequest
+public sealed record GetExtensionAnalyticsRequest
     : TwitchHelixRequest<GetExtensionAnalyticsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>,
     IForwardPageableRequest

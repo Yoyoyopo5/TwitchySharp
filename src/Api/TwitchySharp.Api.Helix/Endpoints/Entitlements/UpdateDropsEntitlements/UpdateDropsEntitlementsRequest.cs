@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Entitlements;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements">Update Drops Entitlements</see> for more information.
 /// </remarks>
-public record UpdateDropsEntitlementsRequest
+public sealed record UpdateDropsEntitlementsRequest
     : TwitchHelixRequest<UpdateDropsEntitlementsResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

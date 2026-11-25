@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-channel-vip">Add Channel VIP</see> for more information.
 /// </remarks>
-public record AddChannelVipRequest
+public sealed record AddChannelVipRequest
     : TwitchHelixRequest<AddChannelVipResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

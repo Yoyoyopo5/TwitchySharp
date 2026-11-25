@@ -30,7 +30,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#check-automod-status">Check AutoMod Status</see> for more information.
 /// </remarks>
-public record CheckAutoModStatusRequest
+public sealed record CheckAutoModStatusRequest
     : TwitchHelixRequest<CheckAutoModStatusResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

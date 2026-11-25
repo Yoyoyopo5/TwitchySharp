@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-stream-markers">Get Stream Markers</see> for more information.
 /// </remarks>
-public record GetStreamMarkersRequest
+public sealed record GetStreamMarkersRequest
     : TwitchHelixRequest<GetStreamMarkersResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

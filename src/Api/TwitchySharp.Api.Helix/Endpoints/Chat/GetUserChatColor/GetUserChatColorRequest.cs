@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-chat-color">Get User Chat Color</see> for more information.
 /// </remarks>
-public record GetUserChatColorRequest
+public sealed record GetUserChatColorRequest
     : TwitchHelixRequest<GetUserChatColorResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

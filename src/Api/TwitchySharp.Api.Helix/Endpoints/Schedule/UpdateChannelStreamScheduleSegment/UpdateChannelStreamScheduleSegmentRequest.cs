@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule-segment">Update Channel Stream Schedule Segment</see> for more information.
 /// </remarks>
-public record UpdateChannelStreamScheduleSegmentRequest
+public sealed record UpdateChannelStreamScheduleSegmentRequest
     : TwitchHelixRequest<UpdateChannelStreamScheduleSegmentResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

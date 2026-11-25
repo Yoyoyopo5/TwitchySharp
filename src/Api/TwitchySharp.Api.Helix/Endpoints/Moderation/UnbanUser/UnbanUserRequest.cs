@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#unban-user">Unban User</see> for more information.
 /// </remarks>
-public record UnbanUserRequest
+public sealed record UnbanUserRequest
     : TwitchHelixRequest<UnbanUserResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

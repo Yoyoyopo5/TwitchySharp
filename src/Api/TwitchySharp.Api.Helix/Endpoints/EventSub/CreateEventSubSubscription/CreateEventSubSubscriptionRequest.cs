@@ -24,7 +24,7 @@ namespace TwitchySharp.Api.Helix.EventSub;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription">Create EventSub Subscription</see> for more information.
 /// </remarks>
-public partial record CreateEventSubSubscriptionRequest
+public sealed partial record CreateEventSubSubscriptionRequest
     : TwitchHelixRequest<CreateEventSubSubscriptionResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

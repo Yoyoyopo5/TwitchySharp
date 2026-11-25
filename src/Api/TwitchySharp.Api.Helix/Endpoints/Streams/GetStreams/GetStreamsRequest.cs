@@ -10,7 +10,7 @@
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-streams">Get Streams</see> for more information.
 /// </remarks>
-public record GetStreamsRequest
+public sealed record GetStreamsRequest
     : TwitchHelixRequest<GetStreamsResponseContent>, IForwardPageableRequest, IBackwardPageableRequest,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

@@ -5,7 +5,7 @@
 /// <remarks>
 /// Uses the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#client-credentials-grant-flow">client credentials grant flow</see>.
 /// </remarks>
-public record ClientCredentialsRequest
+public sealed record ClientCredentialsRequest
     : TwitchAuthenticationRequest<ClientCredentialsResponseContent>
 {
     /// <inheritdoc/>

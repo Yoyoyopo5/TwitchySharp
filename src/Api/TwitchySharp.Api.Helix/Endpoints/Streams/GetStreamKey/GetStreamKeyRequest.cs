@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-stream-key">Get Stream Key</see> for more information.
 /// </remarks>
-public record GetStreamKeyRequest
+public sealed record GetStreamKeyRequest
     : TwitchHelixRequest<GetStreamKeyResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

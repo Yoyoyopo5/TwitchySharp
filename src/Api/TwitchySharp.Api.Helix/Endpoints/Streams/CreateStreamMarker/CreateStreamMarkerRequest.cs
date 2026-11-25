@@ -28,7 +28,7 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-stream-marker">Create Stream Marker</see> for more information.
 /// </remarks>
-public record CreateStreamMarkerRequest
+public sealed record CreateStreamMarkerRequest
     : TwitchHelixRequest<CreateStreamMarkerResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

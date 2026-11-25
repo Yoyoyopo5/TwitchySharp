@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-chat-settings">Update Chat Settings</see> for more information.
 /// </remarks>
-public record UpdateChatSettingsRequest
+public sealed record UpdateChatSettingsRequest
     : TwitchHelixRequest<UpdateChatSettingsResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

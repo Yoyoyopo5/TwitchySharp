@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-custom-reward">Get Custom Reward</see> for more information.
 /// </remarks>
-public record GetCustomRewardRequest
+public sealed record GetCustomRewardRequest
     : TwitchHelixRequest<GetCustomRewardResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

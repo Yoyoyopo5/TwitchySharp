@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Streams;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-followed-streams">Get Followed Streams</see> for more information.
 /// </remarks>
-public record GetFollowedStreamsRequest
+public sealed record GetFollowedStreamsRequest
     : TwitchHelixRequest<GetFollowedStreamsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

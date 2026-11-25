@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-conduits">Update Conduits</see> for more information.
 /// </remarks>
-public record UpdateConduitRequest
+public sealed record UpdateConduitRequest
     : TwitchHelixRequest<UpdateConduitResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

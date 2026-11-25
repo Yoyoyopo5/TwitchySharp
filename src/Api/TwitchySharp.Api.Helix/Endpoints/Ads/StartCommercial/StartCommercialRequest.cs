@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Ads;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#start-commercial">Start Commerical</see> for more information.
 /// </remarks>
-public record StartCommercialRequest
+public sealed record StartCommercialRequest
     : TwitchHelixRequest<StartCommercialResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

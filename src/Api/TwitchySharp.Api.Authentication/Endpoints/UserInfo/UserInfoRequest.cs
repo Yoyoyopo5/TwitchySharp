@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oidc/#getting-claims-information-from-an-access-token">getting claims information from an access token</see> for more information.
 /// </remarks>
-public record UserInfoRequest
+public sealed record UserInfoRequest
     : TwitchAuthenticationRequest<TwitchOidc>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

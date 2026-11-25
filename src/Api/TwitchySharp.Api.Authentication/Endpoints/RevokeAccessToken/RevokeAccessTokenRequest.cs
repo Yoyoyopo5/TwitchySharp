@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <remarks>
 /// See <see href="https://dev.twitch.tv/docs/authentication/revoke-tokens/">Revoke Tokens</see> for more information.
 /// </remarks>
-public record RevokeAccessTokenRequest
+public sealed record RevokeAccessTokenRequest
     : TwitchAuthenticationRequest<RevokeAccessTokenResponseContent>
 {
     /// <inheritdoc/>

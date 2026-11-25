@@ -16,7 +16,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-users">Get Users</see> for more information.
 /// </remarks>
-public record GetUsersRequest
+public sealed record GetUsersRequest
     : TwitchHelixRequest<GetUsersResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

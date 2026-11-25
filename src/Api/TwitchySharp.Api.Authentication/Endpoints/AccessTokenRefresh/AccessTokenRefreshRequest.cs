@@ -7,7 +7,7 @@
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/authentication/refresh-tokens/">refresh tokens</see> for more information.
 /// </remarks>
-public record AccessTokenRefreshRequest
+public sealed record AccessTokenRefreshRequest
     : TwitchAuthenticationRequest<AccessTokenRefreshResponseContent>
 {
     /// <inheritdoc/>

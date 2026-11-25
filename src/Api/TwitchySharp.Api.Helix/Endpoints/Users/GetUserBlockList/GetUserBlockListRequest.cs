@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-user-block-list">Get User Block List</see> for more information.
 /// </remarks>
-public record GetUserBlockListRequest
+public sealed record GetUserBlockListRequest
     : TwitchHelixRequest<GetUserBlockListResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#block-user">Block User</see> for more information.
 /// </remarks>
-public record BlockUserRequest
+public sealed record BlockUserRequest
     : TwitchHelixRequest<BlockUserResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

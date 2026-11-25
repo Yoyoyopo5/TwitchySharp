@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/authentication/validate-tokens/">Validate Tokens</see> for more information.
 /// </remarks>
-public record ValidateAccessTokenRequest
+public sealed record ValidateAccessTokenRequest
     : TwitchAuthenticationRequest<ValidateAccessTokenResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

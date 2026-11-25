@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-pinned-chat-message">Get Pinned Chat Message</see> for more information.
 /// </para>
 /// </remarks>
-public record GetPinnedChatMessageRequest : TwitchHelixRequest<GetPinnedChatMessageResponseContent>,
+public sealed record GetPinnedChatMessageRequest : TwitchHelixRequest<GetPinnedChatMessageResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     public override HttpMethod Method { get; } = HttpMethod.Get;

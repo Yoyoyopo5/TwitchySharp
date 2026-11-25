@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite">Send Guest Star Invite</see> for more information.
 /// </remarks>
-public record SendGuestStarInviteRequest
+public sealed record SendGuestStarInviteRequest
     : TwitchHelixRequest<SendGuestStarInviteResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

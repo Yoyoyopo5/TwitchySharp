@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-suspicious-status-from-chat-user">Remove Suspicious Status from Chat User</see> for more information.
 /// </remarks>
-public record RemoveSuspiciousStatusFromChatUserRequest
+public sealed record RemoveSuspiciousStatusFromChatUserRequest
     : TwitchHelixRequest<RemoveSuspiciousStatusFromChatUserResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

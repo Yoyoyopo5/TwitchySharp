@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-editors">Get Channel Editors</see> for more information.
 /// </remarks>
-public record GetChannelEditorsRequest
+public sealed record GetChannelEditorsRequest
     : TwitchHelixRequest<GetChannelEditorsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

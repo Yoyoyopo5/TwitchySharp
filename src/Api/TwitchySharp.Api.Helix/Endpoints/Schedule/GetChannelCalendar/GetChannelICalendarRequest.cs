@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Schedule;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar">Get Channel iCalendar</see> for more information.
 /// </remarks>
-public record GetChannelICalendarRequest
+public sealed record GetChannelICalendarRequest
     : TwitchHelixRequest<GetChannelICalendarResponseContent>
 {
     protected override string Path => "/schedule/icalendar";

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#unblock-user">Unblock User</see> for more information.
 /// </remarks>
-public record UnblockUserRequest
+public sealed record UnblockUserRequest
     : TwitchHelixRequest<UnblockUserResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

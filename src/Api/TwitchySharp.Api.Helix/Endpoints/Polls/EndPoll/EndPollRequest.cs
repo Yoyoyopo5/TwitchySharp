@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#end-poll">End Poll</see> for more information.
 /// </remarks>
-public record EndPollRequest
+public sealed record EndPollRequest
     : TwitchHelixRequest<EndPollResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

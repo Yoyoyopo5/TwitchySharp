@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#warn-chat-user">Warn Chat User</see> for more information.
 /// </remarks>
-public record WarnChatUserRequest
+public sealed record WarnChatUserRequest
     : TwitchHelixRequest<WarnChatUserResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status">Get Shield Mode Status</see> for more information.
 /// </remarks>
-public record GetShieldModeStatusRequest
+public sealed record GetShieldModeStatusRequest
     : TwitchHelixRequest<GetShieldModeStatusResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

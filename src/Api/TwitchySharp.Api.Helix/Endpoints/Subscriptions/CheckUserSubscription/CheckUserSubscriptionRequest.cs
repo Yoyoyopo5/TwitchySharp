@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Subscriptions;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#check-user-subscription">Check User Subscription</see> for more information.
 /// </remarks>
-public record CheckUserSubscriptionRequest
+public sealed record CheckUserSubscriptionRequest
     : TwitchHelixRequest<CheckUserSubscriptionResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

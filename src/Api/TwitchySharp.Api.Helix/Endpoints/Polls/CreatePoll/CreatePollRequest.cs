@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Polls;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-poll">Create Poll</see> for more information.
 /// </remarks>
-public record CreatePollRequest
+public sealed record CreatePollRequest
     : TwitchHelixRequest<CreatePollResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-chat-messages">Delete Chat Messages</see> for more information.
 /// </remarks>
-public record DeleteChatMessagesRequest
+public sealed record DeleteChatMessagesRequest
     : TwitchHelixRequest<DeleteChatMessagesResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

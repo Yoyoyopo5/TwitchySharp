@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator">Remove Channel Moderator</see> for more information.
 /// </remarks>
-public record RemoveChannelModeratorRequest
+public sealed record RemoveChannelModeratorRequest
     : TwitchHelixRequest<RemoveChannelModeratorResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

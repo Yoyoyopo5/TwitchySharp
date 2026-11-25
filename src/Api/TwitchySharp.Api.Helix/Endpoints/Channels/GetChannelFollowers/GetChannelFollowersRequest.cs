@@ -15,7 +15,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-followers">Get Channel Followers</see> for more information.
 /// </remarks>
-public record GetChannelFollowersRequest
+public sealed record GetChannelFollowersRequest
     : TwitchHelixRequest<GetChannelFollowersResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

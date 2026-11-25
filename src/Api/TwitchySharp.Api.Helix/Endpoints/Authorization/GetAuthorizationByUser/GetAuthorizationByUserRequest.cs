@@ -8,7 +8,7 @@ namespace TwitchySharp.Api.Helix.Authorization;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-authorization-by-user">Get Authorization By User</see> for more information.
 /// </remarks>
-public record GetAuthorizationByUserRequest
+public sealed record GetAuthorizationByUserRequest
     : TwitchHelixRequest<GetAuthorizationByUserResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

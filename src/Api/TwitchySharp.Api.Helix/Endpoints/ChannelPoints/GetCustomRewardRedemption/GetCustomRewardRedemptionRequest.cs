@@ -101,7 +101,7 @@ public abstract record GetCustomRewardRedemptionRequest
 /// <remarks>
 /// <inheritdoc cref="GetCustomRewardRedemptionRequest" path="/remarks/para[2]"/>
 /// </remarks>
-public record GetCustomRewardRedemptionRequestById : GetCustomRewardRedemptionRequest
+public sealed record GetCustomRewardRedemptionRequestById : GetCustomRewardRedemptionRequest
 {
     /// <inheritdoc cref="GetCustomRewardRedemptionRequest.Ids"/>
     public required new IEnumerable<RewardRedemptionId> Ids { get => base.Ids!; init => base.Ids = value; }
@@ -113,7 +113,7 @@ public record GetCustomRewardRedemptionRequestById : GetCustomRewardRedemptionRe
 /// <remarks>
 /// <inheritdoc cref="GetCustomRewardRedemptionRequest" path="/remarks/para[2]"/>
 /// </remarks>
-public record GetCustomRewardRedemptionRequestByStatus : GetCustomRewardRedemptionRequest
+public sealed record GetCustomRewardRedemptionRequestByStatus : GetCustomRewardRedemptionRequest
 {
     /// <inheritdoc cref="GetCustomRewardRedemptionRequest.Status"/>
     public required new RewardRedemptionStatus Status { get => base.Status!.Value; init => base.Status = value; }

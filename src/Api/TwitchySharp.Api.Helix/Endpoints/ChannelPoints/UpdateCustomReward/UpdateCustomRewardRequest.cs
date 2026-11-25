@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-custom-reward">update custom reward</see> for more information.
 /// </remarks>
-public record UpdateCustomRewardRequest
+public sealed record UpdateCustomRewardRequest
     : TwitchHelixRequest<UpdateCustomRewardResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges">Get Channel Chat Badges</see> for more information.
 /// </remarks>
-public record GetChannelChatBadgesRequest
+public sealed record GetChannelChatBadgesRequest
     : TwitchHelixRequest<GetChannelChatBadgesResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

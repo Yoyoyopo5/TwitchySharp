@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.ChannelPoints;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#create-custom-rewards">Create Custom Rewards</see> for more information.
 /// </remarks>
-public record CreateCustomRewardsRequest
+public sealed record CreateCustomRewardsRequest
     : TwitchHelixRequest<CreateCustomRewardsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

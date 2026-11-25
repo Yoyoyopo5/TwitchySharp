@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#delete-conduit">Delete Conduit</see> for more information.
 /// </remarks>
-public record DeleteConduitRequest
+public sealed record DeleteConduitRequest
     : TwitchHelixRequest<DeleteConduitResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

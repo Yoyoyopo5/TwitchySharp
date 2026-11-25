@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Clips;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference#get-clips-download">Get Clips Download</see> for more information.
 /// </remarks>
-public record GetClipsDownloadRequest
+public sealed record GetClipsDownloadRequest
     : TwitchHelixRequest<GetClipsDownloadResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

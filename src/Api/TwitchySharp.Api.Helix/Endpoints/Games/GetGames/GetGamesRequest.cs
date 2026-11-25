@@ -7,7 +7,7 @@ namespace TwitchySharp.Api.Helix.Games;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-games">Get Games</see> for more information.
 /// </remarks>
-public record GetGamesRequest
+public sealed record GetGamesRequest
     : TwitchHelixRequest<GetGamesResponseContent>,
     IAuthenticatedTwitchRequest<ITwitchRequestAuthenticationContext<TwitchIdentity>>
 {

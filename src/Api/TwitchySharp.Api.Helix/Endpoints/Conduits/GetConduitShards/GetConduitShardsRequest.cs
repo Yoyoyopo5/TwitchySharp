@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Conduits;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-conduit-shards">Get Conduit Shards</see> for more information.
 /// </remarks>
-public record GetConduitShardsRequest
+public sealed record GetConduitShardsRequest
     : TwitchHelixRequest<GetConduitShardsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Client>>
 {

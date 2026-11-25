@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#add-channel-moderator">Add Channel Moderator</see> for more information.
 /// </remarks>
-public record AddChannelModeratorRequest
+public sealed record AddChannelModeratorRequest
     : TwitchHelixRequest<AddChannelModeratorResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

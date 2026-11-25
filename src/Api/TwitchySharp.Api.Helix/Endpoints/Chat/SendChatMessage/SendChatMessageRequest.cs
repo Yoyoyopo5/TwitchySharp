@@ -12,7 +12,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-chat-message">Send Chat Message</see> for more information.
 /// </remarks>
-public record SendChatMessageRequest
+public sealed record SendChatMessageRequest
     : TwitchHelixRequest<SendChatMessageResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

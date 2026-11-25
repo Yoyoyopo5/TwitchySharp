@@ -18,7 +18,7 @@ namespace TwitchySharp.Api.Helix.Chat;
 /// See <see href="https://dev.twitch.tv/docs/api/reference#pin-chat-message">Pin Chat Message</see> for more information.
 /// </para>
 /// </remarks>
-public record PinChatMessageRequest : TwitchHelixRequest<PinChatMessageResponseContent>,
+public sealed record PinChatMessageRequest : TwitchHelixRequest<PinChatMessageResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {
     public override HttpMethod Method { get; } = HttpMethod.Put;

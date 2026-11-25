@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#end-prediction">End Prediction</see> for more information.
 /// </remarks>
-public record EndPredictionRequest
+public sealed record EndPredictionRequest
     : TwitchHelixRequest<EndPredictionResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

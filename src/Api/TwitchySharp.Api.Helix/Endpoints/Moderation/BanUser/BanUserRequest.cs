@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#ban-user">Ban User</see> for more information.
 /// </remarks>
-public record BanUserRequest
+public sealed record BanUserRequest
     : TwitchHelixRequest<BanUserResponseContent>,
     IAuthenticatedTwitchRequest<UserSupportingPriorAuthorizationAuthenticationContext>
 {

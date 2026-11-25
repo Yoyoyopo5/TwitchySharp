@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Users;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-user">Update User</see> for more information.
 /// </remarks>
-public record UpdateUserRequest
+public sealed record UpdateUserRequest
     : TwitchHelixRequest<UpdateUserResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

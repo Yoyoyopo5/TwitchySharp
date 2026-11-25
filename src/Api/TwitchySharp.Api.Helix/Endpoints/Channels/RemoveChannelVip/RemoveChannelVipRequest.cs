@@ -13,7 +13,7 @@ namespace TwitchySharp.Api.Helix.Channels;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#remove-channel-vip">Remove Channel VIP</see> for more information.
 /// </remarks>
-public record RemoveChannelVipRequest
+public sealed record RemoveChannelVipRequest
     : TwitchHelixRequest<RemoveChannelVipResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

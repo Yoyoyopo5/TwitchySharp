@@ -11,7 +11,7 @@ namespace TwitchySharp.Api.Helix.Bits;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard">Get Bits Leaderboard</see> for more information.
 /// </remarks>
-public record GetBitsLeaderboardRequest
+public sealed record GetBitsLeaderboardRequest
     : TwitchHelixRequest<GetBitsLeaderboardResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

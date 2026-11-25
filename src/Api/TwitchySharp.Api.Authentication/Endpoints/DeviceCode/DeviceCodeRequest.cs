@@ -5,7 +5,7 @@ namespace TwitchySharp.Api.Authentication;
 /// <remarks>
 /// Uses the <see href="https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#device-code-grant-flow">device code grant flow</see>.
 /// </remarks>
-public record DeviceCodeRequest
+public sealed record DeviceCodeRequest
     : TwitchAuthenticationRequest<DeviceCodeResponseContent>
 {
     /// <inheritdoc/>

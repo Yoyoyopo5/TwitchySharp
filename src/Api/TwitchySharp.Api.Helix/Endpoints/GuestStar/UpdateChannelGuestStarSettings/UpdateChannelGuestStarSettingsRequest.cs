@@ -9,7 +9,7 @@ namespace TwitchySharp.Api.Helix.GuestStar;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings">Update Channel Guest Star Settings</see> for more information.
 /// </remarks>
-public record UpdateChannelGuestStarSettingsRequest
+public sealed record UpdateChannelGuestStarSettingsRequest
     : TwitchHelixRequest<UpdateChannelGuestStarSettingsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

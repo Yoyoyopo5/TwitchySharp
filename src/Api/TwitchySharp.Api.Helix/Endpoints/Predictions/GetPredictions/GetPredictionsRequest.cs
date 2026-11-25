@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Predictions;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#get-predictions">Get Predictions</see> for more information.
 /// </remarks>
-public record GetPredictionsRequest
+public sealed record GetPredictionsRequest
     : TwitchHelixRequest<GetPredictionsResponseContent>, IForwardPageableRequest,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

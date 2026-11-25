@@ -10,7 +10,7 @@ namespace TwitchySharp.Api.Helix.Moderation;
 /// </para>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests">Resolve Unban Requests</see> for more information.
 /// </remarks>
-public record ResolveUnbanRequestsRequest
+public sealed record ResolveUnbanRequestsRequest
     : TwitchHelixRequest<ResolveUnbanRequestsResponseContent>,
     IAuthenticatedTwitchRequest<UserWithScopesAuthenticationContext>
 {

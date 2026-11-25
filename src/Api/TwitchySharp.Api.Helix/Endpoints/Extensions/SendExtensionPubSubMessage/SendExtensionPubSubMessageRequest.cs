@@ -17,7 +17,7 @@ namespace TwitchySharp.Api.Helix.Extensions;
 /// <br/>
 /// See <see href="https://dev.twitch.tv/docs/api/reference/#send-extension-pubsub-message">Send Extension PubSub Message</see> for more information.
 /// </remarks>
-public record SendExtensionPubSubMessageRequest
+public sealed record SendExtensionPubSubMessageRequest
     : TwitchHelixRequest<SendExtensionPubSubMessageResponseContent>,
     IAuthenticatedTwitchRequest<TwitchRequestAuthenticationContext<TwitchIdentity.Extension>>
 {
