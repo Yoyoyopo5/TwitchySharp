@@ -31,7 +31,7 @@ public record UpdateGuestStarSlotRequest
             .Add("moderator_id", ModeratorId)
             .Add("session_id", SessionId)
             .Add("source_slot_id", SourceSlotId)
-            .Add("destination_slot_id", DestinationSlotId?.ToString());
+            .Add("destination_slot_id", DestinationSlotId);
 
     /// <summary>
     /// The user id of the broadcaster hosting the Guest Star session.
@@ -62,7 +62,7 @@ public record UpdateGuestStarSlotRequest
     /// <remarks>
     /// If the destination slot is occupied, the user assigned will be swapped into the source slot.
     /// </remarks>
-    public GuestStarSlotId? DestinationSlotId { get; init; }
+    public required GuestStarSlotId DestinationSlotId { get; init; }
 
     public override ValueTask<TwitchResponse<UpdateGuestStarSlotResponseContent>> CreateResponse(HttpResponseMessage response, CancellationToken ct)
         => EmptyResponse.Create<UpdateGuestStarSlotResponseContent>(response, ct);

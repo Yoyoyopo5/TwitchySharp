@@ -28,6 +28,7 @@ public record GetUserBlockListRequest
     protected override HttpQueryParameters QueryParameters
         => new HttpQueryParameters()
             .Add("broadcaster_id", BroadcasterId)
+            .Add("user_id", UserIds?.Select(x => x.Value))
             .Add("first", First?.ToString())
             .Add("after", After?.Value);
 
@@ -38,6 +39,16 @@ public record GetUserBlockListRequest
     /// This must be the same user that created the access token in the request.
     /// </remarks>
     public required UserId BroadcasterId { get; init; }
+    /// <summary>
+    /// A list of user ids used to filter the results.
+    /// </summary>
+    /// <remarks>
+    /// You may specify a maximum of 100 ids.
+    /// The returned list includes only those users that the broadcaster has blocked.
+    /// If you specify this property, <see cref="First"/> and <see cref="After"/> are ignored,
+    /// the response's pagination object is empty, and the list is in no particular order.
+    /// </remarks>
+    public IEnumerable<UserId>? UserIds { get; init; }
     /// <summary>
     /// <inheritdoc cref="PaginationAmount"/>
     /// </summary>
