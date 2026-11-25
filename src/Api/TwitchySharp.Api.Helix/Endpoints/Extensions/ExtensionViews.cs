@@ -25,4 +25,8 @@ public record ExtensionViews // Not sure which of the following are always prese
     /// Describes the view that is shown to broadcasters while they are configuring your extension within the Extension Manager.
     /// </summary>
     public required ConfigExtensionView Config { get; init; }
+    /// <summary>
+    /// Describes the view that is shown to broadcasters in the Live module of the dashboard.
+    /// </summary>
+    public LiveConfigExtensionView? LiveConfig { get; init; }
 }
